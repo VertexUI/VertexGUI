@@ -76,16 +76,6 @@ open class TwoDGraphicalApp: App<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGWindo
     }
 }
 
-public extension TwoDGraphicalApp {
-    static let robotoFontFamily = FontFamily(name: "Roboto", faces: [
-        //FontFace(path: "/home/adrian/.local/share/fonts/FiraCode-Light.ttf", weight: .Light, style: .Normal),
-        FontFace(path: (Path.cwd/"Assets/fonts/Roboto-Regular.ttf").string, weight: .Regular, style: .Normal),
-        //FontFace(path: "/home/adrian/.local/share/fonts/FiraCode-Medium.ttf", weight: .Medium, style: .Normal),
-        FontFace(path: (Path.cwd/"Assets/fonts/Roboto-Bold.ttf").string, weight: .Bold, style: .Normal),
-    ])
-    static let defaultFontConfig = FontConfig(family: robotoFontFamily, size: 24, weight: .Regular, style: .Normal)
-}
-
 let app = TwoDGraphicalApp()
 
 do {

@@ -1,5 +1,5 @@
 //
-// Created by adrian on 18.04.20.
+
 //
 
 import Foundation
