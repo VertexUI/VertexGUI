@@ -24,7 +24,7 @@ open class Window {
     }
 
     public var onKey = EventHandlerManager<KeyEvent>()
-    public var onMouse = EventHandlerManager<MouseEvent>()
+    public var onMouse = EventHandlerManager<RawMouseEvent>()
     public var onResize = EventHandlerManager<DSize2>()
     public var onFocusChange = EventHandlerManager<Bool>()
 

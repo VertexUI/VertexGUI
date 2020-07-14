@@ -12,7 +12,17 @@ open class TwoDVoxelRaycastPage: SingleChildWidget {
             child: Background(
                 child: Column(children: [
                     Space(size: DSize2(50, 50)),
-                    Text("WOWOWOWO!"),
+                    //TextConfigProvider(
+                        /*child: */Text("WOWOWOWO!"),
+                    /*    config: TextConfig(
+                            fontConfig: FontConfig(
+                                family: context!.defautFontFamily
+                            )
+                        )
+                    ),*/
+                    Button(
+                        child: Text("WOWOWOWOWOWOWOWOWOWO")
+                    ),
                     raycastVisualizer,
                 ]),
                 backgroundColor: Color(0, 120, 240, 255)

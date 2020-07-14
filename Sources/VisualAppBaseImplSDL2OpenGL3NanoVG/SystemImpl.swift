@@ -24,7 +24,7 @@ open class SDL2OpenGL3NanoVGSystem: System<SDL2OpenGL3NanoVGWindow, SDL2OpenGL3N
     }
 
     public var mousePosition: DPoint2 = DPoint2(0, 0)
-    public var mouseEventConsumers = [MouseEventConsumer]()
+    //public var mouseEventConsumers = [MouseEventConsumer]()
     private var pressedMouseButtons = [
         MouseButton.Left: false
     ]
@@ -61,7 +61,7 @@ open class SDL2OpenGL3NanoVGSystem: System<SDL2OpenGL3NanoVGWindow, SDL2OpenGL3N
         SDL_ShowCursor(shown ? SDL_ENABLE : SDL_DISABLE)
     }
 
-    open func forwardMouseEvent(_ event: MouseEvent, windowId: Int) throws {
+    open func forwardMouseEvent(_ event: RawMouseEvent, windowId: Int) throws {
         if let window = SDL2OpenGL3NanoVGSystem.windows[windowId] {
             try window.onMouse.invokeHandlers(event)
         }
@@ -109,20 +109,20 @@ open class SDL2OpenGL3NanoVGSystem: System<SDL2OpenGL3NanoVGWindow, SDL2OpenGL3N
                     case SDL_MOUSEBUTTONDOWN:
                         self.pressedMouseButtons[.Left] = self.pressedMouseButtons[.Left]! || event.button.button == UInt8(SDL_BUTTON_LEFT)
                         if event.button.button == UInt8(SDL_BUTTON_LEFT) {
-                            try self.forwardMouseEvent(MouseButtonDownEvent(button: .Left, position: DPoint2(Double(event.button.x), Double(event.button.y))), windowId: Int(event.button.windowID))
+                            try self.forwardMouseEvent(RawMouseButtonDownEvent(button: .Left, position: DPoint2(Double(event.button.x), Double(event.button.y))), windowId: Int(event.button.windowID))
                         }
                     case SDL_MOUSEBUTTONUP:
                         //let previousPressedState = pressedMouseButtons
                         self.pressedMouseButtons[.Left] = event.button.button == UInt8(SDL_BUTTON_LEFT) ? false : self.pressedMouseButtons[.Left]
                         if event.button.button == UInt8(SDL_BUTTON_LEFT) {
-                            try self.forwardMouseEvent(MouseButtonUpEvent(button: .Left, position: DPoint2(Double(event.button.x), Double(event.button.y))), windowId: Int(event.button.windowID))
+                            try self.forwardMouseEvent(RawMouseButtonUpEvent(button: .Left, position: DPoint2(Double(event.button.x), Double(event.button.y))), windowId: Int(event.button.windowID))
                         }
                     case SDL_MOUSEWHEEL:
                         print("TIMESTAMP", event.wheel.timestamp, event.wheel.x, event.wheel.y)
                         //provideMouseEvent(event: MouseWheelEvent(scrollAmount: Vector(Double(event.wheel.x), Double(event.wheel.y)), position: mousePosition))
                     case SDL_MOUSEMOTION:
                         self.mousePosition = DPoint2(Double(event.motion.x), Double(event.motion.y))
-                        try self.forwardMouseEvent(MouseMoveEvent(position: self.mousePosition, previousPosition: DPoint2(Double(event.motion.x - event.motion.xrel), Double(event.motion.y - event.motion.yrel))), windowId: Int(event.motion.windowID))
+                        try self.forwardMouseEvent(RawMouseMoveEvent(position: self.mousePosition, previousPosition: DPoint2(Double(event.motion.x - event.motion.xrel), Double(event.motion.y - event.motion.yrel))), windowId: Int(event.motion.windowID))
                     case SDL_QUIT, SDL_APP_TERMINATING:
                         SDL2OpenGL3NanoVGSystem.isRunning = false
                         //DispatchQueue.main.async {

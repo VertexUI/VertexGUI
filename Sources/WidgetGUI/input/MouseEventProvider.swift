@@ -3,6 +3,9 @@
 //
 
 import Foundation
+/*
+
+UNUSED
 
 public protocol MouseEventProvider {
     var mouseEventConsumers: [MouseEventConsumer] { get set }
@@ -41,4 +44,4 @@ public extension MouseEventProvider {
             }
         }
     }
-}
+}*/

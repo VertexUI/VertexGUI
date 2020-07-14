@@ -21,7 +21,7 @@ public class Text: Widget {
             textConfigProvider?.textConfig ?? (context != nil ?
             TextConfig(fontConfig: FontConfig(
                 family: context!.defaultFontFamily,
-                size: 12,
+                size: 16,
                 weight: .Regular,
                 style: .Normal
             ), color: .Black, wrap: false)

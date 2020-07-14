@@ -8,7 +8,7 @@ import CustomGraphicsMath
 // TODO: maybe rename to Font?
 public struct FontConfig {
     public var family: FontFamily
-    public var size: Float
+    public var size: Double 
     public var weight: FontWeight
     public var style: FontStyle
 
@@ -24,7 +24,7 @@ public struct FontConfig {
         }
     }
 
-    public init(family: FontFamily, size: Float, weight: FontWeight, style: FontStyle) {
+    public init(family: FontFamily, size: Double, weight: FontWeight, style: FontStyle) {
         self.family = family
         self.size = size
         self.weight = weight
