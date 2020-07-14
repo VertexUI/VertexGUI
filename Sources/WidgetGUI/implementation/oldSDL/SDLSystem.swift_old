@@ -1,0 +1,14 @@
+import struct SDL.SDLSystem
+
+public class SDLSystem: System<SDLWindow, SDLRenderer> {
+    override public init() throws {
+        try SDL.SDLSystem.initialize(subSystems: [.video])
+
+
+        //defer { SDL.quit() }
+    }
+
+    override public func newWindow() throws -> SDLWindow {
+        return try SDLWindow()
+    }
+}

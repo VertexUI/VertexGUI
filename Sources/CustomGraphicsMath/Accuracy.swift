@@ -1,0 +1,1 @@
+public let vectorComparisonAccuracy = 0.01

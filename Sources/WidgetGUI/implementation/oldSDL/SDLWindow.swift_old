@@ -1,0 +1,223 @@
+//
+// Created by adrian on 14.04.20.
+//
+
+import Foundation
+import CSDL2
+import class SDL.SDLWindow
+
+public typealias UnregisterCallback = () throws -> Void
+public typealias OnFrameCallback = (_ deltaTime: UInt32, _ unregister: UnregisterCallback) -> Void
+public typealias OnResizeCallback = (_ newSize: Size, _ unregister: UnregisterCallback) throws -> Void
+public typealias OnMouseCallback = (_ event: MouseEvent, _ unregister: UnregisterCallback) -> Void
+
+public class SDLWindow: Window, MouseEventProvider {
+    private let fps = 60
+    var windowInstance: SDL.SDLWindow
+
+    private var windowSize = (width: 600, height: 480)
+    private var renderables = [Renderable]()
+    private var isRunning = true
+
+    public var mouseEventConsumers = [MouseEventConsumer]()
+    private var pressedMouseButtons = [
+        MouseButton.LEFT: false
+    ]
+    public var mousePosition: DPoint2 = DPoint2(0, 0)
+    private var activeKeys = [
+        SDL_Keycode(SDLK_DOWN): false,
+        SDL_Keycode(SDLK_UP): false,
+        SDL_Keycode(SDLK_LEFT): false,
+        SDL_Keycode(SDLK_RIGHT): false
+    ]
+
+    private var onFrameCallbacks = [Int: (event: OnFrameCallback, unregister: UnregisterCallback)]()
+    private var nextOnFrameCallbackId = 0
+    private var onResizeCallbacks = [Int: (event: OnResizeCallback, unregister: UnregisterCallback)]()
+    private var nextOnResizeCallbackId = 0
+    private var onMouseCallbacks = [Int: (event: OnMouseCallback, unregister: UnregisterCallback)]()
+    private var nextOnMouseCallbackId = 0
+
+    override public var size: Size {
+        get {
+            return Size(width: Double(windowSize.width), height: Double(windowSize.height))
+        }
+
+        set {
+            print("Set SIZE", newValue)
+        }
+    }
+
+    public init() throws {
+        windowInstance = try SDL.SDLWindow(title: "SDLDemo",
+                frame: (x: .centered, y: .centered, width: windowSize.width, height: windowSize.height),
+                options: [.resizable, .shown, .opengl])
+
+        try super.init(background: Color(0,0,0,255), renderer: SDLRenderer(windowInstance: windowInstance))
+
+        globalContext = Context(window: self)
+        globalContext.onCursorRequestsUpdated { _ in
+            // TODO: do something with listeners for context cursor requests
+            //globalContext.onTest()
+            if self.globalContext.cursorRequests.count > 0 {
+                print("HAVE CURSOR REQUEST")
+                switch Array(self.globalContext.cursorRequests.values)[0] {
+                case .Arrow:
+                    SDL_SetCursor(SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_ARROW))
+                case .Hand:
+                    SDL_SetCursor(SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_HAND))
+                default:
+                    break
+                }
+            } else {
+                SDL_SetCursor(SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_ARROW))
+            }
+        }
+    }
+
+    public func add(renderable: Renderable) {
+        renderables.append(renderable)
+    }
+
+    public func onFrame(_ onFrameCallback: @escaping OnFrameCallback) -> UnregisterCallback {
+        let callbackId = nextOnFrameCallbackId
+        onFrameCallbacks[callbackId] = (event: onFrameCallback, unregister: {
+            self.onFrameCallbacks.removeValue(forKey: callbackId)
+        })
+        nextOnFrameCallbackId += 1
+        return onFrameCallbacks[callbackId]!.unregister
+    }
+
+    public func onResize(_ onResizeCallback: @escaping OnResizeCallback) rethrows -> UnregisterCallback {
+        let callbackId = nextOnResizeCallbackId
+        onResizeCallbacks[callbackId] = (event: onResizeCallback, unregister: {
+            self.onResizeCallbacks.removeValue(forKey: callbackId)
+        })
+        nextOnResizeCallbackId += 1
+        return onResizeCallbacks[callbackId]!.unregister
+    }
+
+    public func onMouse(_ onMouseCallback: @escaping OnMouseCallback) -> UnregisterCallback {
+        let callbackId = nextOnMouseCallbackId
+        onMouseCallbacks[callbackId] = (event: onMouseCallback, unregister: {
+            self.onMouseCallbacks.removeValue(forKey: callbackId)
+        })
+        nextOnMouseCallbackId += 1
+        return onMouseCallbacks[callbackId]!.unregister
+    }
+
+    /*
+    TODO: implement key handling, e.g. onkeydown, onkeyup for scene
+    public func activeKeys(activeKeys: [Int32: Bool])
+
+    func onActiveKeysChanged(activeKeys: [Int32: Bool]) {
+        return
+    }*/
+
+    private func publishActiveKeys() {
+        for renderable in renderables {
+            //renderable.onActiveKeysChanged(activeKeys: activeKeys)
+        }
+    }
+
+    override open func render() throws {
+        //try renderer.setDrawColor(red: 0, green: 0, blue: 0, alpha: 255)
+        try renderer.clear(background)
+        /*try renderer.setDrawColor(red: 0, green: 200, blue: 0, alpha: 255)
+        try renderer.drawRect(x: 0, y: 0, width: 200, height: 200)
+        renderer.drawLine(0, 0, 500, 500)
+        try chart.render(state: chartState, renderer: renderer)
+        renderer.present()*/
+
+        for renderable in renderables {
+            try renderable.render(renderer: renderer)
+        }
+
+        try renderer.flush()
+    }
+
+    override open func eventLoop() throws {
+        var event = SDL_Event()
+
+        while isRunning && SDL_WaitEvent(&event) != 0 {
+            let eventType = SDL_EventType(rawValue: event.type)
+
+            switch eventType {
+            case SDL_QUIT, SDL_APP_TERMINATING:
+                isRunning = false
+                break
+            case SDL_WINDOWEVENT:
+                if event.window.event == UInt8(SDL_WINDOWEVENT_SIZE_CHANGED.rawValue) {
+                    windowSize.width = Int(event.window.data1)
+                    windowSize.height = Int(event.window.data2)
+                    for callbacks in onResizeCallbacks.values {
+                        try callbacks.event(size, callbacks.unregister)
+                    }
+                    //chartState.size.width = windowSize.width
+                    //chartState.size.height = windowSize.height
+                    //glViewport(x: 0, y: 0, width: GL.Size(windowSize.width), height: GL.Size(windowSize.height)) //t(0, 0, windowSize.width, windowSize.height)
+                    //updateProjectionMatrix()
+                }
+                break
+            case SDL_KEYDOWN:
+                activeKeys[event.key.keysym.sym] = true
+                publishActiveKeys()
+                break
+            case SDL_KEYUP:
+                activeKeys[event.key.keysym.sym] = false
+                publishActiveKeys()
+                break
+            case SDL_MOUSEBUTTONDOWN:
+                pressedMouseButtons[.LEFT] = pressedMouseButtons[.LEFT]! || event.button.button == UInt8(SDL_BUTTON_LEFT)
+                if event.button.button == UInt8(SDL_BUTTON_LEFT) {
+                    provideMouseEvent(event: MouseButtonDownEvent(button: .LEFT, position: DPoint2(Double(event.button.x), Double(event.button.y))))
+                }
+            case SDL_MOUSEBUTTONUP:
+                //let previousPressedState = pressedMouseButtons
+                pressedMouseButtons[.LEFT] = event.button.button == UInt8(SDL_BUTTON_LEFT) ? false : pressedMouseButtons[.LEFT]
+                if event.button.button == UInt8(SDL_BUTTON_LEFT) {
+                    provideMouseEvent(event: MouseButtonUpEvent(button: .LEFT, position: DPoint2(Double(event.button.x), Double(event.button.y))))
+                }
+            case SDL_MOUSEWHEEL:
+                print("TIMESTAMP", event.wheel.timestamp, event.wheel.x, event.wheel.y)
+                provideMouseEvent(event: MouseWheelEvent(scrollAmount: Vector(Double(event.wheel.x), Double(event.wheel.y)), position: mousePosition))
+            case SDL_MOUSEMOTION:
+                mousePosition = DPoint2(Double(event.motion.x), Double(event.motion.y))
+                provideMouseEvent(event: MouseMoveEvent(position: mousePosition, previousPosition: DPoint2(Double(event.motion.x - event.motion.xrel), Double(event.motion.y - event.motion.yrel))))
+            default:
+                break
+            }
+
+            event.type = 0
+        }
+    }
+
+    override open func renderLoop() throws {
+        var lastFrameTime = SDL_GetTicks()
+        var totalTime: UInt32 = 0
+
+        var frame = 0
+
+        while isRunning {
+            // increment ticker
+            frame += 1
+            let startTime = SDL_GetTicks()
+            let deltaTime = startTime - lastFrameTime
+            lastFrameTime = startTime
+            totalTime += deltaTime
+
+
+
+            for callbacks in onFrameCallbacks.values {
+                callbacks.event(deltaTime, callbacks.unregister)
+            }
+
+            try render()
+
+            let frameDuration = SDL_GetTicks() - startTime
+            if frameDuration < 1000 / UInt32(fps) {
+                SDL_Delay((1000 / UInt32(fps)) - frameDuration)
+            }
+        }
+    }
+}

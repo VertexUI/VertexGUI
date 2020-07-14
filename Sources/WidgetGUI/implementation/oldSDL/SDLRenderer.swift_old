@@ -1,0 +1,106 @@
+//
+// Created by adrian on 02.05.20.
+//
+
+import Foundation
+import class SDL.SDLWindow
+import class SDL.SDLRenderer
+import struct SDL.SDLColor
+import SDL
+import CSDL2
+
+public class SDLRenderer: Renderer {
+    private var windowInstance: SDL.SDLWindow
+    private var rendererInstance: SDL.SDLRenderer
+    private var renderTargetStack = [SDLTexture]()
+
+    public struct SDLRendererError: Error {
+        public var message: String
+    }
+
+    public init(windowInstance: SDL.SDLWindow) {
+        self.windowInstance = windowInstance
+        self.rendererInstance = try! SDL.SDLRenderer(
+            window: windowInstance,
+            driver: SDL.SDLRenderer.Driver(rawValue: -1),
+            options: [SDL.SDLRenderer.Option(rawValue: SDL_RENDERER_ACCELERATED.rawValue)!])
+    }
+
+    override public func clear(_ color: Color) throws {
+        try rendererInstance.setDrawColor(red: color.r, green: color.g, blue: color.b, alpha: color.a)
+        try rendererInstance.clear()
+    }
+
+    override public func rect(rect: Rect, style: RenderStyle) throws {
+        if let fillColor = style.fillColor {
+            try rendererInstance.setDrawColor(red: fillColor.r, green: fillColor.g, blue: fillColor.b, alpha: fillColor.a)
+            try rendererInstance.fillRect(x1: Int(rect.topLeft.x), y1: Int(rect.topLeft.y), x2: Int(rect.bottomRight.x), y2: Int(rect.bottomRight.y))
+        }
+        if let strokeWidth = style.strokeWidth {
+            let strokeColor = style.strokeColor ?? Color(0, 0, 0, 255)
+            try rendererInstance.setDrawColor(red: strokeColor.r, green: strokeColor.g, blue: strokeColor.b, alpha: strokeColor.a)
+            try rendererInstance.drawRect(rect: rect.toSDL())
+        }
+    }
+
+    override public func circle(center: DPoint2, radius: Double, style: RenderStyle) throws {
+        // TODO: implement real fill method
+        if let fillColor = style.fillColor {
+            try rendererInstance.drawCircle(x: Int(center.x), y: Int(center.y), radius: Int(radius), color: SDL_Color(r: fillColor.r, g: fillColor.g, b: fillColor.b, a: fillColor.a))
+        }
+        if let strokeColor = style.strokeColor {
+            try rendererInstance.drawCircle(x: Int(center.x), y: Int(center.y), radius: Int(radius), color: SDL_Color(r: strokeColor.r, g: strokeColor.g, b: strokeColor.b, a: strokeColor.a))
+        }
+    }
+
+    override open func ellipse(center: DPoint2, radius: Vector, style: RenderStyle) throws {
+        // TODO: implement fill
+        if let strokeColor = style.strokeColor {
+            try rendererInstance.drawEllipse(x: Int(center.x), y: Int(center.y), radiusX: Int(radius.x), radiusY: Int(radius.y), color: SDL_Color(r: strokeColor.r, g: strokeColor.g, b: strokeColor.b, a: strokeColor.a))
+        }
+    }
+
+    override public func text(topLeft: DPoint2, text: String, fontConfig: FontConfig) -> Rect {
+        let sdlTextBounds = rendererInstance.drawText(
+                x: Int(topLeft.x),
+                y: Int(topLeft.y),
+                text: text,
+                fontSize: fontConfig.size,
+                fontPath: fontConfig.family,
+                color: SDL_Color(r: fontConfig.color.r, g: fontConfig.color.g, b: fontConfig.color.b, a: fontConfig.color.a))
+        let textBounds = Rect(topLeft: DPoint2(Double(sdlTextBounds.x), Double(sdlTextBounds.y)), size: Size(Double(sdlTextBounds.w), Double(sdlTextBounds.h)))
+        return textBounds
+    }
+
+    override public func cursor(_ cursor: Cursor) throws {
+        SDL_SetCursor(SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_HAND))
+    }
+
+    override open func clipArea(bounds: Rect) throws {
+        try rendererInstance.setClipArea(bounds.toSDL())
+        /*let texture = try SDLTexture(renderer: rendererInstance, format: .argb8888, access: .target, width: Int(size.width), height: Int(size.height))
+        try rendererInstance.setTarget(texture)
+        print("SET TARGET", texture, size)
+        try rendererInstance.info()
+        renderTargetStack.append(texture)*/
+    }
+
+    override open func releaseClipArea() throws {
+        try rendererInstance.releaseClipArea()
+        /*
+        if renderTargetStack.count == 0 {
+            throw SDLRendererError(message: "A clip area needs to be setup before calling this.")
+        }
+        renderTargetStack.remove(at: renderTargetStack.count - 1)
+        if renderTargetStack.count == 0 {
+            try rendererInstance.setTarget(nil)
+        } else {
+            try rendererInstance.setTarget(renderTargetStack.last)
+        }
+        print("TARGETS", renderTargetStack.count)*/
+    }
+
+    override public func flush() {
+        rendererInstance.present()
+    }
+}

@@ -1,0 +1,101 @@
+import WidgetGUI
+import SDL
+import CSDL2
+import GL
+import Foundation
+import Path
+
+open class SDL2OpenGL3NanoVGWindow: Window {
+    var isRunning = true
+    var windowSize = (width: 600, height: 480)
+    let window: SDL.SDLWindow
+    let context: SDL.SDLGLContext
+    
+    public init() throws {
+        window = try SDL.SDLWindow(title: "SDLDemo",
+                                    frame: (x: .centered, y: .centered, width: windowSize.width, height: windowSize.height),
+                                    options: [.resizable, .shown, .opengl])
+
+        context = try SDLGLContext(window: window)
+
+        glViewport(x: 0, y: 0, width: GL.Size(windowSize.width), height: GL.Size(windowSize.height))
+
+        try super.init(background: Color(1, 1, 1, 1), renderer: SDL2OpenGL3NanoVGRenderer(windowInstance: window))
+    }
+
+    override open func render() throws {
+        SDL_GL_MakeCurrent(window.internalPointer, context.internalPointer)
+
+        let framesPerSecond = try window.displayMode().refreshRate
+        var frame = 0
+        var lastFrameTime = SDL_GetTicks()
+        var totalTime: UInt32 = 0
+        var event = SDL_Event()
+        var activeKeys = [
+            SDL_Keycode(SDLK_DOWN): false,
+            SDL_Keycode(SDLK_UP): false,
+            SDL_Keycode(SDLK_LEFT): false,
+            SDL_Keycode(SDLK_RIGHT): false
+        ]
+
+        while isRunning {
+            SDL_PollEvent(&event)
+
+            // increment ticker
+            frame += 1
+            let startTime = SDL_GetTicks()
+            let 𝚫time = startTime - lastFrameTime
+            lastFrameTime = startTime
+            totalTime += 𝚫time
+            let eventType = SDL_EventType(rawValue: event.type)
+            
+            switch eventType {
+                case SDL_QUIT, SDL_APP_TERMINATING:
+                    isRunning = false
+                case SDL_WINDOWEVENT:
+                    if event.window.event == UInt8(SDL_WINDOWEVENT_SIZE_CHANGED.rawValue) {
+                        windowSize.width = Int(event.window.data1)
+                        windowSize.height = Int(event.window.data2)
+                        glViewport(x: 0, y: 0, width: GL.Size(windowSize.width), height: GL.Size(windowSize.height)) //t(0, 0, windowSize.width, windowSize.height)
+                        //updateProjectionMatrix()
+                    }
+                case SDL_KEYDOWN:
+                    activeKeys[event.key.keysym.sym] = true
+                case SDL_KEYUP:
+                    activeKeys[event.key.keysym.sym] = false
+                default:
+                    break
+            }
+
+
+            glClearColor(1, 0.3, 0.3, 1.0)
+            glClear(GL.COLOR_BUFFER_BIT)
+
+            /*for (entity, renderObject) in renderObjects {
+                if (entity.texture == nil) {
+                    glBindTexture(GL.TEXTURE_2D, 0)
+                } else {
+                    glBindTexture(GL.TEXTURE_2D, renderObject.texture)
+                }
+                glBindVertexArray(renderObject.vao)
+                
+                glUniform4f(uniformColorLocation, 0.0, (Float(sin(Float(totalTime) / 1000 * 1 * Float.pi)) + 1.0) / 2, 0.0, 1.0)
+                glUniformMatrix4fv(uniformModelLocation, 1, true, entity.transform.elements)
+                glUniformMatrix4fv(uniformViewLocation, 1, true, viewMatrix.elements)
+                glUniformMatrix4fv(uniformProjectionLocation, 1, true, projectionMatrix.elements)
+                if (entity.indices == nil) {
+                    glDrawArrays(GL.TRIANGLES, 0, GL.Size(entity.vertices.count))
+                } else {
+                    glDrawElements(mode: GL.TRIANGLES, count: 6, type: GL.UNSIGNED_INT, indices: UnsafeRawPointer(bitPattern: 0))
+                }
+            }*/
+
+            window.glSwap()
+
+            let frameDuration = SDL_GetTicks() - startTime
+            if frameDuration < 1000 / UInt32(framesPerSecond) {
+            SDL_Delay((1000 / UInt32(framesPerSecond)) - frameDuration)
+            }
+        }
+    }
+}

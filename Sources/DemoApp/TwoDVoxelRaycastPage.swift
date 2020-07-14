@@ -1,0 +1,28 @@
+import VisualAppBase
+import WidgetGUI
+import CustomGraphicsMath
+
+open class TwoDVoxelRaycastPage: SingleChildWidget {
+    private var raycastVisualizer: TwoDRaycastVisualizer
+    
+    public init() {
+        raycastVisualizer = TwoDRaycastVisualizer()    
+        raycastVisualizer.raycast = TwoDRaycast(gridSize: AnySize2(100, 100), rayStart: AnyVector2(1, 1), rayEnd: AnyVector2(50, 50))
+        super.init(
+            child: Background(
+                child: Column(children: [
+                    Space(size: DSize2(50, 50)),
+                    Text("WOWOWOWO!"),
+                    raycastVisualizer,
+                ]),
+                backgroundColor: Color(0, 120, 240, 255)
+            )
+        )
+    }
+
+    override open func layout(fromChild: Bool = false) throws {
+        child.constraints = constraints
+        try child.layout()
+        bounds.size = child.bounds.size
+    }
+}

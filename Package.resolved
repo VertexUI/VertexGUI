@@ -1,0 +1,43 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "Cnanovg",
+        "repositoryURL": "https://github.com/UnGast/Cnanovg.git",
+        "state": {
+          "branch": "master",
+          "revision": "b6ca44619bf68833a81ddcb23c9396219acd9b35",
+          "version": null
+        }
+      },
+      {
+        "package": "Path.swift",
+        "repositoryURL": "https://github.com/mxcl/Path.swift.git",
+        "state": {
+          "branch": "master",
+          "revision": "6e99825d9fec1f4363f9e28cf91195eedcf6db95",
+          "version": null
+        }
+      },
+      {
+        "package": "GL",
+        "repositoryURL": "https://github.com/UnGast/swift-opengl.git",
+        "state": {
+          "branch": "master",
+          "revision": "5cffdfff5ae39aabddf093cfa084f55270b3cb2a",
+          "version": null
+        }
+      },
+      {
+        "package": "Swim",
+        "repositoryURL": "https://github.com/t-ae/swim.git",
+        "state": {
+          "branch": "master",
+          "revision": "cb9ee369107e9c9bad15c868463dcc1c479a9feb",
+          "version": null
+        }
+      }
+    ]
+  },
+  "version": 1
+}

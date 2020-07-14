@@ -1,0 +1,49 @@
+import CustomGraphicsMath
+import VisualAppBase
+
+public class Row<S: System<W, R>, W: Window, R: Renderer>: MultiChildWidget<S, W, R> {
+    public var wrap: Bool
+
+    public init(children: [Widget<S, W, R>], wrap: Bool = false) {
+        self.wrap = wrap
+        super.init(children: children)
+    }
+
+    override public func layout(fromChild: Bool = false) throws {
+        var currentX = 0.0
+        var currentY = 0.0
+        var maxWidth = 0.0
+        var currentRowHeight = 0.0 // height of the current line of children, if multiline, total height = currentY + currentRowHeight
+        for child in children {
+            // TODO: maybe set min size as well
+            child.constraints = BoxConstraints(minSize: DSize2(0,0), maxSize: DSize2(constraints!.maxWidth - currentX, constraints!.maxHeight - currentY))
+            try child.layout()
+
+            if wrap {
+                if currentX + child.bounds.size.width > constraints!.maxWidth {
+                    currentX = 0
+                    currentY += currentRowHeight
+                }
+            }
+
+            child.bounds.topLeft = DPoint2(currentX, currentY)
+            currentX += child.bounds.size.width
+
+            if child.bounds.size.height > currentRowHeight {
+                currentRowHeight = child.bounds.size.height
+            }
+
+
+            if currentX > maxWidth {
+                maxWidth = currentX
+            }
+        }
+        bounds.size = DSize2(max(constraints!.minWidth, maxWidth), max(constraints!.minHeight, currentY + currentRowHeight))
+    }
+
+    override public func render(renderer: R) throws {
+        for child in self.children {
+            try child.render(renderer: renderer)
+        }
+    }
+}

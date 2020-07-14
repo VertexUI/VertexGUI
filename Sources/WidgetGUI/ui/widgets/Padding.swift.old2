@@ -1,0 +1,27 @@
+public class Padding: Widget {
+    public var child: Widget
+    public var padding: Insets
+
+    public init(child: Widget, padding: Insets) {
+        self.child = child
+        self.padding = padding
+        super.init(children: [child])
+    }
+
+    override public func layout(constraints: BoxConstraints) throws {
+        child.bounds.topLeft = DPoint2(padding.left, padding.top)
+        try child.layout(constraints: BoxConstraints(
+            minSize: Size(constraints.minSize.width - padding.left - padding.right, constraints.minSize.height - padding.top - padding.bottom),
+            maxSize: Size(constraints.maxSize.width - padding.left - padding.right, constraints.maxSize.height - padding.top - padding.bottom)
+        ))
+        bounds.size = Size(
+            child.bounds.size.width + padding.left + padding.right,
+            child.bounds.size.height + padding.top + padding.bottom
+        )
+    }
+
+    /*override public func getContentSize() throws -> Size {
+        let childContentSize = try child.getContentSize()
+        return Size(childContentSize.width + padding.left + padding.right, childContentSize.height + padding.top + padding.bottom)
+    }*/
+}

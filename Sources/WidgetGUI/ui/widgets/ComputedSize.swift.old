@@ -1,0 +1,19 @@
+import VisualAppBase
+import CustomGraphicsMath
+
+public class ComputedSize<S: System<W, R>, W: Window, R: Renderer>: SingleChildWidget<S, W, R> {
+    public typealias CalculationFunction = (_ constraints: BoxConstraints) -> DSize2
+
+    public var calculate: CalculationFunction
+
+    public init(child: Widget<S, W, R>, _ calculate: @escaping CalculationFunction) {
+        self.calculate = calculate
+        super.init(child: child)
+    }
+
+    override open func layout(fromChild: Bool = false) throws {
+        bounds.size = calculate(constraints!)
+        child.constraints = BoxConstraints(size: bounds.size)
+        try child.layout()
+    }
+}

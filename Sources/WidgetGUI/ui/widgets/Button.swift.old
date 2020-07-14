@@ -1,0 +1,68 @@
+//
+// Created by adrian on 18.04.20.
+//
+
+import Foundation
+import CustomGraphicsMath
+import VisualAppBase
+
+public enum ButtonState {
+    case Normal, Hover
+}
+
+public struct ButtonStyle {
+    var background: Color
+    var cursor: Cursor
+}
+
+public let defaultButtonStyles: [ButtonState: ButtonStyle] = [
+    .Normal: ButtonStyle(background: Color(255, 0, 0, 255), cursor: .Arrow),
+    .Hover: ButtonStyle(background: Color(0, 255, 0, 255), cursor: .Hand)
+]
+
+public class Button<S: System<W, R>, W: Window, R: Renderer>: SingleChildWidget<S, W, R> {
+    public var state: ButtonState = .Normal
+    public var stateStyles: [ButtonState: ButtonStyle]
+    public var cursorRequestId: UInt64? = nil
+    public var onClick = EventHandlerManager<Void>()
+
+    public init(child: Widget<S, W, R>, stateStyles: [ButtonState: ButtonStyle] = defaultButtonStyles, onClick onClickHandler: EventHandlerManager<Void>.Handler? = nil) {
+        self.stateStyles = stateStyles
+        if onClickHandler != nil {
+            _ = onClick.addHandler(onClickHandler!)
+        }
+        super.init(child: child)
+    }
+
+    override open func layout(fromChild: Bool = false) throws {
+        child.constraints = constraints
+        try child.layout()
+        bounds.size = child.bounds.size
+    }
+ 
+    override open func render(renderer: R) throws {
+        let style = stateStyles[state] ?? defaultButtonStyles[state]!
+        try renderer.rect(globalBounds, style: RenderStyle(fillColor: style.background))
+        try child.render(renderer: renderer)
+    }
+
+    override open func consume(_ event: GUIMouseEvent) throws {
+        switch event {
+        case is MouseEnterEvent:
+            self.state = .Hover
+            if (cursorRequestId == nil) {
+                cursorRequestId = try context?.system.requestCursor(.Hand)
+            }
+        case is MouseLeaveEvent:
+            self.state = .Normal
+            if (cursorRequestId != nil) {
+                try context?.system.dropCursorRequest(id: cursorRequestId!)
+                cursorRequestId = nil
+            }
+        case is MouseButtonDownEvent:
+            try onClick.invokeHandlers(Void())
+        default:
+            break
+        }
+    }
+}
