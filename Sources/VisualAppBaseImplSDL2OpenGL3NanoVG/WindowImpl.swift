@@ -18,8 +18,8 @@ public typealias OnMouseCallback = (_ event: MouseEvent, _ unregister: Unregiste
 */
 
 open class SDL2OpenGL3NanoVGWindow: Window {
-    var sdlWindow: OpaquePointer
-    var glContext: SDL_GLContext 
+    public var sdlWindow: OpaquePointer
+    public var glContext: SDL_GLContext 
     public var nvg: UnsafeMutablePointer<NVGcontext>
 
     override open var id: Int {
