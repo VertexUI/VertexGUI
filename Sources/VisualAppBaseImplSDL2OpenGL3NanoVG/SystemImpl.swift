@@ -80,14 +80,11 @@ open class SDL2OpenGL3NanoVGSystem: System<SDL2OpenGL3NanoVGWindow, SDL2OpenGL3N
             let eventType = SDL_EventType(rawValue: event.type)
             //DispatchQueue.global().async {
                 do {
-                    print("GOT EVENT", eventType)
-
                     switch eventType {
                     case SDL_WINDOWEVENT:
                         // TODO: implement focus change
                         if event.window.event == UInt8(SDL_WINDOWEVENT_SIZE_CHANGED.rawValue) {
                             if let window = SDL2OpenGL3NanoVGSystem.windows[Int(event.window.windowID)] {
-                                print("GOT RESIZE EVENT")
                                 try window.updateSize()
                             }
                         }

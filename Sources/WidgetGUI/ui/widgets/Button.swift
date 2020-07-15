@@ -20,22 +20,45 @@ public let defaultButtonStyles: [ButtonState: ButtonStyle] = [
     .Hover: ButtonStyle(background: Color(0, 255, 0, 255), cursor: .Hand)
 ]
 
-public class Button: SingleChildWidget, GUIMouseEventConsumer {
+public class Button: SingleChildWidget {
     public var state: ButtonState = .Normal
     public var stateStyles: [ButtonState: ButtonStyle]
     public var cursorRequestId: UInt64? = nil
-    public var onClick = EventHandlerManager<Void>()
+    public var onClick = EventHandlerManager<GUIMouseButtonClickEvent>()
 
-    public init(child: Widget, stateStyles: [ButtonState: ButtonStyle] = defaultButtonStyles, onClick onClickHandler: EventHandlerManager<Void>.Handler? = nil) {
+    private var mouseArea: MouseArea {
+        child as! MouseArea
+    }
+
+    public init(
+        stateStyles: [ButtonState: ButtonStyle] = defaultButtonStyles,
+        onClick onClickHandler: EventHandlerManager<GUIMouseButtonClickEvent>.Handler? = nil,
+        child: Widget) {
         self.stateStyles = stateStyles
         if onClickHandler != nil {
             _ = onClick.addHandler(onClickHandler!)
         }
-        super.init(child: child)
+        
+        super.init(child:
+            MouseArea(child: child)
+        )
+        _ = mouseArea.onClick(forwardOnClick)
+        _ = mouseArea.onMouseEnter { _ in
+            self.state = .Hover
+        }
+        _ = mouseArea.onMouseLeave { _ in
+            self.state = .Normal
+        }
+    }
+
+    open func forwardOnClick(_ event: GUIMouseButtonClickEvent) throws {
+        try onClick.invokeHandlers(event)
     }
 
     override open func layout(fromChild: Bool = false) throws {
-        child.constraints = constraints
+        child.constraints = BoxConstraints(
+            minSize: constraints!.constrain(constraints!.minSize + DSize2(32, 32)),
+            maxSize: constraints!.maxSize)
         try child.layout()
         bounds.size = child.bounds.size
     }
@@ -53,7 +76,7 @@ public class Button: SingleChildWidget, GUIMouseEventConsumer {
         ].compactMap { $0 })
     }
 
-    open func consume(_ event: GUIMouseEvent) throws {
+    /*open func consume(_ event: GUIMouseEvent) throws {
         print("BUTTON CONSUMES MOUSE EVENT")
         /*switch event {
         case is MouseEnterEvent:
@@ -72,5 +95,5 @@ public class Button: SingleChildWidget, GUIMouseEventConsumer {
         default:
             break
         }*/
-    }
+    }*/
 }

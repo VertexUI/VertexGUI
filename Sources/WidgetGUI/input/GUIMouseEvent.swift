@@ -31,6 +31,16 @@ public struct GUIMouseButtonDownEvent: GUIMouseEvent {
     }
 }
 
+public struct GUIMouseButtonClickEvent: GUIMouseEvent {
+    public var button: MouseButton
+    public var position: DPoint2
+
+    public init(button: MouseButton, position: DPoint2) {
+        self.button = button
+        self.position = position
+    }
+}
+
 public struct GUIMouseWheelEvent: GUIMouseEvent {
     public var scrollAmount: DVec2
     public var position: DPoint2

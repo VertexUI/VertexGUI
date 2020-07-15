@@ -65,6 +65,18 @@ open class SDL2OpenGL3NanoVGRenderer: Renderer {
         nvgFill(window.nvg)
     }
 
+    open func strokeWidth(_ width: Double) throws {
+        nvgStrokeWidth(window.nvg, Float(width))
+    }
+
+    open func strokeColor(_ color: Color) throws {
+        nvgStrokeColor(window.nvg, color.toNVG())
+    }
+
+    open func stroke() throws {
+        nvgStroke(window.nvg)
+    }
+
     open func rect(_ rect: DRect) throws {
         //nvgBeginPath(window.nvg)
         nvgRect(window.nvg, Float(rect.topLeft.x), Float(rect.topLeft.y), Float(rect.size.width), Float(rect.size.height))

@@ -25,6 +25,12 @@ public class RenderObjectRenderer {
                 try backendRenderer.fillColor(fillColor)
                 try backendRenderer.fill()
             }
+            if let strokeWidth = renderObject.renderStyle.strokeWidth,
+                let strokeColor = renderObject.renderStyle.strokeColor {
+                try backendRenderer.strokeWidth(strokeWidth)
+                try backendRenderer.strokeColor(strokeColor)
+                try backendRenderer.stroke()
+            }
             // TODO: after render, reset style to style that was present before
         case let renderObject as RenderObject.Rect:
             try backendRenderer.beginPath()

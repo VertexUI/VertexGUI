@@ -24,6 +24,9 @@ public protocol Renderer {
     func beginPath() throws
     func fillColor(_ color: Color) throws
     func fill() throws
+    func strokeWidth(_ width: Double) throws
+    func strokeColor(_ color: Color) throws
+    func stroke() throws
     func rect(_ rect: DRect) throws
     // TODO: update to remove style argument
     func circle(center: DPoint2, radius: Double, style: RenderStyle) throws

@@ -79,7 +79,7 @@ open class Widget: Bounded, Parent, Child {
                     })
                 }
             }
-         }
+        }
     }
 
     //open var size: DSize2 = DSize2(0, 0)

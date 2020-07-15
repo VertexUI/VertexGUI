@@ -1,4 +1,5 @@
 import VisualAppBase
+import CustomGraphicsMath
 
 open class MultiChildWidget: Widget {
     open var children: [Widget]

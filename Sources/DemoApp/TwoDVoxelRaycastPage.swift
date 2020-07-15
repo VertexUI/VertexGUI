@@ -21,6 +21,9 @@ open class TwoDVoxelRaycastPage: SingleChildWidget {
                         )
                     ),*/
                     Button(
+                        onClick: { _ in
+                            print("BUTTON ON CLICK")
+                        },
                         child: Text("WOWOWOWOWOWOWOWOWOWO")
                     ),
                     raycastVisualizer,

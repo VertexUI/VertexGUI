@@ -1,7 +1,7 @@
 public class EventHandlerManager<Data> {
     public typealias Handler = (Data) throws -> Void
     public typealias UnregisterCallback = () -> Void
-    private var handlers = [Int: Handler]()
+    public var handlers = [Int: Handler]()
     private var nextHandlerId = 0
 
     public init() {

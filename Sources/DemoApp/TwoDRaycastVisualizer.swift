@@ -63,7 +63,6 @@ open class TwoDRaycastVisualizer: Widget {
                     try renderer.line(from: self.globalPosition + scale * vertices.0, to: self.globalPosition + scale * vertices.1, width: 10, color: Color(0, 0, 255, 255))
                 }
 
-                print(scaledRayStart, scaledRayEnd)
                 try renderer.line(from: scaledRayStart, to: scaledRayEnd, width: 2, color: Color(0, 0, 0, 255))
                 try renderer.resetTransform()
                 //renderer.translate(DVec2())

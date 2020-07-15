@@ -46,11 +46,13 @@ public class Text: Widget {
         //self.sizeConfig.height = .Fixed(value: size.height)
         // TODO: check whether to have wrap in textConfig, or a property of Text and whether to pass maxWidth extra or put it into textconfig and whether to always pass it
         if let context = context, let textConfig = filledTextConfig {
+            var preferredSize = DSize2()
             if textConfig.wrap {
-                bounds.size = context.getTextBoundsSize(text, config: textConfig, maxWidth: constraints!.maxWidth)// try context!.renderer.getMultilineTextSize(text, maxWidth: constraints!.maxWidth, fontConfig: textConfig.fontConfig)
+               preferredSize = context.getTextBoundsSize(text, config: textConfig, maxWidth: constraints!.maxWidth)// try context!.renderer.getMultilineTextSize(text, maxWidth: constraints!.maxWidth, fontConfig: textConfig.fontConfig)
             } else {
-                bounds.size = context.getTextBoundsSize(text, config: textConfig, maxWidth: constraints!.maxWidth)
+                preferredSize = context.getTextBoundsSize(text, config: textConfig, maxWidth: constraints!.maxWidth)
             }
+            bounds.size = constraints!.constrain(preferredSize)
         }
     }
 
