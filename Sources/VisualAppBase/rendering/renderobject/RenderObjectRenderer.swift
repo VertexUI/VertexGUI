@@ -5,22 +5,22 @@ import VisualAppBase
 // TODO: also keep an immediate render renderer / functional buffer renderer (NanoVG style / canvas api style)
 // TODO: maybe have RenderObjectRenderStrategy instead??
 public class RenderObjectRenderer {
-    private var backendRenderer: Renderer
     
-    public init(backendRenderer: Renderer) {
-        self.backendRenderer = backendRenderer
+    
+    public init() {
     }
 
-    public func render(_ renderObject: RenderObject) throws {
+    // TODO: maybe do layering via z?
+    public func render(_ backendRenderer: Renderer, _ renderObject: RenderObject, _ previousTree: RenderObject? = nil) throws {
         switch (renderObject) {
         case let renderObject as RenderObject.Container:
             for child in renderObject.children {
-                try render(child)
+                try render(backendRenderer, child)
             }
         case let renderObject as RenderObject.Custom:
             try renderObject.render(backendRenderer)
         case let renderObject as RenderObject.RenderStyle:
-            try render(renderObject.child)
+            try render(backendRenderer, renderObject.child)
             if let fillColor = renderObject.renderStyle.fillColor {
                 try backendRenderer.fillColor(fillColor)
                 try backendRenderer.fill()
@@ -45,4 +45,8 @@ public class RenderObjectRenderer {
             print("Could not render RenderObject, implementation missing for.", renderObject)
         }
     }
+}
+
+public struct RenderState {
+    
 }

@@ -43,6 +43,18 @@ public struct CustomRenderObject: RenderObject {
     }
 }
 
+public struct IdentifiedSubtreeRenderObject: RenderObject {
+    public var id: Int
+
+    public init(_ id: Int) {
+        self.id = id
+    }
+}
+
+//public struct CacheableRenderObject: RenderObject {
+//
+//}
+
 public struct TextRenderObject: RenderObject {
     public var text: String
     public var topLeft: DVec2

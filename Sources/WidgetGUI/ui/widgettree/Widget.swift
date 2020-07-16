@@ -60,6 +60,7 @@ open class Widget: Bounded, Parent, Child {
 
     public var onParentChanged = EventHandlerManager<Parent?>()
     public var onAnyParentChanged = EventHandlerManager<Parent?>()
+    public var onRenderStateInvalidated = EventHandlerManager<Void>()
     private var unregisterAnyParentChangedHandler: EventHandlerManager<Parent?>.UnregisterCallback?
     weak open var parent: Parent? = nil {
         willSet {
@@ -177,6 +178,11 @@ open class Widget: Bounded, Parent, Child {
             }
         }
         return nil
+    }
+
+    /// This should trigger a rerender of the widget in the next frame.
+    public func invalidateRenderState() {
+        try! onRenderStateInvalidated.invokeHandlers(Void())
     }
 
     open func render() -> RenderObject? {

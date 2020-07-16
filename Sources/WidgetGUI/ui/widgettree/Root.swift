@@ -12,6 +12,7 @@ open class Root: Parent {
     open var bounds: DRect = DRect(topLeft: DPoint2(0,0), size: DSize2(0,0)) {
         didSet {
             try! layout()
+            renderStateInvalidated = true
         }
     }
 
@@ -29,7 +30,9 @@ open class Root: Parent {
         set {}
     }*/
 
-
+    private var renderObjectRenderer = RenderObjectRenderer()
+    private var renderState: RenderObject?
+    private var renderStateInvalidated = false
     
     private var mouseEventPropagationStrategy = GUIMouseEventPropagationStrategy()
 
@@ -37,6 +40,10 @@ open class Root: Parent {
         self.rootWidget = rootWidget
         //super.init()
         rootWidget.parent = self
+        // TODO: maybe dangling closure
+        _ = rootWidget.onRenderStateInvalidated {
+            self.renderStateInvalidated = true
+        }
     }
 
     open func layout(fromChild: Bool = false) throws {
@@ -60,13 +67,20 @@ open class Root: Parent {
         return mouseEventPropagationStrategy.propagate(event: rawMouseEvent, through: rootWidget)
     }
 
+    open func updateRenderState() {
+        // TODO: do something with subtrees, etc., maybe, maybe just traverse and check whether can reuse some things
+        self.renderState = rootWidget.render()
+    }
+
     // TODO: maybe this little piece of rendering logic belongs into the App as well? / Maybe return a render object as well???? 
     // TODO: --> A Game scene could also be a render object with custom logic which is redrawn on every frame by render strategy.
     open func render(renderer: Renderer) throws {
         //try renderer.clipArea(bounds: globalBounds)
-        var renderObjectRenderer = RenderObjectRenderer(backendRenderer: renderer)
-        var renderObject = try rootWidget.render()
-        try renderObjectRenderer.render(renderObject!)
+        if renderState == nil || renderStateInvalidated {
+            updateRenderState()
+        }
+        //var renderObject = try rootWidget.render()
+        try renderObjectRenderer.render(renderer, renderState!)
         //try renderer.releaseClipArea()
     }
 }

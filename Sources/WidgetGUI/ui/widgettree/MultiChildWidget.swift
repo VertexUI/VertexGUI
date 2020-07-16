@@ -9,6 +9,10 @@ open class MultiChildWidget: Widget {
         super.init()
         for child in children {
             child.parent = self
+            // TODO: maybe dangling closure
+            _ = child.onRenderStateInvalidated {
+                self.invalidateRenderState()
+            }
             //child.context = context
         }
     }

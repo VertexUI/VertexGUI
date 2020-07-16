@@ -7,13 +7,15 @@ open class SingleChildWidget: Widget {
         self.child = child
         super.init()
         child.parent = self
+        // TODO: maybe dangling closure
+        _ = child.onRenderStateInvalidated {
+            self.invalidateRenderState()
+        }
         //child.context = context
     }
 
-    public init(@WidgetBuilder _ build: () -> Widget) {
-        self.child = build()
-        super.init()
-        child.parent = self
+    convenience init(@WidgetBuilder _ build: () -> Widget) {
+        self.init(child: build())
     }
 
     override open func render() -> RenderObject? {
