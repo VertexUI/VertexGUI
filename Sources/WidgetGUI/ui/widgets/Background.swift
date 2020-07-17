@@ -21,7 +21,7 @@ open class Background: SingleChildWidget {
     }*/
     override open func render() -> RenderObject? {
         return .Container([
-            RenderObject.RenderStyle(RenderStyle(fillColor: backgroundColor), .Rect(globalBounds)),
+            RenderObject.RenderStyle(RenderStyle(fillColor: backgroundColor), [.Rect(globalBounds)]),
             child.render()
         ].compactMap { $0 })
     }

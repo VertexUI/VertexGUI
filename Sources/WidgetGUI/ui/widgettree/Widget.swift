@@ -39,6 +39,8 @@ protocol WidgetState {
 // TODO: maybe create a rendercacheable protocol? And a widget tree renderer?
 // TODO: maybe rendering should be done by iterating the tree instead of recursive calls --> better optimization?
 open class Widget: Bounded, Parent, Child {
+    open var id: UInt = UInt.random(in: 0..<UInt.max)
+
     open var _context: WidgetContext?
     open var context: WidgetContext? {
         // TODO: might cache _context

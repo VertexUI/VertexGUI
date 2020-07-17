@@ -70,7 +70,7 @@ public class Button: SingleChildWidget {
         return .Container([
             RenderObject.RenderStyle(
                 RenderStyle(fillColor: style.background),
-                RenderObject.Rect(globalBounds)
+                [RenderObject.Rect(globalBounds)]
             ),
             child.render()
         ].compactMap { $0 })

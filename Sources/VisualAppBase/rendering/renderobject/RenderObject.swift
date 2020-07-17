@@ -7,9 +7,25 @@ public protocol RenderObject {
     typealias Rect = VisualAppBase.RectRenderObject
     typealias Custom = VisualAppBase.CustomRenderObject
     typealias Text = VisualAppBase.TextRenderObject
+    typealias IdentifiedSubTree = VisualAppBase.IdentifiedSubTreeRenderObject
 }
 
-public struct ContainerRenderObject: RenderObject {
+public protocol SubTreeRenderObject: RenderObject {
+    var children: [RenderObject] { get set }
+}
+
+public struct IdentifiedSubTreeRenderObject: SubTreeRenderObject {
+    public var id: UInt
+    public var children: [RenderObject]
+
+    public init(_ id: UInt, _ children: [RenderObject]) {
+        self.id = id
+        self.children = children
+    }
+}
+
+// TODO: is this needed?
+public struct ContainerRenderObject: SubTreeRenderObject {
     public var children: [RenderObject]
 
     public init(_ children: [RenderObject]) {
@@ -17,13 +33,13 @@ public struct ContainerRenderObject: RenderObject {
     }
 }
 
-public struct RenderStyleRenderObject: RenderObject {
+public struct RenderStyleRenderObject: SubTreeRenderObject {
     public var renderStyle: RenderStyle
-    public var child: RenderObject
+    public var children: [RenderObject]
 
-    public init(_ renderStyle: RenderStyle, _ child: RenderObject) {
+    public init(_ renderStyle: RenderStyle, _ children: [RenderObject]) {
         self.renderStyle = renderStyle
-        self.child = child
+        self.children = children
     }
 }
 
@@ -42,18 +58,6 @@ public struct CustomRenderObject: RenderObject {
         self.render = render
     }
 }
-
-public struct IdentifiedSubtreeRenderObject: RenderObject {
-    public var id: Int
-
-    public init(_ id: Int) {
-        self.id = id
-    }
-}
-
-//public struct CacheableRenderObject: RenderObject {
-//
-//}
 
 public struct TextRenderObject: RenderObject {
     public var text: String

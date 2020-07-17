@@ -12,7 +12,7 @@ open class Root: Parent {
     open var bounds: DRect = DRect(topLeft: DPoint2(0,0), size: DSize2(0,0)) {
         didSet {
             try! layout()
-            renderStateInvalidated = true
+            renderTreeInvalidated = true
         }
     }
 
@@ -31,8 +31,8 @@ open class Root: Parent {
     }*/
 
     private var renderObjectRenderer = RenderObjectRenderer()
-    private var renderState: RenderObject?
-    private var renderStateInvalidated = false
+    private var renderTree: RenderTree?
+    private var renderTreeInvalidated = false
     
     private var mouseEventPropagationStrategy = GUIMouseEventPropagationStrategy()
 
@@ -42,7 +42,7 @@ open class Root: Parent {
         rootWidget.parent = self
         // TODO: maybe dangling closure
         _ = rootWidget.onRenderStateInvalidated {
-            self.renderStateInvalidated = true
+            self.renderTreeInvalidated = true
         }
     }
 
@@ -67,20 +67,22 @@ open class Root: Parent {
         return mouseEventPropagationStrategy.propagate(event: rawMouseEvent, through: rootWidget)
     }
 
-    open func updateRenderState() {
+    open func updateRenderTree() {
         // TODO: do something with subtrees, etc., maybe, maybe just traverse and check whether can reuse some things
-        self.renderState = rootWidget.render()
+        renderTree = RenderTree([rootWidget.render()!])
+        renderObjectRenderer.updateRenderTree(renderTree!)
     }
 
     // TODO: maybe this little piece of rendering logic belongs into the App as well? / Maybe return a render object as well???? 
     // TODO: --> A Game scene could also be a render object with custom logic which is redrawn on every frame by render strategy.
     open func render(renderer: Renderer) throws {
         //try renderer.clipArea(bounds: globalBounds)
-        if renderState == nil || renderStateInvalidated {
-            updateRenderState()
+        if renderTree == nil || renderTreeInvalidated {
+            updateRenderTree()
         }
         //var renderObject = try rootWidget.render()
-        try renderObjectRenderer.render(renderer, renderState!)
+        //renderObjectRenderer.updateRenderTree(renderTree!)
+        try renderObjectRenderer.renderGroups(renderer)
         //try renderer.releaseClipArea()
     }
 }
