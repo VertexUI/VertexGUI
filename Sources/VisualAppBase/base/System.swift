@@ -15,7 +15,7 @@ open class System<W: Window, R: Renderer> {
     }
 
     open func newWindow() throws -> W {
-        throw ImplementationError()
+        fatalError("newWindow() not implemented.")
     }
 
     open func requestCursor(_ cursor: Cursor) throws -> UInt64 {

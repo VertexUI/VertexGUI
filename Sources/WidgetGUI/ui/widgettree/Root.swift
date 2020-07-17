@@ -30,7 +30,7 @@ open class Root: Parent {
         set {}
     }*/
 
-    private var renderObjectRenderer = RenderObjectRenderer()
+    private var renderObjectRenderer = RenderTreeRenderer()
     private var renderTree: RenderTree?
     private var renderTreeInvalidated = false
     

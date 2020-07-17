@@ -4,23 +4,59 @@ import Cnanovg
 import CustomGraphicsMath
 import GLGraphicsMath
 import VisualAppBase
+import Path
+
+// TODO: maybe put into another file
+public struct SDL2OpenGL3NanoVGVirtualScreen: VirtualScreen {
+    public var framebuffer = GLMap.UInt()
+    public var texture = GLMap.UInt()
+}
 
 open class SDL2OpenGL3NanoVGRenderer: Renderer {
-    /*open class var vectorLayout: VectorLayout2<DVec2> {
-        .topLeftToBottomRight
-    }*/
-    
     // TODO: maybe this has to be put into System? or does NanoVG load it into the current gl state???
+    //public typealias VirtualScreen = SDL2OpenGL3NanoVGVirtualScreen
+    
     private var fontIds = [String: Int32]()
 
     private var window: SDL2OpenGL3NanoVGWindow
-
-    /*public var resolution: Double {
-        window.drawableSize.width / window.size.width
-    }*/
+    
+    private var compositionShader = Shader(
+        vertex: try! String(contentsOf: Path.cwd/"Sources/DemoApp/assets/guiVertex.glsl"),
+        fragment: try! String(contentsOf: Path.cwd/"Sources/DemoApp/assets/guiFragment.glsl")
+    )
+    private var compositionVAO = GLMap.UInt()
 
     public init(window: SDL2OpenGL3NanoVGWindow) {
         self.window = window
+        setup()
+    }
+
+    public func setup() {
+        glGenVertexArrays(1, &compositionVAO)
+        glBindVertexArray(compositionVAO)
+
+        var compositionVBO = GLMap.UInt()
+        var vertices: [Float] = [
+            -1, -1, 0.5,
+            1, -1, 0.5,
+            1, 1, 0.5,
+            -1, -1, 0.5,
+            1, 1, 0.5,
+            -1, 1, 0.5
+        ]
+        glGenBuffers(1, &compositionVBO)
+        glBindBuffer(GLMap.ARRAY_BUFFER, compositionVBO)
+        glBufferData(GLMap.ARRAY_BUFFER, 3 * 6 * MemoryLayout<Float>.stride, vertices, GLMap.STATIC_DRAW)
+
+        glVertexAttribPointer(0, 3, GLMap.FLOAT, false, GLMap.Size(3 * MemoryLayout<Float>.stride), nil)
+        glEnableVertexAttribArray(0)
+
+        glBindBuffer(GLMap.ARRAY_BUFFER, 0)
+
+        glBindVertexArray(0)
+        glBindTexture(GLMap.TEXTURE_2D, 0)
+
+        try! compositionShader.compile()
     }
 
     public var nvg: UnsafeMutablePointer<NVGcontext> {
@@ -51,6 +87,35 @@ open class SDL2OpenGL3NanoVGRenderer: Renderer {
 
     open func endFrame() throws {
 	    nvgEndFrame(window.nvg)
+    }
+
+    open func makeVirtualScreen() throws -> VirtualScreen {
+ /*  glGenFramebuffers(1, &framebuffer)
+        glBindFramebuffer(GLMap.FRAMEBUFFER, framebuffer)
+
+        glGenTextures(1, &texture)
+        glBindTexture(GLMap.TEXTURE_2D, texture)
+        glTexImage2D(GLMap.TEXTURE_2D, 0, GLMap.RGB, GLMap.Size(window!.drawableSize.width), GLMap.Size(window!.drawableSize.height), 0, GLMap.RGB, GLMap.UNSIGNED_BYTE, nil)
+        glTexParameteri(GLMap.TEXTURE_2D, GLMap.TEXTURE_MIN_FILTER, GLMap.LINEAR)
+        glTexParameteri(GLMap.TEXTURE_2D, GLMap.TEXTURE_MAG_FILTER, GLMap.LINEAR)
+        glBindTexture(GLMap.TEXTURE_2D, 0)
+
+        glFramebufferTexture2D(GLMap.FRAMEBUFFER, GLMap.COLOR_ATTACHMENT0, GLMap.TEXTURE_2D, cacheTexture, 0)
+        
+        glBindFramebuffer(GLMap.FRAMEBUFFER, 0)*/
+        return SDL2OpenGL3NanoVGVirtualScreen()
+    }
+
+    open func bindVirtualScreen(_ screen: VirtualScreen) throws {
+
+    }
+
+    open func unbindVirtualScreen() throws {
+
+    }
+
+    open func drawVirtualScreens(_ screens: [VirtualScreen]) throws {
+
     }
 
     open func beginPath() throws {

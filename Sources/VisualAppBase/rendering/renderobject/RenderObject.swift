@@ -2,12 +2,13 @@ import CustomGraphicsMath
 
 // TODO: implement function for checking whether render object has content at certain position (--> is not transparent) --> used for mouse events like click etc.
 public protocol RenderObject {
+    typealias IdentifiedSubTree = VisualAppBase.IdentifiedSubTreeRenderObject
     typealias Container = VisualAppBase.ContainerRenderObject
+    typealias Uncachable = VisualAppBase.UncachableRenderObject
     typealias RenderStyle = VisualAppBase.RenderStyleRenderObject
     typealias Rect = VisualAppBase.RectRenderObject
     typealias Custom = VisualAppBase.CustomRenderObject
     typealias Text = VisualAppBase.TextRenderObject
-    typealias IdentifiedSubTree = VisualAppBase.IdentifiedSubTreeRenderObject
 }
 
 public protocol SubTreeRenderObject: RenderObject {
@@ -39,6 +40,13 @@ public struct RenderStyleRenderObject: SubTreeRenderObject {
 
     public init(_ renderStyle: RenderStyle, _ children: [RenderObject]) {
         self.renderStyle = renderStyle
+        self.children = children
+    }
+}
+
+public struct UncachableRenderObject: SubTreeRenderObject {
+    public var children: [RenderObject]
+    public init(_ children: [RenderObject]) {
         self.children = children
     }
 }
