@@ -7,13 +7,14 @@ import CustomGraphicsMath
 
 // TODO: maybe put this into another file
 public protocol VirtualScreen {
+    var size: DSize2 { get set }
 
+    func delete() throws
 }
 
 /// Rendering is relative to topLeft of whatever area the renderer is rendering in.
 // TODO: maybe rename to CanvasRenderer/DirectRenderer/SimpleRenderer or something like that
 public protocol Renderer {
-    // TODO: implement associated type and type erasure AnyRenderer
     //associatedtype VirtualScreen: VisualAppBase.VirtualScreen
 
     // TODO: maybe resolution belongs to window?
@@ -21,10 +22,11 @@ public protocol Renderer {
     func beginFrame() throws
     func endFrame() throws
     func clear(_ color: Color) throws
-    func makeVirtualScreen() throws -> VirtualScreen
+    func makeVirtualScreen(size: DSize2) throws -> VirtualScreen
+    func resizeVirtualScreen(_ screen: inout VirtualScreen, _ size: DSize2) throws
     func bindVirtualScreen(_ screen: VirtualScreen) throws
     func unbindVirtualScreen() throws
-    func drawVirtualScreens(_ screens: [VirtualScreen]) throws
+    func drawVirtualScreens(_ screens: [VirtualScreen], at positions: [DVec2]?) throws
     func beginPath() throws
     func fillColor(_ color: Color) throws
     func fill() throws
@@ -46,4 +48,8 @@ public protocol Renderer {
     func translate(_ translation: DVec2) throws 
     func scale(_ amount: DVec2) throws
     func resetTransform()
+}
+
+public extension Renderer {
+    func drawVirtualScreens(_ screens: [VirtualScreen], at positions: [DVec2]? = nil) throws {}
 }

@@ -1,6 +1,8 @@
 import VisualAppBase
 import GL
+import CustomGraphicsMath
 import Path
+import Foundation
 
 fileprivate protocol RenderGroup {
     var renderTreeMask: RenderTreeMask { get set }
@@ -25,6 +27,8 @@ public class RenderTreeRenderer {
     // TODO: maybe define this as a RenderState object?
     private var renderGroups = [RenderGroup]()
     
+    private var frame = 0
+
     public init() {
     }
 
@@ -47,9 +51,7 @@ public class RenderTreeRenderer {
             } else {
                 renderGroups.append(UncachableRenderGroup())
             }
-            print("RECURSIVE GENERATE", currentPath, renderObject)
             renderGroups[renderGroups.count - 1].renderTreeMask = renderGroups[renderGroups.count - 1].renderTreeMask.add(currentPath)
-            print("ADDED UNCACHABLE", renderGroups[renderGroups.count - 1])
         } else {
             if renderGroups[renderGroups.count - 1] is CachableRenderGroup {
 
@@ -68,6 +70,15 @@ public class RenderTreeRenderer {
 
     // TODO: might have a renderGroupingStrategy
     public func generateRenderGroups() {
+        // TODO: instead of simply replacing everything, check for equality
+        // since replacing for now, need to delete all cache textures
+        for group in renderGroups {
+            if let group = group as? CachableRenderGroup {
+                if let cache = group.cache {
+                    try! cache.delete()
+                }
+            }
+        }
         renderGroups = [RenderGroup]()
         // TODO: if the first group contains very few items, might merge it with the following group
         renderGroups.append(CachableRenderGroup())
@@ -75,13 +86,31 @@ public class RenderTreeRenderer {
         recursivelyGenerateRenderGroups(renderTree!.children[0], RenderTreePath([0]))
     }
 
-    public func renderGroups(_ backendRenderer: Renderer) throws {
-        for group in renderGroups {
-            print("RENDER GROUP", group)
-            if let group = group as? CachableRenderGroup {
-                try renderMask(backendRenderer, group.renderTreeMask)
+    public func renderGroups(_ backendRenderer: Renderer, bounds: DRect) throws {
+        for i in 0..<renderGroups.count {
+            // TODO: if multiple cached things follow each other, draw them
+            if renderGroups[i] is CachableRenderGroup {
+                var group = renderGroups[i] as! CachableRenderGroup
+                //if (renderGroups[i] as! CachableRenderGroup).cache == nil {
+                    //group.cache = try backendRenderer.makeVirtualScreen(size: DSize2(bounds.topLeft + DVec2(bounds.size)))
+                    //print("MAKE CACHE", group.cache)
+                    //renderGroups[i] = group
+                    //try backendRenderer.bindVirtualScreen(group.cache!)
+                    try renderMask(backendRenderer, group.renderTreeMask)
+                  //  try backendRenderer.unbindVirtualScreen()
+                //} else {
+                   // try backendRenderer.bindVirtualScreen(group.cache!)
+                   // try renderMask(backendRenderer, group.renderTreeMask)
+                //   try backendRenderer.unbindVirtualScreen()
+                //}
+                //try backendRenderer.drawVirtualScreens([group.cache!], at: [DVec2(0, 0)])
+                print("DRAW VIRTUAL")
+                print("ERROR", glGetError())
+                frame += 1
+                print("FRAME", frame)
+                //sleep(5)
             } else {
-                try renderMask(backendRenderer, group.renderTreeMask)
+                try renderMask(backendRenderer, renderGroups[i].renderTreeMask)
             }
         }
     }

@@ -7,8 +7,6 @@ import Path
 import GL
 import CSDL2
 
-print("APP")
-
 // TODO: create a subclass of App, DesktopApp which supports windows/screens which can support different resolutions --> renderContexts --> different text boundsSize
 open class TwoDGraphicalApp: App<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGWindow, SDL2OpenGL3NanoVGRenderer> {
     //public typealias Renderables = WidgetGUI.Renderables<System, Window, Renderer>
@@ -22,6 +20,7 @@ open class TwoDGraphicalApp: App<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGWindo
     private var cacheTexture = GLMap.UInt()
     private var cacheDepthStencil = GLMap.UInt()
     private var screenVAO = GLMap.UInt()
+    private var virtualScreen: VirtualScreen?
 
     private var compositionShader = Shader(
         vertex: try! String(contentsOf: Path.cwd/"Sources/DemoApp/assets/guiVertex.glsl"),
@@ -54,58 +53,8 @@ open class TwoDGraphicalApp: App<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGWindo
         self.guiRoot.bounds = DRect(topLeft: DPoint2(0,0), size: window!.size)
         try self.guiRoot.layout()
 
-        glGenFramebuffers(1, &cacheFramebuffer)
-        glBindFramebuffer(GLMap.FRAMEBUFFER, cacheFramebuffer)
+        virtualScreen = try renderer!.makeVirtualScreen(size: DSize2(window!.drawableSize.width, window!.drawableSize.height))
 
-        glGenTextures(1, &cacheTexture)
-        glBindTexture(GLMap.TEXTURE_2D, cacheTexture)
-        glTexImage2D(GLMap.TEXTURE_2D, 0, GLMap.RGB, GLMap.Size(window!.drawableSize.width), GLMap.Size(window!.drawableSize.height), 0, GLMap.RGB, GLMap.UNSIGNED_BYTE, nil)
-        glTexParameteri(GLMap.TEXTURE_2D, GLMap.TEXTURE_MIN_FILTER, GLMap.LINEAR)
-        glTexParameteri(GLMap.TEXTURE_2D, GLMap.TEXTURE_MAG_FILTER, GLMap.LINEAR)
-        glBindTexture(GLMap.TEXTURE_2D, 0)
-
-        glFramebufferTexture2D(GLMap.FRAMEBUFFER, GLMap.COLOR_ATTACHMENT0, GLMap.TEXTURE_2D, cacheTexture, 0)
-
-        glGenRenderbuffers(1, &cacheDepthStencil)
-        glBindRenderbuffer(GLMap.RENDERBUFFER, cacheDepthStencil)
-        glRenderbufferStorage(GLMap.RENDERBUFFER, GLMap.DEPTH24_STENCIL8, GLMap.Size(window!.drawableSize.width), GLMap.Size(window!.drawableSize.height))
-        glBindRenderbuffer(GLMap.RENDERBUFFER, 0)
-        glFramebufferRenderbuffer(GLMap.FRAMEBUFFER, GLMap.DEPTH_STENCIL_ATTACHMENT, GLMap.RENDERBUFFER, cacheDepthStencil)
-
-        if glCheckFramebufferStatus(GLMap.FRAMEBUFFER) != GLMap.FRAMEBUFFER_COMPLETE {
-            print("Framebuffer not complete.")
-        }
-
-        glBindFramebuffer(GLMap.FRAMEBUFFER, 0)
-
-
-
-        glGenVertexArrays(1, &screenVAO)
-        glBindVertexArray(screenVAO)
-
-        var screenVBO = GLMap.UInt()
-        var vertices: [Float] = [
-            -1, -1, 0.5,
-            1, -1, 0.5,
-            1, 1, 0.5,
-            -1, -1, 0.5,
-            1, 1, 0.5,
-            -1, 1, 0.5
-        ]
-        glGenBuffers(1, &screenVBO)
-        glBindBuffer(GLMap.ARRAY_BUFFER, screenVBO)
-        glBufferData(GLMap.ARRAY_BUFFER, 3 * 6 * MemoryLayout<Float>.stride, vertices, GLMap.STATIC_DRAW)
-
-        glVertexAttribPointer(0, 3, GLMap.FLOAT, false, GLMap.Size(3 * MemoryLayout<Float>.stride), nil)
-        glEnableVertexAttribArray(0)
-
-        glBindBuffer(GLMap.ARRAY_BUFFER, 0)
-
-        glBindVertexArray(0)
-        glBindTexture(GLMap.TEXTURE_2D, 0)
-
-        try compositionShader.compile()
-        
         _ = self.window!.onResize(handleWindowResized)
         _ = self.window!.onMouse(handleMouseEvent)
         _ = self.system!.onFrame(render)
@@ -130,33 +79,33 @@ open class TwoDGraphicalApp: App<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGWindo
         self.guiRoot.bounds.size = newSize
         do {
             try self.guiRoot.layout()
+            try renderer!.resizeVirtualScreen(&virtualScreen!, window!.drawableSize)
         } catch {
-            print("Error during layout() guiRoot after updateSize.")
+            print("Error during handleWindowResized().")
         }
-        glBindTexture(GLMap.TEXTURE_2D, cacheTexture)
-        glTexImage2D(GLMap.TEXTURE_2D, 0, GLMap.RGB, GLMap.Size(window!.drawableSize.width), GLMap.Size(window!.drawableSize.height), 0, GLMap.RGB, GLMap.UNSIGNED_BYTE, nil)
-        glBindTexture(GLMap.TEXTURE_2D, 0)
-        glBindRenderbuffer(GLMap.RENDERBUFFER, cacheDepthStencil)
-        glRenderbufferStorage(GLMap.RENDERBUFFER, GLMap.DEPTH24_STENCIL8, GLMap.Size(window!.drawableSize.width), GLMap.Size(window!.drawableSize.height))
-        glBindRenderbuffer(GLMap.RENDERBUFFER, 0)
     }
 
     open func render(deltaTime: Int) throws {
         //print("RENDER!!")
 
-        glBindFramebuffer(GLMap.FRAMEBUFFER, cacheFramebuffer)
+        //glBindFramebuffer(GLMap.FRAMEBUFFER, cacheFramebuffer)
+        //try renderer!.bindVirtualScreen(virtualScreen!)
+
         try renderer!.beginFrame()
         try renderer!.clear(window!.background)
         try guiRoot.render(renderer: renderer!)
         try renderer!.endFrame()
 
-        glBindFramebuffer(GLMap.FRAMEBUFFER, 0)
+        //try renderer!.unbindVirtualScreen()
+        //try renderer!.drawVirtualScreens([virtualScreen!], at: [DVec2(100, 100)])
+
+        /*glBindFramebuffer(GLMap.FRAMEBUFFER, 0)
         glViewport(0, 0, GLMap.Size(window!.drawableSize.width), GLMap.Size(window!.drawableSize.height))
 
         compositionShader.use()
         glBindTexture(GLMap.TEXTURE_2D, cacheTexture)
         glBindVertexArray(screenVAO)
-        glDrawArrays(GLMap.TRIANGLES, 0, 6)
+        glDrawArrays(GLMap.TRIANGLES, 0, 6)*/
 
         try self.window!.updateContent()
     }

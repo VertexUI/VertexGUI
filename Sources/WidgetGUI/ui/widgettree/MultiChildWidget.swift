@@ -11,7 +11,7 @@ open class MultiChildWidget: Widget {
             child.parent = self
             // TODO: maybe dangling closure
             _ = child.onRenderStateInvalidated {
-                self.invalidateRenderState()
+                self.invalidateRenderState($0)
             }
             //child.context = context
         }

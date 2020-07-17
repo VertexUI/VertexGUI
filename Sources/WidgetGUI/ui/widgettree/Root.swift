@@ -12,6 +12,7 @@ open class Root: Parent {
     open var bounds: DRect = DRect(topLeft: DPoint2(0,0), size: DSize2(0,0)) {
         didSet {
             try! layout()
+            //updateRenderTree()
             renderTreeInvalidated = true
         }
     }
@@ -41,9 +42,7 @@ open class Root: Parent {
         //super.init()
         rootWidget.parent = self
         // TODO: maybe dangling closure
-        _ = rootWidget.onRenderStateInvalidated {
-            self.renderTreeInvalidated = true
-        }
+        _ = rootWidget.onRenderStateInvalidated(updateRenderTree(_:))
     }
 
     open func layout(fromChild: Bool = false) throws {
@@ -67,10 +66,12 @@ open class Root: Parent {
         return mouseEventPropagationStrategy.propagate(event: rawMouseEvent, through: rootWidget)
     }
 
-    open func updateRenderTree() {
+    /// - Parameter widget: If a specific widget is passed only the sub tree that was created by the widget will be updated.
+    open func updateRenderTree(_ widget: Widget? = nil) {
         // TODO: do something with subtrees, etc., maybe, maybe just traverse and check whether can reuse some things
         renderTree = RenderTree([rootWidget.render()!])
         renderObjectRenderer.updateRenderTree(renderTree!)
+        print("UPDATING RENDER TREE", widget)
     }
 
     // TODO: maybe this little piece of rendering logic belongs into the App as well? / Maybe return a render object as well???? 
@@ -78,11 +79,13 @@ open class Root: Parent {
     open func render(renderer: Renderer) throws {
         //try renderer.clipArea(bounds: globalBounds)
         if renderTree == nil || renderTreeInvalidated {
+            print("CALLING FROM HERE", renderTreeInvalidated)
             updateRenderTree()
+            renderTreeInvalidated = false
         }
         //var renderObject = try rootWidget.render()
         //renderObjectRenderer.updateRenderTree(renderTree!)
-        try renderObjectRenderer.renderGroups(renderer)
+        try renderObjectRenderer.renderGroups(renderer, bounds: bounds)
         //try renderer.releaseClipArea()
     }
 }
