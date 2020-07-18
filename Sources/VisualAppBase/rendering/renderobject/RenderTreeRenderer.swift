@@ -42,13 +42,13 @@ public class RenderTreeRenderer {
             return _nextRenderGroupId
         }
     }
+    private var availableCaches = [VirtualScreen]()
     
     public init() {
     }
 
     public func setRenderTree(_ updatedRenderTree: RenderTree) {
         self.renderTree = updatedRenderTree
-        clearRenderCache()
         generateRenderGroups()
     }
 
@@ -67,10 +67,6 @@ public class RenderTreeRenderer {
                 }
             }
         }
-    }
-
-    public func clearRenderCache() {
-        
     }
 
     // TODO: optimize, avoid quickly alternating between cached, uncached if possible, incorporate small cachable subtrees into uncachable if makes sense
@@ -106,12 +102,10 @@ public class RenderTreeRenderer {
 
     // TODO: might have a renderGroupingStrategy
     public func generateRenderGroups() {
-        // TODO: instead of simply replacing everything, check for equality
-        // since replacing for now, need to delete all cache textures
         for group in renderGroups {
             if let group = group as? CachableRenderGroup {
                 if let cache = group.cache {
-                    try! cache.delete()
+                    availableCaches.append(cache)
                 }
             }
         }
@@ -128,10 +122,20 @@ public class RenderTreeRenderer {
         for i in 0..<renderGroups.count {
             // TODO: if multiple cached things follow each other, draw them
             if var group = renderGroups[i] as? CachableRenderGroup {
-                if group.cache == nil || group.cacheInvalidated {
-                    group.cache = try backendRenderer.makeVirtualScreen(size: DSize2(bounds.topLeft + DVec2(bounds.size)))
+                if group.cache == nil {
+                    if var cache = availableCaches.popLast() {
+                        try backendRenderer.resizeVirtualScreen(&cache, DSize2(bounds.topLeft + DVec2(bounds.size)))
+                        group.cache = cache
+                        print("Reused render cache.", "Old caches available:", availableCaches.count)
+                    } else {
+                        group.cache = try backendRenderer.makeVirtualScreen(size: DSize2(bounds.topLeft + DVec2(bounds.size)))
+                    }
+                    group.cacheInvalidated = true
+                }
+                if group.cacheInvalidated  {
                     try backendRenderer.pushVirtualScreen(group.cache!)
                     try backendRenderer.beginFrame()
+                    try backendRenderer.clear(Color(0, 0, 0, 0))
                     try renderMask(backendRenderer, group.renderTreeMask)
                     try backendRenderer.endFrame()
                     try backendRenderer.popVirtualScreen()
@@ -217,8 +221,4 @@ public class RenderTreeRenderer {
             print("Could not render RenderObject, implementation missing for:", renderObject)
         }
     }
-}
-
-public struct RenderState {
-    
 }

@@ -142,7 +142,7 @@ open class SDL2OpenGL3NanoVGRenderer: Renderer {
         let checkedScreen = checkVirtualScreen(screen)
         screen.size = size // mutate input screen
         glBindTexture(GLMap.TEXTURE_2D, checkedScreen.texture)
-        glTexImage2D(GLMap.TEXTURE_2D, 0, GLMap.RGB, GLMap.Size(size.width), GLMap.Size(size.height), 0, GLMap.RGB, GLMap.UNSIGNED_BYTE, nil)
+        glTexImage2D(GLMap.TEXTURE_2D, 0, GLMap.RGBA, GLMap.Size(size.width), GLMap.Size(size.height), 0, GLMap.RGBA, GLMap.UNSIGNED_BYTE, nil)
         glBindTexture(GLMap.TEXTURE_2D, 0)
     }
 
