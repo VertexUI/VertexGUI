@@ -110,12 +110,12 @@ public class RenderTreeRenderer {
                 if group.cache == nil || group.cacheInvalidated {
                     group.cache = try backendRenderer.makeVirtualScreen(size: DSize2(bounds.topLeft + DVec2(bounds.size)))
                     renderGroups[i] = group
-                    try backendRenderer.bindVirtualScreen(group.cache!)
+                    try backendRenderer.pushVirtualScreen(group.cache!)
                     try backendRenderer.beginFrame()
                     try backendRenderer.clear(Color(120, 160, 130, 255))
                     try renderMask(backendRenderer, group.renderTreeMask)
                     try backendRenderer.endFrame()
-                    try backendRenderer.unbindVirtualScreen()
+                    try backendRenderer.popVirtualScreen()
                     group.cacheInvalidated = false
                 }
                 try backendRenderer.drawVirtualScreens([group.cache!], at: [DVec2(0, 0)])
@@ -160,6 +160,10 @@ public class RenderTreeRenderer {
                 try renderRenderObject(backendRenderer, nextRenderObjects[i], path: nextPaths[i], mask: mask)
             }
         case let renderObject as RenderObject.Uncachable:
+            for i in 0..<nextPaths.count {
+                try renderRenderObject(backendRenderer, nextRenderObjects[i], path: nextPaths[i], mask: mask)
+            }
+        case let renderObject as RenderObject.CacheSplit:
             for i in 0..<nextPaths.count {
                 try renderRenderObject(backendRenderer, nextRenderObjects[i], path: nextPaths[i], mask: mask)
             }

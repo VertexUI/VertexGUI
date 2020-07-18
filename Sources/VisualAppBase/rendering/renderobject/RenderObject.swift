@@ -5,6 +5,7 @@ public protocol RenderObject {
     typealias IdentifiedSubTree = VisualAppBase.IdentifiedSubTreeRenderObject
     typealias Container = VisualAppBase.ContainerRenderObject
     typealias Uncachable = VisualAppBase.UncachableRenderObject
+    typealias CacheSplit = VisualAppBase.CacheSplitRenderObject
     typealias RenderStyle = VisualAppBase.RenderStyleRenderObject
     typealias Rect = VisualAppBase.RectRenderObject
     typealias Custom = VisualAppBase.CustomRenderObject
@@ -45,6 +46,16 @@ public struct RenderStyleRenderObject: SubTreeRenderObject {
 }
 
 public struct UncachableRenderObject: SubTreeRenderObject {
+    public var children: [RenderObject]
+    public init(_ children: [RenderObject]) {
+        self.children = children
+    }
+}
+
+/// Can be used as a wrapper for e.g. calculation heavy CustomRenderObjects
+/// which should get their own cache to avoid triggering heavy calculations if
+/// other RenderObjects would need an update in a common cache.
+public struct CacheSplitRenderObject: SubTreeRenderObject {
     public var children: [RenderObject]
     public init(_ children: [RenderObject]) {
         self.children = children

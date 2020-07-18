@@ -30,7 +30,8 @@ public struct SDL2OpenGL3NanoVGVirtualScreen: VirtualScreen {
 open class SDL2OpenGL3NanoVGRenderer: Renderer {
     // TODO: maybe this has to be put into System? or does NanoVG load it into the current gl state???
     //public typealias VirtualScreen = SDL2OpenGL3NanoVGVirtualScreen
-    
+    public internal(set) var virtualScreenStack = [VirtualScreen]()
+
     private var fontIds = [String: Int32]()
 
     private var window: SDL2OpenGL3NanoVGWindow
@@ -40,6 +41,10 @@ open class SDL2OpenGL3NanoVGRenderer: Renderer {
         fragment: try! String(contentsOf: Path.cwd/"Sources/VisualAppBaseImplSDL2OpenGL3NanoVG/shaders/guiFragment.glsl")
     )
     private var compositionVAO = GLMap.UInt()
+
+    /// This buffer is set when unbindVirtualScreen() is called.
+    // TODO: maybe create RenderTarget --> LiveRenderTarget, CachedRenderTarget (or VirtualRenderTarget, replacement for VirtualScreen)
+
 
     public init(window: SDL2OpenGL3NanoVGWindow) {
         self.window = window
@@ -123,34 +128,60 @@ open class SDL2OpenGL3NanoVGRenderer: Renderer {
         return screen
     }
 
+    private func checkVirtualScreen(_ screen: VirtualScreen) -> SDL2OpenGL3NanoVGVirtualScreen {
+        if !(screen is SDL2OpenGL3NanoVGVirtualScreen) {
+            fatalError("Unsupported type of VirtualScreen passed to Renderer.")
+        }
+        return screen as! SDL2OpenGL3NanoVGVirtualScreen
+    }
+
     // TODO: maybe handle resizing differently? is inplace modification really required?
     open func resizeVirtualScreen(_ screen: inout VirtualScreen, _ size: DSize2) throws {
-        if !(screen is SDL2OpenGL3NanoVGVirtualScreen) {
-            fatalError("Unsupported type of VirtualScreen passed to renderer.")
-        }
-        screen.size = size
-        glBindTexture(GLMap.TEXTURE_2D, (screen as! SDL2OpenGL3NanoVGVirtualScreen).texture)
+        let checkedScreen = checkVirtualScreen(screen)
+        screen.size = size // mutate input screen
+        glBindTexture(GLMap.TEXTURE_2D, checkedScreen.texture)
         glTexImage2D(GLMap.TEXTURE_2D, 0, GLMap.RGB, GLMap.Size(size.width), GLMap.Size(size.height), 0, GLMap.RGB, GLMap.UNSIGNED_BYTE, nil)
         glBindTexture(GLMap.TEXTURE_2D, 0)
     }
 
-    open func bindVirtualScreen(_ screen: VirtualScreen) throws {
-        guard let screen = screen as? SDL2OpenGL3NanoVGVirtualScreen else {
-            fatalError("Unsupported type of VirtualScreen passed to renderer.")
+    private func virtualScreenStackContains(_ screen: VirtualScreen) throws -> Bool {
+        let screen = checkVirtualScreen(screen)
+        for otherScreen in virtualScreenStack {
+            let otherScreen = checkVirtualScreen(otherScreen)
+            if screen.framebuffer == otherScreen.framebuffer && screen.texture == otherScreen.texture {
+                return true
+            }
         }
-        glBindFramebuffer(GLMap.FRAMEBUFFER, screen.framebuffer)
-        glViewport(0, 0, GLMap.Size(screen.size.width), GLMap.Size(screen.size.height))
+        return false
     }
 
-    open func unbindVirtualScreen() throws {
-        glBindFramebuffer(GLMap.FRAMEBUFFER, 0)
-        glViewport(0, 0, GLMap.Size(window.drawableSize.width), GLMap.Size(window.drawableSize.height))
+    open func pushVirtualScreen(_ screen: VirtualScreen) throws {
+        if try virtualScreenStackContains(screen) {
+            fatalError("Tried to add same virtual screen to the stack twice.")
+        }
+        let screen = checkVirtualScreen(screen)
+        glBindFramebuffer(GLMap.FRAMEBUFFER, screen.framebuffer)
+        glViewport(0, 0, GLMap.Size(screen.size.width), GLMap.Size(screen.size.height))
+        virtualScreenStack.append(screen)
+    }
+
+    @discardableResult open func popVirtualScreen() throws -> VirtualScreen? {
+        if let popped = virtualScreenStack.popLast() {
+            if virtualScreenStack.count == 0 {
+                glBindFramebuffer(GLMap.FRAMEBUFFER, 0)
+                glViewport(0, 0, GLMap.Size(window.drawableSize.width), GLMap.Size(window.drawableSize.height))
+            } else {
+                let virtualScreen = checkVirtualScreen(virtualScreenStack.last!)
+                glBindFramebuffer(GLMap.FRAMEBUFFER, virtualScreen.framebuffer)
+                glViewport(0, 0, GLMap.Size(virtualScreen.size.width), GLMap.Size(virtualScreen.size.height))
+            }
+            return popped
+        }
+        return nil
     }
 
     open func drawVirtualScreens(_ screens: [VirtualScreen], at positions: [DVec2]? = nil) throws {
-        guard let screen = screens[0] as? SDL2OpenGL3NanoVGVirtualScreen else {
-            fatalError("Unsupported type of VirtualScreen passed to renderer.")
-        }
+        let screen = checkVirtualScreen(screens[0])
         // TODO: implement rendering of all in array
         let positions = positions ?? screens.map { _ in DVec2.zero }
         let translation = positions[0] * DVec2(1, -1) / DVec2(window.drawableSize)

@@ -86,8 +86,11 @@ open class TwoDGraphicalApp: App<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGWindo
     }
 
     open func render(deltaTime: Int) throws {
+        // useless rendering to virtualScreen just as a test 
+        try renderer!.pushVirtualScreen(virtualScreen!)
         try guiRoot.render(renderer: renderer!)
-
+        try renderer!.popVirtualScreen()
+        try renderer!.drawVirtualScreens([virtualScreen!])
         try self.window!.updateContent()
     }
 }

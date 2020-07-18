@@ -6,6 +6,7 @@ import Foundation
 import CustomGraphicsMath
 
 // TODO: maybe put this into another file
+// TODO: maybe rename to VirtualRenderTarget
 public protocol VirtualScreen {
     var size: DSize2 { get set }
 
@@ -16,6 +17,7 @@ public protocol VirtualScreen {
 // TODO: maybe rename to CanvasRenderer/DirectRenderer/SimpleRenderer or something like that
 public protocol Renderer {
     //associatedtype VirtualScreen: VisualAppBase.VirtualScreen
+    var virtualScreenStack: [VirtualScreen] { get }
 
     // TODO: maybe resolution belongs to window?
     //var resolution: Double { get }
@@ -24,8 +26,8 @@ public protocol Renderer {
     func clear(_ color: Color) throws
     func makeVirtualScreen(size: DSize2) throws -> VirtualScreen
     func resizeVirtualScreen(_ screen: inout VirtualScreen, _ size: DSize2) throws
-    func bindVirtualScreen(_ screen: VirtualScreen) throws
-    func unbindVirtualScreen() throws
+    func pushVirtualScreen(_ screen: VirtualScreen) throws
+    @discardableResult func popVirtualScreen() throws -> VirtualScreen?
     func drawVirtualScreens(_ screens: [VirtualScreen], at positions: [DVec2]?) throws
     func beginPath() throws
     func fillColor(_ color: Color) throws
