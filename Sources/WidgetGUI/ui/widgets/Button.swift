@@ -72,10 +72,18 @@ public class Button: SingleChildWidget {
         //try renderer.rect(globalBounds, style: RenderStyle(fillColor: style.background))
         //try child.render(renderer: renderer)
         return .Container {
-            RenderObject.RenderStyle(
-                RenderStyle(fillColor: style.background),
-                [RenderObject.Rect(globalBounds)]
-            )
+            RenderObject.RenderStyle(RenderStyle(fillColor: style.background)) {
+                RenderObject.Rect(globalBounds)
+            }
+            if state == .Normal {
+                RenderObject.RenderStyle(RenderStyle(fillColor: Color(0, 255, 120, 255))) {
+                    RenderObject.Rect(Rect(topLeft: globalBounds.topLeft, size: DSize2(20, 50)))
+                }
+            } else if state == .Hover {
+                RenderObject.RenderStyle(RenderStyle(fillColor: Color(0, 255, 255, 255))) {
+                    RenderObject.Rect(Rect(topLeft: globalBounds.topLeft, size: DSize2(20, 50)))
+                }
+            }
             renderedChild!
         }
      }
