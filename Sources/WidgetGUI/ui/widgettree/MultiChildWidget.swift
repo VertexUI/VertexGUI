@@ -17,7 +17,11 @@ open class MultiChildWidget: Widget {
         }
     }
 
-    override open func render() -> RenderObject? {
+    /*override open func render() -> RenderObject? {
         return .Container(children.compactMap { $0.render() })
+    }*/
+
+    open func render(_ renderedChildren: [RenderObject?]) -> RenderObject? {
+        return .Container(renderedChildren.compactMap {$0 })
     }
 }

@@ -18,7 +18,7 @@ open class SingleChildWidget: Widget {
         self.init(child: build())
     }
 
-    override open func render() -> RenderObject? {
-        return child.render()
+    open func render(_ renderedChild: RenderObject?) -> RenderObject? {
+        return renderedChild 
     }
 }

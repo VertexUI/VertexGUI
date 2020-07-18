@@ -1,7 +1,7 @@
 import CustomGraphicsMath
 import VisualAppBase
 
-public class Space: Widget {
+public class Space: LeafWidget {
     public var size: DSize2 {
         didSet {
             try! layout()

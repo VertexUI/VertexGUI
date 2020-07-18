@@ -17,25 +17,42 @@ fileprivate struct UncachableRenderGroup: RenderGroup {
 fileprivate struct CachableRenderGroup: RenderGroup {
     public var renderTreeMask: RenderTreeMask = RenderTreeMask()
     public var cache: VirtualScreen?
+    public var cacheInvalidated = false
 
     public init() {}
 }
 
 // TODO: maybe rename to RenderTreeRenderer?
+// TODO: maybe have a RenderTreeGroupGenerator with efficientUpdate(identified: ...) etc. + a group renderer?
 public class RenderTreeRenderer {
     private var renderTree: RenderTree?
     // TODO: maybe define this as a RenderState object?
     private var renderGroups = [RenderGroup]()
     
-    private var frame = 0
-
     public init() {
     }
 
-    public func updateRenderTree(_ updatedRenderTree: RenderTree) {
+    public func setRenderTree(_ updatedRenderTree: RenderTree) {
         self.renderTree = updatedRenderTree
         clearRenderCache()
         generateRenderGroups()
+    }
+
+    // TODO: maybe change to updateRenderTree(_ updatedTree: .., _ updatedPaths: ...)
+    public func updateRenderTree(_ identifiedSubTree: IdentifiedSubTreeRenderObject) {
+        //print("UPDATE RENDER TREE", renderTree!.idPaths)
+        let (updatedRenderTree, updatedTreePath) = renderTree!.updated(identifiedSubTree)
+        if let updatedTreePath = updatedTreePath {
+            renderTree = updatedRenderTree
+            for i in 0..<renderGroups.count {
+                if var group = renderGroups[i] as? CachableRenderGroup {
+                    if group.renderTreeMask.containsAny(updatedTreePath) {
+                        group.cacheInvalidated = true
+                        renderGroups[i] = group
+                    }
+                }
+            }
+        }
     }
 
     public func clearRenderCache() {
@@ -89,28 +106,23 @@ public class RenderTreeRenderer {
     public func renderGroups(_ backendRenderer: Renderer, bounds: DRect) throws {
         for i in 0..<renderGroups.count {
             // TODO: if multiple cached things follow each other, draw them
-            if renderGroups[i] is CachableRenderGroup {
-                var group = renderGroups[i] as! CachableRenderGroup
-                //if (renderGroups[i] as! CachableRenderGroup).cache == nil {
-                    //group.cache = try backendRenderer.makeVirtualScreen(size: DSize2(bounds.topLeft + DVec2(bounds.size)))
-                    //print("MAKE CACHE", group.cache)
-                    //renderGroups[i] = group
-                    //try backendRenderer.bindVirtualScreen(group.cache!)
+            if var group = renderGroups[i] as? CachableRenderGroup {
+                if group.cache == nil || group.cacheInvalidated {
+                    group.cache = try backendRenderer.makeVirtualScreen(size: DSize2(bounds.topLeft + DVec2(bounds.size)))
+                    renderGroups[i] = group
+                    try backendRenderer.bindVirtualScreen(group.cache!)
+                    try backendRenderer.beginFrame()
+                    try backendRenderer.clear(Color(120, 160, 130, 255))
                     try renderMask(backendRenderer, group.renderTreeMask)
-                  //  try backendRenderer.unbindVirtualScreen()
-                //} else {
-                   // try backendRenderer.bindVirtualScreen(group.cache!)
-                   // try renderMask(backendRenderer, group.renderTreeMask)
-                //   try backendRenderer.unbindVirtualScreen()
-                //}
-                //try backendRenderer.drawVirtualScreens([group.cache!], at: [DVec2(0, 0)])
-                print("DRAW VIRTUAL")
-                print("ERROR", glGetError())
-                frame += 1
-                print("FRAME", frame)
-                //sleep(5)
+                    try backendRenderer.endFrame()
+                    try backendRenderer.unbindVirtualScreen()
+                    group.cacheInvalidated = false
+                }
+                try backendRenderer.drawVirtualScreens([group.cache!], at: [DVec2(0, 0)])
             } else {
+                try backendRenderer.beginFrame()
                 try renderMask(backendRenderer, renderGroups[i].renderTreeMask)
+                try backendRenderer.endFrame()
             }
         }
     }
@@ -139,6 +151,10 @@ public class RenderTreeRenderer {
         }
 
         switch (renderObject) {
+        case let renderObject as RenderObject.IdentifiedSubTree:
+            for i in 0..<nextPaths.count {
+                try renderRenderObject(backendRenderer, nextRenderObjects[i], path: nextPaths[i], mask: mask)
+            }
         case let renderObject as RenderObject.Container:
             for i in 0..<nextPaths.count {
                 try renderRenderObject(backendRenderer, nextRenderObjects[i], path: nextPaths[i], mask: mask)

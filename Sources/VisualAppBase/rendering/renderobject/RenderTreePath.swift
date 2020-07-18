@@ -1,8 +1,12 @@
-public struct RenderTreePath {
+public struct RenderTreePath: Sequence {
     public var segments: [Int]
 
     public var count: Int {
         return segments.count
+    }
+
+    public var last: Int? {
+        return segments.last
     }
 
     public init(_ segments: [Int]) {
@@ -16,6 +20,25 @@ public struct RenderTreePath {
         set {
             segments[index] = newValue
         }
+    }
+
+    public func makeIterator() -> IndexingIterator<[Int]> {
+        return segments.makeIterator()
+    }
+
+    public static func / (lhs: Self, rhs: Int) -> Self {
+        return Self(lhs.segments + [rhs])
+    }
+
+    public static func + (lhs: Self, rhs: Int) -> Self {
+        if lhs.count == 0 {
+            return lhs
+        }
+        return Self(lhs.segments[0..<lhs.count - 1] + [lhs.last! + rhs])
+    }
+
+    @discardableResult public mutating func removeLast() -> Int {
+        return segments.removeLast()
     }
 }
 

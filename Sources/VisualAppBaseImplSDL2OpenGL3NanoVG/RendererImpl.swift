@@ -154,7 +154,6 @@ open class SDL2OpenGL3NanoVGRenderer: Renderer {
         // TODO: implement rendering of all in array
         let positions = positions ?? screens.map { _ in DVec2.zero }
         let translation = positions[0] * DVec2(1, -1) / DVec2(window.drawableSize)
-        print("DRAW SCREEN", screen, positions, translation)
         compositionShader.use()
         glUniform2fv(glGetUniformLocation(compositionShader.id!, "translation"), 1, translation.map(Float.init))
         glBindTexture(GLMap.TEXTURE_2D, screen.texture)

@@ -6,7 +6,7 @@ import Foundation
 import CustomGraphicsMath
 import VisualAppBase
 
-public class Text: Widget {
+public class Text: LeafWidget {
     public var text: String {
         didSet {
             try! layout()

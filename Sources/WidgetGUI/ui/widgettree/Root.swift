@@ -12,8 +12,7 @@ open class Root: Parent {
     open var bounds: DRect = DRect(topLeft: DPoint2(0,0), size: DSize2(0,0)) {
         didSet {
             try! layout()
-            //updateRenderTree()
-            renderTreeInvalidated = true
+            updateRenderTree()
         }
     }
 
@@ -24,14 +23,9 @@ open class Root: Parent {
     }
 
     public var rootWidget: Widget
-    /*public var mouseEventConsumers: [MouseEventConsumer] {
-        get {
-            return [rootWidget]
-        }
-        set {}
-    }*/
 
-    private var renderObjectRenderer = RenderTreeRenderer()
+    private var widgetRenderTreeGenerator = WidgetRenderTreeGenerator()
+    private var renderTreeRenderer = RenderTreeRenderer()
     private var renderTree: RenderTree?
     private var renderTreeInvalidated = false
     
@@ -55,23 +49,18 @@ open class Root: Parent {
         try layout(fromChild: true)
     }
 
-    /*open func setup(with context: Context) throws {
-        self.context = context
-        _ = context.window.onMouse { event in
-            // TODO: create mouse events specific for ui
-            //try self.provideMouseEvent($0)
-        }
-    }*/
     open func consumeMouseEvent(_ rawMouseEvent: RawMouseEvent) -> Bool {
         return mouseEventPropagationStrategy.propagate(event: rawMouseEvent, through: rootWidget)
     }
 
     /// - Parameter widget: If a specific widget is passed only the sub tree that was created by the widget will be updated.
     open func updateRenderTree(_ widget: Widget? = nil) {
-        // TODO: do something with subtrees, etc., maybe, maybe just traverse and check whether can reuse some things
-        renderTree = RenderTree([rootWidget.render()!])
-        renderObjectRenderer.updateRenderTree(renderTree!)
-        print("UPDATING RENDER TREE", widget)
+        if let updatedWidget = widget, renderTree != nil {
+            renderTreeRenderer.updateRenderTree(widgetRenderTreeGenerator.generate(updatedWidget))
+        } else {
+            renderTree = RenderTree([widgetRenderTreeGenerator.generate(rootWidget)])
+            renderTreeRenderer.setRenderTree(renderTree!)
+        }
     }
 
     // TODO: maybe this little piece of rendering logic belongs into the App as well? / Maybe return a render object as well???? 
@@ -83,9 +72,6 @@ open class Root: Parent {
             updateRenderTree()
             renderTreeInvalidated = false
         }
-        //var renderObject = try rootWidget.render()
-        //renderObjectRenderer.updateRenderTree(renderTree!)
-        try renderObjectRenderer.renderGroups(renderer, bounds: bounds)
-        //try renderer.releaseClipArea()
+        try renderTreeRenderer.renderGroups(renderer, bounds: bounds)
     }
 }

@@ -86,26 +86,7 @@ open class TwoDGraphicalApp: App<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGWindo
     }
 
     open func render(deltaTime: Int) throws {
-        //print("RENDER!!")
-
-        //glBindFramebuffer(GLMap.FRAMEBUFFER, cacheFramebuffer)
-        //try renderer!.bindVirtualScreen(virtualScreen!)
-
-        try renderer!.beginFrame()
-        try renderer!.clear(window!.background)
         try guiRoot.render(renderer: renderer!)
-        try renderer!.endFrame()
-
-        //try renderer!.unbindVirtualScreen()
-        //try renderer!.drawVirtualScreens([virtualScreen!], at: [DVec2(100, 100)])
-
-        /*glBindFramebuffer(GLMap.FRAMEBUFFER, 0)
-        glViewport(0, 0, GLMap.Size(window!.drawableSize.width), GLMap.Size(window!.drawableSize.height))
-
-        compositionShader.use()
-        glBindTexture(GLMap.TEXTURE_2D, cacheTexture)
-        glBindVertexArray(screenVAO)
-        glDrawArrays(GLMap.TRIANGLES, 0, 6)*/
 
         try self.window!.updateContent()
     }

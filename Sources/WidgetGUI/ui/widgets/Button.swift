@@ -21,7 +21,11 @@ public let defaultButtonStyles: [ButtonState: ButtonStyle] = [
 ]
 
 public class Button: SingleChildWidget {
-    public var state: ButtonState = .Normal
+    public var state: ButtonState = .Normal {
+        didSet {
+            invalidateRenderState()
+        }
+    }
     public var stateStyles: [ButtonState: ButtonStyle]
     public var cursorRequestId: UInt64? = nil
     public var onClick = EventHandlerManager<GUIMouseButtonClickEvent>()
@@ -63,7 +67,7 @@ public class Button: SingleChildWidget {
         bounds.size = child.bounds.size
     }
  
-    override open func render() -> RenderObject? {
+    override open func render(_ renderedChild: RenderObject?) -> RenderObject? {
         let style = stateStyles[state] ?? defaultButtonStyles[state]!
         //try renderer.rect(globalBounds, style: RenderStyle(fillColor: style.background))
         //try child.render(renderer: renderer)
@@ -72,7 +76,7 @@ public class Button: SingleChildWidget {
                 RenderStyle(fillColor: style.background),
                 [RenderObject.Rect(globalBounds)]
             ),
-            child.render()
+            renderedChild
         ].compactMap { $0 })
     }
 

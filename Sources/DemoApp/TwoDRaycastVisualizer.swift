@@ -2,7 +2,7 @@ import VisualAppBase
 import WidgetGUI
 import CustomGraphicsMath
 
-open class TwoDRaycastVisualizer: Widget {
+open class TwoDRaycastVisualizer: LeafWidget {
     public var raycast: TwoDRaycast?
 
     //public init() {
@@ -21,7 +21,7 @@ open class TwoDRaycastVisualizer: Widget {
     }
 
     override open func render() -> RenderObject {
-        return .Uncachable([.Custom { renderer in
+        return .Custom { renderer in
             //try renderer.translate(DVec2(0, -globalPosition.y))
             try renderer.scale(DVec2(1, -1))
             try renderer.translate(DVec2(0, -(2 * self.globalPosition.y + self.bounds.size.height)))
@@ -70,6 +70,6 @@ open class TwoDRaycastVisualizer: Widget {
                 //try renderer.resetTransform() 
                 //try renderer.line(from: DVec2(1, 1), to: DVec2(100, 100), width: 2, color: Color(0, 0, 0, 255))
             }
-        }])
+        }
     }
 }

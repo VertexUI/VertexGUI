@@ -183,13 +183,13 @@ open class Widget: Bounded, Parent, Child {
     }
 
     /// This should trigger a rerender of the widget in the next frame.
-    public func invalidateRenderState(_ widget: Widget?) {
+    public func invalidateRenderState(_ widget: Widget? = nil) {
         let widget = widget ?? self
         try! onRenderStateInvalidated.invokeHandlers(widget)
     }
 
-    open func render() -> RenderObject? {
+    /*open func render() -> RenderObject? {
         fatalError("render() not implemented.")
-    }
+    }*/
 }
 
