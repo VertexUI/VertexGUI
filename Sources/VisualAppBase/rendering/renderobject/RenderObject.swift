@@ -1,6 +1,7 @@
 import CustomGraphicsMath
 
 // TODO: implement function for checking whether render object has content at certain position (--> is not transparent) --> used for mouse events like click etc.
+// TODO: might split into SubTreeRenderObject and LeafRenderObject!!!
 public protocol RenderObject {
     typealias IdentifiedSubTree = VisualAppBase.IdentifiedSubTreeRenderObject
     typealias Container = VisualAppBase.ContainerRenderObject

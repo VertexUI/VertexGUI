@@ -31,12 +31,18 @@ open class Root: Parent {
     
     private var mouseEventPropagationStrategy = GUIMouseEventPropagationStrategy()
 
-    public init(rootWidget: Widget) {
-        self.rootWidget = rootWidget
+    public init(rootWidget contentRootWidget: Widget) {
+        self.rootWidget = Column(children: [
+            Background(
+                backgroundColor: Color(255, 255, 255, 255),
+                child: Text("TEST")
+            ),
+            contentRootWidget
+        ])
         //super.init()
-        rootWidget.parent = self
+        self.rootWidget.parent = self
         // TODO: maybe dangling closure
-        _ = rootWidget.onRenderStateInvalidated(updateRenderTree(_:))
+        _ = self.rootWidget.onRenderStateInvalidated(updateRenderTree(_:))
     }
 
     open func layout(fromChild: Bool = false) throws {

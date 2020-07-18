@@ -22,6 +22,8 @@ public struct SDL2OpenGL3NanoVGVirtualScreen: VirtualScreen {
     }
 
     public func delete() throws {
+        // TODO: handle delete in renderer / attach to renderer and track whether should be deleted
+        print("Warning: delete function of screen called and due to current implementation called outside of parent renderer.")
         glDeleteFramebuffers(1, [framebuffer])
         glDeleteTextures(1, [texture])
     }
@@ -37,8 +39,8 @@ open class SDL2OpenGL3NanoVGRenderer: Renderer {
     private var window: SDL2OpenGL3NanoVGWindow
     
     private var compositionShader = Shader(
-        vertex: try! String(contentsOf: Path.cwd/"Sources/VisualAppBaseImplSDL2OpenGL3NanoVG/shaders/guiVertex.glsl"),
-        fragment: try! String(contentsOf: Path.cwd/"Sources/VisualAppBaseImplSDL2OpenGL3NanoVG/shaders/guiFragment.glsl")
+        vertex: try! String(contentsOf: Path.cwd/"Sources/VisualAppBaseImplSDL2OpenGL3NanoVG/shaders/compositionVertex.glsl"),
+        fragment: try! String(contentsOf: Path.cwd/"Sources/VisualAppBaseImplSDL2OpenGL3NanoVG/shaders/compositionFragment.glsl")
     )
     private var compositionVAO = GLMap.UInt()
 
@@ -116,7 +118,7 @@ open class SDL2OpenGL3NanoVGRenderer: Renderer {
 
         glGenTextures(1, &screen.texture)
         glBindTexture(GLMap.TEXTURE_2D, screen.texture)
-        glTexImage2D(GLMap.TEXTURE_2D, 0, GLMap.RGB, GLMap.Size(size.width), GLMap.Size(size.height), 0, GLMap.RGB, GLMap.UNSIGNED_BYTE, nil)
+        glTexImage2D(GLMap.TEXTURE_2D, 0, GLMap.RGBA, GLMap.Size(size.width), GLMap.Size(size.height), 0, GLMap.RGBA, GLMap.UNSIGNED_BYTE, nil)
         glTexParameteri(GLMap.TEXTURE_2D, GLMap.TEXTURE_MIN_FILTER, GLMap.LINEAR)
         glTexParameteri(GLMap.TEXTURE_2D, GLMap.TEXTURE_MAG_FILTER, GLMap.LINEAR)
         glBindTexture(GLMap.TEXTURE_2D, 0)
@@ -185,6 +187,8 @@ open class SDL2OpenGL3NanoVGRenderer: Renderer {
         // TODO: implement rendering of all in array
         let positions = positions ?? screens.map { _ in DVec2.zero }
         let translation = positions[0] * DVec2(1, -1) / DVec2(window.drawableSize)
+        glEnable(GLMap.BLEND)
+        glBlendFunc(GLMap.SRC_ALPHA, GLMap.ONE_MINUS_SRC_ALPHA)
         compositionShader.use()
         glUniform2fv(glGetUniformLocation(compositionShader.id!, "translation"), 1, translation.map(Float.init))
         glBindTexture(GLMap.TEXTURE_2D, screen.texture)

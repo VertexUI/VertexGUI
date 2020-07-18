@@ -4,7 +4,7 @@ import VisualAppBase
 open class Background: SingleChildWidget {
     open var backgroundColor: Color
 
-    public init(child: Widget, backgroundColor: Color) {
+    public init(backgroundColor: Color, child: Widget) {
         self.backgroundColor = backgroundColor
         super.init(child: child)
     }

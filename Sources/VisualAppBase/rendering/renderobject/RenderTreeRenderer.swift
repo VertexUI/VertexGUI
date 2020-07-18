@@ -5,21 +5,28 @@ import Path
 import Foundation
 
 fileprivate protocol RenderGroup {
+    var id: Int { get }
     var renderTreeMask: RenderTreeMask { get set }
 }
 
 fileprivate struct UncachableRenderGroup: RenderGroup {
+    public var id: Int
     public var renderTreeMask: RenderTreeMask = RenderTreeMask()
 
-    public init() {}
+    public init(id: Int) {
+        self.id = id
+    }
 }
 
 fileprivate struct CachableRenderGroup: RenderGroup {
+    public var id: Int
     public var renderTreeMask: RenderTreeMask = RenderTreeMask()
     public var cache: VirtualScreen?
     public var cacheInvalidated = false
 
-    public init() {}
+    public init(id: Int) {
+        self.id = id
+    }
 }
 
 // TODO: maybe rename to RenderTreeRenderer?
@@ -28,6 +35,13 @@ public class RenderTreeRenderer {
     private var renderTree: RenderTree?
     // TODO: maybe define this as a RenderState object?
     private var renderGroups = [RenderGroup]()
+    private var _nextRenderGroupId = 0
+    private var nextRenderGroupId: Int {
+        get {
+            defer { _nextRenderGroupId += 1 }
+            return _nextRenderGroupId
+        }
+    }
     
     public init() {
     }
@@ -60,27 +74,32 @@ public class RenderTreeRenderer {
     }
 
     // TODO: optimize, avoid quickly alternating between cached, uncached if possible, incorporate small cachable subtrees into uncachable if makes sense
-    private func recursivelyGenerateRenderGroups(_ renderObject: RenderObject, _ currentPath: RenderTreePath) {
+    private func generateRenderGroupsRecursively(_ renderObject: RenderObject, _ currentPath: RenderTreePath) {
         if let renderObject = renderObject as? RenderObject.Uncachable {
-
-            if renderGroups[renderGroups.count - 1] is UncachableRenderGroup {
-
-            } else {
-                renderGroups.append(UncachableRenderGroup())
+            if !(renderGroups[renderGroups.count - 1] is UncachableRenderGroup) {
+                renderGroups.append(UncachableRenderGroup(id: nextRenderGroupId))
             }
             renderGroups[renderGroups.count - 1].renderTreeMask = renderGroups[renderGroups.count - 1].renderTreeMask.add(currentPath)
+        } else if let renderObject = renderObject as? RenderObject.CacheSplit {
+            renderGroups.append(CachableRenderGroup(id: nextRenderGroupId))
+            renderGroups[renderGroups.count - 1].renderTreeMask = renderGroups[renderGroups.count - 1].renderTreeMask.add(currentPath)
+
+            for i in 0..<renderObject.children.count {
+                generateRenderGroupsRecursively(renderObject.children[i], currentPath/i)
+            }
+            
+            renderGroups.append(CachableRenderGroup(id: nextRenderGroupId))
         } else {
-            if renderGroups[renderGroups.count - 1] is CachableRenderGroup {
-
-            } else {
-                renderGroups.append(CachableRenderGroup())
+            if !(renderGroups[renderGroups.count - 1] is CachableRenderGroup) {
+                renderGroups.append(CachableRenderGroup(id: nextRenderGroupId))
             }
-            renderGroups[renderGroups.count - 1].renderTreeMask = renderGroups[renderGroups.count - 1].renderTreeMask.add(currentPath)
         
             if let renderObject = renderObject as? SubTreeRenderObject {
                 for i in 0..<renderObject.children.count {
-                    recursivelyGenerateRenderGroups(renderObject.children[i], RenderTreePath(currentPath.segments + [i]))
+                    generateRenderGroupsRecursively(renderObject.children[i], currentPath/i)
                 }
+            } else {
+                renderGroups[renderGroups.count - 1].renderTreeMask = renderGroups[renderGroups.count - 1].renderTreeMask.add(currentPath)
             }
         }
     }
@@ -98,9 +117,11 @@ public class RenderTreeRenderer {
         }
         renderGroups = [RenderGroup]()
         // TODO: if the first group contains very few items, might merge it with the following group
-        renderGroups.append(CachableRenderGroup())
+        renderGroups.append(CachableRenderGroup(id: nextRenderGroupId))
 
-        recursivelyGenerateRenderGroups(renderTree!.children[0], RenderTreePath([0]))
+        for i in 0..<renderTree!.children.count {
+            generateRenderGroupsRecursively(renderTree!.children[i], RenderTreePath([i]))
+        }
     }
 
     public func renderGroups(_ backendRenderer: Renderer, bounds: DRect) throws {
@@ -109,14 +130,13 @@ public class RenderTreeRenderer {
             if var group = renderGroups[i] as? CachableRenderGroup {
                 if group.cache == nil || group.cacheInvalidated {
                     group.cache = try backendRenderer.makeVirtualScreen(size: DSize2(bounds.topLeft + DVec2(bounds.size)))
-                    renderGroups[i] = group
                     try backendRenderer.pushVirtualScreen(group.cache!)
                     try backendRenderer.beginFrame()
-                    try backendRenderer.clear(Color(120, 160, 130, 255))
                     try renderMask(backendRenderer, group.renderTreeMask)
                     try backendRenderer.endFrame()
                     try backendRenderer.popVirtualScreen()
                     group.cacheInvalidated = false
+                    renderGroups[i] = group
                 }
                 try backendRenderer.drawVirtualScreens([group.cache!], at: [DVec2(0, 0)])
             } else {

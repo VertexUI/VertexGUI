@@ -60,7 +60,6 @@ public struct TwoDRaycast {
         var targetSlope = direction[otherAxis] / direction[drivingAxis]
         
         var startIndex = rayStart.rounded(.down)
-        print("CALCULATE", startIndex)
         var endIndex = rayEnd.rounded(.down)
         var currentOffset = DVec2()
         
@@ -91,7 +90,6 @@ public struct TwoDRaycast {
         for offset in testedOffsets {
             let tileIndex = IVec2(startIndex + offset.rounded(.down))
             testedTiles.append(tileIndex)
-            print("TEST TILE", tileIndex)
             
             //let lines = getTileLines(tileIndex: tileIndex)
             let edgeVertices = Tile.edgeVertices(topLeft: DVec2(tileIndex))
