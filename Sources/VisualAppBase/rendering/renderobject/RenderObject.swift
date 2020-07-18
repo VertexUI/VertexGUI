@@ -25,6 +25,11 @@ public struct IdentifiedSubTreeRenderObject: SubTreeRenderObject {
         self.id = id
         self.children = children
     }
+
+    public init(_ id: UInt, @RenderObjectBuilder _ children: () -> [RenderObject]) {
+        self.id = id
+        self.children = children()
+    }
 }
 
 // TODO: is this needed?
@@ -33,6 +38,10 @@ public struct ContainerRenderObject: SubTreeRenderObject {
 
     public init(_ children: [RenderObject]) {
         self.children = children
+    }
+
+    public init(@RenderObjectBuilder _ children: () -> [RenderObject]) {
+        self.children = children()
     }
 }
 
@@ -44,12 +53,20 @@ public struct RenderStyleRenderObject: SubTreeRenderObject {
         self.renderStyle = renderStyle
         self.children = children
     }
+
+    public init(_ renderStyle: RenderStyle, @RenderObjectBuilder _ children: () -> [RenderObject]) {
+        self.renderStyle = renderStyle
+        self.children = children()
+    }
 }
 
 public struct UncachableRenderObject: SubTreeRenderObject {
     public var children: [RenderObject]
     public init(_ children: [RenderObject]) {
         self.children = children
+    }
+    public init(@RenderObjectBuilder _ children: () -> [RenderObject]) {
+        self.children = children()
     }
 }
 
@@ -60,6 +77,9 @@ public struct CacheSplitRenderObject: SubTreeRenderObject {
     public var children: [RenderObject]
     public init(_ children: [RenderObject]) {
         self.children = children
+    }
+    public init(@RenderObjectBuilder _ children: () -> [RenderObject]) {
+        self.children = children()
     }
 }
 

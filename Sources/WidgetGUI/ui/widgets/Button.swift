@@ -71,14 +71,14 @@ public class Button: SingleChildWidget {
         let style = stateStyles[state] ?? defaultButtonStyles[state]!
         //try renderer.rect(globalBounds, style: RenderStyle(fillColor: style.background))
         //try child.render(renderer: renderer)
-        return .Container([
+        return .Container {
             RenderObject.RenderStyle(
                 RenderStyle(fillColor: style.background),
                 [RenderObject.Rect(globalBounds)]
-            ),
-            renderedChild
-        ].compactMap { $0 })
-    }
+            )
+            renderedChild!
+        }
+     }
 
     /*open func consume(_ event: GUIMouseEvent) throws {
         print("BUTTON CONSUMES MOUSE EVENT")

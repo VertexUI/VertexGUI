@@ -26,7 +26,6 @@ public extension Line {
         return point + direction * scale
     }
 
-    // TODO: maybe put a default accuracy somewhere, maybe for all vector operations?
     func scaleAt(_ point: Vector, accuracy: Vector.Element = Vector.Element(vectorComparisonAccuracy)) -> Vector.Element? {
         var lastScale: Vector.Element?
         for axis in 0..<direction.count {
