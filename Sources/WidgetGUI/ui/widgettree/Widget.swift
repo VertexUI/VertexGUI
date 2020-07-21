@@ -188,6 +188,7 @@ open class Widget: Bounded, Parent, Child {
         try! onRenderStateInvalidated.invokeHandlers(widget)
     }
     
+
     /*open func render() -> RenderObject? {
         fatalError("render() not implemented.")
     }*/

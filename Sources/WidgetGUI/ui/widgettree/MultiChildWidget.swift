@@ -22,6 +22,6 @@ open class MultiChildWidget: Widget {
     }*/
 
     open func render(_ renderedChildren: [RenderObject?]) -> RenderObject? {
-        return .Container(renderedChildren.compactMap {$0 })
+        return .Container { renderedChildren }
     }
 }

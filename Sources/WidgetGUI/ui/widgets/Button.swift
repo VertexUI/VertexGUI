@@ -71,20 +71,20 @@ public class Button: SingleChildWidget {
         let style = stateStyles[state] ?? defaultButtonStyles[state]!
         //try renderer.rect(globalBounds, style: RenderStyle(fillColor: style.background))
         //try child.render(renderer: renderer)
-        return .Container {
-            RenderObject.RenderStyle(RenderStyle(fillColor: style.background)) {
-                RenderObject.Rect(globalBounds)
-            }
+        return RenderObject.Container {
             if state == .Normal {
-                RenderObject.RenderStyle(RenderStyle(fillColor: Color(0, 255, 120, 255))) {
+                RenderObject.RenderStyle(fillColor: FixedRenderValue(Color(0, 255, 120, 255))) {
                     RenderObject.Rect(Rect(topLeft: globalBounds.topLeft, size: DSize2(20, 50)))
                 }
             } else if state == .Hover {
-                RenderObject.RenderStyle(RenderStyle(fillColor: Color(0, 255, 255, 255))) {
-                    RenderObject.Rect(Rect(topLeft: globalBounds.topLeft, size: DSize2(20, 50)))
+                RenderObject.RenderStyle(
+                    fillColor: TimedRenderValue(
+                        startTimestamp: Date.timeIntervalSinceReferenceDate, 
+                        duration: 8, valueAt: { progress in Color(UInt8(progress * 255), 0, 0, 255) })) {
+                    RenderObject.Rect(globalBounds)
                 }
             }
-            renderedChild!
+            //renderedChild
         }
      }
 

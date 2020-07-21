@@ -31,6 +31,7 @@ fileprivate struct CachableRenderGroup: RenderGroup {
 
 // TODO: maybe rename to RenderTreeRenderer?
 // TODO: maybe have a RenderTreeGroupGenerator with efficientUpdate(identified: ...) etc. + a group renderer?
+// TODO: create a RenderState --> contains RenderTree, Transitions and more depending on RenderStrategy, maybe
 public class RenderTreeRenderer {
     private var renderTree: RenderTree?
     // TODO: maybe define this as a RenderState object?
@@ -71,7 +72,7 @@ public class RenderTreeRenderer {
 
     // TODO: optimize, avoid quickly alternating between cached, uncached if possible, incorporate small cachable subtrees into uncachable if makes sense
     private func generateRenderGroupsRecursively(_ renderObject: RenderObject, _ currentPath: RenderTreePath) {
-        if let renderObject = renderObject as? RenderObject.Uncachable {
+        if renderObject.hasTimedRenderValue || (renderObject as? RenderObject.Uncachable) != nil {
             if !(renderGroups[renderGroups.count - 1] is UncachableRenderGroup) {
                 renderGroups.append(UncachableRenderGroup(id: nextRenderGroupId))
             }
@@ -174,6 +175,8 @@ public class RenderTreeRenderer {
             }
         }
 
+        let timestamp = Date.timeIntervalSinceReferenceDate
+
         switch (renderObject) {
         case let renderObject as RenderObject.IdentifiedSubTree:
             for i in 0..<nextPaths.count {
@@ -195,14 +198,14 @@ public class RenderTreeRenderer {
             for i in 0..<nextPaths.count {
                 try renderRenderObject(backendRenderer, nextRenderObjects[i], path: nextPaths[i], mask: mask)
             }
-            if let fillColor = renderObject.renderStyle.fillColor {
-                try backendRenderer.fillColor(fillColor)
+            if let fillColor = renderObject.fillColor {
+                try backendRenderer.fillColor(fillColor.getValue(at: timestamp))
                 try backendRenderer.fill()
             }
-            if let strokeWidth = renderObject.renderStyle.strokeWidth,
-                let strokeColor = renderObject.renderStyle.strokeColor {
+            if let strokeWidth = renderObject.strokeWidth,
+                let strokeColor = renderObject.strokeColor {
                 try backendRenderer.strokeWidth(strokeWidth)
-                try backendRenderer.strokeColor(strokeColor)
+                try backendRenderer.strokeColor(strokeColor.getValue(at: timestamp))
                 try backendRenderer.stroke()
             }
             // TODO: after render, reset style to style that was present before
