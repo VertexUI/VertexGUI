@@ -29,6 +29,7 @@ fileprivate struct CachableRenderGroup: RenderGroup {
     }
 }
 
+// TODO: give rendering an extra package outside of VisualAppBase
 // TODO: maybe rename to RenderTreeRenderer?
 // TODO: maybe have a RenderTreeGroupGenerator with efficientUpdate(identified: ...) etc. + a group renderer?
 // TODO: create a RenderState --> contains RenderTree, Transitions and more depending on RenderStrategy, maybe
@@ -53,23 +54,66 @@ public class RenderTreeRenderer {
         generateRenderGroups()
     }
 
-    // TODO: maybe change to updateRenderTree(_ updatedTree: .., _ updatedPaths: ...)
-    // TODO: implement checking for the exact changes by comparing old tree with id and new tree with id,
     // the only update groups etc. for the really updated parts
+    // TODO: modify this and provide a function --> process RenderTreeUpdate which contains the update info tuple
     public func updateRenderTree(_ identifiedSubTree: IdentifiedSubTreeRenderObject) {
         //print("UPDATE RENDER TREE", renderTree!.idPaths)
-        let (updatedRenderTree, updatedTreePath) = renderTree!.updated(identifiedSubTree)
-        if let updatedTreePath = updatedTreePath {
-            renderTree = updatedRenderTree
-            for i in 0..<renderGroups.count {
-                if var group = renderGroups[i] as? CachableRenderGroup {
-                    if group.renderTreeMask.containsAny(updatedTreePath) {
-                        group.cacheInvalidated = true
-                        renderGroups[i] = group
-                    }
+        // TODO: tree comparison
+        let (updatedRenderTree, updatedSubTreePath) = renderTree!.updated(identifiedSubTree)
+        var updatedRenderObjectTypePaths = [updatedSubTreePath]
+        renderTree = updatedRenderTree
+        print("TREE UPDATE", updatedSubTreePath)
+
+        var updatedTypeGroupIndices = Set<Int>()
+        for i in 0..<renderGroups.count {
+            if var group = renderGroups[i] as? CachableRenderGroup {
+                if group.renderTreeMask.containsAny(updatedSubTreePath) {
+                    group.cacheInvalidated = true
+                    renderGroups[i] = group
+                }
+            }
+            
+            for updatedTypePath in updatedRenderObjectTypePaths {
+                if renderGroups[i].renderTreeMask.containsAny(updatedTypePath) {
+                    updatedTypeGroupIndices.insert(i)
                 }
             }
         }
+
+        return
+
+        var groupUpdateBatches: [[Int]] = [[Int]()]
+        for i in updatedTypeGroupIndices.sorted() {
+            if let last = groupUpdateBatches[groupUpdateBatches.count - 1].last {
+                if last + 1 < i {
+                    groupUpdateBatches.append([i])
+                } else {
+                    groupUpdateBatches[groupUpdateBatches.count - 1].append(i)
+                }
+            } else {
+                groupUpdateBatches[groupUpdateBatches.count - 1].append(i)
+            }
+        }
+        print("UPDATE BATCHES", groupUpdateBatches)
+
+
+        var renderGroupSlices = [[RenderGroup]]()
+        var newRenderGroups = [[RenderGroup]]()
+        var previousGroupIndex = 0
+        for i in updatedTypeGroupIndices.sorted() {
+            // make mask from group start to group end
+            let newGroups = generateRenderGroupsRecursively(renderGroups[i].renderTreeMask, RenderTreePath(), self.renderTree!, [])
+            newRenderGroups.append(newGroups)
+            renderGroupSlices.append(Array(self.renderGroups[previousGroupIndex..<i]))
+            previousGroupIndex = i
+           // print("GENERATED new groups", newGroups)
+        }
+        self.renderGroups = []
+        for i in 0..<renderGroupSlices.count {
+            self.renderGroups.append(contentsOf: renderGroupSlices[i])
+            self.renderGroups.append(contentsOf: newRenderGroups[i])
+        }
+        print("RENDER GROUPS NOW", renderGroups.count)
     }
 
     /*

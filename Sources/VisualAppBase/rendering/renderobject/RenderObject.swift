@@ -16,6 +16,7 @@ public protocol RenderObject {
 }
 
 public protocol SubTreeRenderObject: RenderObject {
+    // TODO: maybe instead provide a replaceChildren function that returns a new object
     var children: [RenderObject] { get set }
 }
 

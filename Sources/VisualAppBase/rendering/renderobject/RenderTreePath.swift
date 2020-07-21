@@ -26,8 +26,12 @@ public struct RenderTreePath: Sequence {
         return segments.makeIterator()
     }
 
-    public func dropFirst(_ k: Int) -> Self {
+    public func dropFirst(_ k: Int = 1) -> Self {
         return Self(Array(segments.dropFirst(k)))
+    }
+
+    public func dropLast(_ k: Int = 1) -> Self {
+        return Self(Array(segments.dropLast(k)))
     }
 
     public static func / (lhs: Self, rhs: Int) -> Self {

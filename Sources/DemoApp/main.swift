@@ -23,8 +23,8 @@ open class TwoDGraphicalApp: App<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGWindo
     private var virtualScreen: VirtualScreen?
 
     private var compositionShader = Shader(
-        vertex: try! String(contentsOf: Path.cwd/"Sources/DemoApp/assets/guiVertex.glsl"),
-        fragment: try! String(contentsOf: Path.cwd/"Sources/DemoApp/assets/guiFragment.glsl")
+        vertex: try! String(contentsOf: Path.cwd/"Sources/DemoApp/assets/CompositionVertex.glsl"),
+        fragment: try! String(contentsOf: Path.cwd/"Sources/DemoApp/assets/CompositionFragment.glsl")
     )
 
     override public init() {
