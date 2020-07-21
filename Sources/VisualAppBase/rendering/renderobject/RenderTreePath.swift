@@ -9,7 +9,7 @@ public struct RenderTreePath: Sequence {
         return segments.last
     }
 
-    public init(_ segments: [Int]) {
+    public init(_ segments: [Int] = []) {
         self.segments = segments
     }
 
@@ -24,6 +24,10 @@ public struct RenderTreePath: Sequence {
 
     public func makeIterator() -> IndexingIterator<[Int]> {
         return segments.makeIterator()
+    }
+
+    public func dropFirst(_ k: Int) -> Self {
+        return Self(Array(segments.dropFirst(k)))
     }
 
     public static func / (lhs: Self, rhs: Int) -> Self {

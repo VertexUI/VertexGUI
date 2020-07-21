@@ -11,7 +11,7 @@ fileprivate protocol RenderGroup {
 
 fileprivate struct UncachableRenderGroup: RenderGroup {
     public var id: Int
-    public var renderTreeMask: RenderTreeMask = RenderTreeMask()
+    public var renderTreeMask: RenderTreeMask = .Leaf
 
     public init(id: Int) {
         self.id = id
@@ -20,7 +20,7 @@ fileprivate struct UncachableRenderGroup: RenderGroup {
 
 fileprivate struct CachableRenderGroup: RenderGroup {
     public var id: Int
-    public var renderTreeMask: RenderTreeMask = RenderTreeMask()
+    public var renderTreeMask: RenderTreeMask = .Leaf 
     public var cache: VirtualScreen?
     public var cacheInvalidated = false
 
@@ -54,6 +54,8 @@ public class RenderTreeRenderer {
     }
 
     // TODO: maybe change to updateRenderTree(_ updatedTree: .., _ updatedPaths: ...)
+    // TODO: implement checking for the exact changes by comparing old tree with id and new tree with id,
+    // the only update groups etc. for the really updated parts
     public func updateRenderTree(_ identifiedSubTree: IdentifiedSubTreeRenderObject) {
         //print("UPDATE RENDER TREE", renderTree!.idPaths)
         let (updatedRenderTree, updatedTreePath) = renderTree!.updated(identifiedSubTree)
@@ -70,35 +72,85 @@ public class RenderTreeRenderer {
         }
     }
 
-    // TODO: optimize, avoid quickly alternating between cached, uncached if possible, incorporate small cachable subtrees into uncachable if makes sense
-    private func generateRenderGroupsRecursively(_ renderObject: RenderObject, _ currentPath: RenderTreePath) {
-        if renderObject.hasTimedRenderValue || (renderObject as? RenderObject.Uncachable) != nil {
-            if !(renderGroups[renderGroups.count - 1] is UncachableRenderGroup) {
-                renderGroups.append(UncachableRenderGroup(id: nextRenderGroupId))
-            }
-            renderGroups[renderGroups.count - 1].renderTreeMask = renderGroups[renderGroups.count - 1].renderTreeMask.add(currentPath)
-        } else if let renderObject = renderObject as? RenderObject.CacheSplit {
-            renderGroups.append(CachableRenderGroup(id: nextRenderGroupId))
-            renderGroups[renderGroups.count - 1].renderTreeMask = renderGroups[renderGroups.count - 1].renderTreeMask.add(currentPath)
+    /*
+    Unfinished iterative definition
+    private func generateRenderGroups(for mask: RenderTreeMask? = nil) -> [RenderGroup] {
+        var groups: [RenderGroup] = [CachableRenderGroup(id: nextRenderGroupId)]
 
-            for i in 0..<renderObject.children.count {
-                generateRenderGroupsRecursively(renderObject.children[i], currentPath/i)
-            }
-            
-            renderGroups.append(CachableRenderGroup(id: nextRenderGroupId))
-        } else {
-            if !(renderGroups[renderGroups.count - 1] is CachableRenderGroup) {
-                renderGroups.append(CachableRenderGroup(id: nextRenderGroupId))
-            }
-        
-            if let renderObject = renderObject as? SubTreeRenderObject {
-                for i in 0..<renderObject.children.count {
-                    generateRenderGroupsRecursively(renderObject.children[i], currentPath/i)
+        var currentPath = RenderTreePath([0])
+        var parents: [SubTreeRenderObject] = [.Container(renderTree!.children)]
+        //var checkObjects = renderTree!.children
+        while parents.count > 0 {
+            for i in 0..<parents.last!.children.count {
+                let object = parents.last!.children[i]
+                let objectPath = currentPath/i
+
+                if mask == nil || mask!.containsAny(objectPath) {
+                    if object.hasTimedRenderValue || object is RenderObject.Uncachable {
+                        if !(groups.last! is UncachableRenderGroup) {
+                            groups.append(UncachableRenderGroup(id: nextRenderGroupId))
+                        }
+
+                        groups[groups.count - 1].renderTreeMask = groups.last!.renderTreeMask.add(objectPath)
+                    } else if let object = object as? RenderObject.CacheSplit {
+                        groups.append(CachableRenderGroup(id: nextRenderGroupId))
+
+                        parents.append(object)
+                        currentPath = objectPath
+                    } else {
+                        // TODO: implement
+                        if let object = object as? SubTreeRenderObject {
+
+                        }
+                    }
                 }
-            } else {
-                renderGroups[renderGroups.count - 1].renderTreeMask = renderGroups[renderGroups.count - 1].renderTreeMask.add(currentPath)
             }
         }
+    }*/
+
+    // TODO: optimize, avoid quickly alternating between cached, uncached if possible, incorporate small cachable subtrees into uncachable if makes sense
+    // TODO: replace with generate render groups!
+    private func generateRenderGroupsRecursively(_ mask: RenderTreeMask, _ currentPath: RenderTreePath, _ currentRenderObject: RenderObject, _ groups: [RenderGroup]) -> [RenderGroup] {
+        if !mask.containsAny(currentPath) {
+            return groups
+        }
+        
+        var updatedGroups = groups
+
+        if updatedGroups.count == 0 {
+            updatedGroups.append(CachableRenderGroup(id: nextRenderGroupId))
+        }
+
+        //var currentGroupIndex = inputGroupIndex
+        if currentRenderObject.hasTimedRenderValue || (currentRenderObject as? RenderObject.Uncachable) != nil {
+            if !(updatedGroups.last! is UncachableRenderGroup) {
+                updatedGroups.append(UncachableRenderGroup(id: nextRenderGroupId))
+            }
+            updatedGroups[updatedGroups.count - 1].renderTreeMask = updatedGroups.last!.renderTreeMask.add(currentPath)
+        } else if let currentRenderObject = currentRenderObject as? RenderObject.CacheSplit {
+            updatedGroups.append(CachableRenderGroup(id: nextRenderGroupId))
+            updatedGroups[updatedGroups.count - 1].renderTreeMask = updatedGroups.last!.renderTreeMask.add(currentPath)
+
+            for i in 0..<currentRenderObject.children.count {
+                updatedGroups = generateRenderGroupsRecursively(mask, currentPath/i, currentRenderObject.children[i], updatedGroups)
+            }
+            
+            updatedGroups.append(CachableRenderGroup(id: nextRenderGroupId))
+        } else {
+            if !(updatedGroups.last! is CachableRenderGroup) {
+                updatedGroups.append(CachableRenderGroup(id: nextRenderGroupId))
+            }
+        
+            if let currentRenderObject = currentRenderObject as? SubTreeRenderObject {
+                for i in 0..<currentRenderObject.children.count {
+                    updatedGroups = generateRenderGroupsRecursively(mask, currentPath/i, currentRenderObject.children[i], updatedGroups)
+                }
+            } else {
+                updatedGroups[updatedGroups.count - 1].renderTreeMask = updatedGroups.last!.renderTreeMask.add(currentPath)
+            }
+        }
+
+        return updatedGroups
     }
 
     // TODO: might have a renderGroupingStrategy
@@ -110,13 +162,10 @@ public class RenderTreeRenderer {
                 }
             }
         }
-        renderGroups = [RenderGroup]()
-        // TODO: if the first group contains very few items, might merge it with the following group
-        renderGroups.append(CachableRenderGroup(id: nextRenderGroupId))
 
-        for i in 0..<renderTree!.children.count {
-            generateRenderGroupsRecursively(renderTree!.children[i], RenderTreePath([i]))
-        }
+        // TODO: apply optimizations to output groups
+        renderGroups = generateRenderGroupsRecursively(RenderTreeMask.Leaf, RenderTreePath(), renderTree!, [RenderGroup]())
+        print("DID GENERATE GROUPS", renderGroups)
     }
 
     public func renderGroups(_ backendRenderer: Renderer, bounds: DRect) throws {
@@ -153,75 +202,84 @@ public class RenderTreeRenderer {
     }
 
     private func renderMask(_ backendRenderer: Renderer, _ mask: RenderTreeMask) throws {
-        if mask.items.count > 0 {
+        /*if mask.items.count > 0 {
             let startPath = RenderTreePath([mask.items[0].index])
             let startRenderObject = renderTree!.children[startPath[0]]
             try renderRenderObject(backendRenderer, startRenderObject, path: startPath, mask: mask)
-        }
+        }*/
+        try renderRenderObject(backendRenderer, self.renderTree!, path: RenderTreePath(), mask: mask)
     }
 
     // TODO: maybe do layering via z?
-    private func renderRenderObject(_ backendRenderer: Renderer, _ renderObject: RenderObject, path currentPath: RenderTreePath, mask: RenderTreeMask) throws {
+    private func renderRenderObject(_ backendRenderer: Renderer, _ currentRenderObject: RenderObject, path currentPath: RenderTreePath, mask: RenderTreeMask) throws {
+        if !mask.containsAny(currentPath) {
+            return
+        }
+        
         var nextPaths = [RenderTreePath]()
         var nextRenderObjects = [RenderObject]()
 
-        if let renderObject = renderObject as? SubTreeRenderObject {
-            for i in 0..<renderObject.children.count {
+        if let currentRenderObject = currentRenderObject as? SubTreeRenderObject {
+            for i in 0..<currentRenderObject.children.count {
                 let nextPath = RenderTreePath(currentPath.segments + [i])
                 if mask.containsAny(nextPath) {
                     nextPaths.append(nextPath)
-                    nextRenderObjects.append(renderObject.children[i])
+                    nextRenderObjects.append(currentRenderObject.children[i])
                 }
             }
         }
 
         let timestamp = Date.timeIntervalSinceReferenceDate
 
-        switch (renderObject) {
-        case let renderObject as RenderObject.IdentifiedSubTree:
+        switch (currentRenderObject) {
+        case let currentRenderObject as RenderTree:
             for i in 0..<nextPaths.count {
                 try renderRenderObject(backendRenderer, nextRenderObjects[i], path: nextPaths[i], mask: mask)
             }
-        case let renderObject as RenderObject.Container:
+        case let currentRenderObject as RenderObject.IdentifiedSubTree:
             for i in 0..<nextPaths.count {
                 try renderRenderObject(backendRenderer, nextRenderObjects[i], path: nextPaths[i], mask: mask)
             }
-        case let renderObject as RenderObject.Uncachable:
+        case let currentRenderObject as RenderObject.Container:
             for i in 0..<nextPaths.count {
                 try renderRenderObject(backendRenderer, nextRenderObjects[i], path: nextPaths[i], mask: mask)
             }
-        case let renderObject as RenderObject.CacheSplit:
+        case let currentRenderObject as RenderObject.Uncachable:
             for i in 0..<nextPaths.count {
                 try renderRenderObject(backendRenderer, nextRenderObjects[i], path: nextPaths[i], mask: mask)
             }
-        case let renderObject as RenderObject.RenderStyle:
+        case let currentRenderObject as RenderObject.CacheSplit:
             for i in 0..<nextPaths.count {
                 try renderRenderObject(backendRenderer, nextRenderObjects[i], path: nextPaths[i], mask: mask)
             }
-            if let fillColor = renderObject.fillColor {
+        case let currentRenderObject as RenderObject.RenderStyle:
+            for i in 0..<nextPaths.count {
+                try renderRenderObject(backendRenderer, nextRenderObjects[i], path: nextPaths[i], mask: mask)
+            }
+            if let fillColor = currentRenderObject.fillColor {
                 try backendRenderer.fillColor(fillColor.getValue(at: timestamp))
                 try backendRenderer.fill()
             }
-            if let strokeWidth = renderObject.strokeWidth,
-                let strokeColor = renderObject.strokeColor {
+            if let strokeWidth = currentRenderObject.strokeWidth,
+                let strokeColor = currentRenderObject.strokeColor {
                 try backendRenderer.strokeWidth(strokeWidth)
                 try backendRenderer.strokeColor(strokeColor.getValue(at: timestamp))
                 try backendRenderer.stroke()
             }
             // TODO: after render, reset style to style that was present before
-        case let renderObject as RenderObject.Custom:
-            try renderObject.render(backendRenderer)
-        case let renderObject as RenderObject.Rect:
+        case let currentRenderObject as RenderObject.Custom:
+            try currentRenderObject.render(backendRenderer)
+        case let currentRenderObject as RenderObject.Rect:
             try backendRenderer.beginPath()
-            try backendRenderer.rect(renderObject.rect)
-        case let renderObject as RenderObject.Text:
-            if renderObject.textConfig.wrap {
-                try backendRenderer.multilineText(renderObject.text, topLeft: renderObject.topLeft, maxWidth: renderObject.maxWidth ?? 0, fontConfig: renderObject.textConfig.fontConfig, color: renderObject.textConfig.color)
+            try backendRenderer.rect(currentRenderObject.rect)
+        case let currentRenderObject as RenderObject.Text:
+            if currentRenderObject.textConfig.wrap {
+                try backendRenderer.multilineText(currentRenderObject.text, topLeft: currentRenderObject.topLeft, maxWidth: currentRenderObject.maxWidth ?? 0, fontConfig: currentRenderObject.textConfig.fontConfig, color: currentRenderObject.textConfig.color)
             } else {
-                try backendRenderer.text(renderObject.text, topLeft: renderObject.topLeft, fontConfig: renderObject.textConfig.fontConfig, color: renderObject.textConfig.color)
+                try backendRenderer.text(currentRenderObject.text, topLeft: currentRenderObject.topLeft, fontConfig: currentRenderObject.textConfig.fontConfig, color: currentRenderObject.textConfig.color)
             }
         default:
-            print("Could not render RenderObject, implementation missing for:", renderObject)
+            print("Could not render RenderObject, implementation missing for:", currentRenderObject)
         }
     }
 }

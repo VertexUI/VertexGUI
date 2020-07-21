@@ -1,10 +1,15 @@
 import Foundation
 
 // TODO: maybe name RenderObjectTree
-public struct RenderTree {
+// TODO: maybe rename RenderTreeRoot
+public struct RenderTree: SubTreeRenderObject {
     public var children: [RenderObject]
     
     //public var idPaths = [UInt: RenderTreePath]()
+
+    public var hasTimedRenderValue: Bool {
+        return false
+    }
 
     public init(_ children: [RenderObject]) {
         self.children = children

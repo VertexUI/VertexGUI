@@ -123,6 +123,10 @@ public struct ContainerRenderObject: SubTreeRenderObject {
     public init(@RenderObjectBuilder _ children: () -> [RenderObject]) {
         self.children = children()
     }
+
+    public init(_ children: [RenderObject]) {
+        self.children = children
+    }
 }
 
 public struct RenderStyleRenderObject: SubTreeRenderObject {
