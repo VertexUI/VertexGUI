@@ -33,9 +33,12 @@ public struct RenderTreeMaskLeafItem: RenderTreeMaskItem, CustomStringConvertibl
 
 
 public enum RenderTreeMaskEntry {
+    // TODO: maybe need Empty as well?, however render tree should always have children, so Tree should be used
     case Leaf
     indirect case Tree(_ branches: [(index: Int, mask: RenderTreeMaskEntry)])
 
+    /// - Returns whether any leaf item path equals or contains the given path.
+    /// If path length is 0, returns true
     public func containsAny(_ path: RenderTreePath) -> Bool {
         if path.count == 0 {
             return true
@@ -46,7 +49,7 @@ public enum RenderTreeMaskEntry {
             return true
         case .Tree(let branches):
             for branch in branches {
-                if branch.mask.containsAny(path.dropFirst(1)) {
+                if branch.index == path[0] && branch.mask.containsAny(path.dropFirst(1)) {
                     return true
                 }
             }
@@ -116,7 +119,9 @@ public enum RenderTreeMaskEntry {
         }
         switch self {
         case .Leaf:
-            return (RenderTreeMaskEntry.Tree([(index: path[0], mask: .Leaf)])).add(path.dropFirst(1))
+            return RenderTreeMaskEntry.Tree([
+                (index: path[0], mask: RenderTreeMaskEntry.Leaf.add(path.dropFirst(1)))
+            ])
         case .Tree(let branches):
             if let presentBranchIndex = branches.firstIndex { $0.index == path[0] } {
                 var newBranches = branches

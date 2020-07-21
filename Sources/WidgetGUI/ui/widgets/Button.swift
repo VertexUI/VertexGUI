@@ -72,18 +72,18 @@ public class Button: SingleChildWidget {
         //try renderer.rect(globalBounds, style: RenderStyle(fillColor: style.background))
         //try child.render(renderer: renderer)
         return RenderObject.Container {
-            if state == .Normal {
+            /*if state == .Normal {
                 RenderObject.RenderStyle(fillColor: FixedRenderValue(Color(0, 255, 120, 255))) {
                     RenderObject.Rect(Rect(topLeft: globalBounds.topLeft, size: DSize2(20, 50)))
                 }
-            } else if state == .Hover {
+            } else if state == .Hover {*/
                 RenderObject.RenderStyle(
                     fillColor: TimedRenderValue(
                         startTimestamp: Date.timeIntervalSinceReferenceDate, 
-                        duration: 8, valueAt: { progress in Color(UInt8(progress * 255), 0, 0, 255) })) {
+                        duration: 3, valueAt: { progress in Color(UInt8(progress * 255), 0, 0, 255) })) {
                     RenderObject.Rect(globalBounds)
                 }
-            }
+           /// }
             //renderedChild
         }
      }
