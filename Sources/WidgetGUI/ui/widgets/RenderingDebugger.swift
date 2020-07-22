@@ -4,17 +4,21 @@ import CustomGraphicsMath
 public class RenderingDebugger: SingleChildWidget {
     public var debuggingData: RenderingDebuggingData? = nil {
         didSet {
-            updateChild()
+            handleDebuggingDataUpdated()
             self.invalidateRenderState()
         }
     }
+    public var expandedGroupIndices: Set<Int> = []
 
     public init() {
-        super.init(child: Column {
-            Button {
-                Text("WOW A BUTTON")
-            }
-        })
+        super.init(child: Column {})
+    }
+
+    private func handleDebuggingDataUpdated() {
+        if let debuggingData = debuggingData {
+            expandedGroupIndices = Set(0..<debuggingData.groups.count)
+            updateChild()
+        }
     }
 
     private func updateChild() {
@@ -23,11 +27,12 @@ public class RenderingDebugger: SingleChildWidget {
         if let debuggingData = debuggingData {
             print("HAVE DEBUGGING DATA")
 
-            let groups: [Widget?] = debuggingData.groups.flatMap {
-                [self.build(group: $0), Space(size: DSize2(0, 40))]
+            let groups: [Widget?] = (0..<debuggingData.groups.count).flatMap {
+                [self.build(groupIndex: $0), Space(size: DSize2(0, 40))]
             }
 
             print("GROUP COUNT", groups.count)
+
 
             self.child = Background(background: .White) {
                 Column {
@@ -47,14 +52,17 @@ public class RenderingDebugger: SingleChildWidget {
     private func build(object: RenderObject, in range: TreeRange) -> Widget {
         var children = [Widget]()
         if let object = object as? SubTreeRenderObject {
-
             children.append(contentsOf: object.children.map {
                 self.build(object: $0, in: range)
             })
         }
         
         return Column {
-            Text(String(describing: object))
+            Background(background: Color(240, 240, 255, 255)) {
+                Padding(padding: Insets(16)) {
+                    Text(String(describing: object))
+                }
+            }
             Row {
                 Space(size: DSize2(40, 0))
                 Column {
@@ -73,13 +81,27 @@ public class RenderingDebugger: SingleChildWidget {
         }
     }
 
-    private func build(group: RenderGroup) -> Widget {
+    private func build(groupIndex: Int) -> Widget {
+        let group = debuggingData!.groups[groupIndex]
         return Column {
-            Text("RenderGroup \(group.id)")
-            if let treeRange = group.treeRange {
-                build(range: treeRange)
-            } else {
-                Text("empty")
+            MouseArea(on: (buttonDown: { _ throws -> Void in
+                print("CLICK")
+                if self.expandedGroupIndices.contains(groupIndex) {
+                    self.expandedGroupIndices.remove(groupIndex)
+                } else {
+                    self.expandedGroupIndices.insert(groupIndex)
+                }
+                self.updateChild()
+                self.invalidateRenderState()
+            }, click: nil, move: nil)) {
+                Text("RenderGroup \(group.id)")
+            }
+            if expandedGroupIndices.contains(groupIndex) {
+                if let treeRange = group.treeRange {
+                    build(range: treeRange)
+                } else {
+                    Text("empty")
+                }
             }
         }
     }
@@ -91,5 +113,11 @@ public class RenderingDebugger: SingleChildWidget {
         //child.bounds.size = DSize2(100, 100)
         bounds.size = child.bounds.size
         print("DEBUGGER LAYOUT FINISHED", bounds.size)
+    }
+
+    override open func render(_ renderedChild: RenderObject?) -> RenderObject? {
+        return RenderObject.Uncachable {
+            renderedChild
+        }
     }
 }

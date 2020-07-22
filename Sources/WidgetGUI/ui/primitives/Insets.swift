@@ -18,4 +18,8 @@ public struct Insets {
     public init(_ top: Double, _ right: Double, _ bottom: Double, _ left: Double) {
         self.init(top: top, right: right, bottom: bottom, left: left)
     }
+
+    public init(_ value: Double) {
+        self.init(top: value, right: value, bottom: value, left: value)
+    }
 }

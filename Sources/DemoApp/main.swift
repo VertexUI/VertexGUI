@@ -83,8 +83,9 @@ open class TwoDGraphicalApp: App<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGWindo
             print("GUI ROOT DEBUGGING DATA AVAILABLE PUBSLIH")
         }
         _ = self.window!.onResize(handleWindowResized)
-        _ = self.debuggerWindow!.onResize(handleDebuggerWindowResized)
         _ = self.window!.onMouse(handleMouseEvent)
+        _ = self.debuggerWindow!.onResize(handleDebuggerWindowResized)
+        _ = self.debuggerWindow!.onMouse(handleDebuggerWindowMouseEvent)
         _ = self.system!.onFrame(render)
     }
 
@@ -101,6 +102,10 @@ open class TwoDGraphicalApp: App<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGWindo
 
     open func handleMouseEvent(_ mouseEvent: RawMouseEvent) {
         self.guiRoot.consumeMouseEvent(mouseEvent)
+    }
+
+    open func handleDebuggerWindowMouseEvent(_ mouseEvent: RawMouseEvent) {
+        self.debuggerRoot.consumeMouseEvent(mouseEvent)
     }
 
     open func handleWindowResized(newSize: DSize2) {

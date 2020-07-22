@@ -9,10 +9,16 @@ public protocol RenderGroup {
     //var renderTreeMask: RenderTreeMask { get set }
     var treeRange: TreeRange? { get set }
 
+    var isEmpty: Bool { get }
+
     mutating func add(_ path: TreePath)
 }
 
 public extension RenderGroup {
+    var isEmpty: Bool {
+        treeRange == nil
+    }
+
     mutating func add(_ path: TreePath) {
         if var treeRange = treeRange {
             treeRange.extend(with: path)
@@ -101,8 +107,8 @@ public class RenderTreeRenderer {
             }
         }
 
-        generateRenderGroups()
-        return
+        //generateRenderGroups()
+        //return
 
         // TODO: maybe rename to updateRequiringGroupBatches
         var groupUpdateBatches: [[Int]] = [[Int]()]
@@ -149,7 +155,7 @@ public class RenderTreeRenderer {
             var newRenderGroups = generateRenderGroupsRecursively(for: renderTree!, at: TreePath(), in: batchRange)
             for i in 0..<newRenderGroups.count {
                 if var newGroup = newRenderGroups[i] as? CachableRenderGroup {
-                    newGroup.cacheInvalidated = true
+                    //newGroup.cacheInvalidated = true
                     newRenderGroups[i] = newGroup
                 }
             }
@@ -173,9 +179,20 @@ public class RenderTreeRenderer {
         if let lastBatch = groupUpdateBatches.last, let lastUpdatedGroupIndex = lastBatch.last {
             updatedRenderGroups.append(contentsOf: Array(renderGroups[lastUpdatedGroupIndex...]))
         }
-        print("GENERATED UPDATED RENDER GROUPS", updatedRenderGroups)
 
         renderGroups = updatedRenderGroups
+        optimizeGroups()
+    }
+
+    /// Optimizes groups by removing empty ones.
+    private func optimizeGroups() {
+        var updatedGroups = [RenderGroup]()
+        for group in renderGroups {
+            if !group.isEmpty {
+                updatedGroups.append(group)
+            }
+        }
+        renderGroups = updatedGroups
     }
 
     /*
@@ -269,6 +286,7 @@ public class RenderTreeRenderer {
 
         // TODO: apply optimizations to output groups
         renderGroups = generateRenderGroupsRecursively(for: renderTree!, at: TreePath(), in: TreeRange())
+        optimizeGroups()
     }
 
     public func renderGroups(_ backendRenderer: Renderer, bounds: DRect) throws {

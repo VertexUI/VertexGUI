@@ -29,6 +29,12 @@ public class MouseArea: SingleChildWidget, GUIMouseEventConsumer {
         super.init(child: child)
     }
 
+    public convenience init(
+        on eventHandlers: GUIMouseEventHandlerTuple? = nil,
+        @WidgetBuilder child: () -> Widget) {
+            self.init(on: eventHandlers, child: child())
+    }
+
     override open func layout(fromChild: Bool = false) throws {
         child.constraints = constraints
         try child.layout()
