@@ -2,11 +2,15 @@ import CustomGraphicsMath
 import VisualAppBase
 
 open class Background: SingleChildWidget {
-    open var backgroundColor: Color
+    open var background: Color
 
-    public init(backgroundColor: Color, child: Widget) {
-        self.backgroundColor = backgroundColor
+    public init(background: Color, child: Widget) {
+        self.background = background
         super.init(child: child)
+    }
+
+    public convenience init(background: Color, child: () -> Widget) {
+        self.init(background: background, child: child())
     }
 
     override open func layout(fromChild: Bool = false) throws {
@@ -21,7 +25,7 @@ open class Background: SingleChildWidget {
     }*/
     override open func render(_ renderedChild: RenderObject?) -> RenderObject? {
         return .Container {
-            RenderObject.RenderStyle(fillColor: FixedRenderValue(backgroundColor)) {
+            RenderObject.RenderStyle(fillColor: FixedRenderValue(background)) {
                 RenderObject.Rect(globalBounds)
             }
             renderedChild

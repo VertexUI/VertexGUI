@@ -1,12 +1,16 @@
 import CustomGraphicsMath
 import VisualAppBase
 
-public class Row<S: System<W, R>, W: Window, R: Renderer>: MultiChildWidget<S, W, R> {
+public class Row: MultiChildWidget {
     public var wrap: Bool
 
-    public init(children: [Widget<S, W, R>], wrap: Bool = false) {
+    public init(wrap: Bool = false, children: [Widget]) {
         self.wrap = wrap
         super.init(children: children)
+    }
+
+    public convenience init(wrap: Bool = false, @WidgetBuilder children: () -> [Widget]) {
+        self.init(wrap: wrap, children: children())
     }
 
     override public func layout(fromChild: Bool = false) throws {
@@ -39,11 +43,5 @@ public class Row<S: System<W, R>, W: Window, R: Renderer>: MultiChildWidget<S, W
             }
         }
         bounds.size = DSize2(max(constraints!.minWidth, maxWidth), max(constraints!.minHeight, currentY + currentRowHeight))
-    }
-
-    override public func render(renderer: R) throws {
-        for child in self.children {
-            try child.render(renderer: renderer)
-        }
     }
 }

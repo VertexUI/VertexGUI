@@ -55,6 +55,13 @@ public class Button: SingleChildWidget {
         }
     }
 
+    public convenience init(
+        stateStyles: [ButtonState: ButtonStyle] = defaultButtonStyles,
+        onClick onClickHandler: EventHandlerManager<GUIMouseButtonClickEvent>.Handler? = nil,
+        @WidgetBuilder child: () -> Widget) {
+            self.init(stateStyles: stateStyles, onClick: onClickHandler, child: child())
+    }
+
     open func forwardOnClick(_ event: GUIMouseButtonClickEvent) throws {
         try onClick.invokeHandlers(event)
     }
@@ -74,7 +81,7 @@ public class Button: SingleChildWidget {
         return RenderObject.Container {
             if state == .Normal {
                 RenderObject.RenderStyle(fillColor: FixedRenderValue(Color(0, 255, 120, 255))) {
-                    RenderObject.Rect(Rect(topLeft: globalBounds.topLeft, size: DSize2(20, 50)))
+                    RenderObject.Rect(globalBounds)
                 }
             } else if state == .Hover {
                 RenderObject.RenderStyle(

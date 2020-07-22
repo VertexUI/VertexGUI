@@ -2,7 +2,7 @@ import CustomGraphicsMath
 
 // TODO: implement function for checking whether render object has content at certain position (--> is not transparent) --> used for mouse events like click etc.
 // TODO: might split into SubTreeRenderObject and LeafRenderObject!!!
-public protocol RenderObject {
+public protocol RenderObject: CustomDebugStringConvertible {
     typealias IdentifiedSubTree = VisualAppBase.IdentifiedSubTreeRenderObject
     typealias Container = VisualAppBase.ContainerRenderObject
     typealias Uncachable = VisualAppBase.UncachableRenderObject
@@ -102,6 +102,10 @@ public struct IdentifiedSubTreeRenderObject: SubTreeRenderObject {
         return false
     }
 
+    public var debugDescription: String {
+        "IdentifiedSubTreeRenderObject"
+    }
+
     public init(_ id: UInt, _ children: [RenderObject]) {
         self.id = id
         self.children = children
@@ -119,6 +123,10 @@ public struct ContainerRenderObject: SubTreeRenderObject {
 
     public var hasTimedRenderValue: Bool {
         return false
+    }
+
+    public var debugDescription: String {
+        "ContainerRenderObject"
     }
 
     public init(@RenderObjectBuilder _ children: () -> [RenderObject]) {
@@ -144,7 +152,10 @@ public struct RenderStyleRenderObject: SubTreeRenderObject {
     /*public init<C: RenderValue>(fillColor: C? = nil, strokeWidth: Double? = nil, strokeColor: C? = nil, _ children: [RenderObject]) where C.Value == Color {
         //self.renderStyle = renderStyle
         self.children = children
-    }*/
+    }*/ 
+    public var debugDescription: String {
+        "RenderStyleRenderObject { fillColor: \(fillColor); strokeWidth: \(strokeWidth); strokeColor: \(strokeColor) }"
+    }
 
     public init<C: RenderValue>(fillColor: C? = nil, strokeWidth: Double? = nil, strokeColor: C? = nil, @RenderObjectBuilder children: () -> [RenderObject]) where C.Value == Color {
         //self.renderStyle = renderStyle
@@ -167,6 +178,10 @@ public struct UncachableRenderObject: SubTreeRenderObject {
         return false
     }
 
+    public var debugDescription: String {
+        "UncachableRenderObject"
+    }
+
     public init(_ children: [RenderObject]) {
         self.children = children
     }
@@ -184,6 +199,10 @@ public struct CacheSplitRenderObject: SubTreeRenderObject {
     public var hasTimedRenderValue: Bool {
         return false
     }
+    
+    public var debugDescription: String {
+        "CacheSplitRenderObject"
+    }
 
     public init(_ children: [RenderObject]) {
         self.children = children
@@ -200,6 +219,10 @@ public struct RectRenderObject: RenderObject {
         return false
     }
     
+    public var debugDescription: String {
+        "RectRenderObject { rect: \(rect) }"
+    }
+    
     public init(_ rect: DRect) {
         self.rect = rect
     }
@@ -210,6 +233,10 @@ public struct CustomRenderObject: RenderObject {
 
     public var hasTimedRenderValue: Bool {
         return false
+    } 
+    
+    public var debugDescription: String {
+        "CustomRenderObject"
     }
 
     public init(_ render: @escaping (_ renderer: Renderer) throws -> Void) {
@@ -225,6 +252,10 @@ public struct TextRenderObject: RenderObject {
 
     public var hasTimedRenderValue: Bool {
         return false
+    }
+    
+    public var debugDescription: String {
+        "TextRenderObject { text: \(text); topLeft: \(topLeft); textConfig: \(textConfig); maxWidth: \(maxWidth) }"
     }
 
     public init(_ text: String, topLeft: DVec2, textConfig: TextConfig, maxWidth: Double?) {

@@ -4,7 +4,7 @@ import CustomGraphicsMath
 import Path
 import Foundation
 
-fileprivate protocol RenderGroup {
+public protocol RenderGroup {
     var id: Int { get }
     //var renderTreeMask: RenderTreeMask { get set }
     var treeRange: TreeRange? { get set }
@@ -12,7 +12,7 @@ fileprivate protocol RenderGroup {
     mutating func add(_ path: TreePath)
 }
 
-fileprivate extension RenderGroup {
+public extension RenderGroup {
     mutating func add(_ path: TreePath) {
         if var treeRange = treeRange {
             treeRange.extend(with: path)
@@ -23,7 +23,7 @@ fileprivate extension RenderGroup {
     }
 }
 
-fileprivate struct UncachableRenderGroup: RenderGroup {
+public struct UncachableRenderGroup: RenderGroup {
     public var id: Int
     public var treeRange: TreeRange? = nil
 
@@ -32,9 +32,9 @@ fileprivate struct UncachableRenderGroup: RenderGroup {
     }
 }
 
-fileprivate struct CachableRenderGroup: RenderGroup {
+public struct CachableRenderGroup: RenderGroup {
     public var id: Int
-    var treeRange: TreeRange? = nil
+    public var treeRange: TreeRange? = nil
     public var cache: VirtualScreen?
     public var cacheInvalidated = false
 
@@ -50,7 +50,7 @@ fileprivate struct CachableRenderGroup: RenderGroup {
 public class RenderTreeRenderer {
     private var renderTree: RenderTree?
     // TODO: maybe define this as a RenderState object?
-    private var renderGroups = [RenderGroup]()
+    public var renderGroups = [RenderGroup]()
     private var _nextRenderGroupId = 0
     private var nextRenderGroupId: Int {
         get {
@@ -100,6 +100,9 @@ public class RenderTreeRenderer {
                 }
             }
         }
+
+        generateRenderGroups()
+        return
 
         // TODO: maybe rename to updateRequiringGroupBatches
         var groupUpdateBatches: [[Int]] = [[Int]()]
@@ -265,7 +268,7 @@ public class RenderTreeRenderer {
         }
 
         // TODO: apply optimizations to output groups
-        renderGroups = generateRenderGroupsRecursively(for: renderTree!, at: TreePath(), in: TreeRange(), forward: [RenderGroup]())
+        renderGroups = generateRenderGroupsRecursively(for: renderTree!, at: TreePath(), in: TreeRange())
     }
 
     public func renderGroups(_ backendRenderer: Renderer, bounds: DRect) throws {
@@ -293,8 +296,10 @@ public class RenderTreeRenderer {
                         group.cacheInvalidated = false
                         renderGroups[i] = group
                     }
+                    try backendRenderer.beginFrame()
                     // TODO: if multiple cached things follow each other, draw them in one step
                     try backendRenderer.drawVirtualScreens([group.cache!], at: [DVec2(0, 0)])
+                    try backendRenderer.endFrame()
                 } else {
                     try backendRenderer.beginFrame()
                     try render(range: treeRange, with: backendRenderer)

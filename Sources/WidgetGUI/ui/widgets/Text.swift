@@ -24,7 +24,7 @@ public class Text: LeafWidget {
                 size: 16,
                 weight: .Regular,
                 style: .Normal
-            ), color: .Black, wrap: false)
+            ), color: .Black, wrap: true)
             : nil)
     }
 
@@ -62,7 +62,7 @@ public class Text: LeafWidget {
 
     override public func render() -> RenderObject? {
         if let textConfig = filledTextConfig {
-            return .Text("WOWO", topLeft: globalPosition, textConfig: textConfig, maxWidth: bounds.size.width)
+            return .Text(text, topLeft: globalPosition, textConfig: textConfig, maxWidth: bounds.size.width)
         }
         return nil
     }

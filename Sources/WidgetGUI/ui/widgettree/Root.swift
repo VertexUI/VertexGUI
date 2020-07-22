@@ -31,12 +31,14 @@ open class Root: Parent {
     
     private var mouseEventPropagationStrategy = GUIMouseEventPropagationStrategy()
 
+    public var onDebuggingDataAvailable = EventHandlerManager<RenderingDebuggingData>()
+
     public init(rootWidget contentRootWidget: Widget) {
         self.rootWidget = Column(children: [
-            Background(
-                backgroundColor: Color(255, 255, 255, 255),
+            /*Background(
+                background: Color(255, 255, 255, 255),
                 child: Text("TEST")
-            ),
+            ),*/
             contentRootWidget
         ])
         //super.init()
@@ -47,6 +49,7 @@ open class Root: Parent {
 
     open func layout(fromChild: Bool = false) throws {
         rootWidget.constraints = BoxConstraints(minSize: DSize2.zero, maxSize: bounds.size)
+        print("SET ROOT WIDGET CONSTRAINTS", bounds.size)
         try rootWidget.layout()
     }
 
@@ -67,9 +70,11 @@ open class Root: Parent {
             renderTree = RenderTree([widgetRenderTreeGenerator.generate(rootWidget)])
             renderTreeRenderer.setRenderTree(renderTree!)
         }
+        try! onDebuggingDataAvailable.invokeHandlers(RenderingDebuggingData(tree: renderTree!, groups: renderTreeRenderer.renderGroups))
+        print("UPDATE RENDER TREE CALLED", widget)
     }
 
-    // TODO: maybe this little piece of rendering logic belongs into the App as well? / Maybe return a render object as well???? 
+    // TODO: maybe this little piece of rendering logic belongs into the App as well? / Maybe return a render object tree as well???? 
     // TODO: --> A Game scene could also be a render object with custom logic which is redrawn on every frame by render strategy.
     open func render(renderer: Renderer) throws {
         //try renderer.clipArea(bounds: globalBounds)

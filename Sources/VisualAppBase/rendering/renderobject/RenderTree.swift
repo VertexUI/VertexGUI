@@ -11,6 +11,10 @@ public struct RenderTree: SubTreeRenderObject {
         return false
     }
 
+    public var debugDescription: String {
+        "RenderTree"
+    }
+
     public init(_ children: [RenderObject]) {
         self.children = children
         self.idPaths = getIdPathsRecursively(self, TreePath(), [UInt: TreePath]())

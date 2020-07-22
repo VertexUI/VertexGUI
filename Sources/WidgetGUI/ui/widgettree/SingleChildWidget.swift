@@ -14,10 +14,6 @@ open class SingleChildWidget: Widget {
         //child.context = context
     }
 
-    convenience init(@WidgetBuilder _ build: () -> Widget) {
-        self.init(child: build())
-    }
-
     open func render(_ renderedChild: RenderObject?) -> RenderObject? {
         return renderedChild 
     }
