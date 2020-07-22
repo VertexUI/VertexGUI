@@ -35,5 +35,6 @@ let package = Package(
         ),
         .target(name: "VisualAppBaseImplSDL2OpenGL3NanoVG", dependencies: ["WidgetGUI", "CSDL2", "GL", .product(name: "CnanovgGL3", package: "Cnanovg"), "CustomGraphicsMath", "GLGraphicsMath", .product(name: "Path", package: "Path.swift")]),
         .target(name: "DemoApp", dependencies: ["WidgetGUI", "VisualAppBase", "VisualAppBaseImplSDL2OpenGL3NanoVG"]),
+        .testTarget(name: "VisualAppBaseTests", dependencies: ["VisualAppBase"])
     ]
 )

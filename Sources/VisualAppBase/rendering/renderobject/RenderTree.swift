@@ -5,7 +5,7 @@ import Foundation
 public struct RenderTree: SubTreeRenderObject {
     public var children: [RenderObject]
     
-    public var idPaths = [UInt: RenderTreePath]()
+    public var idPaths = [UInt: TreePath]()
 
     public var hasTimedRenderValue: Bool {
         return false
@@ -13,11 +13,11 @@ public struct RenderTree: SubTreeRenderObject {
 
     public init(_ children: [RenderObject]) {
         self.children = children
-        self.idPaths = getIdPathsRecursively(self, RenderTreePath(), [UInt: RenderTreePath]())
+        self.idPaths = getIdPathsRecursively(self, TreePath(), [UInt: TreePath]())
     }
 
     // TODO: maybe add setter...
-    public subscript(path: RenderTreePath) -> RenderObject? {
+    public subscript(path: TreePath) -> RenderObject? {
         if path.count == 0 {
             return nil
         }
@@ -42,7 +42,7 @@ public struct RenderTree: SubTreeRenderObject {
         return nil
     }
 
-    private func getIdPathsRecursively(_ renderObject: RenderObject, _ currentPath: RenderTreePath, _ currentIdPaths: [UInt: RenderTreePath]) -> [UInt: RenderTreePath] {
+    private func getIdPathsRecursively(_ renderObject: RenderObject, _ currentPath: TreePath, _ currentIdPaths: [UInt: TreePath]) -> [UInt: TreePath] {
         var updatedPaths = currentIdPaths
         if let renderObject = renderObject as? RenderObject.IdentifiedSubTree {
             updatedPaths[renderObject.id] = currentPath
@@ -58,9 +58,9 @@ public struct RenderTree: SubTreeRenderObject {
     /// Fills self.idPaths with ids mapped to paths of IdentifiedSubTreeRenderObjects
     /// by recursively checking every child in self.children.
     /// Should probably only be called in init.
-    /*mutating private func retrieveIdPaths(_ startRenderObject: RenderObject, _ startPath: RenderTreePath) {
-        idPaths = [UInt: RenderTreePath]()
-        var currentPath = RenderTreePath([0])
+    /*mutating private func retrieveIdPaths(_ startRenderObject: RenderObject, _ startPath: TreePath) {
+        idPaths = [UInt: TreePath]()
+        var currentPath = TreePath([0])
         // TODO: maybe instead of wrapping in a container here, just add a protocol that RenderTree (maybe rename to RenderTreeRoot) and SubTreeRenderObject conform too
         var parents: [SubTreeRenderObject] = [.Container(children)]
         var checkChildren = children
@@ -96,7 +96,7 @@ public struct RenderTree: SubTreeRenderObject {
             if let lastPathSegment = currentPath.last, parents.count > 0 {
                 print("WELL NOW CHECK", parents.last!.children.count, parents.count, lastPathSegment)
                 if parents.last!.children.count > lastPathSegment + 1 {
-                    //currentPath = RenderTreePath(Array(currentPath.segments[0..<currentPath.count - 1]))/(lastPathSegment + 1)
+                    //currentPath = TreePath(Array(currentPath.segments[0..<currentPath.count - 1]))/(lastPathSegment + 1)
                     currentPath = currentPath + 1
                     checkChildren = parents.last!.children
                     print("ADVANCE TO NEXT CHLID AFTER GOING DOWN FIRST")
@@ -111,10 +111,10 @@ public struct RenderTree: SubTreeRenderObject {
         }
     }*/
 
-    /*public func replaceRecursively(_ renderObjects: [RenderObject], _ currentPath: RenderTreePath, _ identifiedSubTree: IdentifiedSubTreeRenderObject) -> ([RenderObject], RenderTreePath?) {
+    /*public func replaceRecursively(_ renderObjects: [RenderObject], _ currentPath: TreePath, _ identifiedSubTree: IdentifiedSubTreeRenderObject) -> ([RenderObject], TreePath?) {
         //print("UPDATE RECURSIVELY", identifiedSubTree)
         var updatedRenderObjects = [RenderObject]()
-        var updatePath: RenderTreePath?
+        var updatePath: TreePath?
         for i in 0..<renderObjects.count {
             let renderObject = renderObjects[i]
             if let renderObject = renderObject as? IdentifiedSubTreeRenderObject {
@@ -137,15 +137,15 @@ public struct RenderTree: SubTreeRenderObject {
         }
         return (updatedRenderObjects, updatePath)
     }*/
-    public func updated(_ identifiedSubTree: IdentifiedSubTreeRenderObject) -> (updatedTree: RenderTree, updatedIdentifiedSubTreePath: RenderTreePath) {
+    public func updated(_ identifiedSubTree: IdentifiedSubTreeRenderObject) -> (updatedTree: RenderTree, updatedIdentifiedSubTreePath: TreePath) {
         //let identifiedPath = idPaths[identifiedSubTree.id]!
 
-        var replacedIdentifiedSubTreePath: RenderTreePath?
+        var replacedIdentifiedSubTreePath: TreePath?
         var replacedIdentifiedSubTree: IdentifiedSubTreeRenderObject?
         var newTree: RenderTree?
 
         var parents: [SubTreeRenderObject] = [self]
-        var currentPath = RenderTreePath()
+        var currentPath = TreePath()
         var replacedChildren: [[RenderObject]] = [[RenderObject]()]
 
         outer: while parents.count > 0 {
@@ -190,7 +190,7 @@ public struct RenderTree: SubTreeRenderObject {
 
 
 
-        //let (replacedC updatePath) = replaceRecursively(children, RenderTreePath([]), identifiedSubTree)
+        //let (replacedC updatePath) = replaceRecursively(children, TreePath([]), identifiedSubTree)
         return (unwrappedNewTree, replacedIdentifiedSubTreePath!)
     }
 }

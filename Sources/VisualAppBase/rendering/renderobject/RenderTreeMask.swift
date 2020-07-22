@@ -39,7 +39,7 @@ public enum RenderTreeMaskEntry {
 
     /// - Returns whether any leaf item path equals or contains the given path.
     /// If path length is 0, returns true
-    public func containsAny(_ path: RenderTreePath) -> Bool {
+    public func containsAny(_ path: TreePath) -> Bool {
         if path.count == 0 {
             return true
         }
@@ -77,7 +77,7 @@ public enum RenderTreeMaskEntry {
         return false*/
     }
 
-    /*private func addRecursively(_ path: RenderTreePath, _ pathSegmentIndex: Int, _ items: [RenderTreeMaskItem]) -> [RenderTreeMaskItem] {
+    /*private func addRecursively(_ path: TreePath, _ pathSegmentIndex: Int, _ items: [RenderTreeMaskItem]) -> [RenderTreeMaskItem] {
         var newItems = [RenderTreeMaskItem]()
         var added = false
         for item in items {
@@ -113,7 +113,7 @@ public enum RenderTreeMaskEntry {
     /// If the path crosses an item that was a leaf in the mask
     /// (everything under a leaf is masked positively), the leaf is 
     /// converted to a Tree (means, everything that isn't specifically added is not masked positively)
-    public func add(_ path: RenderTreePath) -> RenderTreeMask {
+    public func add(_ path: TreePath) -> RenderTreeMask {
         if path.count == 0 {
             return self
         }
@@ -147,8 +147,8 @@ public struct RenderTreeMask {
     public let items: [RenderTreeMaskItem]
 
     // TODO: untested
-    public var firstPath: RenderTreePath {
-        var path = RenderTreePath()
+    public var firstPath: TreePath {
+        var path = TreePath()
         var checkItems = items
         while checkItems.count > 0 {
             let checkItem = checkItems[0]
@@ -169,7 +169,7 @@ public struct RenderTreeMask {
 
     /// - Returns whether any leaf item path equals or contains the given path.
     /// If path length is 0, returns true
-    public func containsAny(_ path: RenderTreePath) -> Bool {
+    public func containsAny(_ path: TreePath) -> Bool {
         if path.count == 0 {
             return true
         }
@@ -195,7 +195,7 @@ public struct RenderTreeMask {
         return false
     }
 
-    private func addRecursively(_ path: RenderTreePath, _ pathSegmentIndex: Int, _ items: [RenderTreeMaskItem]) -> [RenderTreeMaskItem] {
+    private func addRecursively(_ path: TreePath, _ pathSegmentIndex: Int, _ items: [RenderTreeMaskItem]) -> [RenderTreeMaskItem] {
         var newItems = [RenderTreeMaskItem]()
         var added = false
         for item in items {
@@ -228,7 +228,7 @@ public struct RenderTreeMask {
         return newItems
     }
 
-    public func add(_ path: RenderTreePath) -> RenderTreeMask {
+    public func add(_ path: TreePath) -> RenderTreeMask {
         if path.count == 0 {
             return self
         }
