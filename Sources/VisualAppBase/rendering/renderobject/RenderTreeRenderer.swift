@@ -91,13 +91,17 @@ public class RenderTreeRenderer {
                 for updatedTypePath in updatedRenderObjectTypePaths {
                     if treeRange.contains(updatedTypePath) {
                         updatedTypeGroupIndices.insert(i)
+                        if var group = renderGroups[i] as? CachableRenderGroup, let cache = group.cache {
+                           group.cache = nil
+                           renderGroups[i] = group
+                           availableCaches.append(cache) 
+                        }
                     }
                 }
             }
         }
 
-        return
-
+        // TODO: maybe rename to updateRequiringGroupBatches
         var groupUpdateBatches: [[Int]] = [[Int]()]
         for i in updatedTypeGroupIndices.sorted() {
             if let last = groupUpdateBatches[groupUpdateBatches.count - 1].last {
@@ -110,27 +114,65 @@ public class RenderTreeRenderer {
                 groupUpdateBatches[groupUpdateBatches.count - 1].append(i)
             }
         }
+        let groupUpdateBatchRanges: [TreeRange?] = groupUpdateBatches.map {
+            var compoundStart: TreePath?
+            var compoundEnd: TreePath?
+            for i in $0 {
+                if compoundStart == nil {
+                    if let groupRangeStart = renderGroups[i].treeRange?.start {
+                        compoundStart = groupRangeStart 
+                    }
+                }
+                if let groupRangeEnd = renderGroups[i].treeRange?.end {
+                    compoundEnd = groupRangeEnd
+                }
+            }
+            if let compoundStart = compoundStart, let compoundEnd = compoundEnd {
+                return TreeRange(from: compoundStart, to: compoundEnd)
+            }
+            
+            return nil
+        }
         print("UPDATE BATCHES", groupUpdateBatches)
+        print("UPDATE RANGES", groupUpdateBatchRanges)
 
-        /*
-        var renderGroupSlices = [[RenderGroup]]()
-        var newRenderGroups = [[RenderGroup]]()
-        var previousGroupIndex = 0
-        for i in updatedTypeGroupIndices.sorted() {
-            // make mask from group start to group end
-            if let treeRange = renderGroups[i].treeRange {
-            let newGroups = generateRenderGroupsRecursively(renderGroups[i].renderTreeMask, TreePath(), self.renderTree!, [])
-            newRenderGroups.append(newGroups)
-            renderGroupSlices.append(Array(self.renderGroups[previousGroupIndex..<i]))
-            previousGroupIndex = i
-           // print("GENERATED new groups", newGroups)
+        var updatedRenderGroups = [RenderGroup]()
+        for i in 0..<groupUpdateBatchRanges.count {
+            let batchGroupIndices = groupUpdateBatches[i]
+            guard let batchRange = groupUpdateBatchRanges[i] else {
+                continue
+            }
+
+            var newRenderGroups = generateRenderGroupsRecursively(for: renderTree!, at: TreePath(), in: batchRange)
+            for i in 0..<newRenderGroups.count {
+                if var newGroup = newRenderGroups[i] as? CachableRenderGroup {
+                    newGroup.cacheInvalidated = true
+                    newRenderGroups[i] = newGroup
+                }
+            }
+
+            let precedingReusableRenderGroups: [RenderGroup]
+            if i == 0 {
+                if let firstBatchGroupIndex = batchGroupIndices.first, firstBatchGroupIndex > 0 {
+                    precedingReusableRenderGroups = Array(renderGroups[0..<firstBatchGroupIndex])
+                } else {
+                    precedingReusableRenderGroups = []
+                }
+            } else {
+                let precedingBatchGroupIndices = groupUpdateBatches[i - 1]
+                let precedingEndIndex = precedingBatchGroupIndices.last!
+                let currentStartIndex = batchGroupIndices.first!
+                precedingReusableRenderGroups = Array(renderGroups[precedingEndIndex + 1..<currentStartIndex])
+            }
+            updatedRenderGroups.append(contentsOf: precedingReusableRenderGroups)
+            updatedRenderGroups.append(contentsOf: newRenderGroups)
         }
-        self.renderGroups = []
-        for i in 0..<renderGroupSlices.count {
-            self.renderGroups.append(contentsOf: renderGroupSlices[i])
-            self.renderGroups.append(contentsOf: newRenderGroups[i])
+        if let lastBatch = groupUpdateBatches.last, let lastUpdatedGroupIndex = lastBatch.last {
+            updatedRenderGroups.append(contentsOf: Array(renderGroups[lastUpdatedGroupIndex...]))
         }
-        print("RENDER GROUPS NOW", renderGroups.count)*/
+        print("GENERATED UPDATED RENDER GROUPS", updatedRenderGroups)
+
+        renderGroups = updatedRenderGroups
     }
 
     /*
@@ -171,7 +213,7 @@ public class RenderTreeRenderer {
 
     // TODO: optimize, avoid quickly alternating between cached, uncached if possible, incorporate small cachable subtrees into uncachable if makes sense
     // TODO: replace with generate render groups!
-    private func generateRenderGroupsRecursively(for currentRenderObject: RenderObject, at currentPath: TreePath, in range: TreeRange, forward groups: [RenderGroup]) -> [RenderGroup] {
+    private func generateRenderGroupsRecursively(for currentRenderObject: RenderObject, at currentPath: TreePath, in range: TreeRange, forward groups: [RenderGroup] = []) -> [RenderGroup] {
         if !range.contains(currentPath) {
             return groups
         }
