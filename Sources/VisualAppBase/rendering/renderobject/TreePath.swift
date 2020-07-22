@@ -1,4 +1,4 @@
-public struct TreePath: Sequence, Comparable, Equatable {
+public struct TreePath: Sequence, Comparable, Equatable, CustomDebugStringConvertible {
     public var segments: [Int]
 
     public var count: Int {
@@ -7,6 +7,10 @@ public struct TreePath: Sequence, Comparable, Equatable {
 
     public var last: Int? {
         return segments.last
+    }
+
+    public var debugDescription: String {
+        "TreePath { \(segments.map(String.init).joined(separator: ", ")) }"
     }
 
     public init(_ segments: [Int] = []) {

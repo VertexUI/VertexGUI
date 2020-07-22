@@ -8,6 +8,19 @@ fileprivate protocol RenderGroup {
     var id: Int { get }
     //var renderTreeMask: RenderTreeMask { get set }
     var treeRange: TreeRange? { get set }
+
+    mutating func add(_ path: TreePath)
+}
+
+fileprivate extension RenderGroup {
+    mutating func add(_ path: TreePath) {
+        if var treeRange = treeRange {
+            treeRange.extend(with: path)
+            self.treeRange = treeRange
+        } else {
+            self.treeRange = TreeRange(from: path, to: path)
+        }
+    }
 }
 
 fileprivate struct UncachableRenderGroup: RenderGroup {
@@ -173,10 +186,10 @@ public class RenderTreeRenderer {
             if !(updatedGroups.last! is UncachableRenderGroup) {
                 updatedGroups.append(UncachableRenderGroup(id: nextRenderGroupId))
             }
-            updatedGroups[updatedGroups.count - 1].treeRange = (updatedGroups[updatedGroups.count - 1].treeRange ?? TreeRange()).extended(with: currentPath)// = updatedGroups.last!.renderTreeMask.add(currentPath)
+            updatedGroups[updatedGroups.count - 1].add(currentPath)// = (updatedGroups[updatedGroups.count - 1].treeRange ?? TreeRange()).extended(with: currentPath)// = updatedGroups.last!.renderTreeMask.add(currentPath)
         } else if let currentRenderObject = currentRenderObject as? RenderObject.CacheSplit {
             updatedGroups.append(CachableRenderGroup(id: nextRenderGroupId))
-            updatedGroups[updatedGroups.count - 1].treeRange = (updatedGroups[updatedGroups.count - 1].treeRange ?? TreeRange()).extended(with: currentPath)// = updatedGroups.last!.renderTreeMask.add(currentPath)
+            updatedGroups[updatedGroups.count - 1].add(currentPath)// = (updatedGroups[updatedGroups.count - 1].treeRange ?? TreeRange()).extended(with: currentPath)// = updatedGroups.last!.renderTreeMask.add(currentPath)
             for i in 0..<currentRenderObject.children.count {
                 updatedGroups = generateRenderGroupsRecursively(for: currentRenderObject.children[i], at: currentPath/i, in: range, forward: updatedGroups)
             }
@@ -192,7 +205,7 @@ public class RenderTreeRenderer {
                     updatedGroups = generateRenderGroupsRecursively(for: currentRenderObject.children[i], at: currentPath/i, in: range, forward: updatedGroups)
                 }
             } else {
-                updatedGroups[updatedGroups.count - 1].treeRange = (updatedGroups[updatedGroups.count - 1].treeRange ?? TreeRange()).extended(with: currentPath)// = updatedGroups.last!.renderTreeMask.add(currentPath)
+                updatedGroups[updatedGroups.count - 1].add(currentPath)// = (updatedGroups[updatedGroups.count - 1].treeRange ?? TreeRange()).extended(with: currentPath)// = updatedGroups.last!.renderTreeMask.add(currentPath)
             }
         }
 
@@ -214,7 +227,7 @@ public class RenderTreeRenderer {
     }
 
     public func renderGroups(_ backendRenderer: Renderer, bounds: DRect) throws {
-        for i in 0..<1 {
+        for i in 0..<renderGroups.count {
             //print("RENDER GROUP", "MASK", renderGroups[i].renderTreeMask)
             if let treeRange = renderGroups[i].treeRange {
                 if var group = renderGroups[i] as? CachableRenderGroup {
@@ -261,7 +274,6 @@ public class RenderTreeRenderer {
     // TODO: maybe do layering via z?
     private func render(object currentRenderObject: RenderObject, at currentPath: TreePath, in range: TreeRange, with backendRenderer: Renderer) throws {
         if !range.contains(currentPath) {
-            //print("RANGE DOES NOT CONTAIN", currentPath)
             return
         }
         
