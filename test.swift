@@ -27,6 +27,8 @@ struct ProtoImpl: TestProto {
 
 let test2 = ProtoImpl() as Any
 
-let test2Conv = test2 as? some TestProto
+if let test2 = test2, test2 is SomeProto {
+    print("IT IS")
+}
 
 print(test2Conv)
