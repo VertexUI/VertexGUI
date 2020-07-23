@@ -5,6 +5,6 @@ public class RenderGroupsListView: SingleChildWidget {
     
     public init(debuggingData: RenderingDebuggingData) {
         self.debuggingData = debuggingData
-        super.init(child: )
+        super.init(child: Text("Works"))
     }
 }
