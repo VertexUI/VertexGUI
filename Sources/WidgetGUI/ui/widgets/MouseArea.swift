@@ -16,23 +16,32 @@ public class MouseArea: SingleChildWidget, GUIMouseEventConsumer {
     public var onMouseLeave = EventHandlerManager<GUIMouseLeaveEvent>()
 
     public init(
-        on eventHandlers: GUIMouseEventHandlerTuple? = nil,
+        onClick onClickHandler: EventHandlerManager<GUIMouseButtonClickEvent>.Handler? = nil,
+        onMouseButtonDown onMouseButtonDownHandler: EventHandlerManager<GUIMouseButtonDownEvent>.Handler? = nil,
+        onMouseMove onMouseMoveHandler: EventHandlerManager<GUIMouseMoveEvent>.Handler? = nil,
         child: Widget) {
-            if let eventHandlers = eventHandlers {
-                if let onMouseButtonDownHandler = eventHandlers.buttonDown {
-                    _ = self.onMouseButtonDown(onMouseButtonDownHandler)
-                }
-                if let onMouseMoveHandler = eventHandlers.move {
-                    _ = self.onMouseMove(onMouseMoveHandler)
-                }
+            if let onClickHandler = onClickHandler {
+                _ = self.onClick(onClickHandler)
+            }
+            if let onMouseButtonDownHandler = onMouseButtonDownHandler {
+                _ = self.onMouseButtonDown(onMouseButtonDownHandler)
+            }
+            if let onMouseMoveHandler = onMouseMoveHandler {
+                _ = self.onMouseMove(onMouseMoveHandler)
             }
         super.init(child: child)
     }
 
     public convenience init(
-        on eventHandlers: GUIMouseEventHandlerTuple? = nil,
+        onClick onClickHandler: EventHandlerManager<GUIMouseButtonClickEvent>.Handler? = nil,
+        onMouseButtonDown onMouseButtonDownHandler: EventHandlerManager<GUIMouseButtonDownEvent>.Handler? = nil,
+        onMouseMove onMouseMoveHandler: EventHandlerManager<GUIMouseMoveEvent>.Handler? = nil,
         @WidgetBuilder child: () -> Widget) {
-            self.init(on: eventHandlers, child: child())
+            self.init(
+                onClick: onClickHandler,
+                onMouseButtonDown: onMouseButtonDownHandler,
+                onMouseMove: onMouseMoveHandler,
+                child: child())
     }
 
     override open func layout(fromChild: Bool = false) throws {

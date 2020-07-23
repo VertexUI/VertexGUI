@@ -4,7 +4,7 @@
 
 import Foundation
 
-public struct Color {
+public struct Color: Hashable, Equatable {
     public var r: UInt8
     public var g: UInt8
     public var b: UInt8

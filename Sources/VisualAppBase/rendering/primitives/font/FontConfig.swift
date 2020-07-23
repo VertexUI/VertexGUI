@@ -6,7 +6,7 @@ import Foundation
 import CustomGraphicsMath
 
 // TODO: maybe rename to Font?
-public struct FontConfig {
+public struct FontConfig: Hashable {
     public var family: FontFamily
     public var size: Double 
     public var weight: FontWeight

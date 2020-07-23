@@ -6,9 +6,9 @@ import Foundation
 
 // TODO: maybe instead of Vector, use MultiElementMath protocol or something like that
 // TODO: maybe remove the name AnySize2<Float> as well and just use Vectors everywhere?
-public typealias AnySize<E: Numeric> = AnyVector<E>
+public typealias AnySize<E: Numeric & Hashable> = AnyVector<E>
 //public typealias AnySize2<E: Numeric> = AnyVector2<E>
-public typealias AnySize3<E: Numeric> = AnyVector3<E>
+public typealias AnySize3<E: Numeric & Hashable> = AnyVector3<E>
 
 public protocol Size2: Vector2 {
 
@@ -34,7 +34,7 @@ public extension Size2 {
     }
 }
 
-public struct AnySize2<E: Numeric>: Size2 {
+public struct AnySize2<E: Numeric & Hashable>: Size2 {
     public typealias Element = E
     public var rows: Int
     public var cols: Int

@@ -184,7 +184,7 @@ public extension Vector where Element: FloatingPoint {
     }*/
 }
 
-public struct AnyVector<E: Numeric>: Vector {
+public struct AnyVector<E: Numeric & Hashable>: Vector {
     public typealias Element = E
     public var rows: Int
     public var cols: Int
@@ -230,7 +230,7 @@ public extension Vector2 {
     }
 }
 
-public struct AnyVector2<E: Numeric>: Vector2 {
+public struct AnyVector2<E: Numeric & Hashable>: Vector2 {
     public typealias Element = E
     public var rows: Int
     public var cols: Int
@@ -307,7 +307,7 @@ public extension Vector3 where Element: FloatingPointGenericMath {
     }
 }
 
-public struct AnyVector3<E: Numeric>: Vector3 {
+public struct AnyVector3<E: Numeric & Hashable>: Vector3 {
     public typealias Element = E
     public var rows: Int
     public var cols: Int
@@ -324,7 +324,7 @@ public protocol Vector4: Vector3 {
     var w: Element { get set }
 }
 
-public struct AnyVector4<E: Numeric>: Vector {
+public struct AnyVector4<E: Numeric & Hashable>: Vector {
     public typealias Element = E
     public var rows: Int
     public var cols: Int

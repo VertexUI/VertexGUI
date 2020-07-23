@@ -5,20 +5,21 @@ public class RenderingDebugger: SingleChildWidget {
     public var debuggingData: RenderingDebuggingData? = nil {
         didSet {
             handleDebuggingDataUpdated()
-            self.invalidateRenderState()
         }
     }
     public var expandedGroupIndices: Set<Int> = []
+    public var selectedObject: RenderObject?
 
     public init() {
-        super.init(child: Column {})
+        super.init(child: Column(children: []))
     }
 
     private func handleDebuggingDataUpdated() {
         if let debuggingData = debuggingData {
             expandedGroupIndices = Set(0..<debuggingData.groups.count)
-            updateChild()
         }
+        updateChild()
+        self.invalidateRenderState()
     }
 
     private func updateChild() {
@@ -35,8 +36,11 @@ public class RenderingDebugger: SingleChildWidget {
 
 
             self.child = Background(background: .White) {
-                Column {
-                    groups
+                Row {
+                    Column {
+                        groups.compactMap { $0 }
+                    }
+                    buildSelectedObjectDetail()
                 }
             }
             self.child.parent = self
@@ -49,6 +53,26 @@ public class RenderingDebugger: SingleChildWidget {
         }
     }
 
+    private func buildSelectedObjectDetail() -> Widget {
+        var children = [Widget]()
+        if let selectedObject = selectedObject {
+            var properties = [Widget]()
+            let mirror = Mirror(reflecting: selectedObject)
+            for child in mirror.children {
+                if let label = child.label {
+                    properties.append(Text("\(label): \(child.value)"))
+                }
+            }
+            children.append(contentsOf: properties)
+        } else {
+            //return Space(size: DSize2.zero)
+        }
+        return Column {
+            Text("Detail View for \(String(describing: selectedObject))")
+            children
+        }
+    }
+
     private func build(object: RenderObject, in range: TreeRange) -> Widget {
         var children = [Widget]()
         if let object = object as? SubTreeRenderObject {
@@ -57,10 +81,19 @@ public class RenderingDebugger: SingleChildWidget {
             })
         }
         
+        let background: Color
+        if let selectedObject = selectedObject {
+            background = type(of: selectedObject) == type(of: object) && selectedObject.individualHash == object.individualHash ? Color(255, 230, 230, 255) : Color(240, 240, 255, 255)
+        } else {
+            background = Color(240, 240, 255, 255)
+        }
+
         return Column {
-            Background(background: Color(240, 240, 255, 255)) {
-                Padding(padding: Insets(16)) {
-                    Text(String(describing: object))
+            MouseArea(onClick: { _ in self.onObjectClick(object) }) {
+                Background(background: background) {
+                    Padding(padding: Insets(16)) {
+                        Text(String(describing: object))
+                    }
                 }
             }
             Row {
@@ -84,7 +117,7 @@ public class RenderingDebugger: SingleChildWidget {
     private func build(groupIndex: Int) -> Widget {
         let group = debuggingData!.groups[groupIndex]
         return Column {
-            MouseArea(on: (buttonDown: { _ throws -> Void in
+            MouseArea(onMouseButtonDown: { _ throws -> Void in
                 print("CLICK")
                 if self.expandedGroupIndices.contains(groupIndex) {
                     self.expandedGroupIndices.remove(groupIndex)
@@ -93,7 +126,7 @@ public class RenderingDebugger: SingleChildWidget {
                 }
                 self.updateChild()
                 self.invalidateRenderState()
-            }, click: nil, move: nil)) {
+            }) {
                 Text("RenderGroup \(group.id)")
             }
             if expandedGroupIndices.contains(groupIndex) {
@@ -104,6 +137,12 @@ public class RenderingDebugger: SingleChildWidget {
                 }
             }
         }
+    }
+
+    private func onObjectClick(_ object: RenderObject) {
+        self.selectedObject = object
+        self.updateChild()
+        self.invalidateRenderState()
     }
 
     override open func layout(fromChild: Bool) throws {

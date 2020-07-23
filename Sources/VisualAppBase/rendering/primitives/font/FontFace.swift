@@ -1,4 +1,4 @@
-public struct FontFace {
+public struct FontFace: Hashable {
     public var path: String
     public var weight: FontWeight
     public var style: FontStyle

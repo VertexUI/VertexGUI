@@ -20,7 +20,7 @@ public extension Plane where Vector.Element: FloatingPoint {
     }
 }
 
-public struct AnyPlane<E: Numeric>: Plane {
+public struct AnyPlane<E: Numeric & Hashable>: Plane {
     public typealias Vector = AnyVector3<E>
     public var point: AnyVector3<E>
     public var normal: AnyVector3<E>

@@ -21,7 +21,7 @@ open class TwoDRaycastVisualizer: LeafWidget {
     }
 
     override open func render() -> RenderObject {
-        return .CacheSplit([.Custom { renderer in
+        return .CacheSplit([.Custom(id: self.id) { renderer in
             print("MANUAL RAYCAST RENDER")
             //try renderer.translate(DVec2(0, -globalPosition.y))
             try renderer.scale(DVec2(1, -1))

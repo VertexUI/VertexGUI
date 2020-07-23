@@ -1,4 +1,4 @@
-public struct FontFamily {
+public struct FontFamily: Hashable {
     public var name: String
     public var faces: [FontFace]
 

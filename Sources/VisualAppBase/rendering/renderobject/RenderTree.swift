@@ -15,6 +15,10 @@ public struct RenderTree: SubTreeRenderObject {
         "RenderTree"
     }
 
+    public var individualHash: Int {
+        return 0
+    }
+
     public init(_ children: [RenderObject]) {
         self.children = children
         self.idPaths = getIdPathsRecursively(self, TreePath(), [UInt: TreePath]())

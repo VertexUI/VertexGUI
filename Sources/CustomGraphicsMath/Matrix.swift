@@ -1,6 +1,6 @@
 import Foundation
 
-public protocol Matrix: Sequence, Equatable, CustomStringConvertible {
+public protocol Matrix: Sequence, Equatable, CustomStringConvertible, Hashable {
     associatedtype Element: Numeric
 
     var rows: Int { get set }
@@ -192,7 +192,7 @@ public func *= <T: Matrix>(lhs: inout T, rhs: T) throws -> AnyMatrix {
     return try lhs * rhs
 }*/
 
-public struct AnyMatrix<E: Numeric>: Matrix {
+public struct AnyMatrix<E: Numeric & Hashable>: Matrix {
     public typealias Element = E
     public var rows: Int
     public var cols: Int
@@ -343,7 +343,7 @@ public extension Matrix4 where Element: FloatingPointGenericMath {
     }
 }
 
-public struct AnyMatrix4<E: Numeric>: Matrix4 {
+public struct AnyMatrix4<E: Numeric & Hashable>: Matrix4 {
     public typealias Element = E
     public var rows: Int
     public var cols: Int

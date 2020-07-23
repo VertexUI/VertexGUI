@@ -13,18 +13,39 @@ public protocol RenderObject: CustomDebugStringConvertible {
     typealias Text = VisualAppBase.TextRenderObject
 
     var hasTimedRenderValue: Bool { get }
+
+    /// The hash for the objects properties. Excludes children.
+    var individualHash: Int { get }
 }
 
 public protocol SubTreeRenderObject: RenderObject {
     // TODO: maybe instead provide a replaceChildren function that returns a new object
     var children: [RenderObject] { get set }
+
+    /// The hash including own properties and the hashes of children.
+    var combinedHash: Int { get }
 }
 
-public protocol RenderValue {
-    associatedtype Value
+public extension SubTreeRenderObject {
+    var combinedHash: Int {
+        var hasher = Hasher()
+        hasher.combine(individualHash)
+        for child in children {
+            if child is SubTreeRenderObject {
+                hasher.combine((child as! SubTreeRenderObject).combinedHash)
+            } else {
+                hasher.combine(child.individualHash)
+            }
+        }
+        return hasher.finalize()
+    }
 }
 
-public struct FixedRenderValue<V>: RenderValue {
+public protocol RenderValue: Hashable {
+    associatedtype Value: Hashable
+}
+
+public struct FixedRenderValue<V: Hashable>: RenderValue {
     public typealias Value = V
     public var value: V
     public init(_ value: V) {
@@ -32,7 +53,7 @@ public struct FixedRenderValue<V>: RenderValue {
     }
 }
 
-public struct TimedRenderValue<V>: RenderValue {
+public struct TimedRenderValue<V: Hashable>: RenderValue {
     public typealias Value = V
     /// a timestamp relative to something
     /// (e.g. reference date 1.1.2000, something like that), in seconds
@@ -44,11 +65,22 @@ public struct TimedRenderValue<V>: RenderValue {
 
     private var valueAt: (_ progress: Double) -> V
 
-    public init(startTimestamp: Double, duration: Double, valueAt: @escaping (_ progress: Double) -> V) {
+    private var id: UInt
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(startTimestamp)
+        hasher.combine(duration)
+        hasher.combine(endTimestamp)
+        hasher.combine(id)
+    }
+
+    /// - Parameter id: used for hashing, should be unique to each valueAt function.
+    public init(startTimestamp: Double, duration: Double, id: UInt, valueAt: @escaping (_ progress: Double) -> V) {
         self.startTimestamp = startTimestamp
         self.duration = duration
         self.endTimestamp = startTimestamp + duration
         self.valueAt = valueAt
+        self.id = id
     }
 
     /// - Parameter timestamp: must be relative
@@ -59,11 +91,17 @@ public struct TimedRenderValue<V>: RenderValue {
         }
         return valueAt(min(1, max(0, (timestamp - startTimestamp) / duration)))
     }
+
+
+    public static func == (lhs: TimedRenderValue, rhs: TimedRenderValue) -> Bool {
+        // TODO: maybe this comparison should be replaced with something more safe
+        return lhs.hashValue == rhs.hashValue
+    }
 }
 
 // TODO: maybe add a ScopedRenderValue as well which retrieves values from a Variables provided by any parent of type VariableDefinitionRenderObject
 
-public struct AnyRenderValue<V>: RenderValue {
+public struct AnyRenderValue<V: Hashable>: RenderValue {
     public typealias Value = V
     private var fixedBase: FixedRenderValue<V>?
     private var timedBase: TimedRenderValue<V>?    
@@ -106,6 +144,12 @@ public struct IdentifiedSubTreeRenderObject: SubTreeRenderObject {
         "IdentifiedSubTreeRenderObject"
     }
 
+    public var individualHash: Int {
+        var hasher = Hasher()
+        hasher.combine(id)
+        return hasher.finalize()
+    }
+
     public init(_ id: UInt, _ children: [RenderObject]) {
         self.id = id
         self.children = children
@@ -127,6 +171,10 @@ public struct ContainerRenderObject: SubTreeRenderObject {
 
     public var debugDescription: String {
         "ContainerRenderObject"
+    }
+
+    public var individualHash: Int {
+        return 0 
     }
 
     public init(@RenderObjectBuilder _ children: () -> [RenderObject]) {
@@ -154,7 +202,15 @@ public struct RenderStyleRenderObject: SubTreeRenderObject {
         self.children = children
     }*/ 
     public var debugDescription: String {
-        "RenderStyleRenderObject { fillColor: \(fillColor); strokeWidth: \(strokeWidth); strokeColor: \(strokeColor) }"
+        "RenderStyleRenderObject"
+    }
+
+    public var individualHash: Int {
+        var hasher = Hasher()
+        hasher.combine(fillColor)
+        hasher.combine(strokeWidth)
+        hasher.combine(strokeColor)
+        return hasher.finalize()
     }
 
     public init<C: RenderValue>(fillColor: C? = nil, strokeWidth: Double? = nil, strokeColor: C? = nil, @RenderObjectBuilder children: () -> [RenderObject]) where C.Value == Color {
@@ -182,6 +238,8 @@ public struct UncachableRenderObject: SubTreeRenderObject {
         "UncachableRenderObject"
     }
 
+    public var individualHash: Int = 0
+
     public init(_ children: [RenderObject]) {
         self.children = children
     }
@@ -204,6 +262,8 @@ public struct CacheSplitRenderObject: SubTreeRenderObject {
         "CacheSplitRenderObject"
     }
 
+    public var individualHash: Int = 0
+    
     public init(_ children: [RenderObject]) {
         self.children = children
     }
@@ -220,8 +280,10 @@ public struct RectRenderObject: RenderObject {
     }
     
     public var debugDescription: String {
-        "RectRenderObject { rect: \(rect) }"
+        "RectRenderObject"
     }
+    
+    public var individualHash: Int = 0
     
     public init(_ rect: DRect) {
         self.rect = rect
@@ -239,7 +301,16 @@ public struct CustomRenderObject: RenderObject {
         "CustomRenderObject"
     }
 
-    public init(_ render: @escaping (_ renderer: Renderer) throws -> Void) {
+    private var id: UInt
+    public var individualHash: Int {
+        var hasher = Hasher()
+        hasher.combine(id)
+        return hasher.finalize()
+    }
+
+    /// - Parameter id: Used for hashing, should be unique for each render function.
+    public init(id: UInt, _ render: @escaping (_ renderer: Renderer) throws -> Void) {
+        self.id = id
         self.render = render
     }
 }
@@ -255,7 +326,16 @@ public struct TextRenderObject: RenderObject {
     }
     
     public var debugDescription: String {
-        "TextRenderObject { text: \(text); topLeft: \(topLeft); textConfig: \(textConfig); maxWidth: \(maxWidth) }"
+        "TextRenderObject"
+    }
+    
+    public var individualHash: Int {
+        var hasher = Hasher()
+        hasher.combine(text)
+        hasher.combine(topLeft)
+        hasher.combine(textConfig)
+        hasher.combine(maxWidth)
+        return hasher.finalize()
     }
 
     public init(_ text: String, topLeft: DVec2, textConfig: TextConfig, maxWidth: Double?) {
