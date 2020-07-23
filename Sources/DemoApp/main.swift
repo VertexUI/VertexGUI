@@ -12,12 +12,12 @@ open class TwoDGraphicalApp: App<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGWindo
     //public typealias Renderables = WidgetGUI.Renderables<System, Window, Renderer>
     open var window: Window?
     open var renderer: Renderer?
-    open var debuggerWindow: Window?
-    open var debuggerRenderer: Renderer?
+    open var devToolsWindow: Window?
+    open var devToolsRenderer: Renderer?
 
     open var guiRoot: WidgetGUI.Root
-    open var debuggerRoot: WidgetGUI.Root
-    open var debugger: RenderingDebugger
+    open var devToolsGuiRoot: WidgetGUI.Root
+    open var devToolsView: DeveloperToolsView
 
     private var cacheFramebuffer = GLMap.UInt()
     private var cacheTexture = GLMap.UInt()
@@ -36,11 +36,11 @@ open class TwoDGraphicalApp: App<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGWindo
         guiRoot = WidgetGUI.Root(
             rootWidget: page)
 
-        let debugger = RenderingDebugger()
-        debuggerRoot = WidgetGUI.Root(
-            rootWidget: debugger
+        let devToolsView = DeveloperToolsView()
+        devToolsGuiRoot = WidgetGUI.Root(
+            rootWidget: devToolsView
         )
-        self.debugger = debugger
+        self.devToolsView = devToolsView
 
         super.init()
         guiRoot.context = WidgetContext(
@@ -51,7 +51,7 @@ open class TwoDGraphicalApp: App<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGWindo
                 ]
             ), getTextBoundsSize: getTextBoundsSize)
 
-        debuggerRoot.context = WidgetContext(
+        devToolsGuiRoot.context = WidgetContext(
             defaultFontFamily: FontFamily(
                 name: "Roboto",
                 faces: [
@@ -73,19 +73,19 @@ open class TwoDGraphicalApp: App<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGWindo
 
 //        virtualScreen = try renderer!.makeVirtualScreen(size: DSize2(window!.drawableSize.width, window!.drawableSize.height))
 
-        self.debuggerWindow = try Window(background: Color(50, 50, 50, 255), size: DSize2(800, 600))
-        self.debuggerRenderer = try Renderer(window: debuggerWindow!)
-        self.debuggerRoot.bounds = DRect(topLeft: DPoint2(0,0), size: debuggerWindow!.size)
-        try self.debuggerRoot.layout()
+        self.devToolsWindow = try Window(background: Color(50, 50, 50, 255), size: DSize2(800, 600))
+        self.devToolsRenderer = try Renderer(window: devToolsWindow!)
+        self.devToolsGuiRoot.bounds = DRect(topLeft: DPoint2(0,0), size: devToolsWindow!.size)
+        try self.devToolsGuiRoot.layout()
     
         _ = guiRoot.onDebuggingDataAvailable {
-            self.debugger.debuggingData = $0
+            self.devToolsView.debuggingData = $0
             print("GUI ROOT DEBUGGING DATA AVAILABLE PUBSLIH")
         }
         _ = self.window!.onResize(handleWindowResized)
         _ = self.window!.onMouse(handleMouseEvent)
-        _ = self.debuggerWindow!.onResize(handleDebuggerWindowResized)
-        _ = self.debuggerWindow!.onMouse(handleDebuggerWindowMouseEvent)
+        _ = self.devToolsWindow!.onResize(handledevToolsWindowResized)
+        _ = self.devToolsWindow!.onMouse(handledevToolsWindowMouseEvent)
         _ = self.system!.onFrame(render)
     }
 
@@ -104,8 +104,8 @@ open class TwoDGraphicalApp: App<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGWindo
         self.guiRoot.consumeMouseEvent(mouseEvent)
     }
 
-    open func handleDebuggerWindowMouseEvent(_ mouseEvent: RawMouseEvent) {
-        self.debuggerRoot.consumeMouseEvent(mouseEvent)
+    open func handledevToolsWindowMouseEvent(_ mouseEvent: RawMouseEvent) {
+        self.devToolsGuiRoot.consumeMouseEvent(mouseEvent)
     }
 
     open func handleWindowResized(newSize: DSize2) {
@@ -118,9 +118,9 @@ open class TwoDGraphicalApp: App<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGWindo
         }
     }
 
-    open func handleDebuggerWindowResized(newSize: DSize2) {
-        self.debuggerRoot.bounds.size = newSize
-        try! self.debuggerRoot.layout()
+    open func handledevToolsWindowResized(newSize: DSize2) {
+        self.devToolsGuiRoot.bounds.size = newSize
+        try! self.devToolsGuiRoot.layout()
     }
 
     open func render(deltaTime: Int) throws {
@@ -134,11 +134,11 @@ open class TwoDGraphicalApp: App<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGWindo
       //  try renderer!.drawVirtualScreens([virtualScreen!])
         try window!.updateContent()
 
-        try debuggerRenderer!.beginFrame()
-        try debuggerRenderer!.clear(debuggerWindow!.background)
-        try debuggerRoot.render(renderer: debuggerRenderer!)
-        try debuggerRenderer!.endFrame()
-        try debuggerWindow!.updateContent()
+        try devToolsRenderer!.beginFrame()
+        try devToolsRenderer!.clear(devToolsWindow!.background)
+        try devToolsGuiRoot.render(renderer: devToolsRenderer!)
+        try devToolsRenderer!.endFrame()
+        try devToolsWindow!.updateContent()
     }
 }
 

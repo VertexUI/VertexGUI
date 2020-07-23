@@ -8,6 +8,7 @@ public protocol RenderObject: CustomDebugStringConvertible {
     typealias Uncachable = VisualAppBase.UncachableRenderObject
     typealias CacheSplit = VisualAppBase.CacheSplitRenderObject
     typealias RenderStyle = VisualAppBase.RenderStyleRenderObject
+    typealias Translation = VisualAppBase.TranslationRenderObject
     typealias Rect = VisualAppBase.RectRenderObject
     typealias Custom = VisualAppBase.CustomRenderObject
     typealias Text = VisualAppBase.TextRenderObject
@@ -224,6 +225,30 @@ public struct RenderStyleRenderObject: SubTreeRenderObject {
             self.strokeColor = AnyRenderValue<Color>(strokeColor) 
         }
         //self.init(fillColor: fillColor, strokeWidth: strokeWidth, strokeColor: strokeColor, children())
+    }
+}
+
+public struct TranslationRenderObject: SubTreeRenderObject {
+    public var children: [RenderObject]
+    public var translation: DVec2
+
+    public var hasTimedRenderValue: Bool = false
+
+    public var debugDescription: String = "TranslationRenderObject"
+
+    public var individualHash: Int {
+        var hasher = Hasher()
+        hasher.combine(translation)
+        return hasher.finalize()
+    }
+
+    public init(_ translation: DVec2, children: [RenderObject]) {
+        self.translation = translation
+        self.children = children
+    }
+
+    public init(_ translation: DVec2, @RenderObjectBuilder children: () -> [RenderObject]) {
+        self.init(translation, children: children())
     }
 }
 

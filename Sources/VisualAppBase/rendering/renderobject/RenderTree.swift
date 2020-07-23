@@ -27,7 +27,7 @@ public struct RenderTree: SubTreeRenderObject {
     // TODO: maybe add setter...
     public subscript(path: TreePath) -> RenderObject? {
         if path.count == 0 {
-            return nil
+            return self
         }
         var checkChildren = children
         for i in 0..<path.count {

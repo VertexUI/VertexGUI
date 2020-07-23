@@ -1,14 +1,14 @@
 import VisualAppBase
 import CustomGraphicsMath
 
-public class RenderingDebugger: SingleChildWidget {
+public class DeveloperToolsView: SingleChildWidget {
     public var debuggingData: RenderingDebuggingData? = nil {
         didSet {
             handleDebuggingDataUpdated()
         }
     }
     public var expandedGroupIndices: Set<Int> = []
-    public var selectedObject: RenderObject?
+    public var selectedObjectPath: TreePath?
 
     public init() {
         super.init(child: Column(children: []))
@@ -18,6 +18,7 @@ public class RenderingDebugger: SingleChildWidget {
         if let debuggingData = debuggingData {
             expandedGroupIndices = Set(0..<debuggingData.groups.count)
         }
+        selectedObjectPath = nil
         updateChild()
         self.invalidateRenderState()
     }
@@ -37,8 +38,14 @@ public class RenderingDebugger: SingleChildWidget {
 
             self.child = Background(background: .White) {
                 Row {
-                    Column {
-                        groups.compactMap { $0 }
+                    ScrollArea {
+                        Column {
+                            RenderGroupsListView(debuggingData: debuggingData)
+                            Background(background: .Blue) {
+                                Space(size: DSize2(400, 400))
+                            }
+                            groups.compactMap { $0 }
+                        }
                     }
                     buildSelectedObjectDetail()
                 }
@@ -55,7 +62,8 @@ public class RenderingDebugger: SingleChildWidget {
 
     private func buildSelectedObjectDetail() -> Widget {
         var children = [Widget]()
-        if let selectedObject = selectedObject {
+        if let selectedObjectPath = selectedObjectPath {
+            let selectedObject = debuggingData!.tree[selectedObjectPath]!
             var properties = [Widget]()
             let mirror = Mirror(reflecting: selectedObject)
             for child in mirror.children {
@@ -64,32 +72,33 @@ public class RenderingDebugger: SingleChildWidget {
                 }
             }
             children.append(contentsOf: properties)
+        
+            return Column {
+                Text("Detail View for \(String(describing: selectedObject))")
+                children
+            }
         } else {
-            //return Space(size: DSize2.zero)
-        }
-        return Column {
-            Text("Detail View for \(String(describing: selectedObject))")
-            children
+            return Column {}
         }
     }
 
-    private func build(object: RenderObject, in range: TreeRange) -> Widget {
+    private func build(object: RenderObject, at path: TreePath, in range: TreeRange) -> Widget {
         var children = [Widget]()
         if let object = object as? SubTreeRenderObject {
-            children.append(contentsOf: object.children.map {
-                self.build(object: $0, in: range)
-            })
+            for i in 0..<object.children.count {
+                children.append(self.build(object: object.children[i], at: path/i, in: range))
+            }
         }
         
         let background: Color
-        if let selectedObject = selectedObject {
-            background = type(of: selectedObject) == type(of: object) && selectedObject.individualHash == object.individualHash ? Color(255, 230, 230, 255) : Color(240, 240, 255, 255)
+        if let selectedObjectPath = selectedObjectPath {
+            background = path == selectedObjectPath ? Color(255, 230, 230, 255) : Color(240, 240, 255, 255)
         } else {
             background = Color(240, 240, 255, 255)
         }
 
         return Column {
-            MouseArea(onClick: { _ in self.onObjectClick(object) }) {
+            MouseArea(onClick: { _ in self.onObjectClick(object, at: path) }) {
                 Background(background: background) {
                     Padding(padding: Insets(16)) {
                         Text(String(describing: object))
@@ -110,7 +119,7 @@ public class RenderingDebugger: SingleChildWidget {
             Text("Range")
             Text("Start: \(range.start.debugDescription)")
             Text("End: \(range.start.debugDescription)")
-            build(object: debuggingData!.tree, in: range)
+            build(object: debuggingData!.tree, at: TreePath(), in: range)
         }
     }
 
@@ -139,8 +148,8 @@ public class RenderingDebugger: SingleChildWidget {
         }
     }
 
-    private func onObjectClick(_ object: RenderObject) {
-        self.selectedObject = object
+    private func onObjectClick(_ object: RenderObject, at path: TreePath) {
+        self.selectedObjectPath = path 
         self.updateChild()
         self.invalidateRenderState()
     }

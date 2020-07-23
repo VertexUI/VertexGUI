@@ -1,5 +1,9 @@
 @_functionBuilder
 public struct WidgetBuilder {
+    public static func buildBlock() -> [Widget] {
+        return []
+    }
+    
     public static func buildBlock(_ widget: Widget) -> Widget {
         return widget
     }

@@ -14,6 +14,12 @@ open class SingleChildWidget: Widget {
         //child.context = context
     }
 
+    override open func layout(fromChild: Bool) throws {
+        child.constraints = constraints!
+        try child.layout()
+        bounds.size = child.bounds.size
+    }    
+
     open func render(_ renderedChild: RenderObject?) -> RenderObject? {
         return renderedChild 
     }

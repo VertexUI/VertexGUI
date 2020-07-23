@@ -28,6 +28,7 @@ open class Root: Parent {
     private var renderTreeRenderer = RenderTreeRenderer()
     private var renderTree: RenderTree?
     private var renderTreeInvalidated = false
+    private var invalidatedWidgets = [UInt: Widget]()
     
     private var mouseEventPropagationStrategy = GUIMouseEventPropagationStrategy()
 
@@ -44,7 +45,10 @@ open class Root: Parent {
         //super.init()
         self.rootWidget.parent = self
         // TODO: maybe dangling closure
-        _ = self.rootWidget.onRenderStateInvalidated(updateRenderTree(_:))
+        _ = self.rootWidget.onRenderStateInvalidated {
+            self.renderTreeInvalidated = true
+            self.invalidatedWidgets[$0.id] = $0
+        }
     }
 
     open func layout(fromChild: Bool = false) throws {
@@ -80,7 +84,14 @@ open class Root: Parent {
         //try renderer.clipArea(bounds: globalBounds)
         if renderTree == nil || renderTreeInvalidated {
             print("CALLING FROM HERE", renderTreeInvalidated)
-            updateRenderTree()
+            if invalidatedWidgets.count > 0 {
+                for widget in invalidatedWidgets.values {
+                    updateRenderTree(widget)
+                }
+                invalidatedWidgets.removeAll()
+            } else {
+                updateRenderTree()
+            }
             renderTreeInvalidated = false
         }
         try renderTreeRenderer.renderGroups(renderer, bounds: bounds)

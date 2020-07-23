@@ -14,11 +14,13 @@ public class MouseArea: SingleChildWidget, GUIMouseEventConsumer {
     public var onMouseMove = EventHandlerManager<GUIMouseMoveEvent>()
     public var onMouseEnter = EventHandlerManager<GUIMouseEnterEvent>()
     public var onMouseLeave = EventHandlerManager<GUIMouseLeaveEvent>()
+    public var onMouseWheel = EventHandlerManager<GUIMouseWheelEvent>()
 
     public init(
         onClick onClickHandler: EventHandlerManager<GUIMouseButtonClickEvent>.Handler? = nil,
         onMouseButtonDown onMouseButtonDownHandler: EventHandlerManager<GUIMouseButtonDownEvent>.Handler? = nil,
         onMouseMove onMouseMoveHandler: EventHandlerManager<GUIMouseMoveEvent>.Handler? = nil,
+        onMouseWheel onMouseWheelHandler: EventHandlerManager<GUIMouseWheelEvent>.Handler? = nil,
         child: Widget) {
             if let onClickHandler = onClickHandler {
                 _ = self.onClick(onClickHandler)
@@ -29,6 +31,9 @@ public class MouseArea: SingleChildWidget, GUIMouseEventConsumer {
             if let onMouseMoveHandler = onMouseMoveHandler {
                 _ = self.onMouseMove(onMouseMoveHandler)
             }
+            if let onMouseWheelHandler = onMouseWheelHandler {
+                _ = self.onMouseWheel(onMouseWheelHandler)
+            }
         super.init(child: child)
     }
 
@@ -36,11 +41,13 @@ public class MouseArea: SingleChildWidget, GUIMouseEventConsumer {
         onClick onClickHandler: EventHandlerManager<GUIMouseButtonClickEvent>.Handler? = nil,
         onMouseButtonDown onMouseButtonDownHandler: EventHandlerManager<GUIMouseButtonDownEvent>.Handler? = nil,
         onMouseMove onMouseMoveHandler: EventHandlerManager<GUIMouseMoveEvent>.Handler? = nil,
+        onMouseWheel onMouseWheelHandler: EventHandlerManager<GUIMouseWheelEvent>.Handler? = nil,
         @WidgetBuilder child: () -> Widget) {
             self.init(
                 onClick: onClickHandler,
                 onMouseButtonDown: onMouseButtonDownHandler,
                 onMouseMove: onMouseMoveHandler,
+                onMouseWheel: onMouseWheelHandler,
                 child: child())
     }
 
@@ -62,6 +69,8 @@ public class MouseArea: SingleChildWidget, GUIMouseEventConsumer {
             try onMouseEnter.invokeHandlers(mouseEnterEvent)
         case let mouseLeaveEvent as GUIMouseLeaveEvent:
             try onMouseLeave.invokeHandlers(mouseLeaveEvent)
+        case let mouseWheelEvent as GUIMouseWheelEvent:
+            try onMouseWheel.invokeHandlers(mouseWheelEvent)
         default:
             print("Unsupported event", event)
         }

@@ -1,0 +1,4 @@
+protocol StatefulWidget {
+    associatedtype State
+    
+}

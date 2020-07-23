@@ -181,6 +181,7 @@ public class RenderTreeRenderer {
 
         renderGroups = updatedRenderGroups
         optimizeGroups()
+        //generateRenderGroups()
     }
 
     /// Optimizes groups by removing empty ones.
@@ -392,6 +393,12 @@ public class RenderTreeRenderer {
                 try backendRenderer.stroke()
             }
             // TODO: after render, reset style to style that was present before
+        case let currentRenderObject as RenderObject.Translation:
+            try backendRenderer.translate(currentRenderObject.translation)
+            for i in 0..<nextPaths.count {
+                try render(object: nextRenderObjects[i], at: nextPaths[i], in: range, with: backendRenderer)
+            }
+            try backendRenderer.translate(DVec2.zero)
         case let currentRenderObject as RenderObject.Custom:
             try currentRenderObject.render(backendRenderer)
         case let currentRenderObject as RenderObject.Rect:

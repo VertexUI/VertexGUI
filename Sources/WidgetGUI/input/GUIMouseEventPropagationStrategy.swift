@@ -18,6 +18,7 @@ public class GUIMouseEventPropagationStrategy {
         var mouseEventTarget: (Widget & GUIMouseEventConsumer)?
         var testMouseEventTargets: [Widget] = [rootWidget]
         checkTargets: while testMouseEventTargets.count > 0 {
+            print("Mouse Position", rawMouseEvent.position)
             for testTarget in testMouseEventTargets {
                 // TODO: this might be a lot of calculation, can optimize by successively removing x, y while traversing the testTargets
                 if testTarget.globalBounds.contains(point: rawMouseEvent.position) {
@@ -79,6 +80,8 @@ public class GUIMouseEventPropagationStrategy {
                         try mouseEventTarget.consume(GUIMouseEnterEvent(position: rawMouseEvent.position, previousPosition: rawMouseEvent.previousPosition))
                         self.previousMouseMoveEventTarget = mouseEventTarget
                     }
+                case let rawMouseEvent as RawMouseWheelEvent:
+                    try mouseEventTarget.consume(GUIMouseWheelEvent(scrollAmount: rawMouseEvent.scrollAmount, position: rawMouseEvent.position))
                 default:
                     print("Unsupported event.")
                 }

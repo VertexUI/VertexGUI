@@ -115,11 +115,16 @@ open class SDL2OpenGL3NanoVGSystem: System<SDL2OpenGL3NanoVGWindow, SDL2OpenGL3N
                             try self.forwardMouseEvent(RawMouseButtonUpEvent(button: .Left, position: DPoint2(Double(event.button.x), Double(event.button.y))), windowId: Int(event.button.windowID))
                         }
                     case SDL_MOUSEWHEEL:
-                        print("TIMESTAMP", event.wheel.timestamp, event.wheel.x, event.wheel.y)
-                        //provideMouseEvent(event: MouseWheelEvent(scrollAmount: Vector(Double(event.wheel.x), Double(event.wheel.y)), position: mousePosition))
+                        //print("TIMESTAMP", event.wheel.timestamp, event.wheel.x, event.wheel.y)
+                        print("FORWARD MOUSE EVENT", self.mousePosition)
+                        try self.forwardMouseEvent(
+                            RawMouseWheelEvent(scrollAmount: DVec2(Double(event.wheel.x), Double(event.wheel.y)), position: self.mousePosition),
+                            windowId: Int(event.wheel.windowID))//provideMouseEvent(event: MouseWheelEvent(scrollAmount: Vector(Double(event.wheel.x), Double(event.wheel.y)), position: mousePosition))
                     case SDL_MOUSEMOTION:
                         self.mousePosition = DPoint2(Double(event.motion.x), Double(event.motion.y))
-                        try self.forwardMouseEvent(RawMouseMoveEvent(position: self.mousePosition, previousPosition: DPoint2(Double(event.motion.x - event.motion.xrel), Double(event.motion.y - event.motion.yrel))), windowId: Int(event.motion.windowID))
+                        try self.forwardMouseEvent(
+                            RawMouseMoveEvent(position: self.mousePosition, previousPosition: DPoint2(Double(event.motion.x - event.motion.xrel), Double(event.motion.y - event.motion.yrel))),
+                            windowId: Int(event.motion.windowID))
                     case SDL_QUIT, SDL_APP_TERMINATING:
                         SDL2OpenGL3NanoVGSystem.isRunning = false
                         //DispatchQueue.main.async {
