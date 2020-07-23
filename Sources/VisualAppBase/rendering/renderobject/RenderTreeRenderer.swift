@@ -1,5 +1,4 @@
 import VisualAppBase
-import GL
 import CustomGraphicsMath
 import Path
 import Foundation
