@@ -343,8 +343,8 @@ public struct CustomRenderObject: RenderObject {
 public struct TextRenderObject: RenderObject {
     public var text: String
     public var topLeft: DVec2
-    public var textConfig: TextConfig
-    public var maxWidth: Double?    
+    public var config: TextConfig
+    public var maxWidth: Double?
 
     public var hasTimedRenderValue: Bool {
         return false
@@ -358,15 +358,15 @@ public struct TextRenderObject: RenderObject {
         var hasher = Hasher()
         hasher.combine(text)
         hasher.combine(topLeft)
-        hasher.combine(textConfig)
+        hasher.combine(config)
         hasher.combine(maxWidth)
         return hasher.finalize()
     }
 
-    public init(_ text: String, topLeft: DVec2, textConfig: TextConfig, maxWidth: Double?) {
+    public init(_ text: String, config: TextConfig, topLeft: DVec2, maxWidth: Double? = nil) {
         self.text = text
         self.topLeft = topLeft
-        self.textConfig = textConfig
+        self.config = config
         self.maxWidth = maxWidth
     }
 }

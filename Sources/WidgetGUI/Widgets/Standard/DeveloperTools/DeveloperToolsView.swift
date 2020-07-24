@@ -41,7 +41,10 @@ public class DeveloperToolsView: SingleChildWidget {
 
             //print("GROUP COUNT", groups.count)
 
-            return RenderGroupsListView(debuggingData: debuggingData)
+            return Row {
+                RenderGroupsTreeView(debuggingData: debuggingData)
+                RenderGroupsListView(debuggingData: debuggingData)
+            }
         }
         return Column {}
     }

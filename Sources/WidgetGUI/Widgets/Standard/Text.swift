@@ -62,7 +62,7 @@ public class Text: LeafWidget {
 
     override public func render() -> RenderObject? {
         if let textConfig = filledTextConfig {
-            return .Text(text, topLeft: globalPosition, textConfig: textConfig, maxWidth: bounds.size.width)
+            return .Text(text, config: textConfig, topLeft: globalPosition, maxWidth: bounds.size.width)
         }
         return nil
     }
