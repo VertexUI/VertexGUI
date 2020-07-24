@@ -201,4 +201,47 @@ public struct RenderTree: SubTreeRenderObject {
         //let (replacedC updatePath) = replaceRecursively(children, TreePath([]), identifiedSubTree)
         return (unwrappedNewTree, replacedIdentifiedSubTreePath!)
     }
+
+    /// - Warnings: Unused, untested
+    public func traverseDepth(onObject objectHandler: (_ object: RenderObject, _ path: TreePath, _ index: Int, _ parentIndex: Int) throws -> Void) rethrows {
+        var currentPath = TreePath()
+        var currentIndex = 0
+        try objectHandler(self, currentPath, currentIndex, -1)
+        /*if !(rootObject is SubTreeRenderObject) {
+            objectHandler(rootObject, currentPath, currentIndex)
+            return
+        }*/
+
+        var parents: [SubTreeRenderObject] = [self]
+        var parentIndices: [Int] = [currentIndex]
+        var visitedChildrenCounts: [Int] = [0]
+
+        depthLoop: repeat {
+            let currentParentListIndex = currentPath.count
+            
+            breadthLoop: for i in visitedChildrenCounts[currentParentListIndex]..<parents[currentParentListIndex].children.count {
+                currentIndex += 1
+                visitedChildrenCounts[currentParentListIndex] += 1
+            
+                // TODO: does this create two unnecessary copies?
+                let child = parents[currentParentListIndex].children[i]
+            
+                if let subTree = child as? SubTreeRenderObject {
+                    currentPath = currentPath/i
+                    try objectHandler(subTree, currentPath, currentIndex, parentIndices[currentParentListIndex])
+                    parents.append(subTree)
+                    parentIndices.append(currentIndex)
+                    visitedChildrenCounts.append(0)
+                    continue depthLoop
+                } else {
+                    try objectHandler(child, currentPath/i, currentIndex, parentIndices[currentParentListIndex])
+                }
+            }
+
+            parents.popLast()
+            parentIndices.popLast()
+            currentPath.popLast()
+            visitedChildrenCounts.popLast()
+        } while parents.count > 0
+    }
 }

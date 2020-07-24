@@ -6,7 +6,7 @@ import Foundation
 
 /// axis aligned rect in 2 coordinate space
 // TODO: maybe this belongs into UIPackage?
-public struct Rect<E: FloatingPoint>: Equatable {
+public struct Rect<E: FloatingPoint>: Equatable, Hashable {
     public enum Edge: CaseIterable {
         case Top, Right, Bottom, Left
     }

@@ -61,10 +61,16 @@ open class TwoDRaycastVisualizer: LeafWidget {
 
                     let scale = DVec2(DSize2(self.bounds.size) / DSize2(raycast.gridSize))
                     let vertices = Tile.edgeVertices(topLeft: DVec2(result.tileIndex), vectorLayout: .topLeftToBottomRight)[result.edge]!
-                    try renderer.line(from: self.globalPosition + scale * vertices.0, to: self.globalPosition + scale * vertices.1, width: 10, color: Color(0, 0, 255, 255))
+                    try renderer.lineSegment(from: self.globalPosition + scale * vertices.0, to: self.globalPosition + scale * vertices.1)
+                    try renderer.strokeWidth(10)
+                    try renderer.strokeColor(.Blue)
+                    try renderer.stroke()
                 }
 
-                try renderer.line(from: scaledRayStart, to: scaledRayEnd, width: 2, color: Color(0, 0, 0, 255))
+                try renderer.lineSegment(from: scaledRayStart, to: scaledRayEnd)
+                try renderer.strokeWidth(2)
+                try renderer.strokeColor(.Blue)
+                try renderer.stroke()
                 try renderer.resetTransform()
                 //renderer.translate(DVec2())
 

@@ -4,25 +4,33 @@ import CustomGraphicsMath
 public class RenderGroupsListView: SingleChildWidget, StatefulWidget {
     public struct State {
         public var expandedGroupIndices: Set<Int> = []
-        public var selectedObjectPath: TreePath?
     }
     
     public var state: State = State()
     private var debuggingData: RenderingDebuggingData?
-    
-    public init(debuggingData: RenderingDebuggingData?) {
-        self.debuggingData = debuggingData
-        if let debuggingData = debuggingData {
-            self.state.expandedGroupIndices = Set(0..<debuggingData.groups.count)
-        }
-        super.init(child: Text("Works"))
-        var child = buildChild()
-        child.parent = self
-        // TODO: maybe dangling closure
-        _ = child.onRenderStateInvalidated {
-            self.invalidateRenderState($0)
-        }
-        self.child = child
+    private var selectedObjectPath: TreePath?
+    private var onObjectSelected = EventHandlerManager<(RenderObject, TreePath)>()
+
+    public init(
+        selectedObjectPath: TreePath?,
+        debuggingData: RenderingDebuggingData?,
+        onObjectSelected objectSelectedHandler: EventHandlerManager<(RenderObject, TreePath)>.Handler? = nil) {
+            self.debuggingData = debuggingData
+            if let debuggingData = debuggingData {
+                self.state.expandedGroupIndices = Set(0..<debuggingData.groups.count)
+            }
+            if let objectSelectedHandler = objectSelectedHandler {
+                _ = onObjectSelected.addHandler(objectSelectedHandler)
+            }
+            self.selectedObjectPath = selectedObjectPath
+            super.init(child: Text("Works"))
+            var child = buildChild()
+            child.parent = self
+            // TODO: maybe dangling closure
+            _ = child.onRenderStateInvalidated {
+                self.invalidateRenderState($0)
+            }
+            self.child = child
     }
 
     private func invalidateChild() {
@@ -60,34 +68,11 @@ public class RenderGroupsListView: SingleChildWidget, StatefulWidget {
                             groups.compactMap { $0 }
                         }
                     }
-                    buildSelectedObjectDetail()
                 }
             }
         }
 
         return Column {}
-    }
-
-    private func buildSelectedObjectDetail() -> Widget {
-        var children = [Widget]()
-        if let selectedObjectPath = state.selectedObjectPath {
-            let selectedObject = debuggingData!.tree[selectedObjectPath]!
-            var properties = [Widget]()
-            let mirror = Mirror(reflecting: selectedObject)
-            for child in mirror.children {
-                if let label = child.label {
-                    properties.append(Text("\(label): \(child.value)"))
-                }
-            }
-            children.append(contentsOf: properties)
-        
-            return Column {
-                Text("Detail View for \(String(describing: selectedObject))")
-                children
-            }
-        } else {
-            return Column {}
-        }
     }
 
     private func build(object: RenderObject, at path: TreePath, in range: TreeRange) -> Widget {
@@ -99,7 +84,7 @@ public class RenderGroupsListView: SingleChildWidget, StatefulWidget {
         }
         
         let background: Color
-        if let selectedObjectPath = state.selectedObjectPath {
+        if let selectedObjectPath = selectedObjectPath {
             background = path == selectedObjectPath ? Color(255, 230, 230, 255) : Color(240, 240, 255, 255)
         } else {
             background = Color(240, 240, 255, 255)
@@ -156,8 +141,7 @@ public class RenderGroupsListView: SingleChildWidget, StatefulWidget {
     }
 
     private func onObjectClick(_ object: RenderObject, at path: TreePath) {
-        self.state.selectedObjectPath = path 
-        self.invalidateChild()
+        try! self.onObjectSelected.invokeHandlers((object, path))
     }
 
     override open func render(_ renderedChild: RenderObject?) -> RenderObject? {

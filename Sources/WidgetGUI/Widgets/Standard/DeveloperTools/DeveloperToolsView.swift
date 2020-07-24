@@ -1,12 +1,18 @@
 import VisualAppBase
 import CustomGraphicsMath
 
-public class DeveloperToolsView: SingleChildWidget {
+public class DeveloperToolsView: SingleChildWidget, StatefulWidget {
     public var debuggingData: RenderingDebuggingData? = nil {
         didSet {
             handleDebuggingDataUpdated()
         }
     }
+
+    public struct State {
+        public var selectedObjectPath: TreePath?
+    }
+    
+    public var state: State = State()
 
     public init() {
         super.init(child: Column(children: []))
@@ -41,12 +47,43 @@ public class DeveloperToolsView: SingleChildWidget {
 
             //print("GROUP COUNT", groups.count)
 
-            return Row {
-                RenderGroupsTreeView(debuggingData: debuggingData)
-                RenderGroupsListView(debuggingData: debuggingData)
+            return Background(background: .White) {
+                Column {
+                    ScrollArea {
+                        RenderGroupsTreeView(debuggingData: debuggingData, selectedObjectPath: state.selectedObjectPath) {
+                            self.state.selectedObjectPath = $1
+                            self.invalidateChild()
+                        }
+                    }
+                    buildSelectedObjectDetail()
+                    //RenderGroupsListView(debuggingData: debuggingData)
+                }
             }
         }
         return Column {}
+    }
+
+    private func buildSelectedObjectDetail() -> Widget {
+        var children = [Widget]()
+        if let selectedObjectPath = state.selectedObjectPath {
+            print("BUILD SELECTED DETAIL!!!", selectedObjectPath)
+            let selectedObject = debuggingData!.tree[selectedObjectPath]!
+            var properties = [Widget]()
+            let mirror = Mirror(reflecting: selectedObject)
+            for child in mirror.children {
+                if let label = child.label {
+                    properties.append(Text("\(label): \(child.value)"))
+                }
+            }
+            children.append(contentsOf: properties)
+        
+            return Column {
+                Text("Detail View for \(String(describing: selectedObject))")
+                children
+            }
+        } else {
+            return Column {}
+        }
     }
 /*
     private func onObjectClick(_ object: RenderObject, at path: TreePath) {

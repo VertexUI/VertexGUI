@@ -379,18 +379,27 @@ public class RenderTreeRenderer {
                 try render(object: nextRenderObjects[i], at: nextPaths[i], in: range, with: backendRenderer)
             }
         case let currentRenderObject as RenderObject.RenderStyle:
-            for i in 0..<nextPaths.count {
-                try render(object: nextRenderObjects[i], at: nextPaths[i], in: range, with: backendRenderer)
-            }
+            var performFill = false
+            var performStroke = false
             if let fillColor = currentRenderObject.fillColor {
                 try backendRenderer.fillColor(fillColor.getValue(at: timestamp))
-                try backendRenderer.fill()
+                performFill = true
             }
             if let strokeWidth = currentRenderObject.strokeWidth,
                 let strokeColor = currentRenderObject.strokeColor {
                 try backendRenderer.strokeWidth(strokeWidth)
                 try backendRenderer.strokeColor(strokeColor.getValue(at: timestamp))
-                try backendRenderer.stroke()
+                performStroke = true
+            }
+            for i in 0..<nextPaths.count {
+                try render(object: nextRenderObjects[i], at: nextPaths[i], in: range, with: backendRenderer)
+            
+                if performFill {
+                    try backendRenderer.fill()
+                }
+                if performStroke {
+                    try backendRenderer.stroke()
+                }
             }
             // TODO: after render, reset style to style that was present before
         case let currentRenderObject as RenderObject.Translation:
@@ -404,6 +413,9 @@ public class RenderTreeRenderer {
         case let currentRenderObject as RenderObject.Rect:
             try backendRenderer.beginPath()
             try backendRenderer.rect(currentRenderObject.rect)
+        case let currentRenderObject as RenderObject.LineSegment:
+            try backendRenderer.beginPath()
+            try backendRenderer.lineSegment(from: currentRenderObject.start, to: currentRenderObject.end)
         case let currentRenderObject as RenderObject.Text:
             if currentRenderObject.config.wrap {
                 try backendRenderer.multilineText(currentRenderObject.text, topLeft: currentRenderObject.topLeft, maxWidth: currentRenderObject.maxWidth ?? 0, fontConfig: currentRenderObject.config.fontConfig, color: currentRenderObject.config.color)

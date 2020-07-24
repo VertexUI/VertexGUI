@@ -40,7 +40,7 @@ public protocol Renderer {
     func circle(center: DPoint2, radius: Double, style: RenderStyle) throws
     func ellipse(center: DPoint2, radius: DVec2, style: RenderStyle) throws
     func text(_ text: String, topLeft: DPoint2, fontConfig: FontConfig, color: Color) throws
-    func line(from: DPoint2, to: DPoint2, width: Double, color: Color) throws
+    func lineSegment(from: DPoint2, to: DPoint2) throws
     func getTextBoundsSize(_ text: String, fontConfig: FontConfig) throws -> DSize2
     func multilineText(_ text: String, topLeft: DPoint2, maxWidth: Double, fontConfig: FontConfig, color: Color) throws
     func getMultilineTextBoundsSize(_ text: String, maxWidth: Double, fontConfig: FontConfig) throws -> DSize2

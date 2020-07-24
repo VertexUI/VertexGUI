@@ -1,3 +1,4 @@
+import VisualAppBase
 import CustomGraphicsMath
 
 // TODO: implement function for checking whether render object has content at certain position (--> is not transparent) --> used for mouse events like click etc.
@@ -10,6 +11,7 @@ public protocol RenderObject: CustomDebugStringConvertible {
     typealias RenderStyle = VisualAppBase.RenderStyleRenderObject
     typealias Translation = VisualAppBase.TranslationRenderObject
     typealias Rect = VisualAppBase.RectRenderObject
+    typealias LineSegment = VisualAppBase.LineSegmentRenderObject
     typealias Custom = VisualAppBase.CustomRenderObject
     typealias Text = VisualAppBase.TextRenderObject
 
@@ -308,10 +310,39 @@ public struct RectRenderObject: RenderObject {
         "RectRenderObject"
     }
     
-    public var individualHash: Int = 0
+    public var individualHash: Int {
+        var hasher = Hasher()
+        hasher.combine(rect)
+        return hasher.finalize()
+    }
     
     public init(_ rect: DRect) {
         self.rect = rect
+    }
+}
+
+public struct LineSegmentRenderObject: RenderObject {
+    public var start: DPoint2
+    public var end: DPoint2
+
+    public var hasTimedRenderValue: Bool {
+        return false
+    }
+    
+    public var debugDescription: String {
+        "LineSegmentRenderObject"
+    }
+
+    public var individualHash: Int {
+        var hasher = Hasher()
+        hasher.combine(start)
+        hasher.combine(end)
+        return hasher.finalize()
+    }
+
+    public init(from start: DPoint2, to end: DPoint2) {
+        self.start = start
+        self.end = end
     }
 }
 

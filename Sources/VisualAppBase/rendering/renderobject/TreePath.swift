@@ -38,9 +38,13 @@ public struct TreePath: Sequence, Comparable, Equatable, CustomDebugStringConver
         return Self(Array(segments.dropLast(k)))
     }
 
-    @discardableResult public mutating func removeLast() -> Int {
-        return segments.removeLast()
+    @discardableResult public mutating func popLast() -> Int? {
+        segments.popLast()
     }
+
+    /*@discardableResult public mutating func removeLast() -> Int {
+        return segments.removeLast()
+    }*/
 
     public static func / (lhs: Self, rhs: Int) -> Self {
         return Self(lhs.segments + [rhs])

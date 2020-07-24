@@ -231,13 +231,10 @@ open class SDL2OpenGL3NanoVGRenderer: Renderer {
         //}
     }
 
-    open func line(from: DPoint2, to: DPoint2, width: Double, color: Color) throws {
+    open func lineSegment(from: DPoint2, to: DPoint2) throws {
         nvgBeginPath(window.nvg)
         nvgMoveTo(window.nvg, Float(from.x), Float(from.y))
         nvgLineTo(window.nvg, Float(to.x), Float(to.y))
-        nvgStrokeWidth(window.nvg, Float(width))
-        nvgStrokeColor(window.nvg, color.toNVG())
-        nvgStroke(window.nvg)
     }
 
     open func circle(center: DPoint2, radius: Double, style: RenderStyle) throws {
