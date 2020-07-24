@@ -26,4 +26,5 @@ public struct Color: Hashable, Equatable {
     public static let Blue = Color(0, 0, 255, 255)
     public static let Black = Color(0,0,0,255)
     public static let White = Color(255,255,255,255)
+    public static let Transparent = Color(0, 0, 0, 0)
 }

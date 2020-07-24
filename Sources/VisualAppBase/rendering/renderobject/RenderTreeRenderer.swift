@@ -384,12 +384,17 @@ public class RenderTreeRenderer {
             if let fillColor = currentRenderObject.fillColor {
                 try backendRenderer.fillColor(fillColor.getValue(at: timestamp))
                 performFill = true
+            } else {
+                try backendRenderer.fillColor(.Transparent)
             }
             if let strokeWidth = currentRenderObject.strokeWidth,
                 let strokeColor = currentRenderObject.strokeColor {
                 try backendRenderer.strokeWidth(strokeWidth)
                 try backendRenderer.strokeColor(strokeColor.getValue(at: timestamp))
                 performStroke = true
+            } else {
+                try backendRenderer.strokeWidth(0)
+                try backendRenderer.strokeColor(.Transparent)
             }
             for i in 0..<nextPaths.count {
                 try render(object: nextRenderObjects[i], at: nextPaths[i], in: range, with: backendRenderer)

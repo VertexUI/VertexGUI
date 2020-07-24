@@ -129,6 +129,8 @@ public class RenderGroupsTreeView: MultiChildWidget {
             }
         }
 
+        lines.reverse()
+
         print("LHAVE LINES!!!", lines)
         for line in lines {
             print(line.start, line.end)
@@ -141,10 +143,9 @@ public class RenderGroupsTreeView: MultiChildWidget {
                 lines
                 /*RenderObject.Custom(id: 23) { renderer throws in
                     for line in lines {
-                        print("RENDER LINE")
                         try renderer.lineSegment(from: line.start, to: line.end)
                         try renderer.strokeColor(.Black)
-                        try renderer.strokeWidth(1)
+                        try renderer.strokeWidth(5)
                         try renderer.stroke()
                     }
                 }*/
