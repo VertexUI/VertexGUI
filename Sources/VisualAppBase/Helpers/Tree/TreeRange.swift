@@ -1,4 +1,4 @@
-public struct TreeRange {
+public struct TreeRange: Hashable {
     public var start: TreePath 
     public var end: TreePath
 

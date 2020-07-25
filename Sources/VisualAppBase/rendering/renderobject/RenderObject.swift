@@ -3,33 +3,45 @@ import CustomGraphicsMath
 
 // TODO: implement function for checking whether render object has content at certain position (--> is not transparent) --> used for mouse events like click etc.
 // TODO: might split into SubTreeRenderObject and LeafRenderObject!!!
-public protocol RenderObject: CustomDebugStringConvertible {
-    typealias IdentifiedSubTree = VisualAppBase.IdentifiedSubTreeRenderObject
-    typealias Container = VisualAppBase.ContainerRenderObject
-    typealias Uncachable = VisualAppBase.UncachableRenderObject
-    typealias CacheSplit = VisualAppBase.CacheSplitRenderObject
-    typealias RenderStyle = VisualAppBase.RenderStyleRenderObject
-    typealias Translation = VisualAppBase.TranslationRenderObject
-    typealias Rect = VisualAppBase.RectRenderObject
-    typealias LineSegment = VisualAppBase.LineSegmentRenderObject
-    typealias Custom = VisualAppBase.CustomRenderObject
-    typealias Text = VisualAppBase.TextRenderObject
+open class RenderObject: CustomDebugStringConvertible, TreeNode {
+    public typealias IdentifiedSubTree = VisualAppBase.IdentifiedSubTreeRenderObject
+    public typealias Container = VisualAppBase.ContainerRenderObject
+    public typealias Uncachable = VisualAppBase.UncachableRenderObject
+    public typealias CacheSplit = VisualAppBase.CacheSplitRenderObject
+    public typealias RenderStyle = VisualAppBase.RenderStyleRenderObject
+    public typealias Translation = VisualAppBase.TranslationRenderObject
+    public typealias Rect = VisualAppBase.RectRenderObject
+    public typealias LineSegment = VisualAppBase.LineSegmentRenderObject
+    public typealias Custom = VisualAppBase.CustomRenderObject
+    public typealias Text = VisualAppBase.TextRenderObject
 
-    var hasTimedRenderValue: Bool { get }
+    open var children: [RenderObject] = []
+    open var isBranching: Bool { false }
+
+    open var hasTimedRenderValue: Bool {
+        fatalError("hasTimedRenderValue not implemented.")
+    }
 
     /// The hash for the objects properties. Excludes children.
-    var individualHash: Int { get }
+    open var individualHash: Int {
+        fatalError("individualHash not implemented.")
+    }
+
+    open var debugDescription: String {
+        fatalError("debugDescription not implemented.")
+    }
 }
 
-public protocol SubTreeRenderObject: RenderObject {
+open class SubTreeRenderObject: RenderObject {
     // TODO: maybe instead provide a replaceChildren function that returns a new object
-    var children: [RenderObject] { get set }
+    override final public var isBranching: Bool { true }
+
+    public init(children: [RenderObject]) {
+        super.init()
+        self.children = children
+    }
 
     /// The hash including own properties and the hashes of children.
-    var combinedHash: Int { get }
-}
-
-public extension SubTreeRenderObject {
     var combinedHash: Int {
         var hasher = Hasher()
         hasher.combine(individualHash)
@@ -135,19 +147,18 @@ public struct AnyRenderValue<V: Hashable>: RenderValue {
     }
 }
 
-public struct IdentifiedSubTreeRenderObject: SubTreeRenderObject {
+open class IdentifiedSubTreeRenderObject: SubTreeRenderObject {
     public var id: UInt
-    public var children: [RenderObject]
 
-    public var hasTimedRenderValue: Bool {
+    override open var hasTimedRenderValue: Bool {
         return false
     }
 
-    public var debugDescription: String {
+    override open var debugDescription: String {
         "IdentifiedSubTreeRenderObject"
     }
 
-    public var individualHash: Int {
+    override open var individualHash: Int {
         var hasher = Hasher()
         hasher.combine(id)
         return hasher.finalize()
@@ -155,48 +166,44 @@ public struct IdentifiedSubTreeRenderObject: SubTreeRenderObject {
 
     public init(_ id: UInt, _ children: [RenderObject]) {
         self.id = id
-        self.children = children
+        super.init(children: children)
     }
 
-    public init(_ id: UInt, @RenderObjectBuilder _ children: () -> [RenderObject]) {
-        self.id = id
-        self.children = children()
+    public convenience init(_ id: UInt, @RenderObjectBuilder _ children: () -> [RenderObject]) {
+        self.init(id, children())
     }
 }
 
 // TODO: is this needed?
-public struct ContainerRenderObject: SubTreeRenderObject {
-    public var children: [RenderObject]
-
-    public var hasTimedRenderValue: Bool {
+open class ContainerRenderObject: SubTreeRenderObject {
+    override open var hasTimedRenderValue: Bool {
         return false
     }
 
-    public var debugDescription: String {
+    override open var debugDescription: String {
         "ContainerRenderObject"
     }
 
-    public var individualHash: Int {
+    override open var individualHash: Int {
         return 0 
     }
 
-    public init(@RenderObjectBuilder _ children: () -> [RenderObject]) {
-        self.children = children()
+    public init(_ children: [RenderObject]) {
+        super.init(children: children)
+        print("Container RENDER OBJECT BRANCHES?", self.isBranching)
     }
 
-    public init(_ children: [RenderObject]) {
-        self.children = children
+    public convenience init(@RenderObjectBuilder _ children: () -> [RenderObject]) {
+        self.init(children())
     }
 }
 
-public struct RenderStyleRenderObject: SubTreeRenderObject {
-    public var children: [RenderObject]
-
+open class RenderStyleRenderObject: SubTreeRenderObject {
     public var fillColor: AnyRenderValue<Color>?
     public var strokeWidth: Double?
     public var strokeColor: AnyRenderValue<Color>?
 
-    public var hasTimedRenderValue: Bool {
+    override open var hasTimedRenderValue: Bool {
         return fillColor?.isTimed ?? false || strokeColor?.isTimed ?? false
     }
 
@@ -204,11 +211,11 @@ public struct RenderStyleRenderObject: SubTreeRenderObject {
         //self.renderStyle = renderStyle
         self.children = children
     }*/ 
-    public var debugDescription: String {
+    override open var debugDescription: String {
         "RenderStyleRenderObject"
     }
 
-    public var individualHash: Int {
+    override open var individualHash: Int {
         var hasher = Hasher()
         hasher.combine(fillColor)
         hasher.combine(strokeWidth)
@@ -218,7 +225,6 @@ public struct RenderStyleRenderObject: SubTreeRenderObject {
 
     public init<C: RenderValue>(fillColor: C? = nil, strokeWidth: Double? = nil, strokeColor: C? = nil, @RenderObjectBuilder children: () -> [RenderObject]) where C.Value == Color {
         //self.renderStyle = renderStyle
-        self.children = children()
         if let fillColor = fillColor {
             self.fillColor = AnyRenderValue<Color>(fillColor) 
         }
@@ -226,19 +232,19 @@ public struct RenderStyleRenderObject: SubTreeRenderObject {
         if let strokeColor = strokeColor {
             self.strokeColor = AnyRenderValue<Color>(strokeColor) 
         }
+        super.init(children: children())
         //self.init(fillColor: fillColor, strokeWidth: strokeWidth, strokeColor: strokeColor, children())
     }
 }
 
-public struct TranslationRenderObject: SubTreeRenderObject {
-    public var children: [RenderObject]
+open class TranslationRenderObject: SubTreeRenderObject {
     public var translation: DVec2
 
-    public var hasTimedRenderValue: Bool = false
+    override open var hasTimedRenderValue: Bool { false }
 
-    public var debugDescription: String = "TranslationRenderObject"
+    override open var debugDescription: String { "TranslationRenderObject" }
 
-    public var individualHash: Int {
+    override open var individualHash: Int {
         var hasher = Hasher()
         hasher.combine(translation)
         return hasher.finalize()
@@ -246,71 +252,67 @@ public struct TranslationRenderObject: SubTreeRenderObject {
 
     public init(_ translation: DVec2, children: [RenderObject]) {
         self.translation = translation
-        self.children = children
+        super.init(children: children)
     }
 
-    public init(_ translation: DVec2, @RenderObjectBuilder children: () -> [RenderObject]) {
+    public convenience init(_ translation: DVec2, @RenderObjectBuilder children: () -> [RenderObject]) {
         self.init(translation, children: children())
     }
 }
 
-public struct UncachableRenderObject: SubTreeRenderObject {
-    public var children: [RenderObject]
-
-    public var hasTimedRenderValue: Bool {
+open class UncachableRenderObject: SubTreeRenderObject {
+    override open var hasTimedRenderValue: Bool {
         return false
     }
 
-    public var debugDescription: String {
+    override open var debugDescription: String {
         "UncachableRenderObject"
     }
 
-    public var individualHash: Int = 0
+    override open var individualHash: Int { 0 }
 
     public init(_ children: [RenderObject]) {
-        self.children = children
+        super.init(children: children)
     }
-    public init(@RenderObjectBuilder _ children: () -> [RenderObject]) {
-        self.children = children()
+    public convenience init(@RenderObjectBuilder _ children: () -> [RenderObject]) {
+        self.init(children())
     }
 }
 
 /// Can be used as a wrapper for e.g. calculation heavy CustomRenderObjects
 /// which should get their own cache to avoid triggering heavy calculations if
 /// other RenderObjects would need an update in a common cache.
-public struct CacheSplitRenderObject: SubTreeRenderObject {
-    public var children: [RenderObject]
-    
-    public var hasTimedRenderValue: Bool {
+open class CacheSplitRenderObject: SubTreeRenderObject {
+    override open var hasTimedRenderValue: Bool {
         return false
     }
     
-    public var debugDescription: String {
+    override open var debugDescription: String {
         "CacheSplitRenderObject"
     }
 
-    public var individualHash: Int = 0
+    override open var individualHash: Int { 0 }
     
     public init(_ children: [RenderObject]) {
-        self.children = children
+        super.init(children: children)
     }
-    public init(@RenderObjectBuilder _ children: () -> [RenderObject]) {
-        self.children = children()
+    public convenience init(@RenderObjectBuilder _ children: () -> [RenderObject]) {
+        self.init(children())
     }
 }
 
-public struct RectRenderObject: RenderObject {
+open class RectRenderObject: RenderObject {
     public var rect: DRect
 
-    public var hasTimedRenderValue: Bool {
+    override open var hasTimedRenderValue: Bool {
         return false
     }
     
-    public var debugDescription: String {
+    override open var debugDescription: String {
         "RectRenderObject"
     }
     
-    public var individualHash: Int {
+    override open var individualHash: Int {
         var hasher = Hasher()
         hasher.combine(rect)
         return hasher.finalize()
@@ -321,19 +323,19 @@ public struct RectRenderObject: RenderObject {
     }
 }
 
-public struct LineSegmentRenderObject: RenderObject {
+open class LineSegmentRenderObject: RenderObject {
     public var start: DPoint2
     public var end: DPoint2
 
-    public var hasTimedRenderValue: Bool {
+    override open var hasTimedRenderValue: Bool {
         return false
     }
     
-    public var debugDescription: String {
+    override open var debugDescription: String {
         "LineSegmentRenderObject"
     }
 
-    public var individualHash: Int {
+    override open var individualHash: Int {
         var hasher = Hasher()
         hasher.combine(start)
         hasher.combine(end)
@@ -346,19 +348,19 @@ public struct LineSegmentRenderObject: RenderObject {
     }
 }
 
-public struct CustomRenderObject: RenderObject {
+open class CustomRenderObject: RenderObject {
     public var render: (_ renderer: Renderer) throws -> Void
 
-    public var hasTimedRenderValue: Bool {
+    override open var hasTimedRenderValue: Bool {
         return false
     } 
     
-    public var debugDescription: String {
+    override open var debugDescription: String {
         "CustomRenderObject"
     }
 
     private var id: UInt
-    public var individualHash: Int {
+    override open var individualHash: Int {
         var hasher = Hasher()
         hasher.combine(id)
         return hasher.finalize()
@@ -368,24 +370,25 @@ public struct CustomRenderObject: RenderObject {
     public init(id: UInt, _ render: @escaping (_ renderer: Renderer) throws -> Void) {
         self.id = id
         self.render = render
+        super.init()
     }
 }
 
-public struct TextRenderObject: RenderObject {
+open class TextRenderObject: RenderObject {
     public var text: String
     public var topLeft: DVec2
     public var config: TextConfig
     public var maxWidth: Double?
 
-    public var hasTimedRenderValue: Bool {
+    override open var hasTimedRenderValue: Bool {
         return false
     }
     
-    public var debugDescription: String {
+    override open var debugDescription: String {
         "TextRenderObject"
     }
     
-    public var individualHash: Int {
+    override open var individualHash: Int {
         var hasher = Hasher()
         hasher.combine(text)
         hasher.combine(topLeft)

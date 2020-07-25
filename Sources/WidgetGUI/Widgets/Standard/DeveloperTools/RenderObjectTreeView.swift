@@ -1,7 +1,7 @@
 import VisualAppBase
 import CustomGraphicsMath
 
-public class RenderGroupsTreeView: MultiChildWidget {
+public class RenderObjectTreeView: MultiChildWidget {
     private struct Group {
         var parent: Widget?
         var children: [Widget] = []
@@ -11,14 +11,14 @@ public class RenderGroupsTreeView: MultiChildWidget {
         var groups: [Group] = []
     }
 
-    private var debuggingData: RenderingDebuggingData
+    private var debuggingData: RenderObjectTreeRenderer.DebuggingData
     private var selectedObjectPath: TreePath?    
     private var onObjectSelected = EventHandlerManager<(RenderObject, TreePath)>()
 
     private var groupedChildren: [Line] = []
 
     public init(
-        debuggingData: RenderingDebuggingData, 
+        debuggingData: RenderObjectTreeRenderer.DebuggingData, 
         selectedObjectPath: TreePath?, 
         onObjectSelected objectSelectedHandler: EventHandlerManager<(RenderObject, TreePath)>.Handler?) {
             self.debuggingData = debuggingData
@@ -26,8 +26,8 @@ public class RenderGroupsTreeView: MultiChildWidget {
             if let objectSelectedHandler = objectSelectedHandler {
                 _ = self.onObjectSelected.addHandler(objectSelectedHandler)
             }
-            super.init(children: debuggingData.groups.map {
-                Text("GROUP \($0.id)")
+            super.init(children: debuggingData.sequence.map {
+                Text("Sequence Item \($0.range)")
             })
 
             var children = [Widget]()

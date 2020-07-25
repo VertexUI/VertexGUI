@@ -2,7 +2,7 @@ import VisualAppBase
 import CustomGraphicsMath
 
 public class DeveloperToolsView: SingleChildWidget, StatefulWidget {
-    public var debuggingData: RenderingDebuggingData? = nil {
+    public var debuggingData: RenderObjectTreeRenderer.DebuggingData? = nil {
         didSet {
             handleDebuggingDataUpdated()
         }
@@ -50,7 +50,7 @@ public class DeveloperToolsView: SingleChildWidget, StatefulWidget {
             return Background(background: .White) {
                 Column {
                     ScrollArea {
-                        RenderGroupsTreeView(debuggingData: debuggingData, selectedObjectPath: state.selectedObjectPath) {
+                        RenderObjectTreeView(debuggingData: debuggingData, selectedObjectPath: state.selectedObjectPath) {
                             self.state.selectedObjectPath = $1
                             self.invalidateChild()
                         }

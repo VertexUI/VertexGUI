@@ -12,7 +12,7 @@ open class Root: Parent {
     open var bounds: DRect = DRect(topLeft: DPoint2(0,0), size: DSize2(0,0)) {
         didSet {
             try! layout()
-            updateRenderTree()
+            updateRenderObjectTree()
         }
     }
 
@@ -24,15 +24,16 @@ open class Root: Parent {
 
     public var rootWidget: Widget
 
-    private var widgetRenderTreeGenerator = WidgetRenderTreeGenerator()
-    private var renderTreeRenderer = RenderTreeRenderer()
-    private var renderTree: RenderTree?
+    // TODO: might include this into this Root class, why need another small object for that...?
+    private var widgetRenderObjectTreeGenerator = WidgetRenderObjectTreeGenerator()
+    private var renderObjectTreeRenderer: RenderObjectTreeRenderer
+    private var renderObjectTree: RenderObjectTree
     private var renderTreeInvalidated = false
     private var invalidatedWidgets = [UInt: Widget]()
     
     private var mouseEventPropagationStrategy = GUIMouseEventPropagationStrategy()
 
-    public var onDebuggingDataAvailable = EventHandlerManager<RenderingDebuggingData>()
+    public var onDebuggingDataAvailable = EventHandlerManager<RenderObjectTreeRenderer.DebuggingData>()
 
     public init(rootWidget contentRootWidget: Widget) {
         self.rootWidget = Column(children: [
@@ -43,6 +44,8 @@ open class Root: Parent {
             contentRootWidget
         ])
         //super.init()
+        self.renderObjectTree = RenderObjectTree()
+        self.renderObjectTreeRenderer = RenderObjectTreeRenderer(renderObjectTree)
         self.rootWidget.parent = self
         // TODO: maybe dangling closure
         _ = self.rootWidget.onRenderStateInvalidated {
@@ -67,33 +70,36 @@ open class Root: Parent {
     }
 
     /// - Parameter widget: If a specific widget is passed only the sub tree that was created by the widget will be updated.
-    open func updateRenderTree(_ widget: Widget? = nil) {
-        if let updatedWidget = widget, renderTree != nil {
-            renderTreeRenderer.updateRenderTree(widgetRenderTreeGenerator.generate(updatedWidget))
+    open func updateRenderObjectTree(_ widget: Widget? = nil) {
+        if renderObjectTree.children.count == 0 {
+            // TODO: provide an insert action
+            renderObjectTree.children.append(widgetRenderObjectTreeGenerator.generate(rootWidget))
+            renderObjectTreeRenderer.refresh()
         } else {
-            renderTree = RenderTree([widgetRenderTreeGenerator.generate(rootWidget)])
-            renderTreeRenderer.setRenderTree(renderTree!)
+            var updateWidget = widget ?? rootWidget
+            let update = renderObjectTree.replace(widgetRenderObjectTreeGenerator.generate(updateWidget))
+            renderObjectTreeRenderer.processUpdate(update)
+            print("UPDATE RENDER TREE CALLED", widget)
         }
-        try! onDebuggingDataAvailable.invokeHandlers(RenderingDebuggingData(tree: renderTree!, groups: renderTreeRenderer.renderGroups))
-        print("UPDATE RENDER TREE CALLED", widget)
+        try! onDebuggingDataAvailable.invokeHandlers(renderObjectTreeRenderer.debuggingData)
     }
 
     // TODO: maybe this little piece of rendering logic belongs into the App as well? / Maybe return a render object tree as well???? 
     // TODO: --> A Game scene could also be a render object with custom logic which is redrawn on every frame by render strategy.
     open func render(renderer: Renderer) throws {
         //try renderer.clipArea(bounds: globalBounds)
-        if renderTree == nil || renderTreeInvalidated {
+        if renderTreeInvalidated {
             print("CALLING FROM HERE", renderTreeInvalidated)
             if invalidatedWidgets.count > 0 {
                 for widget in invalidatedWidgets.values {
-                    updateRenderTree(widget)
+                    updateRenderObjectTree(widget)
                 }
                 invalidatedWidgets.removeAll()
             } else {
-                updateRenderTree()
+                updateRenderObjectTree()
             }
             renderTreeInvalidated = false
         }
-        try renderTreeRenderer.renderGroups(renderer, bounds: bounds)
+        try renderObjectTreeRenderer.render(with: renderer, in: bounds)
     }
 }

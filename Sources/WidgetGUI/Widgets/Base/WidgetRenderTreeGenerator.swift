@@ -1,7 +1,7 @@
 import VisualAppBase
 
 /// Renders a tree of widgets to a tree of render objects.
-public class WidgetRenderTreeGenerator {
+public class WidgetRenderObjectTreeGenerator {
     public func generate(_ widget: Widget?) -> IdentifiedSubTreeRenderObject {
         switch widget {
         case let widget as LeafWidget:

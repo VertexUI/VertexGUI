@@ -1,4 +1,4 @@
-public struct TreePath: Sequence, Comparable, Equatable, CustomDebugStringConvertible {
+public struct TreePath: Sequence, Comparable, Hashable, Equatable, CustomDebugStringConvertible {
     public var segments: [Int]
 
     public var count: Int {

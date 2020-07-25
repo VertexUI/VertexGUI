@@ -7,13 +7,13 @@ public class RenderGroupsListView: SingleChildWidget, StatefulWidget {
     }
     
     public var state: State = State()
-    private var debuggingData: RenderingDebuggingData?
+    private var debuggingData: RenderObjectTreeRenderer.DebuggingData?
     private var selectedObjectPath: TreePath?
     private var onObjectSelected = EventHandlerManager<(RenderObject, TreePath)>()
 
     public init(
         selectedObjectPath: TreePath?,
-        debuggingData: RenderingDebuggingData?,
+        debuggingData: RenderObjectTreeRenderer.DebuggingData?,
         onObjectSelected objectSelectedHandler: EventHandlerManager<(RenderObject, TreePath)>.Handler? = nil) {
             self.debuggingData = debuggingData
             if let debuggingData = debuggingData {

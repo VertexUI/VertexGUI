@@ -1,26 +1,29 @@
 import Foundation
 
 // TODO: maybe name RenderObjectTree
-// TODO: maybe rename RenderTreeRoot
-public struct RenderTree: SubTreeRenderObject {
-    public var children: [RenderObject]
-    
+// TODO: maybe rename RenderObjectTreeRoot
+public class RenderObjectTree: SubTreeRenderObject {
+    public enum Update {
+        case Replace(path: TreePath, old: RenderObject, new: RenderObject)
+    }
+
     public var idPaths = [UInt: TreePath]()
 
-    public var hasTimedRenderValue: Bool {
+    override open var hasTimedRenderValue: Bool {
         return false
     }
 
-    public var debugDescription: String {
-        "RenderTree"
+    override open var debugDescription: String {
+        "RenderObjectTree"
     }
 
-    public var individualHash: Int {
+    override open var individualHash: Int {
         return 0
     }
 
-    public init(_ children: [RenderObject]) {
-        self.children = children
+    public init(_ children: [RenderObject] = []) {
+        self.idPaths = [:]
+        super.init(children: children)
         self.idPaths = getIdPathsRecursively(self, TreePath(), [UInt: TreePath]())
     }
 
@@ -69,7 +72,7 @@ public struct RenderTree: SubTreeRenderObject {
     /*mutating private func retrieveIdPaths(_ startRenderObject: RenderObject, _ startPath: TreePath) {
         idPaths = [UInt: TreePath]()
         var currentPath = TreePath([0])
-        // TODO: maybe instead of wrapping in a container here, just add a protocol that RenderTree (maybe rename to RenderTreeRoot) and SubTreeRenderObject conform too
+        // TODO: maybe instead of wrapping in a container here, just add a protocol that RenderObjectTree (maybe rename to RenderObjectTreeRoot) and SubTreeRenderObject conform too
         var parents: [SubTreeRenderObject] = [.Container(children)]
         var checkChildren = children
         outer: while parents.count > 0 {
@@ -145,12 +148,12 @@ public struct RenderTree: SubTreeRenderObject {
         }
         return (updatedRenderObjects, updatePath)
     }*/
-    public func updated(_ identifiedSubTree: IdentifiedSubTreeRenderObject) -> (updatedTree: RenderTree, updatedIdentifiedSubTreePath: TreePath) {
+    public func replace(_ identifiedSubTree: IdentifiedSubTreeRenderObject) -> Update {
         //let identifiedPath = idPaths[identifiedSubTree.id]!
 
         var replacedIdentifiedSubTreePath: TreePath?
         var replacedIdentifiedSubTree: IdentifiedSubTreeRenderObject?
-        var newTree: RenderTree?
+        var newTree: RenderObjectTree?
 
         var parents: [SubTreeRenderObject] = [self]
         var currentPath = TreePath()
@@ -184,7 +187,7 @@ public struct RenderTree: SubTreeRenderObject {
             if parents.count > 0 {
                 parents[parentIndex - 1].children.append(newFinished)
             } else {
-                newTree = newFinished as? RenderTree
+                newTree = newFinished as? RenderObjectTree
             }
         }
 
@@ -192,14 +195,12 @@ public struct RenderTree: SubTreeRenderObject {
             fatalError("Could not generate a new tree in updated().")
         }
 
-        guard let unwrappedReplacedIdentifiedSubTree = replacedIdentifiedSubTree else {
+        guard let unwrappedReplacedIdentifiedSubTree = replacedIdentifiedSubTree, let replacedPath = replacedIdentifiedSubTreePath else {
             fatalError("No SubTree with same id was present.")
         }
 
-
-
         //let (replacedC updatePath) = replaceRecursively(children, TreePath([]), identifiedSubTree)
-        return (unwrappedNewTree, replacedIdentifiedSubTreePath!)
+        return .Replace(path: replacedPath, old: unwrappedReplacedIdentifiedSubTree, new: identifiedSubTree)
     }
 
     /// - Warnings: Unused, untested
