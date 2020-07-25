@@ -94,7 +94,7 @@ open class Widget: Bounded, Parent, Child {
             // TODO: maybe let the parent list for onUpdateBounds on it's children instead of calling the parent
             if oldValue != bounds {
                 if let parent = self.parent {
-                    try! parent.relayout()
+                    //try! parent.relayout()
                 }
             }
         }

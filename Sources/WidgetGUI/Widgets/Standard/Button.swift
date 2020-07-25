@@ -30,22 +30,24 @@ public class Button: SingleChildWidget {
     public var cursorRequestId: UInt64? = nil
     public var onClick = EventHandlerManager<GUIMouseButtonClickEvent>()
 
-    private var mouseArea: MouseArea {
-        child as! MouseArea
-    }
+    private var inputChild: Widget
 
     public init(
         stateStyles: [ButtonState: ButtonStyle] = defaultButtonStyles,
         onClick onClickHandler: EventHandlerManager<GUIMouseButtonClickEvent>.Handler? = nil,
-        child: Widget) {
+        child inputChild: Widget) {
         self.stateStyles = stateStyles
         if onClickHandler != nil {
             _ = onClick.addHandler(onClickHandler!)
         }
-        
-        super.init(child:
-            MouseArea(child: child)
-        )
+        self.inputChild = inputChild
+        super.init()
+    }
+
+    override open func buildChild() -> Widget {
+        let mouseArea = MouseArea {
+            inputChild
+        }
         _ = mouseArea.onClick(forwardOnClick)
         _ = mouseArea.onMouseEnter { _ in
             self.state = .Hover
@@ -53,6 +55,7 @@ public class Button: SingleChildWidget {
         _ = mouseArea.onMouseLeave { _ in
             self.state = .Normal
         }
+        return mouseArea
     }
 
     public convenience init(
@@ -76,43 +79,20 @@ public class Button: SingleChildWidget {
  
     override open func render(_ renderedChild: RenderObject?) -> RenderObject? {
         let style = stateStyles[state] ?? defaultButtonStyles[state]!
-        //try renderer.rect(globalBounds, style: RenderStyle(fillColor: style.background))
-        //try child.render(renderer: renderer)
         return RenderObject.Container {
             if state == .Normal {
                 RenderObject.RenderStyle(fillColor: FixedRenderValue(Color(0, 255, 120, 255))) {
                     RenderObject.Rect(globalBounds)
                 }
-            }/* else if state == .Hover {
+            } else if state == .Hover {
                 RenderObject.RenderStyle(
                     fillColor: TimedRenderValue(
                         startTimestamp: Date.timeIntervalSinceReferenceDate, 
                         duration: 3, id: 0, valueAt: { progress in Color(UInt8(progress * 255), 0, 0, 255) })) {
                     RenderObject.Rect(globalBounds)
                 }
-            }*/
+            }
             renderedChild
         }
      }
-
-    /*open func consume(_ event: GUIMouseEvent) throws {
-        print("BUTTON CONSUMES MOUSE EVENT")
-        /*switch event {
-        case is MouseEnterEvent:
-            self.state = .Hover
-            if (cursorRequestId == nil) {
-                cursorRequestId = try context?.system.requestCursor(.Hand)
-            }
-        case is MouseLeaveEvent:
-            self.state = .Normal
-            if (cursorRequestId != nil) {
-                try context?.system.dropCursorRequest(id: cursorRequestId!)
-                cursorRequestId = nil
-            }
-        case is MouseButtonDownEvent:
-            try onClick.invokeHandlers(Void())
-        default:
-            break
-        }*/
-    }*/
 }

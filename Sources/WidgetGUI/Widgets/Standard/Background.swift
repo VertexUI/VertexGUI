@@ -4,13 +4,20 @@ import VisualAppBase
 open class Background: SingleChildWidget {
     open var background: Color
 
-    public init(background: Color, child: Widget) {
+    private var inputChild: Widget
+
+    public init(background: Color, child inputChild: Widget) {
         self.background = background
-        super.init(child: child)
+        self.inputChild = inputChild
+        super.init()
     }
 
     public convenience init(background: Color, child: () -> Widget) {
         self.init(background: background, child: child())
+    }
+
+    override open func buildChild() -> Widget {
+        return inputChild
     }
 
     override open func layout(fromChild: Bool = false) throws {

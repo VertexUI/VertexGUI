@@ -16,12 +16,14 @@ public class MouseArea: SingleChildWidget, GUIMouseEventConsumer {
     public var onMouseLeave = EventHandlerManager<GUIMouseLeaveEvent>()
     public var onMouseWheel = EventHandlerManager<GUIMouseWheelEvent>()
 
+    private var inputChild: Widget
+
     public init(
         onClick onClickHandler: EventHandlerManager<GUIMouseButtonClickEvent>.Handler? = nil,
         onMouseButtonDown onMouseButtonDownHandler: EventHandlerManager<GUIMouseButtonDownEvent>.Handler? = nil,
         onMouseMove onMouseMoveHandler: EventHandlerManager<GUIMouseMoveEvent>.Handler? = nil,
         onMouseWheel onMouseWheelHandler: EventHandlerManager<GUIMouseWheelEvent>.Handler? = nil,
-        child: Widget) {
+        child inputChild: Widget) {
             if let onClickHandler = onClickHandler {
                 _ = self.onClick(onClickHandler)
             }
@@ -34,7 +36,8 @@ public class MouseArea: SingleChildWidget, GUIMouseEventConsumer {
             if let onMouseWheelHandler = onMouseWheelHandler {
                 _ = self.onMouseWheel(onMouseWheelHandler)
             }
-        super.init(child: child)
+            self.inputChild = inputChild
+        super.init()
     }
 
     public convenience init(
@@ -51,6 +54,10 @@ public class MouseArea: SingleChildWidget, GUIMouseEventConsumer {
                 child: child())
     }
 
+    override open func buildChild() -> Widget {
+        return inputChild
+    }
+
     override open func layout(fromChild: Bool = false) throws {
         child.constraints = constraints
         try child.layout()
@@ -58,6 +65,7 @@ public class MouseArea: SingleChildWidget, GUIMouseEventConsumer {
     }
 
     public func consume(_ event: GUIMouseEvent) throws {
+        print("MOUSE AREA CONSUME!")
         switch event {
         case let mouseButtonDownEvent as GUIMouseButtonDownEvent:
             try onMouseButtonDown.invokeHandlers(mouseButtonDownEvent)

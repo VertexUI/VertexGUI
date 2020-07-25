@@ -14,8 +14,8 @@ public class DeveloperToolsView: SingleChildWidget, StatefulWidget {
     
     public var state: State = State()
 
-    public init() {
-        super.init(child: Column(children: []))
+    override public init() {
+        super.init()
     }
 
     private func invalidateChild() {
@@ -39,7 +39,7 @@ public class DeveloperToolsView: SingleChildWidget, StatefulWidget {
         //self.invalidateRenderState()
     }
 
-    private func buildChild() -> Widget {
+    override open func buildChild() -> Widget {
         print("DEBUUGER CALL UPDATE CHILD")
 
         if let debuggingData = debuggingData {

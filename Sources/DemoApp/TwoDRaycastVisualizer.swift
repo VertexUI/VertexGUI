@@ -2,7 +2,7 @@ import VisualAppBase
 import WidgetGUI
 import CustomGraphicsMath
 
-open class TwoDRaycastVisualizer: LeafWidget {
+open class TwoDRaycastVisualizer: LeafWidget, GUIMouseEventConsumer {
     public var raycast: TwoDRaycast?
 
     //public init() {
@@ -11,6 +11,12 @@ open class TwoDRaycastVisualizer: LeafWidget {
 
     override open func layout(fromChild: Bool) {
         bounds.size = constraints!.maxSize
+    }
+
+    open func consume(_ event: GUIMouseEvent) throws {
+        if let event = event as? GUIMouseButtonClickEvent {
+            print("TWO D RAYCAST VISUALIZER CLICK EVENT")
+        }
     }
 
     private func getTileRect(index: IVec2) -> DRect {
@@ -27,7 +33,6 @@ open class TwoDRaycastVisualizer: LeafWidget {
             try renderer.scale(DVec2(1, -1))
             try renderer.translate(DVec2(0, -(2 * self.globalPosition.y + self.bounds.size.height)))
 
-            
             if let raycast = self.raycast {
                 let scaledRayStart = self.globalPosition + raycast.rayStart / DVec2(raycast.gridSize) * self.bounds.size
                 let scaledRayEnd = self.globalPosition + raycast.rayEnd / DVec2(raycast.gridSize) * self.bounds.size

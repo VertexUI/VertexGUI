@@ -1,10 +1,10 @@
 import VisualAppBase
 
 open class SingleChildWidget: Widget {
-    open var child: Widget
+    open lazy var child: Widget = buildChild()
     
-    public init(child: Widget) {
-        self.child = child
+    override public init() {
+        //self.child = child
         super.init()
         child.parent = self
         // TODO: maybe dangling closure
@@ -12,6 +12,10 @@ open class SingleChildWidget: Widget {
             self.invalidateRenderState($0)
         }
         //child.context = context
+    }
+
+    open func buildChild() -> Widget {
+        fatalError("buildChild() not implemented.")
     }
 
     override open func layout(fromChild: Bool) throws {

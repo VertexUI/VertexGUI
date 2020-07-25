@@ -22,30 +22,70 @@ public class ScrollArea: SingleChildWidget {
             _currentY = max(bounds.size.height - child.bounds.size.height, min(newValue, 0))
         }
     }
+    private var scrollXEnabled = false
+    private var scrollYEnabled = false
+    private var scrollFactor = DVec2.zero
+    private var scrollBarLength = DSize2.zero
+    private var scrollBarWidth = DSize2(30, 30)
+    private var visibleSize = DSize2.zero
 
-    public init(speed: Double = ScrollArea.defaultSpeed, child: Widget) {
+    private var inputChild: Widget
+
+    public init(speed: Double = ScrollArea.defaultSpeed, child inputChild: Widget) {
         self.speed = speed
-        var mouseArea = MouseArea {
-            child
-        }
-        super.init(child: mouseArea)
-        _ = mouseArea.onMouseWheel(handleMouseWheel(_:))
-        _ = mouseArea.onMouseMove(handleMouseMove(_:))
+        self.inputChild = inputChild
+        super.init()
     }
 
     public convenience init(speed: Double = ScrollArea.defaultSpeed, @WidgetBuilder child: () -> Widget) {
         self.init(speed: speed, child: child())
     }
+
+    override open func buildChild() -> Widget {
+        let mouseArea = MouseArea {
+            inputChild
+        }
+        _ = mouseArea.onMouseWheel(handleMouseWheel(_:))
+        _ = mouseArea.onMouseMove(handleMouseMove(_:))
+        return mouseArea
+    }
     
     override open func layout(fromChild: Bool) throws {
-        child.constraints = BoxConstraints(minSize: constraints!.minSize, maxSize: DSize2(constraints!.maxSize.width, Double.infinity))
+        child.constraints = BoxConstraints(minSize: constraints!.minSize, maxSize: DSize2(Double.infinity, Double.infinity))
         try child.layout()
         bounds.size = constraints!.constrain(child.bounds.size)
+        
+        if child.bounds.size.width > bounds.size.width {
+            scrollXEnabled = true
+        }
+        if child.bounds.size.height > bounds.size.height {
+            scrollYEnabled = true
+        }
+        if scrollXEnabled && !scrollYEnabled && bounds.size.height + scrollBarWidth.x > constraints!.maxHeight {
+            scrollYEnabled = true
+        }
+        if scrollYEnabled && !scrollXEnabled && bounds.size.width + scrollBarWidth.y > constraints!.maxWidth {
+            scrollXEnabled = true
+        }
+
+        if scrollXEnabled {
+            bounds.size = constraints!.constrain(bounds.size + DSize2(0, scrollBarWidth.x))
+        }
+        if scrollYEnabled {
+            bounds.size = constraints!.constrain(bounds.size + DSize2(scrollBarWidth.y, 0))
+        }
+
+        visibleSize.width = scrollYEnabled ? bounds.size.width - scrollBarWidth.y : bounds.size.width
+        visibleSize.height = scrollXEnabled ? bounds.size.height - scrollBarWidth.x : bounds.size.height
+
+        scrollFactor = DVec2(child.bounds.size / visibleSize)
+        scrollBarLength = visibleSize * (DSize2(1, 1) / DSize2(scrollFactor))
     }
 
     private func handleMouseWheel(_ event: GUIMouseWheelEvent) {
         currentX += event.scrollAmount.x * speed
         currentY += event.scrollAmount.y * speed
+        print("MOUSE WHEEL", event.scrollAmount)
         invalidateRenderState()
     }
 
@@ -53,11 +93,30 @@ public class ScrollArea: SingleChildWidget {
         currentX -= event.move.x
         currentY -= event.move.y
         invalidateRenderState()
+        print("MOUSE MOVE", event.move)
     }
 
     override public func render(_ renderedChild: RenderObject?) -> RenderObject? {
-        return RenderObject.Translation(DVec2(currentX, currentY)) {
-            renderedChild
+        var scrollBarX = RenderObject.Rect(DRect(
+            topLeft: DPoint2(globalPosition.x, globalPosition.y + globalBounds.size.height - scrollBarWidth.x),
+            size: DSize2(scrollBarLength.x, scrollBarWidth.x)
+        ))
+        var scrollBarY = RenderObject.Rect(DRect(
+            topLeft: DPoint2(globalPosition.x + globalBounds.size.width - scrollBarWidth.x, globalPosition.y),
+            size: DSize2(scrollBarWidth.x, scrollBarLength.y)
+        ))
+        return RenderObject.Container {
+            RenderObject.Translation(DVec2(currentX, currentY)) {
+                renderedChild
+            }
+            RenderObject.RenderStyle(fillColor: FixedRenderValue(.Black)) {
+                if scrollXEnabled {
+                    scrollBarX
+                }
+                if scrollYEnabled {
+                    scrollBarY
+                }
+            }
         }
     }
 }
