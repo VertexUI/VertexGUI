@@ -21,10 +21,21 @@ public struct Color: Hashable, Equatable {
        self.init(r: r, g: g, b: b, a: a)
     }
 
+    public mutating func adjust(alpha: UInt8) {
+        self.a = alpha
+    }
+
+    public func adjusted(alpha: UInt8) -> Color {
+        var result = self
+        result.adjust(alpha: alpha)
+        return result
+    }
+
     public static let Red = Color(255, 0, 0, 255)
     public static let Green = Color(0, 255, 0, 255)
+    public static let Yellow = Color(255, 255, 0, 255)
     public static let Blue = Color(0, 0, 255, 255)
-    public static let Black = Color(0,0,0,255)
-    public static let White = Color(255,255,255,255)
+    public static let Black = Color(0, 0, 0, 255)
+    public static let White = Color(255, 255, 255, 255)
     public static let Transparent = Color(0, 0, 0, 0)
 }

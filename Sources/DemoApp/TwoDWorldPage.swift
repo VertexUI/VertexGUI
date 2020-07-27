@@ -2,12 +2,9 @@ import VisualAppBase
 import WidgetGUI
 import CustomGraphicsMath
 
-open class TwoDVoxelRaycastPage: SingleChildWidget {
-    private var raycastVisualizer: TwoDRaycastVisualizer
+open class TwoDWorldPage: SingleChildWidget {
     
     override public init() {
-        raycastVisualizer = TwoDRaycastVisualizer()    
-        raycastVisualizer.raycast = TwoDRaycast(gridSize: AnySize2(100, 100), rayStart: AnyVector2(1, 1), rayEnd: AnyVector2(50, 50))
         super.init()
     }
 
@@ -30,7 +27,7 @@ open class TwoDVoxelRaycastPage: SingleChildWidget {
                         },*/
                         child: Text("WOWOWOWOWOWOWOWOWOWO")
                     )
-                    raycastVisualizer
+                    TwoDWorldView()
                 }
             }
     }

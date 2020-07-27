@@ -48,6 +48,7 @@ public struct AnySize2<E: Numeric & Hashable>: Size2 {
 }
 
 public typealias DSize2 = AnySize2<Double>
+public typealias ISize2 = AnySize2<Int>
 
 /*
 

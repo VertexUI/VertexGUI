@@ -104,18 +104,6 @@ public class RenderObjectTreeView: MultiChildWidget {
     }
 
     override open func render(_ renderedChildren: [RenderObject?]) -> RenderObject? {
-        /*var groups = debuggingData.groups.map {
-            RenderObject.Text("WOW \($0.id)", config: TextConfig(
-                fontConfig: FontConfig(
-                    family: context!.defaultFontFamily,
-                    size: 16,
-                    weight: .Regular,
-                    style: .Normal
-                ),
-                color: .Black,
-                wrap: false
-            ), topLeft: globalPosition)
-        }*/
         var lines = [RenderObject.LineSegment]()
 
         for i in 0..<groupedChildren.count {
@@ -131,28 +119,15 @@ public class RenderObjectTreeView: MultiChildWidget {
 
         lines.reverse()
 
-        print("LHAVE LINES!!!", lines)
         for line in lines {
             print(line.start, line.end)
         }
 
         return RenderObject.RenderStyle(fillColor: FixedRenderValue(Color.White)) {
-            //[RenderObject.Rect(globalBounds)]
-
             RenderObject.RenderStyle(strokeWidth: 2, strokeColor: FixedRenderValue(.Black)) {
                 lines
-                /*RenderObject.Custom(id: 23) { renderer throws in
-                    for line in lines {
-                        try renderer.lineSegment(from: line.start, to: line.end)
-                        try renderer.strokeColor(.Black)
-                        try renderer.strokeWidth(5)
-                        try renderer.stroke()
-                    }
-                }*/
             }
-
             renderedChildren
-            //groups
         }
     }
 }

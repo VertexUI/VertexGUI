@@ -31,8 +31,7 @@ open class TwoDGraphicalApp: App<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGWindo
     )
 
     override public init() {
-
-        let page = TwoDVoxelRaycastPage()
+        let page = TwoDWorldPage()
         guiRoot = WidgetGUI.Root(
             rootWidget: page)
 
