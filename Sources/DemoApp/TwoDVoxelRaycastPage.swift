@@ -14,25 +14,23 @@ open class TwoDVoxelRaycastPage: SingleChildWidget {
     override open func buildChild() -> Widget {
         Background(
                 background: Color(0, 120, 240, 255)) {
-                MouseArea() {
-                    Column {
-                        Space(size: DSize2(50, 50))
-                        //TextConfigProvider(
-                            /*child: */Text("WOWOWOWO!")
-                        /*    config: TextConfig(
-                                fontConfig: FontConfig(
-                                    family: context!.defautFontFamily
-                                )
+                Column {
+                    Space(size: DSize2(50, 50))
+                    //TextConfigProvider(
+                        /*child: */Text("WOWOWOWO!")
+                    /*    config: TextConfig(
+                            fontConfig: FontConfig(
+                                family: context!.defautFontFamily
                             )
-                        ),*/
-                        Button(
-                            /*onClick: { _ in
-                                print("BUTTON ON CLICK")
-                            },*/
-                            child: Text("WOWOWOWOWOWOWOWOWOWO")
                         )
-                        raycastVisualizer
-                    }
+                    ),*/
+                    Button(
+                        /*onClick: { _ in
+                            print("BUTTON ON CLICK")
+                        },*/
+                        child: Text("WOWOWOWOWOWOWOWOWOWO")
+                    )
+                    raycastVisualizer
                 }
             }
     }

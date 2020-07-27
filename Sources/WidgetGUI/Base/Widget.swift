@@ -2,42 +2,6 @@ import WidgetGUI
 import CustomGraphicsMath
 import VisualAppBase
 
-/*
-struct DPoint2 {
-    var x: Int
-    var y: Int
-}
-
-extension DPoint2 {
-    init(_ x: Int, _ y: Int) {
-        self.init(x: x, y: y)
-    }
-}
-
-struct DSize2 {
-    var width: Int
-    var height: Int
-}
-
-extension DSize2 {
-    init(_ width: Int, _ height: Int) {
-        self.init(width: width, height: height)
-    }
-}
-
-protocol Widget {
-    associatedtype State: WidgetState
-    func render (state: State, renderer: SDLRenderer) throws
-}
-
-protocol WidgetState {
-    var position: DPoint2 { get set }
-    var size: DSize2 { get set }
-}*/
-
-
-// TODO: maybe create a rendercacheable protocol? And a widget tree renderer?
-// TODO: maybe rendering should be done by iterating the tree instead of recursive calls --> better optimization?
 open class Widget: Bounded, Parent, Child {
     open var id: UInt = UInt.random(in: 0..<UInt.max)
 
@@ -85,9 +49,6 @@ open class Widget: Bounded, Parent, Child {
         }
     }
 
-    //open var size: DSize2 = DSize2(0, 0)
-    //open var position: DPoint2 = DPoint2(0,0)
-    
     // TODO: might need to create something like layoutBounds and renderBounds (area that is invalidated on rerender request --> could be more than layoutBounds and affect outside widgets (e.g. a drop shadow that is not included in layoutBounds))
     open var bounds: DRect = DRect(topLeft: DPoint2(0,0), size: DSize2(0,0)) {
         didSet {
@@ -115,26 +76,6 @@ open class Widget: Bounded, Parent, Child {
         }
     }
 
-    /*open var globalContext: Context? = nil {
-        didSet {
-            children.forEach { $0.globalContext = globalContext }
-        }
-    }  */
-
-   // public var onParentChanged = EventHandlerManager<Parent?>()
-    //public var onAnyParentChanged = EventHandlerManager<Parent?>()
-
-    /*open var mouseEventConsumers: [MouseEventConsumer] {
-        get {
-            // TODO: implement mouse events!!
-            return [] // children
-        }
-
-        set {
-            print("ERROR??, Cant set mouseEventConsumers on Widget")
-        }
-    }
-*/
     public init() {}
 
     // TODO: rename fromChild parameter to something more generic / or use relayout or something like that, probably only needed in widgets that have children --> in these avoid relayout the child that has triggered the parent relayout
@@ -149,10 +90,6 @@ open class Widget: Bounded, Parent, Child {
     open func relayout() throws {
         try layout(fromChild: true)
     }
-
-    /*open func consume(_ event: GUIMouseEvent) throws {
-        try provideMouseEvent(event)
-    }*/
 
     open func findParent(_ condition: (_ parent: Parent) throws -> Bool) rethrows -> Parent? {
         var parent: Parent? = self.parent
@@ -187,10 +124,5 @@ open class Widget: Bounded, Parent, Child {
         let widget = widget ?? self
         try! onRenderStateInvalidated.invokeHandlers(widget)
     }
-    
-
-    /*open func render() -> RenderObject? {
-        fatalError("render() not implemented.")
-    }*/
 }
 

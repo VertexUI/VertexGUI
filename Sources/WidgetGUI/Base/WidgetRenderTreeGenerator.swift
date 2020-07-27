@@ -12,6 +12,6 @@ public class WidgetRenderObjectTreeGenerator {
             return IdentifiedSubTreeRenderObject(widget.id, [widget.render(widget.children.map(generate))].compactMap { $0 })
         default:
             fatalError("Unsupported widget type.")
-        }        
+        }
     }
 }

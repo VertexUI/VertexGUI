@@ -31,7 +31,7 @@ open class Root: Parent {
     private var renderTreeInvalidated = false
     private var invalidatedWidgets = [UInt: Widget]()
     
-    private var mouseEventPropagationStrategy = GUIMouseEventPropagationStrategy()
+    private var mouseEventManager = WidgetTreeMouseEventManager()
 
     public var onDebuggingDataAvailable = EventHandlerManager<RenderObjectTreeRenderer.DebuggingData>()
 
@@ -66,7 +66,7 @@ open class Root: Parent {
     }
 
     open func consumeMouseEvent(_ rawMouseEvent: RawMouseEvent) -> Bool {
-        return mouseEventPropagationStrategy.propagate(event: rawMouseEvent, through: rootWidget)
+        return mouseEventManager.propagate(event: rawMouseEvent, through: rootWidget)
     }
 
     /// - Parameter widget: If a specific widget is passed only the sub tree that was created by the widget will be updated.
