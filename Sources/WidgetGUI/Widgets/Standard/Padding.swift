@@ -5,18 +5,23 @@ public class Padding: SingleChildWidget {
 
     private var inputChild: Widget
 
-    public init(padding: Insets, child: Widget) {
+    /*public init(padding: Insets, child: Widget) {
         self.padding = padding
         self.inputChild = child
         super.init()
+    }*/
+    public init(top: Double, right: Double, bottom: Double, left: Double, @WidgetBuilder child inputChild: () -> Widget) {
+        self.padding = Insets(top, right, bottom, left)
+        self.inputChild = inputChild()
+        super.init()
+    }
+
+    public convenience init(all: Double, @WidgetBuilder child inputChild: () -> Widget) {
+        self.init(top: all, right: all, bottom: all, left: all, child: inputChild)
     }
 
     override open func buildChild() -> Widget {
         return inputChild
-    }
-
-    public convenience init(padding: Insets, @WidgetBuilder child: () -> Widget) {
-        self.init(padding: padding, child: child())
     }
 
     override public func layout() throws {

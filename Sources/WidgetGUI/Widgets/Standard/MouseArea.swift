@@ -65,7 +65,6 @@ public class MouseArea: SingleChildWidget, GUIMouseEventConsumer {
     }
 
     public func consume(_ event: GUIMouseEvent) throws {
-        print("MOUSE AREA CONSUME!")
         switch event {
         case let mouseButtonDownEvent as GUIMouseButtonDownEvent:
             try onMouseButtonDown.invokeHandlers(mouseButtonDownEvent)
@@ -82,10 +81,5 @@ public class MouseArea: SingleChildWidget, GUIMouseEventConsumer {
         default:
             print("Unsupported event", event)
         }
-        /*if let mouseButtonDownEvent = event as? GUIMouseButtonDownEvent {
-            try onMouseButtonDown.invokeHandlers(mouseButtonDownEvent)
-        } else if let mouseMoveEvent = event as? GUIMouseMoveEvent {
-            try onMouseMove.invokeHandlers(mouseMoveEvent)
-        } else if let */
     }
 }

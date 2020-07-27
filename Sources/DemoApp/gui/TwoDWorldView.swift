@@ -16,6 +16,10 @@ open class TwoDWorldView: LeafWidget {
         bounds.size = constraints!.maxSize
     }
 
+    private func worldToLocal(position: DVec2) -> DVec2 {
+        position / DVec2(world.size) * DVec2(bounds.size)
+    }
+
     private func getTileRect(index: IVec2) -> DRect {
         // TODO: optimize/cache tileSize
         let tileSize = DSize2(bounds.size) / DSize2(world.size)
@@ -70,6 +74,8 @@ open class TwoDWorldView: LeafWidget {
                         try renderer.strokeWidth(10)
                         try renderer.strokeColor(.Yellow)
                         try renderer.stroke()
+                    default:
+                        break
                     }
                 }
 
@@ -77,6 +83,17 @@ open class TwoDWorldView: LeafWidget {
                 try renderer.strokeWidth(5)
                 try renderer.strokeColor(.Blue)
                 try renderer.stroke()
+
+                for result in raycast.results {
+                    switch result {
+                    case .Intersection(let position):
+                        try renderer.circle(center: self.worldToLocal(position: position) + self.globalPosition, radius: 5)
+                        try renderer.fillColor(Color(230, 200, 255, 255))
+                        try renderer.fill()
+                    default:
+                        break
+                    }
+                }
             }
         }])
     }

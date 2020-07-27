@@ -4,13 +4,15 @@ import VisualAppBase
 public class Row: MultiChildWidget {
     public var wrap: Bool
 
-    public init(wrap: Bool = false, children: [Widget]) {
+    /*public init(wrap: Bool = false, children: [Widget]) {
         self.wrap = wrap
         super.init(children: children)
-    }
+    }*/
 
-    public convenience init(wrap: Bool = false, @WidgetBuilder children: () -> [Widget]) {
-        self.init(wrap: wrap, children: children())
+    public init(wrap: Bool = false, @WidgetBuilder children: () -> [Widget]) {
+        self.wrap = wrap
+        super.init(children: children())
+        //self.init(wrap: wrap, children: children())
     }
 
     override public func layout() throws {

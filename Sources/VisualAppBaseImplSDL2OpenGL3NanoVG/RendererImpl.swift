@@ -237,16 +237,12 @@ open class SDL2OpenGL3NanoVGRenderer: Renderer {
         nvgLineTo(window.nvg, Float(to.x), Float(to.y))
     }
 
-    open func circle(center: DPoint2, radius: Double, style: RenderStyle) throws {
+    open func circle(center: DPoint2, radius: Double) throws {
         nvgBeginPath(window.nvg)
         nvgCircle(window.nvg, Float(center.x), Float(center.y), Float(radius))
-        if let fillColor = style.fillColor {
-            nvgFillColor(window.nvg, fillColor.toNVG())
-            nvgFill(window.nvg)
-        }
     }
 
-    public func ellipse(center: DPoint2, radius: DVec2, style: RenderStyle) throws {
+    public func ellipse(center: DPoint2, radius: DVec2) throws {
         fatalError("ellipse not implemented")
     }
 

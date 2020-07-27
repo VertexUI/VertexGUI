@@ -20,22 +20,44 @@ open class TwoDWorldPage: SingleChildWidget {
     }
 
     override open func buildChild() -> Widget {
-        Background(background: Color(0, 120, 240, 255)) {
-            Column {
-                Space(size: DSize2(50, 50))
-                //TextConfigProvider(
-                    /*child: */Text("WOWOWOWO!")
-                /*    config: TextConfig(
-                        fontConfig: FontConfig(
-                            family: context!.defautFontFamily
+        Background(background: Color(120, 160, 255, 255)) {
+            Row {                
+                Column {
+                    Padding(all: 20) {
+                    //TextConfigProvider(
+                        /*child: */Text("2D Raycast Visualizer")
+                    /*    config: TextConfig(
+                            fontConfig: FontConfig(
+                                family: context!.defautFontFamily
+                            )
                         )
-                    )
-                ),*/
-                Button(
-                    child: Text("WOWOWOWOWOWOWOWOWOWO")
-                )
-                MouseArea(onClick: handleWorldViewClick(_:)) {
-                    TwoDWorldView(world: world, raycasts: raycasts)
+                    ),*/
+                    }
+                    Padding(all: 20) {
+                        Button(
+                            child: Text("Button without function")
+                        )
+                    }
+                    ComputedSize {
+                        $0.constrain(DSize2($0.maxWidth * 0.75, $0.maxHeight))
+                    } child: {
+                        MouseArea(onClick: handleWorldViewClick(_:)) {
+                            TwoDWorldView(world: world, raycasts: raycasts)
+                        }
+                    }
+                }
+
+                ComputedSize {
+                    $0.constrain(DSize2($0.maxWidth, $0.maxHeight))
+                } child: {
+                    Padding(all: 20) {
+                        Column(spacing: 20) {
+                            Text("Raycasts")
+                            raycasts.map { _ in
+                                return Text("TEST TEXT ")
+                            }
+                        }
+                    }
                 }
             }
         }

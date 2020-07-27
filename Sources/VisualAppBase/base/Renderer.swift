@@ -37,8 +37,8 @@ public protocol Renderer {
     func stroke() throws
     func rect(_ rect: DRect) throws
     // TODO: update to remove style argument
-    func circle(center: DPoint2, radius: Double, style: RenderStyle) throws
-    func ellipse(center: DPoint2, radius: DVec2, style: RenderStyle) throws
+    func circle(center: DPoint2, radius: Double) throws
+    func ellipse(center: DPoint2, radius: DVec2) throws
     func text(_ text: String, topLeft: DPoint2, fontConfig: FontConfig, color: Color) throws
     func lineSegment(from: DPoint2, to: DPoint2) throws
     func getTextBoundsSize(_ text: String, fontConfig: FontConfig) throws -> DSize2

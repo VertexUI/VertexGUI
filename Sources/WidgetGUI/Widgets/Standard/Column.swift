@@ -7,16 +7,20 @@ import VisualAppBase
 import CustomGraphicsMath
 
 public class Column: MultiChildWidget {
+    public var spacing: Double
     public var wrap: Bool
 
     /// - Parameter wrap: if max height reached, break (new column) or not break?
-    public init(wrap: Bool = false, children: [Widget]) {
+    /*public init(wrap: Bool = false, children: [Widget]) {
         self.wrap = wrap
         super.init(children: children)
-    }
+    }*/
 
-    public convenience init(wrap: Bool = false, @WidgetBuilder children: () -> [Widget]) {
-        self.init(wrap: wrap, children: children())
+    public init(spacing: Double = 0, wrap: Bool = false, @WidgetBuilder children: () -> [Widget]) {
+        //self.init(wrap: wrap, children: children())
+        self.spacing = spacing
+        self.wrap = wrap
+        super.init(children: children())
     }
 
     override public func layout() throws {
@@ -38,6 +42,7 @@ public class Column: MultiChildWidget {
             }
             child.bounds.topLeft = DPoint2(currentX, currentY)
             currentY += child.bounds.size.height
+            currentY += spacing
 
             if currentColumnWidth < child.bounds.size.width {
                 currentColumnWidth = child.bounds.size.width
