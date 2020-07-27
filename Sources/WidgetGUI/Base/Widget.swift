@@ -78,17 +78,8 @@ open class Widget: Bounded, Parent, Child {
 
     public init() {}
 
-    // TODO: rename fromChild parameter to something more generic / or use relayout or something like that, probably only needed in widgets that have children --> in these avoid relayout the child that has triggered the parent relayout
-    open func layout(fromChild: Bool) throws {
+    open func layout() throws {
         fatalError("layout() not implemented.")
-    }
-
-    public func layout() throws {
-        try layout(fromChild: false)
-    }
-
-    open func relayout() throws {
-        try layout(fromChild: true)
     }
 
     open func findParent(_ condition: (_ parent: Parent) throws -> Bool) rethrows -> Parent? {

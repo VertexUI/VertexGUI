@@ -50,7 +50,7 @@ public class ScrollArea: SingleChildWidget {
         return mouseArea
     }
     
-    override open func layout(fromChild: Bool) throws {
+    override open func layout() throws {
         child.constraints = BoxConstraints(minSize: constraints!.minSize, maxSize: DSize2(Double.infinity, Double.infinity))
         try child.layout()
         bounds.size = constraints!.constrain(child.bounds.size)

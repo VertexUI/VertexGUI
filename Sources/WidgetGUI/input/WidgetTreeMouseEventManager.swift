@@ -45,6 +45,7 @@ public class WidgetTreeMouseEventManager {
         print("MOUSE EVENT TARGETS COUNT", mouseEventTargets.count)
 
         // to let the event bubble up
+        // TODO: maybe implement a bubble down first and then call on target + bubble up after that
         mouseEventTargets.reverse()
 
         do {

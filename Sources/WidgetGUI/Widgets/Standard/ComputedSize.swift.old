@@ -11,7 +11,7 @@ public class ComputedSize<S: System<W, R>, W: Window, R: Renderer>: SingleChildW
         super.init(child: child)
     }
 
-    override open func layout(fromChild: Bool = false) throws {
+    override open func layout() throws {
         bounds.size = calculate(constraints!)
         child.constraints = BoxConstraints(size: bounds.size)
         try child.layout()

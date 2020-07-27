@@ -5,17 +5,19 @@ import CustomGraphicsMath
 open class TwoDRaycastVisualizer: LeafWidget, GUIMouseEventConsumer {
     public var raycast: TwoDRaycast?
 
-    //public init() {
-   //     super.init()
-   // }
-
-    override open func layout(fromChild: Bool) {
+    override open func layout() {
         bounds.size = constraints!.maxSize
     }
 
     open func consume(_ event: GUIMouseEvent) throws {
         if let event = event as? GUIMouseButtonClickEvent {
             print("TWO D RAYCAST VISUALIZER CLICK EVENT")
+        } else if let event = event as? GUIMouseButtonDownEvent {
+            print("TWO D RAYCAST MOUSE BUTTON DOWN EVENT")
+        } else if let event = event as? GUIMouseButtonUpEvent {
+            print("TWO D RAYCAST MOUSE BUTTON UP EVENT")
+        } else if let event = event as? GUIMouseMoveEvent {
+            print("TWO D RAYCAST MOUSE MOVE EVENT")
         }
     }
 
@@ -29,7 +31,6 @@ open class TwoDRaycastVisualizer: LeafWidget, GUIMouseEventConsumer {
     override open func render() -> RenderObject {
         return .CacheSplit([.Custom(id: self.id) { renderer in
             print("MANUAL RAYCAST RENDER")
-            //try renderer.translate(DVec2(0, -globalPosition.y))
             try renderer.scale(DVec2(1, -1))
             try renderer.translate(DVec2(0, -(2 * self.globalPosition.y + self.bounds.size.height)))
 

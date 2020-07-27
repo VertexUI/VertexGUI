@@ -13,7 +13,7 @@ public class Space: LeafWidget {
         super.init()
     }
 
-    override public func layout(fromChild: Bool = false) throws {
+    override public func layout() throws {
         bounds.size = size
     }
 

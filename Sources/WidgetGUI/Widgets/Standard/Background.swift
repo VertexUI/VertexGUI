@@ -20,7 +20,7 @@ open class Background: SingleChildWidget {
         return inputChild
     }
 
-    override open func layout(fromChild: Bool = false) throws {
+    override open func layout() throws {
         child.constraints = constraints
         try child.layout()
         bounds.size = constraints!.constrain(child.bounds.size)

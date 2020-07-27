@@ -72,7 +72,7 @@ public class RenderObjectTreeView: MultiChildWidget {
             }
     }
 
-    override open func layout(fromChild: Bool) throws {
+    override open func layout() throws {
         var spacing: Double = 30
         var nextX: Double = 0
         var nextY: Double = 0

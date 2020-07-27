@@ -54,15 +54,10 @@ open class Root: Parent {
         }
     }
 
-    open func layout(fromChild: Bool = false) throws {
+    open func layout() throws {
         rootWidget.constraints = BoxConstraints(minSize: DSize2.zero, maxSize: bounds.size)
         print("SET ROOT WIDGET CONSTRAINTS", bounds.size)
         try rootWidget.layout()
-    }
-
-    // TODO: is this needed here? or only for real widgets?
-    open func relayout() throws {
-        try layout(fromChild: true)
     }
 
     open func consumeMouseEvent(_ rawMouseEvent: RawMouseEvent) -> Bool {

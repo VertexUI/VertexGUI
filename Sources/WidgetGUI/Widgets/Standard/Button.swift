@@ -69,7 +69,7 @@ public class Button: SingleChildWidget {
         try onClick.invokeHandlers(event)
     }
 
-    override open func layout(fromChild: Bool = false) throws {
+    override open func layout() throws {
         child.constraints = BoxConstraints(
             minSize: constraints!.constrain(constraints!.minSize + DSize2(32, 32)),
             maxSize: constraints!.maxSize)

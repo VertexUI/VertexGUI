@@ -58,7 +58,7 @@ public class MouseArea: SingleChildWidget, GUIMouseEventConsumer {
         return inputChild
     }
 
-    override open func layout(fromChild: Bool = false) throws {
+    override open func layout() throws {
         child.constraints = constraints
         try child.layout()
         bounds.size = child.bounds.size

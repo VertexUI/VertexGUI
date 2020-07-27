@@ -19,7 +19,7 @@ public class Column: MultiChildWidget {
         self.init(wrap: wrap, children: children())
     }
 
-    override public func layout(fromChild: Bool = false) throws {
+    override public func layout() throws {
         var currentX = 0.0
         var currentY = 0.0
         var currentColumnWidth = 0.0 // the current max width for the current column

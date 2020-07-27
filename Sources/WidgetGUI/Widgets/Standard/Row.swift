@@ -13,7 +13,7 @@ public class Row: MultiChildWidget {
         self.init(wrap: wrap, children: children())
     }
 
-    override public func layout(fromChild: Bool = false) throws {
+    override public func layout() throws {
         var currentX = 0.0
         var currentY = 0.0
         var maxWidth = 0.0

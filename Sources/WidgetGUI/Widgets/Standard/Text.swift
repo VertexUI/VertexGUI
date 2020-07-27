@@ -40,7 +40,7 @@ public class Text: LeafWidget {
         }
     }
 
-    override public func layout(fromChild: Bool = false) throws {
+    override public func layout() throws {
         //var size = try globalContext!.getTextSize(text: text, fontConfig: fontConfig)
         //self.sizeConfig.width = .Fixed(value: size.width)
         //self.sizeConfig.height = .Fixed(value: size.height)

@@ -18,7 +18,7 @@ open class Divider<S: System<W, R>, W: Window, R: Renderer>: Widget<S, W, R> {
         super.init()
     }
 
-    override open func layout(fromChild: Bool = false) throws {
+    override open func layout() throws {
         switch axis {
         case .Horizontal:
             bounds.size = DSize2(constraints!.maxWidth, width)

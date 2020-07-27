@@ -26,7 +26,7 @@ public class DeveloperToolsView: SingleChildWidget, StatefulWidget {
             self.invalidateRenderState($0)
         }
         self.child = child
-        try! layout(fromChild: false)
+        try! layout()
         invalidateRenderState()
     }
 
@@ -92,7 +92,7 @@ public class DeveloperToolsView: SingleChildWidget, StatefulWidget {
         self.invalidateRenderState()
     }
 
-    override open func layout(fromChild: Bool) throws {
+    override open func layout() throws {
         print("DEBUGGER CALLED LAYOUT", bounds.size, constraints, self.child.bounds.size)
         child.constraints = constraints 
         try child.layout()

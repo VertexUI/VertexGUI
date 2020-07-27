@@ -18,7 +18,7 @@ open class SingleChildWidget: Widget {
         fatalError("buildChild() not implemented.")
     }
 
-    override open func layout(fromChild: Bool) throws {
+    override open func layout() throws {
         child.constraints = constraints
         try child.layout()
         bounds.size = child.bounds.size
