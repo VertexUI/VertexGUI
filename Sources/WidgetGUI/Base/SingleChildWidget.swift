@@ -6,8 +6,9 @@ open class SingleChildWidget: Widget {
     override public init() {
         //self.child = child
         super.init()
+        // TODO: setting variables on child should be done automatically if children[] is changed
+        children = [child]
         child.parent = self
-        // TODO: maybe dangling closure
         _ = child.onRenderStateInvalidated {
             self.invalidateRenderState($0)
         }
@@ -16,6 +17,17 @@ open class SingleChildWidget: Widget {
 
     open func buildChild() -> Widget {
         fatalError("buildChild() not implemented.")
+    }
+
+    open func invalidateChild() {
+        var child = buildChild()
+        child.parent = self
+        _ = child.onRenderStateInvalidated {
+            self.invalidateRenderState($0)
+        }
+        self.child = child
+        try! layout()
+        invalidateRenderState()
     }
 
     override open func layout() throws {

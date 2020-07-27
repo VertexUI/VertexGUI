@@ -2,45 +2,18 @@ import VisualAppBase
 import WidgetGUI
 import CustomGraphicsMath
 
-open class TwoDWorldView: LeafWidget, GUIMouseEventConsumer {
-    private var world: TwoDVoxelWorld = TwoDVoxelWorld(size: ISize2(40, 40))
-    private var raycasts: [TwoDRaycast] = []
+open class TwoDWorldView: LeafWidget {
+    private var world: TwoDVoxelWorld
+    private var raycasts: [TwoDRaycast]
 
-    private var newRaycastStart: DVec2?
-    private var newRaycastEnd: DVec2?
+    public init(world: TwoDVoxelWorld, raycasts: [TwoDRaycast]) {
+        self.world = world
+        self.raycasts = raycasts
+        super.init()
+    }
 
     override open func layout() {
         bounds.size = constraints!.maxSize
-    }
-
-    private func localToWorld(_ position: DVec2) -> DVec2 {
-        return position / DVec2(bounds.size) * DVec2(world.size)
-    }
-
-    open func consume(_ event: GUIMouseEvent) throws {
-        if let event = event as? GUIMouseButtonClickEvent {
-            if event.button == .Left {
-                let localPosition = event.position - globalPosition
-                let worldPosition = localToWorld(localPosition)
-                if newRaycastStart == nil {
-                    newRaycastStart = worldPosition
-                } else if newRaycastEnd == nil {
-                    newRaycastEnd = worldPosition
-                    raycasts.append(world.raycast(from: newRaycastStart!, to: newRaycastEnd!))
-                    invalidateRenderState()
-                    print("DID PERFORM RAYCAST")
-                    newRaycastStart = nil
-                    newRaycastEnd = nil
-                }
-            }
-            print("TWO D RAYCAST VISUALIZER CLICK EVENT")
-        } else if let event = event as? GUIMouseButtonDownEvent {
-            print("TWO D RAYCAST MOUSE BUTTON DOWN EVENT")
-        } else if let event = event as? GUIMouseButtonUpEvent {
-            print("TWO D RAYCAST MOUSE BUTTON UP EVENT")
-        } else if let event = event as? GUIMouseMoveEvent {
-            print("TWO D RAYCAST MOUSE MOVE EVENT")
-        }
     }
 
     private func getTileRect(index: IVec2) -> DRect {
@@ -66,19 +39,6 @@ open class TwoDWorldView: LeafWidget, GUIMouseEventConsumer {
                     try renderer.fillColor(fillColor)
                     try renderer.rect(tileRect)
                     try renderer.fill()
-
-                    /*if raycast.testedTiles.contains(index) {
-                        try renderer.beginPath()
-                        try renderer.fillColor(Color(0, 255, 0, 255))
-                        try renderer.rect(tileRect)
-                        try renderer.fill()
-                    } else {
-                        let fillColor = ((yIndex % 2 == 0 ? 1 : 0) + xIndex) % 2 == 0 ? Color(240, 240, 240, 255) : Color.White
-                        try renderer.beginPath()
-                        try renderer.fillColor(fillColor)
-                        try renderer.rect(tileRect)
-                        try renderer.fill()
-                    }*/
                 }
             }
 
@@ -117,11 +77,6 @@ open class TwoDWorldView: LeafWidget, GUIMouseEventConsumer {
                 try renderer.strokeWidth(5)
                 try renderer.strokeColor(.Blue)
                 try renderer.stroke()
-
-                //renderer.translate(DVec2())
-
-                //try renderer.resetTransform() 
-                //try renderer.line(from: DVec2(1, 1), to: DVec2(100, 100), width: 2, color: Color(0, 0, 0, 255))
             }
         }])
     }

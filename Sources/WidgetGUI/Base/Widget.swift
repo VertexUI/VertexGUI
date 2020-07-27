@@ -24,6 +24,8 @@ open class Widget: Bounded, Parent, Child {
 
     open var constraints: BoxConstraints? = nil
 
+    public var children: [Widget] = []
+
     public var onParentChanged = EventHandlerManager<Parent?>()
     public var onAnyParentChanged = EventHandlerManager<Parent?>()
     public var onRenderStateInvalidated = EventHandlerManager<Widget>()
@@ -78,6 +80,18 @@ open class Widget: Bounded, Parent, Child {
 
     public init() {}
 
+    public init(children: [Widget]) {
+        self.children = children
+        for child in children {
+            child.parent = self
+            // TODO: maybe dangling closure
+            _ = child.onRenderStateInvalidated {
+                self.invalidateRenderState($0)
+            }
+            //child.context = context
+        }
+    }
+
     open func layout() throws {
         fatalError("layout() not implemented.")
     }
@@ -107,6 +121,23 @@ open class Widget: Bounded, Parent, Child {
                 break
             }
         }
+        return nil
+    }
+
+    // TODO: might need possibility to return all of type + a method that only returns first + in what order depth first / breadth first
+    public func childOfType<W: Widget>(_ type: W.Type) -> W? {
+        for child in children {
+            if let child = child as? W {
+                return child
+            }
+        }
+        
+        for child in children {
+            if let result = child.childOfType(type) {
+                return result
+            }
+        }
+
         return nil
     }
 

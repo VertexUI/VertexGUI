@@ -18,18 +18,6 @@ public class DeveloperToolsView: SingleChildWidget, StatefulWidget {
         super.init()
     }
 
-    private func invalidateChild() {
-        var child = buildChild()
-        child.parent = self
-        // TODO: maybe dangling closure
-        _ = child.onRenderStateInvalidated {
-            self.invalidateRenderState($0)
-        }
-        self.child = child
-        try! layout()
-        invalidateRenderState()
-    }
-
     private func handleDebuggingDataUpdated() {
         /*if let debuggingData = debuggingData {
             expandedGroupIndices = Set(0..<debuggingData.groups.count)
