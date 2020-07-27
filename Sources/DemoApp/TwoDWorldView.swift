@@ -82,7 +82,7 @@ open class TwoDWorldView: LeafWidget, GUIMouseEventConsumer {
                 }
             }
 
-                try renderer.resetTransform()
+            try renderer.resetTransform()
             
             for raycast in self.raycasts {
                 let scaledRayStart = self.globalPosition + raycast.start / DVec2(self.world.size) * self.bounds.size
