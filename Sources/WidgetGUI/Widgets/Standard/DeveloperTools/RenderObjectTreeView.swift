@@ -59,7 +59,6 @@ public class RenderObjectTreeView: MultiChildWidget {
                 /*if parentIndex != currentParentIndex {
 
                 }*/
-                print("BEFORE SET", groupedChildren[path.count].groups.count, path.count)
 
                 groupedChildren[path.count].groups[groupedChildren[path.count].groups.count - 1].children.append(child)
                 /*child.bounds.topLeft = DPoint2(nextX, nextY)

@@ -53,8 +53,19 @@ open class TwoDWorldPage: SingleChildWidget {
                     Padding(all: 20) {
                         Column(spacing: 20) {
                             Text("Raycasts")
-                            raycasts.map { _ in
-                                return Text("TEST TEXT ")
+                            raycasts.map { raycast in
+                                Row(spacing: 20, wrap: true) {
+                                    Text("Raycast")
+                                    raycast.results.compactMap {
+                                        switch $0 {
+                                        case .Hit(let tileIndex, let edge):
+                                            return Text(edge.rawValue)
+                                        default:
+                                            break
+                                        }
+                                        return nil
+                                    }
+                                }
                             }
                         }
                     }

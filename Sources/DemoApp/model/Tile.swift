@@ -1,7 +1,7 @@
 import CustomGraphicsMath
 
 public struct Tile {
-    public enum Edge: CaseIterable {
+    public enum Edge: String, CaseIterable {
         case Top, Right, Bottom, Left
     }
 

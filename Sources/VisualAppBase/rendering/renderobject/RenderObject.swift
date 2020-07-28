@@ -190,7 +190,6 @@ open class ContainerRenderObject: SubTreeRenderObject {
 
     public init(_ children: [RenderObject]) {
         super.init(children: children)
-        print("Container RENDER OBJECT BRANCHES?", self.isBranching)
     }
 
     public convenience init(@RenderObjectBuilder _ children: () -> [RenderObject]) {

@@ -29,7 +29,7 @@ open class TwoDWorldView: LeafWidget {
 
     override open func render() -> RenderObject {
         return .CacheSplit([.Custom(id: self.id) { renderer in
-            print("MANUAL RAYCAST RENDER")
+            //print("MANUAL RAYCAST RENDER")
             try renderer.scale(DVec2(1, -1))
             try renderer.translate(DVec2(0, -(2 * self.globalPosition.y + self.bounds.size.height)))
             
