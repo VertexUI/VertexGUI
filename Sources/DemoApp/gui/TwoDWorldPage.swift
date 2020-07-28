@@ -62,7 +62,6 @@ open class TwoDWorldPage: SingleChildWidget {
                             
                             MouseArea(onMouseLeave: { _ in
                                 self.worldView.highlightedRaycast = nil
-                                print("MOUSE LEAVE")
                             }) {
                                 Column(spacing: 20) {
                                     
@@ -74,7 +73,6 @@ open class TwoDWorldPage: SingleChildWidget {
                                             self.selectedRaycast = raycast
                                             self.invalidateChild()
                                         }, onMouseEnter: { _ in
-                                            print("MOUSE ENTER")
                                             self.worldView.highlightedRaycast = raycast
                                         }) {
                                             Row(spacing: 20, wrap: true) {

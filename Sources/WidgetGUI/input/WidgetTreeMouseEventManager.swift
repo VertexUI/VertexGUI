@@ -90,30 +90,23 @@ public class WidgetTreeMouseEventManager {
 
             case let rawMouseEvent as RawMouseMoveEvent:
                 let previousTargets = previousMouseEventTargets[ObjectIdentifier(GUIMouseMoveEvent.self)]!
-                print("PREVIOUS TARGETS", previousTargets)
-                
+                var stillPresentPreviousTargetIds = [UInt]()
+
                 for i in 0..<mouseEventTargets.count {
                     let currentTarget = mouseEventTargets[i]
                     try currentTarget.consume(GUIMouseMoveEvent(position: rawMouseEvent.position, previousPosition: rawMouseEvent.previousPosition))
-                    // TODO: maybe check with internal ids
-                    /*if let previousMoveTarget = previousMouseMoveEventTarget, previousMoveTarget !== mouseEventTarget {
-                        try previousMoveTarget.consume(GUIMouseLeaveEvent(position: rawMouseEvent.position, previousPosition: rawMouseEvent.previousPosition))
-                        try mouseEventTarget.consume(GUIMouseEnterEvent(position: rawMouseEvent.position, previousPosition: rawMouseEvent.previousPosition))
-                        self.previousMouseMoveEventTarget = mouseEventTarget
-                    } else if previousMouseMoveEventTarget == nil {*/
-                    if i < previousTargets.count {
-                        let previousTarget = previousTargets[i]
-                        if previousTarget.id != currentTarget.id {
-                            try currentTarget.consume(GUIMouseEnterEvent(position: rawMouseEvent.position, previousPosition: rawMouseEvent.previousPosition))
-                            try previousTarget.consume(GUIMouseLeaveEvent(position: rawMouseEvent.position, previousPosition: rawMouseEvent.previousPosition))
-                        }
+
+                    // TODO: maybe this check can be optimized in speed
+                    if previousTargets.contains(where: { $0.id == currentTarget.id }) {
+                        stillPresentPreviousTargetIds.append(currentTarget.id)
                     } else {
                         try currentTarget.consume(GUIMouseEnterEvent(position: rawMouseEvent.position, previousPosition: rawMouseEvent.previousPosition))
                     }
                 }
 
-                if mouseEventTargets.count < previousTargets.count {
-                    for previousTarget in previousTargets[mouseEventTargets.count..<previousTargets.count] {
+                for previousTarget in previousTargets {
+                    // TODO: maybe this check can be optimized in speed
+                    if !stillPresentPreviousTargetIds.contains(previousTarget.id) {
                         try previousTarget.consume(GUIMouseLeaveEvent(position: rawMouseEvent.position, previousPosition: rawMouseEvent.previousPosition))
                     }
                 }
