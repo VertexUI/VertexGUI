@@ -30,6 +30,8 @@ public class Button: SingleChildWidget {
     public var cursorRequestId: UInt64? = nil
     public var onClick = EventHandlerManager<GUIMouseButtonClickEvent>()
 
+    private var dropCursorRequest: (() -> ())?
+
     private var inputChild: Widget
 
     public init(
@@ -51,9 +53,11 @@ public class Button: SingleChildWidget {
         _ = mouseArea.onClick(forwardOnClick)
         _ = mouseArea.onMouseEnter { _ in
             self.state = .Hover
+            self.dropCursorRequest = self.context!.requestCursor(.Hand)
         }
         _ = mouseArea.onMouseLeave { _ in
             self.state = .Normal
+            self.dropCursorRequest!()
         }
         return mouseArea
     }
@@ -98,5 +102,8 @@ public class Button: SingleChildWidget {
 
     override open func destroy() throws {
         onClick.removeAllHandlers()
+        if let drop = dropCursorRequest {
+            drop()
+        }
     }
 }

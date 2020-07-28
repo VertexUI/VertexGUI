@@ -41,7 +41,7 @@ open class SDL2OpenGL3NanoVGSystem: System<SDL2OpenGL3NanoVGWindow, SDL2OpenGL3N
         //defer { SDL.quit() }
     }
 
-    override open func updateCursor() throws {
+    override open func updateCursor() {
         if cursorRequests.count > 0 {
             print("HAVE CURSOR REQUEST")
             switch Array(cursorRequests.values)[0] {

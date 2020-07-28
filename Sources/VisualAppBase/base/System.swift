@@ -18,20 +18,22 @@ open class System<W: Window, R: Renderer> {
         fatalError("newWindow() not implemented.")
     }
 
-    open func requestCursor(_ cursor: Cursor) throws -> UInt64 {
+    open func requestCursor(_ cursor: Cursor) -> () -> Void {
         let id = nextCursorRequestId
         cursorRequests[id] = cursor
         nextCursorRequestId += 1
-        try updateCursor()
-        return id
+        updateCursor()
+        return {
+            self.dropCursorRequest(id: id)
+        }
     }
 
-    open func dropCursorRequest(id: UInt64) throws {
+    open func dropCursorRequest(id: UInt64) {
         cursorRequests.removeValue(forKey: id)
-        try updateCursor()
+        updateCursor()
     }
 
-    open func updateCursor() throws {
+    open func updateCursor() {
         fatalError("updateCursor not implemented.")
     }
 

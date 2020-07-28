@@ -48,7 +48,11 @@ open class TwoDGraphicalApp: App<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGWindo
                 faces: [
                     FontFace(path: (Path.cwd/"Sources/DemoApp/assets/Roboto-Regular.ttf").string, weight: .Regular, style: .Normal)
                 ]
-            ), getTextBoundsSize: getTextBoundsSize)
+            ),
+            getTextBoundsSize: getTextBoundsSize,
+            requestCursor: {
+                self.system!.requestCursor($0)
+            })
 
         devToolsGuiRoot.context = WidgetContext(
             defaultFontFamily: FontFamily(
@@ -56,7 +60,11 @@ open class TwoDGraphicalApp: App<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGWindo
                 faces: [
                     FontFace(path: (Path.cwd/"Sources/DemoApp/assets/Roboto-Regular.ttf").string, weight: .Regular, style: .Normal)
                 ]
-            ), getTextBoundsSize: getTextBoundsSize)
+            ),
+            getTextBoundsSize: getTextBoundsSize,
+            requestCursor: {
+                self.system!.requestCursor($0)
+            })
             /*TextConfigProvider(
                 child: page, 
                 config: TextConfig(fontConfig: Self.defaultFontConfig, color: .Green, wrap: false)))*/
