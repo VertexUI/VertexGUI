@@ -164,11 +164,19 @@ public class RenderObjectTree: SubTreeRenderObject {
 
             for i in replacedChildren[parentIndex].count..<parents[parentIndex].children.count {
 
-                if let currentIdentifiedTree = parents[parentIndex].children[i] as? IdentifiedSubTreeRenderObject {
-                    replacedIdentifiedSubTree = currentIdentifiedTree
-                    replacedIdentifiedSubTreePath = currentPath/i
-                    replacedChildren[parentIndex].append(identifiedSubTree)
-
+                if
+                    let currentIdentifiedTree = parents[parentIndex].children[i] as? IdentifiedSubTreeRenderObject,
+                    currentIdentifiedTree.id == identifiedSubTree.id {
+                 //   if currentIdentifiedTree.id == identifiedSubTree.id {
+                        replacedIdentifiedSubTree = currentIdentifiedTree
+                        replacedIdentifiedSubTreePath = currentPath/i
+                        replacedChildren[parentIndex].append(identifiedSubTree)
+                 /*   } else {
+                        parents.append(currentIdentifiedTree)
+                        replacedChildren.append([RenderObject]())
+                        currentPath = currentPath/i
+                        continue outer
+                    }*/
                 } else if let newParent = parents[parentIndex].children[i] as? SubTreeRenderObject {
                     parents.append(newParent)
                     replacedChildren.append([RenderObject]())
@@ -185,7 +193,8 @@ public class RenderObjectTree: SubTreeRenderObject {
             currentPath = currentPath.dropLast()
             replacedChildren.popLast()
             if parents.count > 0 {
-                parents[parentIndex - 1].children.append(newFinished)
+                replacedChildren[parentIndex - 1].append(newFinished)
+                //parents[parentIndex - 1].children.append(newFinished)
             } else {
                 newTree = newFinished as? RenderObjectTree
             }

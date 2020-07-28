@@ -53,7 +53,6 @@ public struct TwoDRaycastStrategy {
                 let line = AnyLine(vertices.0, vertices.1)
                 if let intersection = rayLine.intersect(line: line) {
                     if line.pointBetween(test: intersection, from: vertices.0, to: vertices.1) {
-                        print("POINT IS BETWEEN", vertices.0, vertices.1, intersection)
                         results.append(.Intersection(position: intersection))
                         let distance = (intersection - start).length
                         if distance < nearestIntersectedEdgeDistance {

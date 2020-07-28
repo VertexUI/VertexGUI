@@ -1,5 +1,6 @@
 import VisualAppBase
 
+// TODO: maybe rename to BuildableSingleChildWidget and create another SingleChildWidget as Basis for button?... maybe can simply use Widget for this
 open class SingleChildWidget: Widget {
     open lazy var child: Widget = buildChild()
     
@@ -26,6 +27,7 @@ open class SingleChildWidget: Widget {
             self.invalidateRenderState($0)
         }
         self.child = child
+        children = [child]
         try! layout()
         invalidateRenderState()
     }

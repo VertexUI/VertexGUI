@@ -104,7 +104,6 @@ open class SDL2OpenGL3NanoVGWindow: Window {
         drawableSize.height = Double(newHeight)
         //SDL_GL_MakeCurrent(sdlWindow, glContext)
         //glViewport(x: 0, y: 0, width: GLMap.Size(drawableSize.width), height: GLMap.Size(drawableSize.height))
-        print("DRAWABLE SIZE::", drawableSize)
         try super.updateSize()
     }
 

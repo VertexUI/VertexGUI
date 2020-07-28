@@ -118,10 +118,6 @@ public class RenderObjectTreeView: MultiChildWidget {
 
         lines.reverse()
 
-        for line in lines {
-            print(line.start, line.end)
-        }
-
         return RenderObject.RenderStyle(fillColor: FixedRenderValue(Color.White)) {
             RenderObject.RenderStyle(strokeWidth: 2, strokeColor: FixedRenderValue(.Black)) {
                 lines

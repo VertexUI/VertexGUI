@@ -9,6 +9,8 @@ open class TwoDWorldPage: SingleChildWidget {
     private var newRaycastStart: DVec2?
     private var newRaycastEnd: DVec2?
 
+    private var selectedRaycast: TwoDRaycast?
+
     // TODO: should create a wrapper / optimize / avoid expensive tree traversal
     private var worldView: TwoDWorldView {
         return childOfType(TwoDWorldView.self)!
@@ -16,7 +18,6 @@ open class TwoDWorldPage: SingleChildWidget {
     
     override public init() {
         super.init()
-        print("INIT AFTER")
     }
 
     override open func buildChild() -> Widget {
@@ -50,20 +51,31 @@ open class TwoDWorldPage: SingleChildWidget {
                 ComputedSize {
                     $0.constrain(DSize2($0.maxWidth, $0.maxHeight))
                 } child: {
+
                     Padding(all: 20) {
-                        Column(spacing: 20) {
-                            Text("Raycasts")
-                            raycasts.map { raycast in
-                                Row(spacing: 20, wrap: true) {
-                                    Text("Raycast")
-                                    raycast.results.compactMap {
-                                        switch $0 {
-                                        case .Hit(let tileIndex, let edge):
-                                            return Text(edge.rawValue)
-                                        default:
-                                            break
+
+                        if let selectedRaycast = selectedRaycast {
+                            
+                            RaycastDetailView(raycast: selectedRaycast)
+
+                        } else {
+
+                            Column(spacing: 20) {
+                                
+                                Text("Raycasts")
+
+                                raycasts.map { raycast in
+
+                                    MouseArea(onClick: { _ in
+                                        self.selectedRaycast = raycast
+                                        self.invalidateChild()
+                                    }, onMouseEnter: { _ in
+                                        self.worldView.highlightedRaycast = raycast
+                                    }) {
+                                        Row(spacing: 20, wrap: true) {
+
+                                            Text("Raycast")
                                         }
-                                        return nil
                                     }
                                 }
                             }

@@ -6,6 +6,12 @@ open class TwoDWorldView: LeafWidget {
     private var world: TwoDVoxelWorld
     private var raycasts: [TwoDRaycast]
 
+    public var highlightedRaycast: TwoDRaycast? {
+        didSet {
+            invalidateRenderState()
+        }
+    }
+
     public init(world: TwoDVoxelWorld, raycasts: [TwoDRaycast]) {
         self.world = world
         self.raycasts = raycasts
@@ -81,7 +87,11 @@ open class TwoDWorldView: LeafWidget {
 
                 try renderer.lineSegment(from: scaledRayStart, to: scaledRayEnd)
                 try renderer.strokeWidth(5)
-                try renderer.strokeColor(.Blue)
+                if let highlightedRaycast = self.highlightedRaycast, raycast == highlightedRaycast {
+                    try renderer.strokeColor(.Black)
+                } else {
+                    try renderer.strokeColor(.Blue)
+                }
                 try renderer.stroke()
 
                 for result in raycast.results {

@@ -79,7 +79,6 @@ open class TwoDGraphicalApp: App<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGWindo
     
         _ = guiRoot.onDebuggingDataAvailable {
             self.devToolsView.debuggingData = $0
-            print("GUI ROOT DEBUGGING DATA AVAILABLE PUBSLIH")
         }
         _ = self.window!.onResize(handleWindowResized)
         _ = self.window!.onMouse(handleMouseEvent)

@@ -1,12 +1,12 @@
 import CustomGraphicsMath
 
-public enum TwoDRaycastResult {
+public enum TwoDRaycastResult: Equatable {
     case Hit(tileIndex: IVec2, edge: Tile.Edge)
     case Test(tileIndex: IVec2)
     case Intersection(position: DVec2)
 }
 
-public struct TwoDRaycast {
+public struct TwoDRaycast: Equatable {
     public let start: DVec2
     public let end: DVec2
     public let results: [TwoDRaycastResult]

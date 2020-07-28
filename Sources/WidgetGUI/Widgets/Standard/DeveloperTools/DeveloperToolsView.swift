@@ -28,13 +28,7 @@ public class DeveloperToolsView: SingleChildWidget, StatefulWidget {
     }
 
     override open func buildChild() -> Widget {
-        print("DEBUUGER CALL UPDATE CHILD")
-
         if let debuggingData = debuggingData {
-            print("HAVE DEBUGGING DATA")
-
-            //print("GROUP COUNT", groups.count)
-
             return Background(background: .White) {
                 Column {
                     ScrollArea {
@@ -54,7 +48,6 @@ public class DeveloperToolsView: SingleChildWidget, StatefulWidget {
     private func buildSelectedObjectDetail() -> Widget {
         var children = [Widget]()
         if let selectedObjectPath = state.selectedObjectPath {
-            print("BUILD SELECTED DETAIL!!!", selectedObjectPath)
             let selectedObject = debuggingData!.tree[selectedObjectPath]!
             var properties = [Widget]()
             let mirror = Mirror(reflecting: selectedObject)

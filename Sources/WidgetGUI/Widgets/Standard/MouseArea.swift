@@ -22,6 +22,8 @@ public class MouseArea: SingleChildWidget, GUIMouseEventConsumer {
         onClick onClickHandler: EventHandlerManager<GUIMouseButtonClickEvent>.Handler? = nil,
         onMouseButtonDown onMouseButtonDownHandler: EventHandlerManager<GUIMouseButtonDownEvent>.Handler? = nil,
         onMouseMove onMouseMoveHandler: EventHandlerManager<GUIMouseMoveEvent>.Handler? = nil,
+        onMouseEnter onMouseEnterHandler: EventHandlerManager<GUIMouseEnterEvent>.Handler? = nil,
+        onMouseLeave onMouseLeaveHandler: EventHandlerManager<GUIMouseLeaveEvent>.Handler? = nil,
         onMouseWheel onMouseWheelHandler: EventHandlerManager<GUIMouseWheelEvent>.Handler? = nil,
         child inputChild: Widget) {
             if let onClickHandler = onClickHandler {
@@ -32,6 +34,12 @@ public class MouseArea: SingleChildWidget, GUIMouseEventConsumer {
             }
             if let onMouseMoveHandler = onMouseMoveHandler {
                 _ = self.onMouseMove(onMouseMoveHandler)
+            }
+            if let onMouseEnterHandler = onMouseEnterHandler {
+                _ = self.onMouseEnter(onMouseEnterHandler)
+            }
+            if let onMouseLeaveHandler = onMouseLeaveHandler {
+                _ = self.onMouseLeave(onMouseLeaveHandler)
             }
             if let onMouseWheelHandler = onMouseWheelHandler {
                 _ = self.onMouseWheel(onMouseWheelHandler)
@@ -44,12 +52,16 @@ public class MouseArea: SingleChildWidget, GUIMouseEventConsumer {
         onClick onClickHandler: EventHandlerManager<GUIMouseButtonClickEvent>.Handler? = nil,
         onMouseButtonDown onMouseButtonDownHandler: EventHandlerManager<GUIMouseButtonDownEvent>.Handler? = nil,
         onMouseMove onMouseMoveHandler: EventHandlerManager<GUIMouseMoveEvent>.Handler? = nil,
+        onMouseEnter onMouseEnterHandler: EventHandlerManager<GUIMouseEnterEvent>.Handler? = nil,
+        onMouseLeave onMouseLeaveHandler: EventHandlerManager<GUIMouseLeaveEvent>.Handler? = nil,
         onMouseWheel onMouseWheelHandler: EventHandlerManager<GUIMouseWheelEvent>.Handler? = nil,
         @WidgetBuilder child: () -> Widget) {
             self.init(
                 onClick: onClickHandler,
                 onMouseButtonDown: onMouseButtonDownHandler,
                 onMouseMove: onMouseMoveHandler,
+                onMouseEnter: onMouseEnterHandler,
+                onMouseLeave: onMouseLeaveHandler,
                 onMouseWheel: onMouseWheelHandler,
                 child: child())
     }

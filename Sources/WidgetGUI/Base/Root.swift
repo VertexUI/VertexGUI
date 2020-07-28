@@ -56,7 +56,6 @@ open class Root: Parent {
 
     open func layout() throws {
         rootWidget.constraints = BoxConstraints(minSize: DSize2.zero, maxSize: bounds.size)
-        print("SET ROOT WIDGET CONSTRAINTS", bounds.size)
         try rootWidget.layout()
     }
 
@@ -72,9 +71,9 @@ open class Root: Parent {
             renderObjectTreeRenderer.refresh()
         } else {
             var updateWidget = widget ?? rootWidget
-            let update = renderObjectTree.replace(widgetRenderObjectTreeGenerator.generate(updateWidget))
+            var updatedSubTree = widgetRenderObjectTreeGenerator.generate(updateWidget)
+            let update = renderObjectTree.replace(updatedSubTree)
             renderObjectTreeRenderer.processUpdate(update)
-            print("UPDATE RENDER TREE CALLED", widget)
         }
         try! onDebuggingDataAvailable.invokeHandlers(renderObjectTreeRenderer.debuggingData)
     }
@@ -84,7 +83,6 @@ open class Root: Parent {
     open func render(renderer: Renderer) throws {
         //try renderer.clipArea(bounds: globalBounds)
         if renderTreeInvalidated {
-            print("CALLING FROM HERE", renderTreeInvalidated)
             if invalidatedWidgets.count > 0 {
                 for widget in invalidatedWidgets.values {
                     updateRenderObjectTree(widget)
