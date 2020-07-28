@@ -90,6 +90,7 @@ public class WidgetTreeMouseEventManager {
 
             case let rawMouseEvent as RawMouseMoveEvent:
                 let previousTargets = previousMouseEventTargets[ObjectIdentifier(GUIMouseMoveEvent.self)]!
+                print("PREVIOUS TARGETS", previousTargets)
                 
                 for i in 0..<mouseEventTargets.count {
                     let currentTarget = mouseEventTargets[i]
@@ -100,7 +101,7 @@ public class WidgetTreeMouseEventManager {
                         try mouseEventTarget.consume(GUIMouseEnterEvent(position: rawMouseEvent.position, previousPosition: rawMouseEvent.previousPosition))
                         self.previousMouseMoveEventTarget = mouseEventTarget
                     } else if previousMouseMoveEventTarget == nil {*/
-                    if previousTargets.count > i {
+                    if i < previousTargets.count {
                         let previousTarget = previousTargets[i]
                         if previousTarget.id != currentTarget.id {
                             try currentTarget.consume(GUIMouseEnterEvent(position: rawMouseEvent.position, previousPosition: rawMouseEvent.previousPosition))

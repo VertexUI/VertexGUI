@@ -59,22 +59,28 @@ open class TwoDWorldPage: SingleChildWidget {
                             RaycastDetailView(raycast: selectedRaycast)
 
                         } else {
+                            
+                            MouseArea(onMouseLeave: { _ in
+                                self.worldView.highlightedRaycast = nil
+                                print("MOUSE LEAVE")
+                            }) {
+                                Column(spacing: 20) {
+                                    
+                                    Text("Raycasts")
 
-                            Column(spacing: 20) {
-                                
-                                Text("Raycasts")
+                                    raycasts.map { raycast in
 
-                                raycasts.map { raycast in
+                                        MouseArea(onClick: { _ in
+                                            self.selectedRaycast = raycast
+                                            self.invalidateChild()
+                                        }, onMouseEnter: { _ in
+                                            print("MOUSE ENTER")
+                                            self.worldView.highlightedRaycast = raycast
+                                        }) {
+                                            Row(spacing: 20, wrap: true) {
 
-                                    MouseArea(onClick: { _ in
-                                        self.selectedRaycast = raycast
-                                        self.invalidateChild()
-                                    }, onMouseEnter: { _ in
-                                        self.worldView.highlightedRaycast = raycast
-                                    }) {
-                                        Row(spacing: 20, wrap: true) {
-
-                                            Text("Raycast")
+                                                Text("Raycast")
+                                            }
                                         }
                                     }
                                 }
