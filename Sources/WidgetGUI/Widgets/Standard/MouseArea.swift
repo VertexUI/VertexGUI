@@ -94,4 +94,12 @@ public class MouseArea: SingleChildWidget, GUIMouseEventConsumer {
             print("Unsupported event", event)
         }
     }
+
+    override open func destroy() throws {
+        onMouseButtonDown.removeAllHandlers()
+        onMouseEnter.removeAllHandlers()
+        onMouseMove.removeAllHandlers()
+        onMouseLeave.removeAllHandlers()
+        onMouseWheel.removeAllHandlers()
+    }
 }

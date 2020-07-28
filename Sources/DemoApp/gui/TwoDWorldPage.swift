@@ -55,9 +55,16 @@ open class TwoDWorldPage: SingleChildWidget {
                     Padding(all: 20) {
 
                         if let selectedRaycast = selectedRaycast {
-                            
-                            RaycastDetailView(raycast: selectedRaycast)
+                            Column {
+                                Button { _ in
+                                    self.selectedRaycast = nil
+                                    self.invalidateChild()
+                                } child: {
+                                    Text("Close")
+                                }
 
+                                RaycastDetailView(raycast: selectedRaycast)
+                            }
                         } else {
                             
                             MouseArea(onMouseLeave: { _ in

@@ -25,4 +25,8 @@ public class EventHandlerManager<Data> {
             try handler(data)
         }
     }
+
+    public func removeAllHandlers() {
+        handlers.removeAll()
+    }
 }

@@ -94,5 +94,9 @@ public class Button: SingleChildWidget {
             }
             renderedChild
         }
-     }
+    }
+
+    override open func destroy() throws {
+        onClick.removeAllHandlers()
+    }
 }

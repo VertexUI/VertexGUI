@@ -70,8 +70,8 @@ open class Root: Parent {
             renderObjectTree.children.append(widgetRenderObjectTreeGenerator.generate(rootWidget))
             renderObjectTreeRenderer.refresh()
         } else {
-            var updateWidget = widget ?? rootWidget
-            var updatedSubTree = widgetRenderObjectTreeGenerator.generate(updateWidget)
+            var updatedWidget = widget ?? rootWidget
+            var updatedSubTree = widgetRenderObjectTreeGenerator.generate(updatedWidget)
             let update = renderObjectTree.replace(updatedSubTree)
             renderObjectTreeRenderer.processUpdate(update)
         }

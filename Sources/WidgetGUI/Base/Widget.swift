@@ -51,6 +51,8 @@ open class Widget: Bounded, Parent, Child {
         }
     }
 
+    public internal(set) var destroyed: Bool = false
+
     // TODO: might need to create something like layoutBounds and renderBounds (area that is invalidated on rerender request --> could be more than layoutBounds and affect outside widgets (e.g. a drop shadow that is not included in layoutBounds))
     open var bounds: DRect = DRect(topLeft: DPoint2(0,0), size: DSize2(0,0)) {
         didSet {
@@ -94,6 +96,19 @@ open class Widget: Bounded, Parent, Child {
 
     open func layout() throws {
         fatalError("layout() not implemented.")
+    }
+
+    // TODO: how to name this?
+    public func initiateDestruction() throws {
+        for child in children {
+            try child.initiateDestruction()
+        }
+        parent = nil
+        try destroy()
+        destroyed = true
+    }
+
+    open func destroy() throws {
     }
 
     open func findParent(_ condition: (_ parent: Parent) throws -> Bool) rethrows -> Parent? {
@@ -143,6 +158,9 @@ open class Widget: Bounded, Parent, Child {
 
     /// This should trigger a rerender of the widget in the next frame.
     public func invalidateRenderState(_ widget: Widget? = nil) {
+        if destroyed {
+            return
+        }
         let widget = widget ?? self
         try! onRenderStateInvalidated.invokeHandlers(widget)
     }

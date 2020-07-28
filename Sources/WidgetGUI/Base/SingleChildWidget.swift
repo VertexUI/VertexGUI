@@ -21,6 +21,8 @@ open class SingleChildWidget: Widget {
     }
 
     open func invalidateChild() {
+        try! child.initiateDestruction()
+        
         var child = buildChild()
         child.parent = self
         _ = child.onRenderStateInvalidated {

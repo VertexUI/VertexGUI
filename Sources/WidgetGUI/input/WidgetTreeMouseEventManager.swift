@@ -97,7 +97,7 @@ public class WidgetTreeMouseEventManager {
                     try currentTarget.consume(GUIMouseMoveEvent(position: rawMouseEvent.position, previousPosition: rawMouseEvent.previousPosition))
 
                     // TODO: maybe this check can be optimized in speed
-                    if previousTargets.contains(where: { $0.id == currentTarget.id }) {
+                    if previousTargets.contains(where: { !$0.destroyed && $0.id == currentTarget.id }) {
                         stillPresentPreviousTargetIds.append(currentTarget.id)
                     } else {
                         try currentTarget.consume(GUIMouseEnterEvent(position: rawMouseEvent.position, previousPosition: rawMouseEvent.previousPosition))
@@ -106,7 +106,7 @@ public class WidgetTreeMouseEventManager {
 
                 for previousTarget in previousTargets {
                     // TODO: maybe this check can be optimized in speed
-                    if !stillPresentPreviousTargetIds.contains(previousTarget.id) {
+                    if !previousTarget.destroyed && !stillPresentPreviousTargetIds.contains(previousTarget.id) {
                         try previousTarget.consume(GUIMouseLeaveEvent(position: rawMouseEvent.position, previousPosition: rawMouseEvent.previousPosition))
                     }
                 }

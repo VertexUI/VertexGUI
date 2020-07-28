@@ -1,4 +1,5 @@
 import WidgetGUI
+import CustomGraphicsMath
 
 public class RaycastDetailView: SingleChildWidget {
     private var raycast: TwoDRaycast
@@ -9,7 +10,11 @@ public class RaycastDetailView: SingleChildWidget {
 
     override public func buildChild() -> Widget {
         Column {
-            Text("Raycast \(raycast.start) to \(raycast.end)")
+            Text("Raycast")
+            
+            Text("From \(self.vectorText(raycast.start))")
+            Text("To \(self.vectorText(raycast.end))")
+
             raycast.results.compactMap {
                 switch $0 {
                 case .Hit(let tileIndex, let edge):
@@ -20,5 +25,9 @@ public class RaycastDetailView: SingleChildWidget {
                 return nil
             }
         }
+    }
+
+    private func vectorText(_ vector: DVec2) -> String {
+        "(\(vector.elements.map({ String(format: "%.3f", $0 ) }).joined(separator: " | ")))"
     }
 }
