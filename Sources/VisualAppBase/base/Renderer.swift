@@ -39,11 +39,11 @@ public protocol Renderer {
     // TODO: update to remove style argument
     func circle(center: DPoint2, radius: Double) throws
     func ellipse(center: DPoint2, radius: DVec2) throws
-    func text(_ text: String, topLeft: DPoint2, fontConfig: FontConfig, color: Color) throws
+    func text(_ text: String, fontConfig: FontConfig, color: Color, topLeft: DPoint2) throws
     func lineSegment(from: DPoint2, to: DPoint2) throws
     func getTextBoundsSize(_ text: String, fontConfig: FontConfig) throws -> DSize2
-    func multilineText(_ text: String, topLeft: DPoint2, maxWidth: Double, fontConfig: FontConfig, color: Color) throws
-    func getMultilineTextBoundsSize(_ text: String, maxWidth: Double, fontConfig: FontConfig) throws -> DSize2
+    func multilineText(_ text: String, fontConfig: FontConfig, color: Color, topLeft: DPoint2, maxWidth: Double) throws
+    func getMultilineTextBoundsSize(_ text: String, fontConfig: FontConfig, maxWidth: Double) throws -> DSize2
     func globalOpacity(_ opacity: Float) throws
     func clipArea(bounds: DRect) throws
     func releaseClipArea() throws

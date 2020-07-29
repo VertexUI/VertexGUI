@@ -375,8 +375,10 @@ open class CustomRenderObject: RenderObject {
 
 open class TextRenderObject: RenderObject {
     public var text: String
+    public var fontConfig: FontConfig
+    public var color: Color
     public var topLeft: DVec2
-    public var config: TextConfig
+    public var wrap: Bool
     public var maxWidth: Double?
 
     override open var hasTimedRenderValue: Bool {
@@ -390,16 +392,20 @@ open class TextRenderObject: RenderObject {
     override open var individualHash: Int {
         var hasher = Hasher()
         hasher.combine(text)
+        hasher.combine(fontConfig)
+        hasher.combine(color)
         hasher.combine(topLeft)
-        hasher.combine(config)
         hasher.combine(maxWidth)
+        hasher.combine(wrap)
         return hasher.finalize()
     }
 
-    public init(_ text: String, config: TextConfig, topLeft: DVec2, maxWidth: Double? = nil) {
+    public init(_ text: String, fontConfig: FontConfig, color: Color, topLeft: DVec2, wrap: Bool = false, maxWidth: Double? = nil) {
         self.text = text
+        self.fontConfig = fontConfig
+        self.color = color
         self.topLeft = topLeft
-        self.config = config
+        self.wrap = wrap
         self.maxWidth = maxWidth
     }
 }

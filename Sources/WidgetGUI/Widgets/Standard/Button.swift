@@ -15,6 +15,13 @@ public struct ButtonStyle {
     var cursor: Cursor
 }
 
+public let defaultButtonTextConfig = TextConfig(
+    fontConfig: FontConfig(
+        family: defaultFontFamily, size: 16, weight: .Bold, style: .Normal),
+    transform: .Uppercase,
+    color: .Black,
+    wrap: false)
+
 public let defaultButtonStyles: [ButtonState: ButtonStyle] = [
     .Normal: ButtonStyle(background: Color(255, 0, 0, 255), cursor: .Arrow),
     .Hover: ButtonStyle(background: Color(0, 255, 0, 255), cursor: .Hand)
@@ -49,7 +56,9 @@ public class Button: SingleChildWidget {
     override open func buildChild() -> Widget {
         let mouseArea = MouseArea {
             Padding(all: 16) {
-                inputChild
+                TextConfigProvider(config: defaultButtonTextConfig) {
+                    inputChild
+                }
             }
         }
         _ = mouseArea.onClick(forwardOnClick)

@@ -255,7 +255,7 @@ open class SDL2OpenGL3NanoVGRenderer: Renderer {
         nvgTextAlign(window.nvg, Int32(NVG_ALIGN_LEFT.rawValue | NVG_ALIGN_TOP.rawValue))
     }
 
-    open func text(_ text: String, topLeft: DPoint2, fontConfig: FontConfig, color: Color) throws {
+    open func text(_ text: String, fontConfig: FontConfig, color: Color, topLeft: DPoint2) throws {
         nvgBeginPath(window.nvg)
         applyFontConfig(fontConfig)
         nvgFillColor(window.nvg, color.toNVG())
@@ -269,14 +269,14 @@ open class SDL2OpenGL3NanoVGRenderer: Renderer {
         return DSize2(Double(bounds[2]), Double(bounds[3]))
     }
 
-    open func multilineText(_ text: String, topLeft: DPoint2, maxWidth: Double, fontConfig: FontConfig, color: Color) throws {
+    open func multilineText(_ text: String, fontConfig: FontConfig, color: Color, topLeft: DPoint2, maxWidth: Double) throws {
         nvgBeginPath(window.nvg)
         applyFontConfig(fontConfig)
         nvgFillColor(window.nvg, color.toNVG())
         nvgTextBox(window.nvg, Float(topLeft.x), Float(topLeft.y), Float(maxWidth), text, nil)
     }
 
-    open func getMultilineTextBoundsSize(_ text: String, maxWidth: Double, fontConfig: FontConfig) throws -> DSize2 {
+    open func getMultilineTextBoundsSize(_ text: String, fontConfig: FontConfig, maxWidth: Double) throws -> DSize2 {
         applyFontConfig(fontConfig)
         var bounds = [Float](repeating: 0, count: 4)
         nvgTextBoxBounds(window.nvg, 0, 0, Float(maxWidth), text, nil, &bounds)

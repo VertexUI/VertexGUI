@@ -452,10 +452,10 @@ public class RenderObjectTreeRenderer {
             try backendRenderer.fill()
             try backendRenderer.stroke()
         case let currentRenderObject as RenderObject.Text:
-            if currentRenderObject.config.wrap {
-                try backendRenderer.multilineText(currentRenderObject.text, topLeft: currentRenderObject.topLeft, maxWidth: currentRenderObject.maxWidth ?? 0, fontConfig: currentRenderObject.config.fontConfig, color: currentRenderObject.config.color)
+            if currentRenderObject.wrap {
+                try backendRenderer.multilineText(currentRenderObject.text, fontConfig: currentRenderObject.fontConfig, color: currentRenderObject.color,  topLeft: currentRenderObject.topLeft, maxWidth: currentRenderObject.maxWidth ?? 0)
             } else {
-                try backendRenderer.text(currentRenderObject.text, topLeft: currentRenderObject.topLeft, fontConfig: currentRenderObject.config.fontConfig, color: currentRenderObject.config.color)
+                try backendRenderer.text(currentRenderObject.text, fontConfig: currentRenderObject.fontConfig, color: currentRenderObject.color, topLeft: currentRenderObject.topLeft)
             }
         default:
             print("Could not render RenderObject, implementation missing for:", currentRenderObject)

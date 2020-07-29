@@ -26,8 +26,8 @@ open class TwoDGraphicalApp: App<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGWindo
     private var virtualScreen: VirtualScreen?
 
     private var compositionShader = Shader(
-        vertex: try! String(contentsOf: Path.cwd/"Sources/DemoApp/assets/CompositionVertex.glsl"),
-        fragment: try! String(contentsOf: Path.cwd/"Sources/DemoApp/assets/CompositionFragment.glsl")
+        vertex: try! String(contentsOf: Path.cwd/"Sources/DemoApp/Assets/CompositionVertex.glsl"),
+        fragment: try! String(contentsOf: Path.cwd/"Sources/DemoApp/Assets/CompositionFragment.glsl")
     )
 
     override public init() {
@@ -43,24 +43,12 @@ open class TwoDGraphicalApp: App<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGWindo
 
         super.init()
         guiRoot.context = WidgetContext(
-            defaultFontFamily: FontFamily(
-                name: "Roboto",
-                faces: [
-                    FontFace(path: (Path.cwd/"Sources/DemoApp/assets/Roboto-Regular.ttf").string, weight: .Regular, style: .Normal)
-                ]
-            ),
             getTextBoundsSize: getTextBoundsSize,
             requestCursor: {
                 self.system!.requestCursor($0)
             })
 
         devToolsGuiRoot.context = WidgetContext(
-            defaultFontFamily: FontFamily(
-                name: "Roboto",
-                faces: [
-                    FontFace(path: (Path.cwd/"Sources/DemoApp/assets/Roboto-Regular.ttf").string, weight: .Regular, style: .Normal)
-                ]
-            ),
             getTextBoundsSize: getTextBoundsSize,
             requestCursor: {
                 self.system!.requestCursor($0)
@@ -101,12 +89,12 @@ open class TwoDGraphicalApp: App<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGWindo
         _ = self.system!.onFrame(render)
     }
 
-    open func getTextBoundsSize(_ text: String, _ config: TextConfig, _ maxWidth: Double?) -> DSize2 {
+    open func getTextBoundsSize(_ text: String, _ fontConfig: FontConfig, _ maxWidth: Double?) -> DSize2 {
         if let renderer = renderer {
-            if config.wrap {
-                return try! renderer.getMultilineTextBoundsSize(text, maxWidth: maxWidth ?? 0, fontConfig: config.fontConfig)
+            if let maxWidth = maxWidth {
+                return try! renderer.getMultilineTextBoundsSize(text, fontConfig: fontConfig, maxWidth: maxWidth ?? 0)
             } else {
-                return try! renderer.getTextBoundsSize(text, fontConfig: config.fontConfig)
+                return try! renderer.getTextBoundsSize(text, fontConfig: fontConfig)
             }
         }
         return DSize2(0, 0)

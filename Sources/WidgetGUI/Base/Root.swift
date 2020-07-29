@@ -35,11 +35,7 @@ open class Root: Parent {
     public var onDebuggingDataAvailable = EventHandlerManager<RenderObjectTreeRenderer.DebuggingData>()
 
     public init(rootWidget contentRootWidget: Widget) {
-        self.rootWidget = Column {
-            /*Background(
-                background: Color(255, 255, 255, 255),
-                child: Text("TEST")
-            ),*/
+        self.rootWidget = ThemeProvider {
             contentRootWidget
         }
         //super.init()
