@@ -30,12 +30,12 @@ open class Background: SingleChildWidget {
         try renderer.rect(globalBounds, style: RenderStyle(fillColor: backgroundColor))
         try child.render(renderer: renderer)
     }*/
-    override open func render(_ renderedChild: RenderObject?) -> RenderObject? {
+    override open func renderContent() -> RenderObject? {
         return .Container {
             RenderObject.RenderStyle(fillColor: FixedRenderValue(background)) {
                 RenderObject.Rect(globalBounds)
             }
-            renderedChild
+            child.render()
         }
     }
 }

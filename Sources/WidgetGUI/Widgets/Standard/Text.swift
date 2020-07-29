@@ -6,7 +6,7 @@ import Foundation
 import CustomGraphicsMath
 import VisualAppBase
 
-public class Text: LeafWidget {
+public class Text: Widget {
     public var text: String {
         didSet {
             try! layout()
@@ -60,7 +60,7 @@ public class Text: LeafWidget {
         return try globalContext!.getTextSize(text: text, fontConfig: fontConfig)
     }*/
 
-    override public func render() -> RenderObject? {
+    override public func renderContent() -> RenderObject? {
         if let textConfig = filledTextConfig {
             return .Text(text, config: textConfig, topLeft: globalPosition, maxWidth: bounds.size.width)
         }

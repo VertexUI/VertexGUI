@@ -24,8 +24,7 @@ open class Root: Parent {
 
     public var rootWidget: Widget
 
-    // TODO: might include this into this Root class, why need another small object for that...?
-    private var widgetRenderObjectTreeGenerator = WidgetRenderObjectTreeGenerator()
+    //private var widgetRenderObjectTreeGenerator = WidgetRenderObjectTreeGenerator()
     private var renderObjectTreeRenderer: RenderObjectTreeRenderer
     private var renderObjectTree: RenderObjectTree
     private var renderTreeInvalidated = false
@@ -67,11 +66,11 @@ open class Root: Parent {
     open func updateRenderObjectTree(_ widget: Widget? = nil) {
         if renderObjectTree.children.count == 0 {
             // TODO: provide an insert action
-            renderObjectTree.children.append(widgetRenderObjectTreeGenerator.generate(rootWidget))
+            renderObjectTree.children.append(rootWidget.render())
             renderObjectTreeRenderer.refresh()
         } else {
             var updatedWidget = widget ?? rootWidget
-            var updatedSubTree = widgetRenderObjectTreeGenerator.generate(updatedWidget)
+            var updatedSubTree = updatedWidget.render()
             let update = renderObjectTree.replace(updatedSubTree)
             renderObjectTreeRenderer.processUpdate(update)
         }

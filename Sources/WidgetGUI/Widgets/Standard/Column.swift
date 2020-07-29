@@ -6,7 +6,7 @@ import Foundation
 import VisualAppBase
 import CustomGraphicsMath
 
-public class Column: MultiChildWidget {
+public class Column: Widget {
     public var spacing: Double
     public var wrap: Bool
 

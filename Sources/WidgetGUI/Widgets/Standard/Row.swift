@@ -1,7 +1,7 @@
 import CustomGraphicsMath
 import VisualAppBase
 
-public class Row: MultiChildWidget {
+public class Row: Widget {
     private var spacing: Double
     private var wrap: Bool
 

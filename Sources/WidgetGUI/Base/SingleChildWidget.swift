@@ -40,7 +40,7 @@ open class SingleChildWidget: Widget {
         bounds.size = child.bounds.size
     }    
 
-    open func render(_ renderedChild: RenderObject?) -> RenderObject? {
-        return renderedChild 
+    override open func renderContent() -> RenderObject? {
+        return child.render()
     }
 }

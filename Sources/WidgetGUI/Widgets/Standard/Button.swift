@@ -53,6 +53,7 @@ public class Button: SingleChildWidget {
         _ = mouseArea.onClick(forwardOnClick)
         _ = mouseArea.onMouseEnter { _ in
             self.state = .Hover
+            // TODO: might need to implement cursor via render object and check in RenderObjectTree renderer which renderobject below mouse
             self.dropCursorRequest = self.context!.requestCursor(.Hand)
         }
         _ = mouseArea.onMouseLeave { _ in
@@ -81,7 +82,7 @@ public class Button: SingleChildWidget {
         bounds.size = child.bounds.size
     }
  
-    override open func render(_ renderedChild: RenderObject?) -> RenderObject? {
+    override open func renderContent() -> RenderObject? {
         let style = stateStyles[state] ?? defaultButtonStyles[state]!
         return RenderObject.Container {
             if state == .Normal {
@@ -96,7 +97,7 @@ public class Button: SingleChildWidget {
                     RenderObject.Rect(globalBounds)
                 }
             }
-            renderedChild
+            child.render() 
         }
     }
 

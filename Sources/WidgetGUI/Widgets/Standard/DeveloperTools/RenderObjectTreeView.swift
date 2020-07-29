@@ -1,7 +1,7 @@
 import VisualAppBase
 import CustomGraphicsMath
 
-public class RenderObjectTreeView: MultiChildWidget {
+public class RenderObjectTreeView: Widget {
     private struct Group {
         var parent: Widget?
         var children: [Widget] = []
@@ -102,7 +102,7 @@ public class RenderObjectTreeView: MultiChildWidget {
         bounds.size = DSize2(maxX, nextY + currentLineHeight)
     }
 
-    override open func render(_ renderedChildren: [RenderObject?]) -> RenderObject? {
+    override open func renderContent() -> RenderObject? {
         var lines = [RenderObject.LineSegment]()
 
         for i in 0..<groupedChildren.count {
@@ -122,7 +122,7 @@ public class RenderObjectTreeView: MultiChildWidget {
             RenderObject.RenderStyle(strokeWidth: 2, strokeColor: FixedRenderValue(.Black)) {
                 lines
             }
-            renderedChildren
+            children.map { $0.render() }
         }
     }
 }

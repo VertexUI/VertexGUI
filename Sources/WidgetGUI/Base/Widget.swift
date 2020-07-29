@@ -164,5 +164,19 @@ open class Widget: Bounded, Parent, Child {
         let widget = widget ?? self
         try! onRenderStateInvalidated.invokeHandlers(widget)
     }
+
+    /// Returns the result of renderContent() wrapped in an IdentifiedSubTreeRenderObject
+    public func render() -> IdentifiedSubTreeRenderObject {
+        return IdentifiedSubTreeRenderObject(id) {
+            renderContent()
+        }
+    }
+
+    /// Invoked by render(), if Widget has children, should use child.render() to render them.
+    open func renderContent() -> RenderObject? {
+        .Container {
+            children.map { $0.render() }
+        }
+    }
 }
 

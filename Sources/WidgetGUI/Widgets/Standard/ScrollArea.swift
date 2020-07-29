@@ -96,7 +96,7 @@ public class ScrollArea: SingleChildWidget {
         print("MOUSE MOVE", event.move)
     }
 
-    override public func render(_ renderedChild: RenderObject?) -> RenderObject? {
+    override public func renderContent() -> RenderObject? {
         var scrollBarX = RenderObject.Rect(DRect(
             topLeft: DPoint2(globalPosition.x, globalPosition.y + globalBounds.size.height - scrollBarWidth.x),
             size: DSize2(scrollBarLength.x, scrollBarWidth.x)
@@ -107,7 +107,7 @@ public class ScrollArea: SingleChildWidget {
         ))
         return RenderObject.Container {
             RenderObject.Translation(DVec2(currentX, currentY)) {
-                renderedChild
+                child.render()
             }
             RenderObject.RenderStyle(fillColor: FixedRenderValue(.Black)) {
                 if scrollXEnabled {

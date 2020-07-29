@@ -2,7 +2,7 @@ import VisualAppBase
 import WidgetGUI
 import CustomGraphicsMath
 
-open class TwoDWorldView: LeafWidget {
+open class TwoDWorldView: Widget {
     private var world: TwoDVoxelWorld
     private var raycasts: [TwoDRaycast]
 
@@ -33,7 +33,7 @@ open class TwoDWorldView: LeafWidget {
         return DRect(topLeft: topLeft, size: tileSize)
     }
 
-    override open func render() -> RenderObject {
+    override open func renderContent() -> RenderObject {
         return .CacheSplit([.Custom(id: self.id) { renderer in
             //print("MANUAL RAYCAST RENDER")
             try renderer.scale(DVec2(1, -1))

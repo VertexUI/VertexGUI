@@ -82,9 +82,9 @@ public class DeveloperToolsView: SingleChildWidget, StatefulWidget {
         print("DEBUGGER LAYOUT FINISHED", bounds.size)
     }*/
 
-    override open func render(_ renderedChild: RenderObject?) -> RenderObject? {
+    override open func renderContent() -> RenderObject? {
         return RenderObject.Uncachable {
-            renderedChild
+            child.render()
         }
     }
 }

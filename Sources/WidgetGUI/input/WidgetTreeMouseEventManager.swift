@@ -21,12 +21,18 @@ public class WidgetTreeMouseEventManager {
 
         var mouseEventTargets: [(Widget & GUIMouseEventConsumer)] = []
         var testMouseEventTargets: [Widget] = [rootWidget]
-        checkTargets: while testMouseEventTargets.count > 0 {
-            for testTarget in testMouseEventTargets {
+        while let testTarget = testMouseEventTargets.popLast() {
+            //for testTarget in testMouseEventTargets {
                 // TODO: this might be a lot of calculation, can optimize by successively removing x, y while traversing the testTargets
                 if testTarget.globalBounds.contains(point: rawMouseEvent.position) {
                     if let target = testTarget as? (Widget & GUIMouseEventConsumer) {
                         mouseEventTargets.append(target)
+                    }
+                    testMouseEventTargets.insert(contentsOf: testTarget.children, at: 0)
+                    /*if testTarget.children.count > 0 {
+                        testMouseEventTargets = testTarget.children
+                    } else {
+                        break checkTargets
                     }
                     switch testTarget {
                     case let testTarget as SingleChildWidget:
@@ -35,11 +41,9 @@ public class WidgetTreeMouseEventManager {
                         testMouseEventTargets = testTarget.children
                     default:
                         break checkTargets
-                    }
-                    continue checkTargets
+                    }*/
                 }
-            }
-            break
+            //}
         }
 
         // to let the event bubble up
