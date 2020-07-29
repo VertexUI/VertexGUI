@@ -112,7 +112,7 @@ open class TwoDGraphicalApp: App<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGWindo
         self.guiRoot.bounds.size = newSize
         do {
             try self.guiRoot.layout()
-           // try renderer!.resizeVirtualScreen(&virtualScreen!, window!.drawableSize)
+        // try renderer!.resizeVirtualScreen(&virtualScreen!, window!.drawableSize)
         } catch {
             print("Error during handleWindowResized().")
         }
@@ -126,19 +126,23 @@ open class TwoDGraphicalApp: App<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGWindo
     open func render(deltaTime: Int) throws {
         // useless rendering to virtualScreen just as a test 
     //    try renderer!.pushVirtualScreen(virtualScreen!)
-        try renderer!.beginFrame()
-        //try renderer!.clear(window!.background)
-        try guiRoot.render(renderer: renderer!)
-        try renderer!.endFrame()
-      //  try renderer!.popVirtualScreen()
-      //  try renderer!.drawVirtualScreens([virtualScreen!])
-        try window!.updateContent()
+        do {
+            try self.renderer!.beginFrame()
+            //try renderer!.clear(window!.background)
+            try self.guiRoot.render(renderer: self.renderer!)
+            try self.renderer!.endFrame()
+        //  try renderer!.popVirtualScreen()
+        //  try renderer!.drawVirtualScreens([virtualScreen!])
+            try self.window!.updateContent()
 
-        try devToolsRenderer!.beginFrame()
-        try devToolsRenderer!.clear(devToolsWindow!.background)
-        try devToolsGuiRoot.render(renderer: devToolsRenderer!)
-        try devToolsRenderer!.endFrame()
-        try devToolsWindow!.updateContent()
+            try self.devToolsRenderer!.beginFrame()
+            try self.devToolsRenderer!.clear(self.devToolsWindow!.background)
+            try self.devToolsGuiRoot.render(renderer: self.devToolsRenderer!)
+            try self.devToolsRenderer!.endFrame()
+            try self.devToolsWindow!.updateContent()
+        } catch {
+            print("Error during render \(error).")
+        }
     }
 }
 

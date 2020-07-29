@@ -83,8 +83,14 @@ open class TwoDWorldPage: SingleChildWidget {
                                             self.worldView.highlightedRaycast = raycast
                                         }) {
                                             Row(spacing: 20, wrap: true) {
-
-                                                Text("Raycast")
+                                                
+                                                MouseInteraction {
+                                                    Text("Raycast")
+                                                } hover: {
+                                                    Text("Raycast on HOVER!!")
+                                                } active: {
+                                                    Text("Raycast on ACTIVE!!")
+                                                }
                                             }
                                         }
                                     }

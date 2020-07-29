@@ -1,5 +1,6 @@
 import VisualAppBase
 import CustomGraphicsMath
+import Dispatch
 
 // TODO: maybe make this the root thing to render, and have a RenderStrategy
 open class Root: Parent {
@@ -27,8 +28,8 @@ open class Root: Parent {
     //private var widgetRenderObjectTreeGenerator = WidgetRenderObjectTreeGenerator()
     private var renderObjectTreeRenderer: RenderObjectTreeRenderer
     private var renderObjectTree: RenderObjectTree
-    private var renderTreeInvalidated = false
-    private var invalidatedWidgets = [UInt: Widget]()
+    //private var renderTreeInvalidated = false
+    //private var invalidatedWidgets = [UInt: Widget]()
     
     private var mouseEventManager = WidgetTreeMouseEventManager()
 
@@ -44,18 +45,20 @@ open class Root: Parent {
         self.rootWidget.parent = self
         // TODO: maybe dangling closure
         _ = self.rootWidget.onRenderStateInvalidated {
-            self.renderTreeInvalidated = true
-            self.invalidatedWidgets[$0.id] = $0
+            //self.renderTreeInvalidated = true
+            self.updateRenderObjectTree($0)
+            //self.invalidatedWidgets[$0.id] = $0
         }
     }
 
     open func layout() {
-        rootWidget.constraints = BoxConstraints(minSize: DSize2.zero, maxSize: bounds.size)
-        try rootWidget.layout()
+        self.rootWidget.constraints = BoxConstraints(minSize: DSize2.zero, maxSize: self.bounds.size)
+        self.rootWidget.layout()
     }
 
     open func consumeMouseEvent(_ rawMouseEvent: RawMouseEvent) -> Bool {
-        return mouseEventManager.propagate(event: rawMouseEvent, through: rootWidget)
+        self.mouseEventManager.propagate(event: rawMouseEvent, through: self.rootWidget)
+        return false
     }
 
     /// - Parameter widget: If a specific widget is passed only the sub tree that was created by the widget will be updated.
@@ -76,8 +79,9 @@ open class Root: Parent {
     // TODO: maybe this little piece of rendering logic belongs into the App as well? / Maybe return a render object tree as well???? 
     // TODO: --> A Game scene could also be a render object with custom logic which is redrawn on every frame by render strategy.
     open func render(renderer: Renderer) throws {
+        try renderObjectTreeRenderer.render(with: renderer, in: bounds)
         //try renderer.clipArea(bounds: globalBounds)
-        if renderTreeInvalidated {
+        /*if renderTreeInvalidated {
             if invalidatedWidgets.count > 0 {
                 for widget in invalidatedWidgets.values {
                     updateRenderObjectTree(widget)
@@ -87,7 +91,7 @@ open class Root: Parent {
                 updateRenderObjectTree()
             }
             renderTreeInvalidated = false
-        }
-        try renderObjectTreeRenderer.render(with: renderer, in: bounds)
+        }*/
+
     }
 }

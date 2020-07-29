@@ -21,6 +21,10 @@ open class SingleChildWidget: Widget {
     }
 
     open func invalidateChild() {
+        if destroyed {
+            return
+        }
+
         try! child.initiateDestruction()
         
         var child = buildChild()
