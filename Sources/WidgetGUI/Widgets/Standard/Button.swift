@@ -48,7 +48,9 @@ public class Button: SingleChildWidget {
 
     override open func buildChild() -> Widget {
         let mouseArea = MouseArea {
-            inputChild
+            Padding(all: 16) {
+                inputChild
+            }
         }
         _ = mouseArea.onClick(forwardOnClick)
         _ = mouseArea.onMouseEnter { _ in
@@ -74,13 +76,13 @@ public class Button: SingleChildWidget {
         try onClick.invokeHandlers(event)
     }
 
-    override open func layout() {
+    /*override open func layout() {
         child.constraints = BoxConstraints(
             minSize: constraints!.constrain(constraints!.minSize + DSize2(32, 32)),
             maxSize: constraints!.maxSize)
         try child.layout()
         bounds.size = child.bounds.size
-    }
+    }*/
  
     override open func renderContent() -> RenderObject? {
         let style = stateStyles[state] ?? defaultButtonStyles[state]!
