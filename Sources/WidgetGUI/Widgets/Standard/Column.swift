@@ -23,7 +23,7 @@ public class Column: Widget {
         super.init(children: children())
     }
 
-    override public func layout() throws {
+    override public func layout() {
         var currentX = 0.0
         var currentY = 0.0
         var currentColumnWidth = 0.0 // the current max width for the current column

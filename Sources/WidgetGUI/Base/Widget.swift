@@ -94,7 +94,7 @@ open class Widget: Bounded, Parent, Child {
         }
     }
 
-    open func layout() throws {
+    open func layout() {
         fatalError("layout() not implemented.")
     }
 

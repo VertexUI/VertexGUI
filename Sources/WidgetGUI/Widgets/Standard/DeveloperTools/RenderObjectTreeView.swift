@@ -71,7 +71,7 @@ public class RenderObjectTreeView: Widget {
             }
     }
 
-    override open func layout() throws {
+    override open func layout() {
         var spacing: Double = 30
         var nextX: Double = 0
         var nextY: Double = 0

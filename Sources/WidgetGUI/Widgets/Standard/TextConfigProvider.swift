@@ -14,7 +14,7 @@ public class TextConfigProvider: SingleChildWidget {
         return inputChild
     }
 
-    override open func layout() throws {
+    override open func layout() {
         child.constraints = constraints
         try child.layout()
         bounds = child.bounds

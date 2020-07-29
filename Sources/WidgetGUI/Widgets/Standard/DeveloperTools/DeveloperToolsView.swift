@@ -73,7 +73,7 @@ public class DeveloperToolsView: SingleChildWidget, StatefulWidget {
         self.invalidateRenderState()
     }
 
-    override open func layout() throws {
+    override open func layout() {
         print("DEBUGGER CALLED LAYOUT", bounds.size, constraints, self.child.bounds.size)
         child.constraints = constraints 
         try child.layout()

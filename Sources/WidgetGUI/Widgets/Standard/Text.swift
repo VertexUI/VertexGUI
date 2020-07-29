@@ -40,7 +40,7 @@ public class Text: Widget {
         }
     }
 
-    override public func layout() throws {
+    override public func layout() {
         //var size = try globalContext!.getTextSize(text: text, fontConfig: fontConfig)
         //self.sizeConfig.width = .Fixed(value: size.width)
         //self.sizeConfig.height = .Fixed(value: size.height)

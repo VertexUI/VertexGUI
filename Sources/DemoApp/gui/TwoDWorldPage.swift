@@ -117,7 +117,7 @@ open class TwoDWorldPage: SingleChildWidget {
         }
     }
 
-    override open func layout() throws {
+    override open func layout() {
         child.constraints = constraints
         try child.layout()
         bounds.size = child.bounds.size

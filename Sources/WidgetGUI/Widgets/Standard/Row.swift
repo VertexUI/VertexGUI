@@ -17,7 +17,7 @@ public class Row: Widget {
         //self.init(wrap: wrap, children: children())
     }
 
-    override public func layout() throws {
+    override public func layout() {
         var currentX = 0.0
         var currentY = 0.0
         var maxWidth = 0.0
@@ -27,7 +27,7 @@ public class Row: Widget {
 
             if wrap {
                 child.constraints = constraints
-                try child.layout()
+                child.layout()
 
                 if currentX + child.bounds.size.width > constraints!.maxWidth {
                     currentX = 0
@@ -35,7 +35,7 @@ public class Row: Widget {
                 }
             } else {
                 child.constraints = BoxConstraints(minSize: DSize2(0,0), maxSize: DSize2(constraints!.maxWidth - currentX, constraints!.maxHeight - currentY))
-                try child.layout()
+                child.layout()
             }
 
             child.bounds.topLeft = DPoint2(currentX, currentY)

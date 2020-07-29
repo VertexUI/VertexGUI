@@ -10,7 +10,7 @@ public class ClipArea: Widget {
         return try child.getContentSize()
     }
 
-    override public func layout() throws {
+    override public func layout() {
         child.bounds = bounds
         try child.layout()
     }

@@ -53,7 +53,7 @@ open class Root: Parent {
         }
     }
 
-    open func layout() throws {
+    open func layout() {
         rootWidget.constraints = BoxConstraints(minSize: DSize2.zero, maxSize: bounds.size)
         try rootWidget.layout()
     }
