@@ -76,14 +76,6 @@ public class Button: SingleChildWidget {
         try onClick.invokeHandlers(event)
     }
 
-    /*override open func layout() {
-        child.constraints = BoxConstraints(
-            minSize: constraints!.constrain(constraints!.minSize + DSize2(32, 32)),
-            maxSize: constraints!.maxSize)
-        try child.layout()
-        bounds.size = child.bounds.size
-    }*/
- 
     override open func renderContent() -> RenderObject? {
         let style = stateStyles[state] ?? defaultButtonStyles[state]!
         return RenderObject.Container {

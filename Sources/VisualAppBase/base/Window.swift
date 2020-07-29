@@ -27,6 +27,7 @@ open class Window {
     public var onMouse = EventHandlerManager<RawMouseEvent>()
     public var onResize = EventHandlerManager<DSize2>()
     public var onFocusChange = EventHandlerManager<Bool>()
+    public var onClose = EventHandlerManager<Void>()
 
     // TODO: maybe can remove background color
     public init(background: Color) throws {

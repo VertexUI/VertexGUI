@@ -81,11 +81,17 @@ open class SDL2OpenGL3NanoVGSystem: System<SDL2OpenGL3NanoVGWindow, SDL2OpenGL3N
             //DispatchQueue.global().async {
                 do {
                     switch eventType {
+                    case SDL_QUIT, SDL_APP_TERMINATING:
+                        try self.exit()
                     case SDL_WINDOWEVENT:
                         // TODO: implement focus change
                         if event.window.event == UInt8(SDL_WINDOWEVENT_SIZE_CHANGED.rawValue) {
                             if let window = SDL2OpenGL3NanoVGSystem.windows[Int(event.window.windowID)] {
                                 try window.updateSize()
+                            }
+                        } else if event.window.event == UInt8(SDL_WINDOWEVENT_CLOSE.rawValue) {
+                            if let window = SDL2OpenGL3NanoVGSystem.windows[Int(event.window.windowID)] {
+                                try window.onClose.invokeHandlers(Void())
                             }
                         }
                         break
@@ -125,11 +131,6 @@ open class SDL2OpenGL3NanoVGSystem: System<SDL2OpenGL3NanoVGWindow, SDL2OpenGL3N
                         try self.forwardMouseEvent(
                             RawMouseMoveEvent(position: self.mousePosition, previousPosition: DPoint2(Double(event.motion.x - event.motion.xrel), Double(event.motion.y - event.motion.yrel))),
                             windowId: Int(event.motion.windowID))
-                    case SDL_QUIT, SDL_APP_TERMINATING:
-                        SDL2OpenGL3NanoVGSystem.isRunning = false
-                        //DispatchQueue.main.async {
-                            exit(0)
-                        //}
                     default:
                         break
                     }
@@ -182,5 +183,10 @@ open class SDL2OpenGL3NanoVGSystem: System<SDL2OpenGL3NanoVGWindow, SDL2OpenGL3N
             //}
         //}
         }
+    }
+
+    override open func exit() throws {
+        SDL2OpenGL3NanoVGSystem.isRunning = false
+        Foundation.exit(0)
     }
 }

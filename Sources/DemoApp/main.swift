@@ -90,8 +90,14 @@ open class TwoDGraphicalApp: App<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGWindo
         }
         _ = self.window!.onResize(handleWindowResized)
         _ = self.window!.onMouse(handleMouseEvent)
+        _ = self.window!.onClose {
+            try! self.system!.exit()
+        }
         _ = self.devToolsWindow!.onResize(handledevToolsWindowResized)
         _ = self.devToolsWindow!.onMouse(handledevToolsWindowMouseEvent)
+        _ = self.devToolsWindow!.onClose {
+            try! self.system!.exit()
+        }
         _ = self.system!.onFrame(render)
     }
 

@@ -34,11 +34,15 @@ open class System<W: Window, R: Renderer> {
     }
 
     open func updateCursor() {
-        fatalError("updateCursor not implemented.")
+        fatalError("updateCursor() not implemented.")
     }
 
     open func mainLoop() throws {
-        fatalError("mainLoop not implemented.")
+        fatalError("mainLoop() not implemented.")
+    }
+
+    open func exit() throws {
+        fatalError("exit() not implemented.")
     }
 
     /*public func eventLoop() throws {}
