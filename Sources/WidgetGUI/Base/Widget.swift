@@ -52,9 +52,10 @@ open class Widget: Bounded, Parent, Child {
     }
 
     public internal(set) var destroyed: Bool = false
+    public var mounted: Bool = false
     // TODO: maybe something better
     public var layoutable: Bool {
-        constraints != nil && context != nil
+        mounted && constraints != nil && context != nil
     }
 
     // TODO: might need to create something like layoutBounds and renderBounds (area that is invalidated on rerender request --> could be more than layoutBounds and affect outside widgets (e.g. a drop shadow that is not included in layoutBounds))
@@ -89,6 +90,7 @@ open class Widget: Bounded, Parent, Child {
     }
 
     open func mount(parent: Parent) {
+        self.parent = parent
         for child in children {
             child.mount(parent: self)
             // TODO: maybe dangling closure
@@ -97,6 +99,7 @@ open class Widget: Bounded, Parent, Child {
             }
             //child.context = context
         }
+        mounted = true
     }
 
     open func layout() {

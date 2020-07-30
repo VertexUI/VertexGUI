@@ -42,7 +42,7 @@ open class Root: Parent {
         //super.init()
         self.renderObjectTree = RenderObjectTree()
         self.renderObjectTreeRenderer = RenderObjectTreeRenderer(renderObjectTree)
-        self.rootWidget.parent = self
+        self.rootWidget.mount(parent: self)
         // TODO: maybe dangling closure
         _ = self.rootWidget.onRenderStateInvalidated {
             //self.renderTreeInvalidated = true

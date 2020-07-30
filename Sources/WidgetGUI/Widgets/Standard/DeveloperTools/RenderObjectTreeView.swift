@@ -26,17 +26,17 @@ public class RenderObjectTreeView: Widget {
             if let objectSelectedHandler = objectSelectedHandler {
                 _ = self.onObjectSelected.addHandler(objectSelectedHandler)
             }
-            super.init(children: debuggingData.sequence.map {
-                Text("Sequence Item \($0.range)")
-            })
+            super.init()
+    }
 
-            var children = [Widget]()
+    override open func mount(parent: Parent) {
+        var children = [Widget]()
             var currentLineParentIndices = [-2]
             debuggingData.tree.traverseDepth { object, path, index, parentIndex in
                 let child = Button(onClick: { _ in
                     try! self.onObjectSelected.invokeHandlers((object, path))
                 }) {
-                    if path == selectedObjectPath {
+                    if path == self.selectedObjectPath {
                         Text("NODE ID Selected!")
                     } else {
                         Text("NODE ID \(index) at PAT \(path)")
@@ -66,9 +66,7 @@ public class RenderObjectTreeView: Widget {
                 print("Child index", index, "Child Size", child.bounds.size, nextX)*/
             }
             self.children = children
-            for child in children {
-                child.parent = self
-            }
+            super.mount(parent: parent)
     }
 
     override open func layout() {

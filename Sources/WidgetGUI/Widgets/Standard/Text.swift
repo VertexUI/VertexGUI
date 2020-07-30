@@ -9,7 +9,7 @@ import VisualAppBase
 public class Text: Widget {
     public var text: String {
         didSet {
-            layout()
+            //layout()
         }
     }
 
@@ -31,7 +31,11 @@ public class Text: Widget {
         self.text = text
         self.textConfig = config
         super.init()
-        _ = onAnyParentChanged { _ in
+    }
+
+    override open func mount(parent: Parent) {
+        super.mount(parent: parent)
+        /*_ = onAnyParentChanged { _ in
             if let textConfigProvider = self.parentOfType(TextConfigProvider.self) {
                 self.textConfigProvider = textConfigProvider
                 // TODO: should the check be performed here?
@@ -39,7 +43,7 @@ public class Text: Widget {
                     self.layout()
                 }
             }
-        }
+        }*/
     }
 
     override public func layout() {
@@ -48,6 +52,7 @@ public class Text: Widget {
         //self.sizeConfig.height = .Fixed(value: size.height)
         // TODO: check whether to have wrap in textConfig, or a property of Text and whether to pass maxWidth extra or put it into textconfig and whether to always pass it
         var preferredSize = DSize2.zero
+        print("LAYOUT TEXT", context, constraints, parent)
         if filledTextConfig.wrap {
             preferredSize = context!.getTextBoundsSize(filledTextConfig.transform.apply(to: text), fontConfig: filledTextConfig.fontConfig, maxWidth: constraints!.maxWidth)// try context!.renderer.getMultilineTextSize(text, maxWidth: constraints!.maxWidth, fontConfig: textConfig.fontConfig)
         } else {

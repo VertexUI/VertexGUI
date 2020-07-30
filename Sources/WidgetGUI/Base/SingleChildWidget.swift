@@ -5,6 +5,7 @@ open class SingleChildWidget: Widget {
     open lazy var child: Widget = buildChild()
     
     override open func mount(parent: Parent) {
+        self.parent = parent
         children = [child]
         super.mount(parent: parent)
     }
@@ -14,19 +15,16 @@ open class SingleChildWidget: Widget {
     }
 
     open func invalidateChild() {
-        if destroyed {
+        if !mounted || destroyed {
             return
         }
 
         try! child.initiateDestruction()
         
-        var child = buildChild()
-        child.parent = self
-        _ = child.onRenderStateInvalidated {
-            self.invalidateRenderState($0)
-        }
-        self.child = child
+        child = buildChild()
         children = [child]
+        child.mount(parent: self)
+        
         try! layout()
         invalidateRenderState()
     }
