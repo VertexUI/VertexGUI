@@ -92,14 +92,16 @@ open class Widget: Bounded, Parent, Child {
     open func mount(parent: Parent) {
         self.parent = parent
         for child in children {
-            child.mount(parent: self)
-            // TODO: maybe dangling closure
-            _ = child.onRenderStateInvalidated {
-                self.invalidateRenderState($0)
-            }
-            //child.context = context
+            mountChild(child)
         }
         mounted = true
+    }
+
+    public func mountChild(_ child: Widget) {
+        _ = child.onRenderStateInvalidated {
+            self.invalidateRenderState($0)
+        }
+        child.mount(parent: self)
     }
 
     open func layout() {

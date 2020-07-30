@@ -23,7 +23,7 @@ open class SingleChildWidget: Widget {
         
         child = buildChild()
         children = [child]
-        child.mount(parent: self)
+        mountChild(child)
         
         try! layout()
         invalidateRenderState()

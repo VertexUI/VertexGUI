@@ -24,7 +24,6 @@ public class StatefulWidgetOne: Widget, StatefulWidget, GUIMouseEventConsumer {
     public func consume(_ event: GUIMouseEvent) {
         if let event = event as? GUIMouseButtonClickEvent {
             if globalBounds.contains(point: event.position) {
-                print("CLICK HIT")
                 state.statePropertyThree += 1
                 invalidateRenderState()
             }
@@ -32,7 +31,7 @@ public class StatefulWidgetOne: Widget, StatefulWidget, GUIMouseEventConsumer {
     }
 
     override open func renderContent() -> RenderObject? {
-        RenderObject.Container {
+        return RenderObject.Container {
             RenderObject.RenderStyle(fillColor: FixedRenderValue(state.statePropertyOne)) {
                 RenderObject.Rect(Rect(topLeft: globalPosition, size: DSize2(200, 300)))
             }
