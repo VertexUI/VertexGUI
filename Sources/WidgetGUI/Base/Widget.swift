@@ -89,6 +89,10 @@ open class Widget: Bounded, Parent, Child {
         self.children = children
     }
 
+    deinit {
+        print("Deinitialized Widget:", id, self)
+    }
+
     open func mount(parent: Parent) {
         self.parent = parent
         for child in children {
@@ -109,16 +113,20 @@ open class Widget: Bounded, Parent, Child {
     }
 
     // TODO: how to name this?
-    public func initiateDestruction() throws {
+    public func destroy() {
         for child in children {
-            try child.initiateDestruction()
+            child.destroy()
         }
+        onParentChanged.removeAllHandlers()
+        onAnyParentChanged.removeAllHandlers()
+        onRenderStateInvalidated.removeAllHandlers()
         parent = nil
-        try destroy()
+        destroySelf()
         destroyed = true
+        print("Destroyed Widget:", id, self)
     }
 
-    open func destroy() throws {
+    open func destroySelf() {
     }
 
     open func findParent(_ condition: (_ parent: Parent) throws -> Bool) rethrows -> Parent? {
@@ -169,7 +177,7 @@ open class Widget: Bounded, Parent, Child {
     /// This should trigger a rerender of the widget in the next frame.
     public func invalidateRenderState(_ widget: Widget? = nil) {
         if destroyed {
-            return
+            fatalError("Tried to call invalidateRenderState() on destroyed widget: \(self)")
         }
         let widget = widget ?? self
         try! onRenderStateInvalidated.invokeHandlers(widget)

@@ -95,7 +95,7 @@ public class MouseArea: SingleChildWidget, GUIMouseEventConsumer {
         }
     }
 
-    override open func destroy() throws {
+    override open func destroySelf() {
         onMouseButtonDown.removeAllHandlers()
         onMouseEnter.removeAllHandlers()
         onMouseMove.removeAllHandlers()

@@ -19,7 +19,7 @@ open class SingleChildWidget: Widget {
             return
         }
 
-        try! child.initiateDestruction()
+        try! child.destroy()
         
         child = buildChild()
         children = [child]

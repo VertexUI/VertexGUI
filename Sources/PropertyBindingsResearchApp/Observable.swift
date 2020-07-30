@@ -1,6 +1,6 @@
 import VisualAppBase
 
-public struct Observable<Value> {
+public class Observable<Value> {
     private var _value: Value
     public var value: Value {
         get {
@@ -14,7 +14,16 @@ public struct Observable<Value> {
     }
     public internal(set) var onChanged = EventHandlerManager<Value>()
     
-    public init(initial initialValue: Value) {
+    public init(_ initialValue: Value) {
         _value = initialValue
     }
 }
+/*
+@propertyWrapper
+public struct Observe<Value> {
+    var wrappedValue: Observable<Value>
+    
+    public init(wrappedValue: Observable<Value>) {
+        self.wrappedValue = wrappedValue
+    }
+}*/

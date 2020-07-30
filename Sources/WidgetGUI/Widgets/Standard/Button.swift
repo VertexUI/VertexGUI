@@ -93,7 +93,7 @@ public class Button: SingleChildWidget {
         }
     }
 
-    override open func destroy() throws {
+    override open func destroySelf() {
         onClick.removeAllHandlers()
         if let drop = dropCursorRequest {
             drop()
