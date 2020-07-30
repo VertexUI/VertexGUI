@@ -10,7 +10,7 @@ public class RenderContext<S: System, W: Window, R: Renderer> {
     public var mousePosition = DPoint2(0,0)
    // public var cursorRequests: [UInt64: Cursor] = [:] // TODO: maybe handle first come first or z index
     //public var nextCursorRequestId: UInt64 = 0
-    //public var onCursorRequestsUpdated = EventHandlerManager<Void>()
+    //public var onCursorRequestsUpdated = ThrowingEventHandlerManager<Void>()
     public var system: S
     public var window: W
     public var renderer: R

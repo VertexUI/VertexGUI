@@ -12,7 +12,7 @@ open class TwoDWorldView: Widget, GUIMouseEventConsumer, StatefulWidget {
     private var world: TwoDVoxelWorld
     private var raycasts: [TwoDRaycast]
 
-    public var onRaycastHover = EventHandlerManager<TwoDRaycast?>()
+    public var onRaycastHover = ThrowingEventHandlerManager<TwoDRaycast?>()
 
 
     public var highlightedRaycast: TwoDRaycast? {

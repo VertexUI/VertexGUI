@@ -33,7 +33,7 @@ open class Root: Parent {
     
     private var mouseEventManager = WidgetTreeMouseEventManager()
 
-    public var onDebuggingDataAvailable = EventHandlerManager<RenderObjectTreeRenderer.DebuggingData>()
+    public var onDebuggingDataAvailable = ThrowingEventHandlerManager<RenderObjectTreeRenderer.DebuggingData>()
 
     public init(rootWidget contentRootWidget: Widget) {
         self.rootWidget = ThemeProvider {

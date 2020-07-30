@@ -26,10 +26,10 @@ open class Widget: Bounded, Parent, Child {
 
     public lazy var children: [Widget] = []
 
-    public var onParentChanged = EventHandlerManager<Parent?>()
-    public var onAnyParentChanged = EventHandlerManager<Parent?>()
-    public var onRenderStateInvalidated = EventHandlerManager<Widget>()
-    private var unregisterAnyParentChangedHandler: EventHandlerManager<Parent?>.UnregisterCallback?
+    public var onParentChanged = ThrowingEventHandlerManager<Parent?>()
+    public var onAnyParentChanged = ThrowingEventHandlerManager<Parent?>()
+    public var onRenderStateInvalidated = ThrowingEventHandlerManager<Widget>()
+    private var unregisterAnyParentChangedHandler: ThrowingEventHandlerManager<Parent?>.UnregisterCallback?
     weak open var parent: Parent? = nil {
         willSet {
             // TODO: remove listeners on any parent when parent is removed

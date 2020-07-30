@@ -9,12 +9,12 @@ public class RenderGroupsListView: SingleChildWidget, StatefulWidget {
     public var state: State = State()
     private var debuggingData: RenderObjectTreeRenderer.DebuggingData?
     private var selectedObjectPath: TreePath?
-    private var onObjectSelected = EventHandlerManager<(RenderObject, TreePath)>()
+    private var onObjectSelected = ThrowingEventHandlerManager<(RenderObject, TreePath)>()
 
     public init(
         selectedObjectPath: TreePath?,
         debuggingData: RenderObjectTreeRenderer.DebuggingData?,
-        onObjectSelected objectSelectedHandler: EventHandlerManager<(RenderObject, TreePath)>.Handler? = nil) {
+        onObjectSelected objectSelectedHandler: ThrowingEventHandlerManager<(RenderObject, TreePath)>.Handler? = nil) {
             self.debuggingData = debuggingData
             if let debuggingData = debuggingData {
                 self.state.expandedGroupIndices = Set(0..<debuggingData.groups.count)

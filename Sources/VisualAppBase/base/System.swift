@@ -5,7 +5,7 @@ open class System {
 
     public var cursorRequests: [UInt64: Cursor] = [:] // TODO: maybe handle first come first or z index
     public var nextCursorRequestId: UInt64 = 0
-    public var onFrame = EventHandlerManager<Int>()
+    public var onFrame = ThrowingEventHandlerManager<Int>()
 
     public init() throws {
 

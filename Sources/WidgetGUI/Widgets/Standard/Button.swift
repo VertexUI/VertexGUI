@@ -31,7 +31,7 @@ public class Button: SingleChildWidget {
     }
     public var stateStyles: [ButtonState: ButtonStyle]
     public var cursorRequestId: UInt64? = nil
-    public var onClick = EventHandlerManager<GUIMouseButtonClickEvent>()
+    public var onClick = ThrowingEventHandlerManager<GUIMouseButtonClickEvent>()
 
     private var dropCursorRequest: (() -> ())?
 
@@ -39,7 +39,7 @@ public class Button: SingleChildWidget {
 
     public init(
         stateStyles: [ButtonState: ButtonStyle] = defaultButtonStyles,
-        onClick onClickHandler: EventHandlerManager<GUIMouseButtonClickEvent>.Handler? = nil,
+        onClick onClickHandler: ThrowingEventHandlerManager<GUIMouseButtonClickEvent>.Handler? = nil,
         @WidgetBuilder child inputChildBuilder: @escaping () -> Widget) {
             self.stateStyles = stateStyles
             if onClickHandler != nil {

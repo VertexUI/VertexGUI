@@ -13,14 +13,14 @@ public class RenderObjectTreeView: Widget {
 
     private var debuggingData: RenderObjectTreeRenderer.DebuggingData
     private var selectedObjectPath: TreePath?    
-    private var onObjectSelected = EventHandlerManager<(RenderObject, TreePath)>()
+    private var onObjectSelected = ThrowingEventHandlerManager<(RenderObject, TreePath)>()
 
     private var groupedChildren: [Line] = []
 
     public init(
         debuggingData: RenderObjectTreeRenderer.DebuggingData, 
         selectedObjectPath: TreePath?, 
-        onObjectSelected objectSelectedHandler: EventHandlerManager<(RenderObject, TreePath)>.Handler?) {
+        onObjectSelected objectSelectedHandler: ThrowingEventHandlerManager<(RenderObject, TreePath)>.Handler?) {
             self.debuggingData = debuggingData
             self.selectedObjectPath = selectedObjectPath
             if let objectSelectedHandler = objectSelectedHandler {

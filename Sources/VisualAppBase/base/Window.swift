@@ -23,11 +23,11 @@ open class Window {
         }
     }
 
-    public var onKey = EventHandlerManager<KeyEvent>()
-    public var onMouse = EventHandlerManager<RawMouseEvent>()
-    public var onResize = EventHandlerManager<DSize2>()
-    public var onFocusChange = EventHandlerManager<Bool>()
-    public var onClose = EventHandlerManager<Void>()
+    public var onKey = ThrowingEventHandlerManager<KeyEvent>()
+    public var onMouse = ThrowingEventHandlerManager<RawMouseEvent>()
+    public var onResize = ThrowingEventHandlerManager<DSize2>()
+    public var onFocusChange = ThrowingEventHandlerManager<Bool>()
+    public var onClose = ThrowingEventHandlerManager<Void>()
 
     // TODO: maybe can remove background color
     public required init(background: Color, size: DSize2) throws {
