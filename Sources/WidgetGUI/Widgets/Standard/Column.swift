@@ -16,11 +16,11 @@ public class Column: Widget {
         super.init(children: children)
     }*/
 
-    public init(spacing: Double = 0, wrap: Bool = false, @WidgetBuilder children: () -> [Widget]) {
+    public init(spacing: Double = 0, wrap: Bool = false, @WidgetBuilder children inputChildrenBuilder: () -> [Widget]) {
         //self.init(wrap: wrap, children: children())
         self.spacing = spacing
         self.wrap = wrap
-        super.init(children: children())
+        super.init(children: inputChildrenBuilder())
     }
 
     override public func layout() {

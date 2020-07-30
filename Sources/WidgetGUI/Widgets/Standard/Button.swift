@@ -1,7 +1,3 @@
-//
-
-//
-
 import Foundation
 import CustomGraphicsMath
 import VisualAppBase
@@ -39,25 +35,25 @@ public class Button: SingleChildWidget {
 
     private var dropCursorRequest: (() -> ())?
 
-    private var inputChild: Widget
+    private var inputChildBuilder: () -> Widget
 
     public init(
         stateStyles: [ButtonState: ButtonStyle] = defaultButtonStyles,
         onClick onClickHandler: EventHandlerManager<GUIMouseButtonClickEvent>.Handler? = nil,
-        child inputChild: Widget) {
-        self.stateStyles = stateStyles
-        if onClickHandler != nil {
-            _ = onClick.addHandler(onClickHandler!)
-        }
-        self.inputChild = inputChild
-        super.init()
+        @WidgetBuilder child inputChildBuilder: @escaping () -> Widget) {
+            self.stateStyles = stateStyles
+            if onClickHandler != nil {
+                _ = onClick.addHandler(onClickHandler!)
+            }
+            self.inputChildBuilder = inputChildBuilder
+            super.init()
     }
 
     override open func buildChild() -> Widget {
         let mouseArea = MouseArea {
             Padding(all: 16) {
                 TextConfigProvider(config: defaultButtonTextConfig) {
-                    inputChild
+                    inputChildBuilder()
                 }
             }
         }
@@ -72,13 +68,6 @@ public class Button: SingleChildWidget {
             self.dropCursorRequest!()
         }
         return mouseArea
-    }
-
-    public convenience init(
-        stateStyles: [ButtonState: ButtonStyle] = defaultButtonStyles,
-        onClick onClickHandler: EventHandlerManager<GUIMouseButtonClickEvent>.Handler? = nil,
-        @WidgetBuilder child: () -> Widget) {
-            self.init(stateStyles: stateStyles, onClick: onClickHandler, child: child())
     }
 
     open func forwardOnClick(_ event: GUIMouseButtonClickEvent) throws {

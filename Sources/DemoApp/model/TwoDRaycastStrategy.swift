@@ -50,7 +50,7 @@ public struct TwoDRaycastStrategy {
             var nearestIntersectedEdgeDistance: Double = .infinity
             for edge in Tile.Edge.allCases {
                 let vertices = edgeVertices[edge]!
-                let line = AnyLine(vertices.0, vertices.1)
+                let line = AnyLine(from: vertices.0, to: vertices.1)
                 if let intersection = rayLine.intersect(line: line) {
                     if line.pointBetween(test: intersection, from: vertices.0, to: vertices.1) {
                         results.append(.Intersection(position: intersection))

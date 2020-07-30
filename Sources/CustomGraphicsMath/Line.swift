@@ -1,4 +1,4 @@
-public protocol Line {
+public protocol Line: CustomDebugStringConvertible {
     associatedtype Vector: CustomGraphicsMath.Vector where Vector.Element: BinaryFloatingPoint
 
     var point: Vector { get set }
@@ -15,10 +15,14 @@ public extension Line {
         self.direction = direction.normalized()
     }
 
-    init(_ point1: Vector, _ point2: Vector) {
+    init(from point1: Vector, to point2: Vector) {
         self.init()
         self.point = point1
         self.direction = (point1 - point2).normalized()
+    }
+
+    var debugDescription: String {
+        "Line x = (\(point)) + scale * (\(direction))"
     }
 
     /// assuming: resultVec = pointOnLineVec + scale * directionVec 
@@ -63,10 +67,6 @@ public extension Line {
     }
 }
 
-func crossVec2<T: Vector2>(_ vector1: T, _ vector2: T) -> T.Element {
-    return vector1.x * vector2.y - vector1.y * vector2.x
-}
-
 public extension Line where Vector: Vector2 {
     // TODO: what to return on identical
     /// - Returns: nil if parallel, self.point when identical, intersection point if intersecting
@@ -85,7 +85,7 @@ public extension Line where Vector: Vector2 {
             }
         }
         
-        let scale1 = crossVec2((otherLine.point - self.point), otherLine.direction) / crossVec2(self.direction, otherLine.direction)
+        let scale1 = (otherLine.point - self.point).cross(otherLine.direction) / self.direction.cross(otherLine.direction)
 
         return pointAtScale(scale1)
     }

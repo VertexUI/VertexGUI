@@ -14,10 +14,6 @@ public class DeveloperToolsView: SingleChildWidget, StatefulWidget {
     
     public var state: State = State()
 
-    override public init() {
-        super.init()
-    }
-
     private func handleDebuggingDataUpdated() {
         /*if let debuggingData = debuggingData {
             expandedGroupIndices = Set(0..<debuggingData.groups.count)
@@ -32,12 +28,12 @@ public class DeveloperToolsView: SingleChildWidget, StatefulWidget {
             return Background(background: .White) {
                 Column {
                     ScrollArea {
-                        RenderObjectTreeView(debuggingData: debuggingData, selectedObjectPath: state.selectedObjectPath) {
+                        RenderObjectTreeView(debuggingData: debuggingData, selectedObjectPath: self.state.selectedObjectPath) {
                             self.state.selectedObjectPath = $1
                             self.invalidateChild()
                         }
                     }
-                    buildSelectedObjectDetail()
+                    self.buildSelectedObjectDetail()
                     //RenderGroupsListView(debuggingData: debuggingData)
                 }
             }

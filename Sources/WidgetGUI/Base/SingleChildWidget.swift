@@ -4,16 +4,9 @@ import VisualAppBase
 open class SingleChildWidget: Widget {
     open lazy var child: Widget = buildChild()
     
-    override public init() {
-        //self.child = child
-        super.init()
-        // TODO: setting variables on child should be done automatically if children[] is changed
+    override open func mount(parent: Parent) {
         children = [child]
-        child.parent = self
-        _ = child.onRenderStateInvalidated {
-            self.invalidateRenderState($0)
-        }
-        //child.context = context
+        super.mount(parent: parent)
     }
 
     open func buildChild() -> Widget {

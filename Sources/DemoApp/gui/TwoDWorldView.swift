@@ -2,19 +2,32 @@ import VisualAppBase
 import WidgetGUI
 import CustomGraphicsMath
 
-open class TwoDWorldView: Widget {
+open class TwoDWorldView: Widget, GUIMouseEventConsumer, StatefulWidget {
+    public struct State {
+        public var highlightedRaycastSetFromInside = false
+    }
+
+    public var state: State = State()
+
     private var world: TwoDVoxelWorld
     private var raycasts: [TwoDRaycast]
 
+    public var onRaycastHover = EventHandlerManager<TwoDRaycast?>()
+
+
     public var highlightedRaycast: TwoDRaycast? {
         didSet {
+            state.highlightedRaycastSetFromInside = false
             invalidateRenderState()
         }
     }
 
-    public init(world: TwoDVoxelWorld, raycasts: [TwoDRaycast]) {
+    private var mouseThrottle = 0
+
+    public init(world: TwoDVoxelWorld, raycasts: [TwoDRaycast], onRaycastHover raycastHoverHandler: @escaping (_ raycast: TwoDRaycast?) -> Void) {
         self.world = world
         self.raycasts = raycasts
+        _ = self.onRaycastHover.addHandler(raycastHoverHandler)
         super.init()
     }
 
@@ -24,6 +37,44 @@ open class TwoDWorldView: Widget {
 
     private func worldToLocal(position: DVec2) -> DVec2 {
         position / DVec2(world.size) * DVec2(bounds.size)
+    }
+
+    private func localToWorld(position: DVec2) -> DVec2 {
+        position / DVec2(bounds.size) * DVec2(world.size)
+    }
+
+    public func consume(_ event: GUIMouseEvent) throws {
+        mouseThrottle += 1
+        if mouseThrottle > 5 {
+            mouseThrottle = 0
+            if let event = event as? GUIMouseMoveEvent {
+                let mousePosition = localToWorld(position: event.position)
+                for raycast in raycasts {
+                    let line1 = AnyLine(from: raycast.start, to: raycast.end)
+                    let line2 = AnyLine(point: mousePosition, direction: DVec2(line1.direction.y * -1, line1.direction.x))
+                    //print("LINE 1", line1)
+                    //print("LINE 2", line2)
+                    let intersection = line1.intersect(line: line2)!
+                    let distance = (mousePosition - intersection).length
+                    print("INTERSECTION", intersection, "DISTANCE", distance)
+                    if distance < 4 {
+                        highlightedRaycast = raycast
+                        try onRaycastHover.invokeHandlers(raycast)
+                        state.highlightedRaycastSetFromInside = true
+                        invalidateRenderState()
+                        return
+                    }
+                }
+
+                if state.highlightedRaycastSetFromInside {
+                    print("REMOVE RAYCAST")
+                    //try onRaycastHover.invokeHandlers(nil)
+                    state.highlightedRaycastSetFromInside = false
+                    highlightedRaycast = nil
+                    invalidateRenderState()
+                }
+            }
+        }
     }
 
     private func getTileRect(index: IVec2) -> DRect {

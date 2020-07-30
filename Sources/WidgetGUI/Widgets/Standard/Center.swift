@@ -1,15 +1,15 @@
 import CustomGraphicsMath
 
 public class Center: SingleChildWidget {
-    private var inputChild: Widget
+    private var inputChildBuilder: () -> Widget
     
-    public init(@WidgetBuilder child: () -> Widget) {
-        self.inputChild = child()
+    public init(@WidgetBuilder child inputChildBuilder: @escaping () -> Widget) {
+        self.inputChildBuilder = inputChildBuilder
         super.init()
     }
 
     override open func buildChild() -> Widget {
-        inputChild
+        inputChildBuilder()
     }
 
     override open func layout() {

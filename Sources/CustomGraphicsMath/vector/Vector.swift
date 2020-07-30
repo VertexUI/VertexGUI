@@ -228,6 +228,10 @@ public extension Vector2 {
     init(_ x: Element, _ y: Element) {
         self.init([x, y])
     }
+
+    func cross(_ other: Self) -> Element {
+        return self.x * other.y - self.y * other.x
+    }
 }
 
 public struct AnyVector2<E: Numeric & Hashable>: Vector2 {

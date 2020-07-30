@@ -24,7 +24,7 @@ open class Widget: Bounded, Parent, Child {
 
     open var constraints: BoxConstraints? = nil
 
-    public var children: [Widget] = []
+    public lazy var children: [Widget] = []
 
     public var onParentChanged = EventHandlerManager<Parent?>()
     public var onAnyParentChanged = EventHandlerManager<Parent?>()
@@ -84,12 +84,13 @@ open class Widget: Bounded, Parent, Child {
         }
     }
 
-    public init() {}
-
-    public init(children: [Widget]) {
+    public init(children: [Widget] = []) {
         self.children = children
+    }
+
+    open func mount(parent: Parent) {
         for child in children {
-            child.parent = self
+            child.mount(parent: self)
             // TODO: maybe dangling closure
             _ = child.onRenderStateInvalidated {
                 self.invalidateRenderState($0)

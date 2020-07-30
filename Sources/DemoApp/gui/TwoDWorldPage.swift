@@ -16,10 +16,6 @@ open class TwoDWorldPage: SingleChildWidget {
         return childOfType(TwoDWorldView.self)!
     }
     
-    override public init() {
-        super.init()
-    }
-
     override open func buildChild() -> Widget {
         Background(background: Color(120, 160, 255, 255)) {
             Row {                
@@ -35,15 +31,19 @@ open class TwoDWorldPage: SingleChildWidget {
                     ),*/
                     }
                     Padding(all: 20) {
-                        Button(
-                            child: Text("Button without function")
-                        )
+                        Button {
+                            Text("Button without function")
+                        }
                     }
                     ComputedSize {
                         $0.constrain(DSize2($0.maxWidth * 0.75, $0.maxHeight))
                     } child: {
-                        MouseArea(onClick: handleWorldViewClick(_:)) {
-                            TwoDWorldView(world: world, raycasts: raycasts)
+                        MouseArea(onClick: self.handleWorldViewClick(_:)) {
+                            TwoDWorldView(world: self.world, raycasts: self.raycasts, onRaycastHover: {
+                                self.selectedRaycast = $0
+                                print("ON RAYCSAT HOVER")
+                                self.invalidateChild()
+                            })
                         }
                     }
                 }
@@ -54,7 +54,8 @@ open class TwoDWorldPage: SingleChildWidget {
 
                     Padding(all: 20) {
 
-                        if let selectedRaycast = selectedRaycast {
+                        if let selectedRaycast = self.selectedRaycast {
+                            
                             Column {
                                 Button { _ in
                                     self.selectedRaycast = nil
@@ -74,7 +75,7 @@ open class TwoDWorldPage: SingleChildWidget {
                                     
                                     Text("Raycasts")
 
-                                    raycasts.map { raycast in
+                                    self.raycasts.map { raycast in
 
                                         MouseArea(onClick: { _ in
                                             self.selectedRaycast = raycast
