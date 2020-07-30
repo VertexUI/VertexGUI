@@ -14,7 +14,7 @@ open class StatefulWidgetsResearchApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2O
     open var devToolsView: DeveloperToolsView
 
     public init() {
-        let page = Text("WOWOW")
+        let page = StatefulView()
         guiRoot = WidgetGUI.Root(
             rootWidget: page)
 
