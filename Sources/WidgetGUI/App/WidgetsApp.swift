@@ -33,7 +33,10 @@ open class WidgetsApp<S: System, W: Window, R: Renderer>: VisualApp<S, W> {
         }
         _ = window.onResize {
             guiRoot.bounds.size = $0
-            try! guiRoot.layout()
+            guiRoot.layout()
+        }
+        _ = window.onClose {
+            try! self.system.exit()
         }
         windowConfigs.append(WindowConfig(window: window, guiRoot: guiRoot, renderer: renderer))
     }
