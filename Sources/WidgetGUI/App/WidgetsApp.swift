@@ -20,8 +20,8 @@ open class WidgetsApp<S: System, W: Window, R: Renderer>: VisualApp<S, W> {
         fatalError("createRenderer() not implemented.")
     }
 
-    public func newWindow(guiRoot: Root) {
-        let window = try! Window(background: Color.Blue, size: DSize2(500, 500))
+    public func newWindow(guiRoot: Root, background: Color) {
+        let window = try! Window(background: background, size: DSize2(500, 500))
         let renderer = createRenderer(for: window)
         guiRoot.context = WidgetContext(
             getTextBoundsSize: { self.getTextBoundsSize($0, $1, $2, renderer) },
@@ -49,25 +49,12 @@ open class WidgetsApp<S: System, W: Window, R: Renderer>: VisualApp<S, W> {
         }
         return DSize2(0, 0)
     }
-/*
-    open func handleMouseEvent(_ mouseEvent: RawMouseEvent, _ window: Window) {
-        self.guiRoot.consumeMouseEvent(mouseEvent)
-    }
 
-    open func handleWindowResized(newSize: DSize2) {
-        self.guiRoot.bounds.size = newSize
-        do {
-            try self.guiRoot.layout()
-        // try renderer!.resizeVirtualScreen(&virtualScreen!, window!.drawableSize)
-        } catch {
-            print("Error during handleWindowResized().")
-        }
-    }
-*/
     public func render(deltaTime: Int) {
         for windowConfig in windowConfigs {
             do {
                 try windowConfig.renderer.beginFrame()
+                try windowConfig.renderer.clear(windowConfig.window.background)
                 try windowConfig.guiRoot.render(with: windowConfig.renderer)
                 try windowConfig.renderer.endFrame()
                 try windowConfig.window.updateContent()

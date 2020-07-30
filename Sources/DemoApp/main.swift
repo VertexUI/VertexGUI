@@ -9,12 +9,6 @@ import CSDL2
 
 // TODO: create a subclass of App, DesktopApp which supports windows/screens which can support different resolutions --> renderContexts --> different text boundsSize
 open class TwoDGraphicalApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGWindow, SDL2OpenGL3NanoVGRenderer> {
-    //public typealias Renderables = WidgetGUI.Renderables<System, Window, Renderer>
-    open var window: Window?
-    open var renderer: Renderer?
-    open var devToolsWindow: Window?
-    open var devToolsRenderer: Renderer?
-
     open var guiRoot: WidgetGUI.Root
     open var devToolsGuiRoot: WidgetGUI.Root
     open var devToolsView: DeveloperToolsView
@@ -47,8 +41,8 @@ open class TwoDGraphicalApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3Nano
             self.devToolsView.debuggingData = $0
         }
 
-        newWindow(guiRoot: guiRoot)
-        newWindow(guiRoot: devToolsGuiRoot)
+        newWindow(guiRoot: guiRoot, background: .Grey)
+        newWindow(guiRoot: devToolsGuiRoot, background: .Grey)
     }
 
     override open func createRenderer(for window: Window) -> Renderer {

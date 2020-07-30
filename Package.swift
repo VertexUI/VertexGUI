@@ -8,6 +8,9 @@ let package = Package(
         .executable(
             name: "DemoApp",
             targets: ["DemoApp"]),
+        .executable(
+            name: "StatefulWidgetResearchApp",
+            targets: ["StatefulWidgetResearchApp"]),
     ],
     dependencies: [
         .package(url: "https://github.com/mxcl/Path.swift.git", .branch("master")),
@@ -35,6 +38,7 @@ let package = Package(
         ),
         .target(name: "VisualAppBaseImplSDL2OpenGL3NanoVG", dependencies: ["WidgetGUI", "CSDL2", "GL", .product(name: "CnanovgGL3", package: "Cnanovg"), "CustomGraphicsMath", "GLGraphicsMath", .product(name: "Path", package: "Path.swift")]),
         .target(name: "DemoApp", dependencies: ["WidgetGUI", "VisualAppBase", "VisualAppBaseImplSDL2OpenGL3NanoVG"]),
+        .target(name: "StatefulWidgetResearchApp", dependencies: ["WidgetGUI", "VisualAppBase", "VisualAppBaseImplSDL2OpenGL3NanoVG"]),
         .testTarget(name: "VisualAppBaseTests", dependencies: ["VisualAppBase"])
     ]
 )
