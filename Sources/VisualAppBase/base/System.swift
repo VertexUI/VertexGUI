@@ -1,7 +1,4 @@
-open class System<W: Window, R: Renderer> {
-    public typealias Window = W
-    public typealias Renderer = R
-
+open class System {
     public var keyStates = Key.allCases.reduce(into: [Key: Bool]()) {
         $0[$1] = false
     }
@@ -14,9 +11,9 @@ open class System<W: Window, R: Renderer> {
 
     }
 
-    open func newWindow() throws -> W {
+    /*open func newWindow() throws -> W {
         fatalError("newWindow() not implemented.")
-    }
+    }*/
 
     open func requestCursor(_ cursor: Cursor) -> () -> Void {
         let id = nextCursorRequestId

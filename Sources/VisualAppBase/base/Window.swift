@@ -30,12 +30,16 @@ open class Window {
     public var onClose = EventHandlerManager<Void>()
 
     // TODO: maybe can remove background color
-    public init(background: Color) throws {
+    public required init(background: Color, size: DSize2) throws {
         self.background = background
-        self.size = DSize2(0,0)
+        self.size = size
     }
 
     open func updateSize() throws {
         try onResize.invokeHandlers(size)
+    }
+
+    open func updateContent() {
+        fatalError("updateContent() not implemented.")
     }
 }   

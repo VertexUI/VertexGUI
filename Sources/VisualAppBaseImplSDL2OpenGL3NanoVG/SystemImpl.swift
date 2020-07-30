@@ -5,7 +5,7 @@ import Foundation
 import CustomGraphicsMath
 import VisualAppBase
 
-open class SDL2OpenGL3NanoVGSystem: System<SDL2OpenGL3NanoVGWindow, SDL2OpenGL3NanoVGRenderer> {
+open class SDL2OpenGL3NanoVGSystem: System {
     public static var windows = [Int: SDL2OpenGL3NanoVGWindow]()
     public static var isRunning = true
     public var targetFps = 60

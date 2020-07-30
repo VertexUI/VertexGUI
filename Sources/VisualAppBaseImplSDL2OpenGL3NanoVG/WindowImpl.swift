@@ -35,7 +35,7 @@ open class SDL2OpenGL3NanoVGWindow: Window {
         }
     }
 
-    public init(background: Color, size: DSize2) throws {
+    public required init(background: Color, size: DSize2) throws {
        /* sdlWindow = try SDL.SDLWindow(title: "SDLDemo",
                 frame: (x: .centered, y: .centered, width: Int(size.width), height: Int(size.height)),
                 options: [.resizable, .shown, .opengl, .allowRetina])*/
@@ -79,9 +79,7 @@ open class SDL2OpenGL3NanoVGWindow: Window {
 
         print("ERROR?: ", GL.glGetError())
 
-        try super.init(background: background)
-
-        self.size = size
+        try super.init(background: background, size: size)
 
         try updateSize()
 
@@ -107,35 +105,7 @@ open class SDL2OpenGL3NanoVGWindow: Window {
         try super.updateSize()
     }
 
-    /*public func onFrame(_ onFrameCallback: @escaping OnFrameCallback) -> UnregisterCallback {
-        let callbackId = nextOnFrameCallbackId
-        onFrameCallbacks[callbackId] = (event: onFrameCallback, unregister: {
-            self.onFrameCallbacks.removeValue(forKey: callbackId)
-        })
-        nextOnFrameCallbackId += 1
-        return onFrameCallbacks[callbackId]!.unregister
-    }*/
-
-
-
-    /*public func onMouse(_ onMouseCallback: @escaping OnMouseCallback) -> UnregisterCallback {
-        let callbackId = nextOnMouseCallbackId
-        onMouseCallbacks[callbackId] = (event: onMouseCallback, unregister: {
-            self.onMouseCallbacks.removeValue(forKey: callbackId)
-        })
-        nextOnMouseCallbackId += 1
-        return onMouseCallbacks[callbackId]!.unregister
-    }*/
-
-    /*
-    TODO: implement key handling, e.g. onkeydown, onkeyup for scene
-    public func activeKeys(activeKeys: [Int32: Bool])
-
-    func onActiveKeysChanged(activeKeys: [Int32: Bool]) {
-        return
-    }*/
-
-    open func updateContent() {
+    override open func updateContent() {
         SDL_GL_SwapWindow(sdlWindow)
     } 
 }

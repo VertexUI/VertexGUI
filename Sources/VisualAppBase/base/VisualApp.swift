@@ -1,23 +1,21 @@
 import Dispatch
 import Foundation
 
-open class App<S: System<W, R>, W: Window, R: Renderer> {
+open class VisualApp<S: System, W: Window> {
     public typealias System = S
     public typealias Window = W
-    public typealias Renderer = R
-    //public typealias RenderContext = VisualAppBase.RenderContext<S, W, R>
 
-    public var system: System?
-    //public var renderContext: RenderContext?
+    public var system: System
 
-    public init() {
-        //self.system = system
+    public init(system: System) {
+        self.system = system
     }
 
+    /*
     /// Setup the system and other app specific things. Should be called by start().
     open func setup() throws {
         fatalError("setup not implemented.")
-    }
+    }*/
 
     open func exit() {
         fatalError("exit not implemented.")
@@ -27,17 +25,17 @@ open class App<S: System<W, R>, W: Window, R: Renderer> {
     /// Will block until exit is executed.
     open func start() throws {
         DispatchQueue.main.async {
-            do {
+            /*do {
                 try self.setup()
             } catch {
                 print("Error in setup()", error)
-            }
+            }*/
 
             do {
-                guard let system = self.system else {
+                /*guard let system = self.system else {
                     fatalError("system not initialized after setup() call in start()")
-                }
-                try system.mainLoop()
+                }*/
+                try self.system.mainLoop()
             } catch {
                 print("Error in system.mainLoop()")
             }

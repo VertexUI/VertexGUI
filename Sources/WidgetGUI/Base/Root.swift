@@ -78,7 +78,7 @@ open class Root: Parent {
 
     // TODO: maybe this little piece of rendering logic belongs into the App as well? / Maybe return a render object tree as well???? 
     // TODO: --> A Game scene could also be a render object with custom logic which is redrawn on every frame by render strategy.
-    open func render(renderer: Renderer) throws {
+    open func render(with renderer: Renderer) throws {
         try renderObjectTreeRenderer.render(with: renderer, in: bounds)
         //try renderer.clipArea(bounds: globalBounds)
         /*if renderTreeInvalidated {

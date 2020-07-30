@@ -8,7 +8,7 @@ import GL
 import CSDL2
 
 // TODO: create a subclass of App, DesktopApp which supports windows/screens which can support different resolutions --> renderContexts --> different text boundsSize
-open class TwoDGraphicalApp: App<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGWindow, SDL2OpenGL3NanoVGRenderer> {
+open class TwoDGraphicalApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGWindow, SDL2OpenGL3NanoVGRenderer> {
     //public typealias Renderables = WidgetGUI.Renderables<System, Window, Renderer>
     open var window: Window?
     open var renderer: Renderer?
@@ -30,7 +30,7 @@ open class TwoDGraphicalApp: App<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGWindo
         fragment: try! String(contentsOf: Path.cwd/"Sources/DemoApp/Assets/CompositionFragment.glsl")
     )
 
-    override public init() {
+    public init() {
         let page = TwoDWorldPage()
         guiRoot = WidgetGUI.Root(
             rootWidget: page)
@@ -41,27 +41,23 @@ open class TwoDGraphicalApp: App<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGWindo
         )
         self.devToolsView = devToolsView
 
-        super.init()
-        guiRoot.context = WidgetContext(
-            getTextBoundsSize: getTextBoundsSize,
-            requestCursor: {
-                self.system!.requestCursor($0)
-            })
+        super.init(system: try! System())
 
-        devToolsGuiRoot.context = WidgetContext(
-            getTextBoundsSize: getTextBoundsSize,
-            requestCursor: {
-                self.system!.requestCursor($0)
-            })
-            /*TextConfigProvider(
-                child: page, 
-                config: TextConfig(fontConfig: Self.defaultFontConfig, color: .Green, wrap: false)))*/
+        _ = guiRoot.onDebuggingDataAvailable {
+            self.devToolsView.debuggingData = $0
+        }
+
+        newWindow(guiRoot: guiRoot)
+        newWindow(guiRoot: devToolsGuiRoot)
     }
 
-    override open func setup() throws {
-        self.system = try System()
+    override open func createRenderer(for window: Window) -> Renderer {
+        return SDL2OpenGL3NanoVGRenderer(window: window)
+    }
+
+    /*override open func setup() throws {
         self.window = try Window(background: Color(50, 50, 50, 255), size: DSize2(800, 600))
-        self.renderer = try Renderer(window: window!)
+        self.renderer = try SDL2OpenGL3NanoVGRenderer(window: window!)
         //self.context = try RenderContext(system: system!, window: window!, renderer: renderer!)
         self.guiRoot.bounds = DRect(topLeft: DPoint2(0,0), size: window!.size)
         try self.guiRoot.layout()
@@ -69,7 +65,7 @@ open class TwoDGraphicalApp: App<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGWindo
 //        virtualScreen = try renderer!.makeVirtualScreen(size: DSize2(window!.drawableSize.width, window!.drawableSize.height))
 
         self.devToolsWindow = try Window(background: Color(50, 50, 50, 255), size: DSize2(800, 600))
-        self.devToolsRenderer = try Renderer(window: devToolsWindow!)
+        self.devToolsRenderer = try SDL2OpenGL3NanoVGRenderer(window: devToolsWindow!)
         self.devToolsGuiRoot.bounds = DRect(topLeft: DPoint2(0,0), size: devToolsWindow!.size)
         try self.devToolsGuiRoot.layout()
     
@@ -79,17 +75,17 @@ open class TwoDGraphicalApp: App<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGWindo
         _ = self.window!.onResize(handleWindowResized)
         _ = self.window!.onMouse(handleMouseEvent)
         _ = self.window!.onClose {
-            try! self.system!.exit()
+            try! self.system.exit()
         }
         _ = self.devToolsWindow!.onResize(handledevToolsWindowResized)
         _ = self.devToolsWindow!.onMouse(handledevToolsWindowMouseEvent)
         _ = self.devToolsWindow!.onClose {
-            try! self.system!.exit()
+            try! self.system.exit()
         }
-        _ = self.system!.onFrame(render)
-    }
+        _ = self.system.onFrame(render)
+    }*/
 
-    open func getTextBoundsSize(_ text: String, _ fontConfig: FontConfig, _ maxWidth: Double?) -> DSize2 {
+    /*open func getTextBoundsSize(_ text: String, _ fontConfig: FontConfig, _ maxWidth: Double?) -> DSize2 {
         if let renderer = renderer {
             if let maxWidth = maxWidth {
                 return try! renderer.getMultilineTextBoundsSize(text, fontConfig: fontConfig, maxWidth: maxWidth ?? 0)
@@ -98,8 +94,8 @@ open class TwoDGraphicalApp: App<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGWindo
             }
         }
         return DSize2(0, 0)
-    }
-
+    }*/
+    /*
     open func handleMouseEvent(_ mouseEvent: RawMouseEvent) {
         self.guiRoot.consumeMouseEvent(mouseEvent)
     }
@@ -121,15 +117,15 @@ open class TwoDGraphicalApp: App<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGWindo
     open func handledevToolsWindowResized(newSize: DSize2) {
         self.devToolsGuiRoot.bounds.size = newSize
         try! self.devToolsGuiRoot.layout()
-    }
+    }*/
 
-    open func render(deltaTime: Int) throws {
+    /*open func render(deltaTime: Int) throws {
         // useless rendering to virtualScreen just as a test 
     //    try renderer!.pushVirtualScreen(virtualScreen!)
         do {
             try self.renderer!.beginFrame()
             //try renderer!.clear(window!.background)
-            try self.guiRoot.render(renderer: self.renderer!)
+            try self.guiRoot.render(with: self.renderer!)
             try self.renderer!.endFrame()
         //  try renderer!.popVirtualScreen()
         //  try renderer!.drawVirtualScreens([virtualScreen!])
@@ -137,13 +133,13 @@ open class TwoDGraphicalApp: App<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGWindo
 
             try self.devToolsRenderer!.beginFrame()
             try self.devToolsRenderer!.clear(self.devToolsWindow!.background)
-            try self.devToolsGuiRoot.render(renderer: self.devToolsRenderer!)
+            try self.devToolsGuiRoot.render(with: self.devToolsRenderer!)
             try self.devToolsRenderer!.endFrame()
             try self.devToolsWindow!.updateContent()
         } catch {
             print("Error during render \(error).")
         }
-    }
+    }*/
 }
 
 let app = TwoDGraphicalApp()
