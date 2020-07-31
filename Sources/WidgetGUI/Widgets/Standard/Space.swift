@@ -13,7 +13,7 @@ public class Space: Widget {
         super.init()
     }
 
-    override public func layout() {
+    override open func performLayout() {
         bounds.size = size
     }
 

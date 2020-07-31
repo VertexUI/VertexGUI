@@ -17,7 +17,7 @@ public class Row: Widget {
         //self.init(wrap: wrap, children: children())
     }
 
-    override public func layout() {
+    override public func performLayout() {
         var currentX = 0.0
         var currentY = 0.0
         var maxWidth = 0.0

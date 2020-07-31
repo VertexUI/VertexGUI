@@ -1,11 +1,12 @@
 import VisualAppBase
+import CustomGraphicsMath
 
 // TODO: maybe rename to BuildableSingleChildWidget and create another SingleChildWidget as Basis for button?... maybe can simply use Widget for this
 open class SingleChildWidget: Widget {
-    open lazy var child: Widget = buildChild()
+    open var child: Widget = Space(size: DSize2(0,0))// = buildChild()
     
     override open func mount(parent: Parent) {
-        self.parent = parent
+        child = buildChild()
         children = [child]
         super.mount(parent: parent)
     }
@@ -29,7 +30,7 @@ open class SingleChildWidget: Widget {
         invalidateRenderState()
     }
 
-    override open func layout() {
+    override open func performLayout() {
         child.constraints = constraints
         try child.layout()
         bounds.size = child.bounds.size

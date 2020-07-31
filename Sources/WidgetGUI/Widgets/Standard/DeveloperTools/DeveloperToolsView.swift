@@ -25,15 +25,15 @@ public class DeveloperToolsView: SingleChildWidget, StatefulWidget {
 
     override open func buildChild() -> Widget {
         if let debuggingData = debuggingData {
-            return Background(background: .White) {
-                Column {
+             return Background(background: .White) { [unowned self] in
+                Column { [unowned self] in
                     ScrollArea {
-                        RenderObjectTreeView(debuggingData: debuggingData, selectedObjectPath: self.state.selectedObjectPath) {
-                            self.state.selectedObjectPath = $1
-                            self.invalidateChild()
+                        RenderObjectTreeView(debuggingData: debuggingData, selectedObjectPath: state.selectedObjectPath) {
+                            state.selectedObjectPath = $1
+                            invalidateChild()
                         }
                     }
-                    self.buildSelectedObjectDetail()
+                    buildSelectedObjectDetail()
                     //RenderGroupsListView(debuggingData: debuggingData)
                 }
             }
@@ -69,7 +69,7 @@ public class DeveloperToolsView: SingleChildWidget, StatefulWidget {
         self.invalidateRenderState()
     }
 
-    override open func layout() {
+    override open func performLayout() {
         print("DEBUGGER CALLED LAYOUT", bounds.size, constraints, self.child.bounds.size)
         child.constraints = constraints 
         try child.layout()

@@ -21,8 +21,7 @@ public class ChildViewOne: SingleChildWidget {
         }
     }
 
-    override open func layout() {
-        super.layout()
+    override open func performLayout() {
         bounds.size = bounds.size + DSize2(0, 60)
     }
 
@@ -46,7 +45,7 @@ public class ChildViewOne: SingleChildWidget {
         }
     }
 
-    deinit {
+    override open func destroySelf() {
         content.onChanged.removeAllHandlers()
     }
 }

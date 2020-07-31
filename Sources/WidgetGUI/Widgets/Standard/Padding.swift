@@ -24,7 +24,7 @@ public class Padding: SingleChildWidget {
         return inputChild
     }
 
-    override public func layout() {
+    override open func performLayout() {
         let paddingSize = DSize2(padding.left + padding.right, padding.top + padding.bottom)
         let maxSize = constraints!.maxSize - paddingSize
         child.constraints = BoxConstraints(

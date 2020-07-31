@@ -4,19 +4,19 @@ import VisualAppBase
 open class Background: SingleChildWidget {
     open var background: Color
 
-    private var inputChildBuilder: () -> Widget
+    private var inputChild: Widget
 
-    public init(background: Color, @WidgetBuilder child inputChildBuilder: @escaping () -> Widget) {
+    public init(background: Color, @WidgetBuilder child inputChildBuilder: () -> Widget) {
         self.background = background
-        self.inputChildBuilder = inputChildBuilder
+        self.inputChild = inputChildBuilder()
         super.init()
     }
 
     override open func buildChild() -> Widget {
-        inputChildBuilder()
+        inputChild
     }
 
-    override open func layout() {
+    override open func performLayout() {
         child.constraints = constraints
         try child.layout()
         bounds.size = constraints!.constrain(child.bounds.size)

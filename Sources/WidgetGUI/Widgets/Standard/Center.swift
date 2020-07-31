@@ -12,7 +12,7 @@ public class Center: SingleChildWidget {
         inputChildBuilder()
     }
 
-    override open func layout() {
+    override open func performLayout() {
         child.constraints = BoxConstraints(minSize: DSize2.zero, maxSize: constraints!.maxSize)
         child.layout()
         bounds.size = constraints!.constrain(child.bounds.size)

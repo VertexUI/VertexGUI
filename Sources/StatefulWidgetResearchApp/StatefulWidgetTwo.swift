@@ -9,7 +9,7 @@ public class StatefulWidgetTwo: Widget, StatefulWidget {
 
     public var state: State = State()
     
-    override open func layout() {
+    override open func performLayout() {
         bounds.size = DSize2(500, 500)
     }
 

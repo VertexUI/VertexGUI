@@ -3,7 +3,7 @@ import CustomGraphicsMath
 
 public class RenderObjectTreeView: Widget {
     private struct Group {
-        var parent: Widget?
+        weak var parent: Widget?
         var children: [Widget] = []
     }
     
@@ -28,48 +28,40 @@ public class RenderObjectTreeView: Widget {
             }
             super.init()
     }
-
+    
     override open func mount(parent: Parent) {
-        var children = [Widget]()
-            var currentLineParentIndices = [-2]
-            debuggingData.tree.traverseDepth { object, path, index, parentIndex in
-                let child = Button(onClick: { _ in
-                    try! self.onObjectSelected.invokeHandlers((object, path))
-                }) {
-                    if path == self.selectedObjectPath {
-                        Text("NODE ID Selected!")
-                    } else {
-                        Text("NODE ID \(index) at PAT \(path)")
-                    }
+        var currentLineParentIndices = [-2]
+        debuggingData.tree.traverseDepth { [unowned self] object, path, index, parentIndex in
+            let child = Button(onClick: { _ in
+                try! onObjectSelected.invokeHandlers((object, path))
+            }) {
+                if path == selectedObjectPath {
+                    Text("NODE ID Selected!")
+                } else {
+                    Text("NODE ID \(index) at PAT \(path)")
                 }
-                children.append(child)
-
-                if groupedChildren.count <= path.count {
-                    groupedChildren.append(Line())
-                    currentLineParentIndices.append(parentIndex)
-                }
-                if currentLineParentIndices[path.count] != parentIndex {
-                    currentLineParentIndices[path.count] = parentIndex
-                    var parent: Widget?
-                    if path.count > 0 {
-                        parent = groupedChildren[path.count - 1].groups.last?.children.last
-                    }
-                    groupedChildren[path.count].groups.append(Group(parent: parent))
-                }
-                /*if parentIndex != currentParentIndex {
-
-                }*/
-
-                groupedChildren[path.count].groups[groupedChildren[path.count].groups.count - 1].children.append(child)
-                /*child.bounds.topLeft = DPoint2(nextX, nextY)
-                nextX += child.bounds.size.width + spacing
-                print("Child index", index, "Child Size", child.bounds.size, nextX)*/
             }
-            self.children = children
-            super.mount(parent: parent)
+            children.append(child)
+
+            if groupedChildren.count <= path.count {
+                groupedChildren.append(Line())
+                currentLineParentIndices.append(parentIndex)
+            }
+            if currentLineParentIndices[path.count] != parentIndex {
+                currentLineParentIndices[path.count] = parentIndex
+                var parent: Widget?
+                if path.count > 0 {
+                    parent = groupedChildren[path.count - 1].groups.last?.children.last
+                }
+                groupedChildren[path.count].groups.append(Group(parent: parent))
+            }
+
+            groupedChildren[path.count].groups[groupedChildren[path.count].groups.count - 1].children.append(child)
+        }
+        super.mount(parent: parent)
     }
 
-    override open func layout() {
+    override open func performLayout() {
         var spacing: Double = 30
         var nextX: Double = 0
         var nextY: Double = 0
@@ -122,5 +114,10 @@ public class RenderObjectTreeView: Widget {
             }
             children.map { $0.render() }
         }
+    }
+    
+    override open func destroySelf() {
+        groupedChildren = []
+        print("DESTORYING RenderObjectTreeView")
     }
 }

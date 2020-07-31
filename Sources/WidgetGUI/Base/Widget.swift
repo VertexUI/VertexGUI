@@ -26,37 +26,37 @@ open class Widget: Bounded, Parent, Child {
 
     public lazy var children: [Widget] = []
 
-    public var onParentChanged = ThrowingEventHandlerManager<Parent?>()
-    public var onAnyParentChanged = ThrowingEventHandlerManager<Parent?>()
-    public var onRenderStateInvalidated = ThrowingEventHandlerManager<Widget>()
-    private var unregisterAnyParentChangedHandler: ThrowingEventHandlerManager<Parent?>.UnregisterCallback?
+    public var onParentChanged = EventHandlerManager<Parent?>()
+    public var onAnyParentChanged = EventHandlerManager<Parent?>()
+    public var onRenderStateInvalidated = EventHandlerManager<Widget>()
+    private var unregisterAnyParentChangedHandler: EventHandlerManager<Parent?>.UnregisterCallback?
     weak open var parent: Parent? = nil {
         willSet {
-            // TODO: remove listeners on any parent when parent is removed
-            if newValue == nil && unregisterAnyParentChangedHandler != nil {
+            if unregisterAnyParentChangedHandler != nil {
                 unregisterAnyParentChangedHandler!()
             }
         }
 
         didSet {
-            try! onParentChanged.invokeHandlers(parent)
-            try! onAnyParentChanged.invokeHandlers(parent)
+            onParentChanged.invokeHandlers(parent)
+            onAnyParentChanged.invokeHandlers(parent)
             if parent != nil {
-                if let childParent = parent as? Child {
-                    unregisterAnyParentChangedHandler = childParent.onAnyParentChanged({
-                        try! self.onAnyParentChanged.invokeHandlers($0)
+                if let childParent: Child = parent as? Child {
+                    unregisterAnyParentChangedHandler = childParent.onAnyParentChanged({ [unowned self] in
+                        onAnyParentChanged.invokeHandlers($0)
                     })
                 }
             }
         }
     }
 
-    public internal(set) var destroyed: Bool = false
-    public var mounted: Bool = false
+    public var mounted = false
     // TODO: maybe something better
     public var layoutable: Bool {
         mounted && constraints != nil && context != nil
     }
+    public var layouted = false
+    public internal(set) var destroyed = false
 
     // TODO: might need to create something like layoutBounds and renderBounds (area that is invalidated on rerender request --> could be more than layoutBounds and affect outside widgets (e.g. a drop shadow that is not included in layoutBounds))
     open var bounds: DRect = DRect(topLeft: DPoint2(0,0), size: DSize2(0,0)) {
@@ -102,14 +102,23 @@ open class Widget: Bounded, Parent, Child {
     }
 
     public func mountChild(_ child: Widget) {
-        _ = child.onRenderStateInvalidated {
-            self.invalidateRenderState($0)
+        _ = child.onRenderStateInvalidated { [unowned self] in
+            invalidateRenderState($0)
         }
         child.mount(parent: self)
     }
-
-    open func layout() {
-        fatalError("layout() not implemented.")
+    
+    open func performLayout() {
+        fatalError("performLayout() not implemented.")
+    }
+        
+    public func layout() {
+        if !layoutable {
+            print("Warning: called layout() on Widget that is not layoutable:", self)
+            return
+        }
+        performLayout()
+        layouted = true
     }
 
     // TODO: how to name this?
@@ -120,6 +129,9 @@ open class Widget: Bounded, Parent, Child {
         onParentChanged.removeAllHandlers()
         onAnyParentChanged.removeAllHandlers()
         onRenderStateInvalidated.removeAllHandlers()
+        if let unregister = unregisterAnyParentChangedHandler {
+            unregister()
+        }
         parent = nil
         destroySelf()
         destroyed = true

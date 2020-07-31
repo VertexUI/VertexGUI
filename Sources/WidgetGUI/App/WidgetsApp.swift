@@ -28,12 +28,13 @@ open class WidgetsApp<S: System, W: Window, R: Renderer>: VisualApp<S, W> {
             requestCursor: {
                 self.system.requestCursor($0)
             })
+        guiRoot.bounds.size = window.size
         _ = window.onMouse {
             guiRoot.consumeMouseEvent($0)
         }
         _ = window.onResize {
             guiRoot.bounds.size = $0
-            guiRoot.layout()
+            //guiRoot.layout()
         }
         _ = window.onClose {
             try! self.system.exit()

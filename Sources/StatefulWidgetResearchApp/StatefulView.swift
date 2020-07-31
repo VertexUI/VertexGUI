@@ -19,7 +19,7 @@ public class StatefulView: SingleChildWidget, StatefulWidget, GUIMouseEventConsu
         }
     }
 
-    override open func layout() {
+    override open func performLayout() {
         child.constraints = constraints
         child.layout()
         bounds.size = child.bounds.size

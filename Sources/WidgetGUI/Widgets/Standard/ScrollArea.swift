@@ -45,12 +45,17 @@ public class ScrollArea: SingleChildWidget {
         let mouseArea = MouseArea {
             inputChild
         }
-        _ = mouseArea.onMouseWheel(handleMouseWheel(_:))
-        _ = mouseArea.onMouseMove(handleMouseMove(_:))
+        // TODO: need to do like this to avoid strong reference? or is passing method reference enough
+        _ = mouseArea.onMouseWheel({ [unowned self] in
+            handleMouseWheel($0)
+        })
+        _ = mouseArea.onMouseMove({ [unowned self] in
+            handleMouseMove($0)
+        })
         return mouseArea
     }
     
-    override open func layout() {
+    override open func performLayout() {
         child.constraints = BoxConstraints(minSize: constraints!.minSize, maxSize: DSize2(Double.infinity, Double.infinity))
         try child.layout()
         bounds.size = constraints!.constrain(child.bounds.size)

@@ -25,7 +25,7 @@ public class ComputedSize: SingleChildWidget {
         inputChild
     }
 
-    override open func layout() {
+    override open func performLayout() {
         bounds.size = calculate(constraints!)
         child.constraints = BoxConstraints(size: bounds.size)
         try child.layout()

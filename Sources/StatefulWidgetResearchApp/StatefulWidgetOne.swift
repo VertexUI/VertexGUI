@@ -17,7 +17,7 @@ public class StatefulWidgetOne: Widget, StatefulWidget, GUIMouseEventConsumer {
         self.passedPropertyOne = passedPropertyOne
     }
     
-    override open func layout() {
+    override open func performLayout() {
         bounds.size = DSize2(500, 500)
     }
 

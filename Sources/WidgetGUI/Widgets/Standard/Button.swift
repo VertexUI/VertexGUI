@@ -31,21 +31,21 @@ public class Button: SingleChildWidget {
     }
     public var stateStyles: [ButtonState: ButtonStyle]
     public var cursorRequestId: UInt64? = nil
-    public var onClick = ThrowingEventHandlerManager<GUIMouseButtonClickEvent>()
+    public var onClick = EventHandlerManager<GUIMouseButtonClickEvent>()
 
     private var dropCursorRequest: (() -> ())?
 
-    private var inputChildBuilder: () -> Widget
+    private var inputChild: Widget
 
     public init(
         stateStyles: [ButtonState: ButtonStyle] = defaultButtonStyles,
-        onClick onClickHandler: ThrowingEventHandlerManager<GUIMouseButtonClickEvent>.Handler? = nil,
+        onClick onClickHandler: EventHandlerManager<GUIMouseButtonClickEvent>.Handler? = nil,
         @WidgetBuilder child inputChildBuilder: @escaping () -> Widget) {
             self.stateStyles = stateStyles
             if onClickHandler != nil {
                 _ = onClick.addHandler(onClickHandler!)
             }
-            self.inputChildBuilder = inputChildBuilder
+            self.inputChild = inputChildBuilder()
             super.init()
     }
 
@@ -53,19 +53,21 @@ public class Button: SingleChildWidget {
         let mouseArea = MouseArea {
             Padding(all: 16) {
                 TextConfigProvider(config: defaultButtonTextConfig) {
-                    inputChildBuilder()
+                    inputChild
                 }
             }
         }
-        _ = mouseArea.onClick(forwardOnClick)
-        _ = mouseArea.onMouseEnter { _ in
-            self.state = .Hover
-            // TODO: might need to implement cursor via render object and check in RenderObjectTree renderer which renderobject below mouse
-            self.dropCursorRequest = self.context!.requestCursor(.Hand)
+        _ = mouseArea.onClick { [unowned self] in
+            onClick.invokeHandlers($0)
         }
-        _ = mouseArea.onMouseLeave { _ in
-            self.state = .Normal
-            self.dropCursorRequest!()
+        _ = mouseArea.onMouseEnter { [unowned self] _ in
+            state = .Hover
+            // TODO: might need to implement cursor via render object and check in RenderObjectTree renderer which renderobject below mouse
+            dropCursorRequest = context!.requestCursor(.Hand)
+        }
+        _ = mouseArea.onMouseLeave { [unowned self] _ in
+            state = .Normal
+            dropCursorRequest!()
         }
         return mouseArea
     }
