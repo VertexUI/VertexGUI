@@ -5,6 +5,7 @@ import CustomGraphicsMath
 import GLGraphicsMath
 import VisualAppBase
 import Path
+import Foundation
 
 // TODO: maybe put into another file
 /*public protocol SDL2OpenGL3NanoVGVirtualScreen: VirtualScreen {
@@ -39,8 +40,8 @@ open class SDL2OpenGL3NanoVGRenderer: Renderer {
     private var window: SDL2OpenGL3NanoVGWindow
     
     private var compositionShader = Shader(
-        vertex: try! String(contentsOf: Path.cwd/"Sources/VisualAppBaseImplSDL2OpenGL3NanoVG/shaders/compositionVertex.glsl"),
-        fragment: try! String(contentsOf: Path.cwd/"Sources/VisualAppBaseImplSDL2OpenGL3NanoVG/shaders/compositionFragment.glsl")
+        vertex: try! String(contentsOf: Bundle.module.url(forResource: "compositionVertex", withExtension: "glsl")!),// Path.cwd/"Sources/VisualAppBaseImplSDL2OpenGL3NanoVG/shaders/compositionVertex.glsl"),
+        fragment: try! String(contentsOf: Bundle.module.url(forResource: "compositionFragment", withExtension: "glsl")!)
     )
     private var compositionVAO = GLMap.UInt()
 

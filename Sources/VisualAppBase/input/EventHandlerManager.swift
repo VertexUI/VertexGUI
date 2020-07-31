@@ -31,7 +31,7 @@ public class EventHandlerManager<Data> {
     }
 }
 
-@available(*, deprecated, message: "Just use EventHandlerManager (probably)!")
+//@available(*, deprecated, message: "Just use EventHandlerManager (probably)!")
 public class ThrowingEventHandlerManager<Data> {
     public typealias Handler = (Data) throws -> Void
     public typealias UnregisterCallback = () -> Void

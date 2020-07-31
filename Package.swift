@@ -1,4 +1,4 @@
-// swift-tools-version:5.2
+// swift-tools-version:5.3
 
 import PackageDescription
 
@@ -37,9 +37,13 @@ let package = Package(
         .target(
                 // TODO: maybe rename to SwiftApplicationFramework or so...? or split to SwiftApplicationFramework and SwiftUIFramework
                 name: "WidgetGUI",
-                dependencies: ["VisualAppBase", "CustomGraphicsMath"]
+                dependencies: ["VisualAppBase", "CustomGraphicsMath"],
+                resources: [.process("Resources")]
         ),
-        .target(name: "VisualAppBaseImplSDL2OpenGL3NanoVG", dependencies: ["WidgetGUI", "CSDL2", "GL", .product(name: "CnanovgGL3", package: "Cnanovg"), "CustomGraphicsMath", "GLGraphicsMath", .product(name: "Path", package: "Path.swift")]),
+        .target(
+            name: "VisualAppBaseImplSDL2OpenGL3NanoVG",
+            dependencies: ["WidgetGUI", "CSDL2", "GL", .product(name: "CnanovgGL3", package: "Cnanovg"), "CustomGraphicsMath", "GLGraphicsMath", .product(name: "Path", package: "Path.swift")],
+            resources: [.process("Resources")]),
         .target(name: "DemoApp", dependencies: ["WidgetGUI", "VisualAppBase", "VisualAppBaseImplSDL2OpenGL3NanoVG"]),
         .target(name: "StatefulWidgetResearchApp", dependencies: ["WidgetGUI", "VisualAppBase", "VisualAppBaseImplSDL2OpenGL3NanoVG"]),
         .target(name: "PropertyBindingsResearchApp", dependencies: ["WidgetGUI", "VisualAppBase", "VisualAppBaseImplSDL2OpenGL3NanoVG"]),

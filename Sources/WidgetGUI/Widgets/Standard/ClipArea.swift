@@ -1,3 +1,4 @@
+/*
 public class ClipArea: Widget {
     public var child: Widget
 
@@ -20,4 +21,4 @@ public class ClipArea: Widget {
         try child.render(renderer: renderer)
         try renderer.releaseClipArea()
     }
-}
+}*/

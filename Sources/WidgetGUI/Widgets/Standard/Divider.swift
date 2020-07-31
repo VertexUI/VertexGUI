@@ -1,7 +1,4 @@
-//
-
-//
-
+/*
 import Foundation
 import CustomGraphicsMath
 import VisualAppBase
@@ -32,3 +29,4 @@ open class Divider<S: System<W, R>, W: Window, R: Renderer>: Widget<S, W, R> {
         try renderer.rect(globalBounds, style: RenderStyle(fillColor: color))
     }
 }
+*/

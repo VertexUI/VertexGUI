@@ -19,11 +19,6 @@ open class TwoDGraphicalApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3Nano
     private var screenVAO = GLMap.UInt()
     private var virtualScreen: VirtualScreen?
 
-    private var compositionShader = Shader(
-        vertex: try! String(contentsOf: Path.cwd/"Sources/DemoApp/Assets/CompositionVertex.glsl"),
-        fragment: try! String(contentsOf: Path.cwd/"Sources/DemoApp/Assets/CompositionFragment.glsl")
-    )
-
     public init() {
         let page = TwoDWorldPage()
         guiRoot = WidgetGUI.Root(
