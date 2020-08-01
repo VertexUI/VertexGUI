@@ -33,19 +33,6 @@ public class Text: Widget {
         super.init()
     }
 
-    override open func mount(parent: Parent) {
-        super.mount(parent: parent)
-        /*_ = onAnyParentChanged { _ in
-            if let textConfigProvider = self.parentOfType(TextConfigProvider.self) {
-                self.textConfigProvider = textConfigProvider
-                // TODO: should the check be performed here?
-                if self.layoutable {
-                    self.layout()
-                }
-            }
-        }*/
-    }
-
     override open func performLayout() {
         // TODO: check whether to have wrap in textConfig, or a property of Text and whether to pass maxWidth extra or put it into textconfig and whether to always pass it
         var preferredSize = DSize2.zero

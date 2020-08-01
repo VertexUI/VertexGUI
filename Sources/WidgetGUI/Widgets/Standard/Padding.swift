@@ -5,11 +5,6 @@ public class Padding: SingleChildWidget {
 
     private var inputChild: Widget
 
-    /*public init(padding: Insets, child: Widget) {
-        self.padding = padding
-        self.inputChild = child
-        super.init()
-    }*/
     public init(top: Double, right: Double, bottom: Double, left: Double, @WidgetBuilder child inputChild: () -> Widget) {
         self.padding = Insets(top, right, bottom, left)
         self.inputChild = inputChild()

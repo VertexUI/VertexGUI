@@ -26,12 +26,12 @@ open class StatefulWidgetsResearchApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2O
 
         super.init(system: try! System())
 
-        _ = guiRoot.onDebuggingDataAvailable {
-            self.devToolsView.debuggingData = $0
-        }
+      // _ = guiRoot.onDebuggingDataAvailable {
+        //    self.devToolsView.debuggingData = $0
+       // }
 
         newWindow(guiRoot: guiRoot, background: .Grey)
-        newWindow(guiRoot: devToolsGuiRoot, background: .Grey)
+        //newWindow(guiRoot: devToolsGuiRoot, background: .Grey)
     }
 
     override open func createRenderer(for window: Window) -> Renderer {

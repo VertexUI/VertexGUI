@@ -29,7 +29,7 @@ public class RenderObjectTreeView: Widget {
             super.init()
     }
     
-    override open func mount(parent: Parent) {
+    override open func build() {
         var currentLineParentIndices = [-2]
         debuggingData.tree.traverseDepth { [unowned self] object, path, index, parentIndex in
             let child = Button(onClick: { _ in
@@ -58,7 +58,6 @@ public class RenderObjectTreeView: Widget {
 
             groupedChildren[path.count].groups[groupedChildren[path.count].groups.count - 1].children.append(child)
         }
-        super.mount(parent: parent)
     }
 
     override open func performLayout() {
@@ -118,6 +117,5 @@ public class RenderObjectTreeView: Widget {
     
     override open func destroySelf() {
         groupedChildren = []
-        print("DESTORYING RenderObjectTreeView")
     }
 }

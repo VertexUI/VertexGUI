@@ -3,12 +3,11 @@ import CustomGraphicsMath
 
 // TODO: maybe rename to BuildableSingleChildWidget and create another SingleChildWidget as Basis for button?... maybe can simply use Widget for this
 open class SingleChildWidget: Widget {
-    open var child: Widget = Space(size: DSize2(0,0))// = buildChild()
+    open lazy var child: Widget = buildChild()
     
-    override open func mount(parent: Parent) {
-        child = buildChild()
+    override open func build() {
+        //child = buildChild()
         children = [child]
-        super.mount(parent: parent)
     }
 
     open func buildChild() -> Widget {
@@ -20,11 +19,8 @@ open class SingleChildWidget: Widget {
             return
         }
 
-        try! child.destroy()
-        
         child = buildChild()
-        children = [child]
-        mountChild(child)
+        replaceChildren(with: [child])
         
         try! layout()
         invalidateRenderState()

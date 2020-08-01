@@ -1,7 +1,7 @@
 public protocol StatefulWidgetMarker {}
 
 public protocol AnyStatefulWidget: class {
-    var anyState: Any? { get }
+    var anyState: Any? { get set }
 }
 
 public protocol StatefulWidget: AnyStatefulWidget {

@@ -29,15 +29,6 @@
         }
       },
       {
-        "package": "XML",
-        "repositoryURL": "https://github.com/kelvin13/swiftxml",
-        "state": {
-          "branch": "master",
-          "revision": "91ae89c58e5a478191c27d44c31bd9bae281fefd",
-          "version": null
-        }
-      },
-      {
         "package": "Swim",
         "repositoryURL": "https://github.com/t-ae/swim.git",
         "state": {

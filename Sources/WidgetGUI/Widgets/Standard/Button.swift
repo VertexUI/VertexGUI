@@ -23,12 +23,15 @@ public let defaultButtonStyles: [ButtonState: ButtonStyle] = [
     .Hover: ButtonStyle(background: Color(0, 255, 0, 255), cursor: .Hand)
 ]
 
-public class Button: SingleChildWidget {
+public class Button: SingleChildWidget, StatefulWidget {
+    public typealias State = ButtonState
+
     public var state: ButtonState = .Normal {
         didSet {
             invalidateRenderState()
         }
     }
+    
     public var stateStyles: [ButtonState: ButtonStyle]
     public var cursorRequestId: UInt64? = nil
     public var onClick = EventHandlerManager<GUIMouseButtonClickEvent>()
