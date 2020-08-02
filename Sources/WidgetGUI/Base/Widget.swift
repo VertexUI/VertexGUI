@@ -64,6 +64,8 @@ open class Widget: Bounded, Parent, Child {
     public var layouted = false
     public internal(set) var destroyed = false
 
+    private var unregisterFunctions = [() -> ()]()
+
     // TODO: might need to create something like layoutBounds and renderBounds (area that is invalidated on rerender request --> could be more than layoutBounds and affect outside widgets (e.g. a drop shadow that is not included in layoutBounds))
     open var bounds: DRect = DRect(topLeft: DPoint2(0,0), size: DSize2(0,0)) {
         didSet {
@@ -102,6 +104,12 @@ open class Widget: Bounded, Parent, Child {
     public final func keyed(_ key: String) -> Self {
         self.key = key
         return self
+    }
+
+    /// Record unregister functions for handlers that were added to some handler list during the lifetime
+    /// of the widget. The unregister functions will be called during destroy().
+    public func autoClean(_ unregister: @escaping () -> ()) {
+        unregisterFunctions.append(unregister)
     }
 
     public final func mount(parent: Parent, with context: ReplacementContext? = nil) {
@@ -211,10 +219,10 @@ open class Widget: Bounded, Parent, Child {
         onParentChanged.removeAllHandlers()
         onAnyParentChanged.removeAllHandlers()
         onRenderStateInvalidated.removeAllHandlers()
-        if let unregister = unregisterAnyParentChangedHandler {
+        parent = nil
+        for unregister in unregisterFunctions {
             unregister()
         }
-        parent = nil
         destroySelf()
         destroyed = true
         //print("Destroyed Widget:", id, self)
@@ -271,7 +279,8 @@ open class Widget: Bounded, Parent, Child {
     /// This should trigger a rerender of the widget in the next frame.
     public final func invalidateRenderState(_ widget: Widget? = nil) {
         if destroyed {
-            fatalError("Tried to call invalidateRenderState() on destroyed widget: \(self)")
+            print("Warning: Tried to call invalidateRenderState() on destroyed widget: \(self)")
+            return
         }
         if !mounted {
             print("Warning: Called invalidateRenderState() on an unmounted Widget:", self)

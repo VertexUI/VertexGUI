@@ -10,25 +10,27 @@ open class TwoDWorldView: Widget, GUIMouseEventConsumer, StatefulWidget {
     public var state: State = State()
 
     private var world: TwoDVoxelWorld
-    private var raycasts: [TwoDRaycast]
+    private var raycasts: ObservableArray<TwoDRaycast>
 
-    public var onRaycastHover = ThrowingEventHandlerManager<TwoDRaycast?>()
+    private var newRaycastStart: DVec2?
+    private var newRaycastEnd: DVec2?
 
+    //public var onRaycastHover = ThrowingEventHandlerManager<TwoDRaycast?>()
 
-    public var highlightedRaycast: TwoDRaycast? {
-        didSet {
-            state.highlightedRaycastSetFromInside = false
-            invalidateRenderState()
-        }
-    }
+    public var highlightedRaycast: Observable<TwoDRaycast?>
 
     private var mouseThrottle = 0
 
-    public init(world: TwoDVoxelWorld, raycasts: [TwoDRaycast], onRaycastHover raycastHoverHandler: @escaping (_ raycast: TwoDRaycast?) -> Void) {
-        self.world = world
-        self.raycasts = raycasts
-        _ = self.onRaycastHover.addHandler(raycastHoverHandler)
-        super.init()
+    public init(
+        world: TwoDVoxelWorld,
+        raycasts: ObservableArray<TwoDRaycast>,
+        highlightedRaycast: Observable<TwoDRaycast?>
+        /*onRaycastHover raycastHoverHandler: @escaping (_ raycast: TwoDRaycast?) -> Void*/) {
+            self.world = world
+            self.raycasts = raycasts
+            self.highlightedRaycast = highlightedRaycast
+            //_ = self.onRaycastHover.addHandler(raycastHoverHandler)
+            super.init()
     }
 
     override open func performLayout() {
@@ -43,7 +45,29 @@ open class TwoDWorldView: Widget, GUIMouseEventConsumer, StatefulWidget {
         position / DVec2(bounds.size) * DVec2(world.size)
     }
 
+    public func handleClick(_ event: GUIMouseButtonClickEvent) {
+        if event.button == .Left {
+            let localPosition = event.position - globalBounds.topLeft
+            let worldPosition = localToWorld(position: localPosition)
+            if newRaycastStart == nil {
+                newRaycastStart = worldPosition
+            } else if newRaycastEnd == nil {
+                newRaycastEnd = worldPosition
+                raycasts.append(world.raycast(from: newRaycastStart!, to: newRaycastEnd!))
+                invalidateRenderState()
+                newRaycastStart = nil
+                newRaycastEnd = nil
+            }
+        }
+    }
+
     public func consume(_ event: GUIMouseEvent) throws {
+        print("CALL CONSUME ON MOUSE EVENT", destroyed)
+
+        if let event = event as? GUIMouseButtonClickEvent {
+            handleClick(event)
+        }
+
         mouseThrottle += 1
         if mouseThrottle > 5 {
             mouseThrottle = 0
@@ -58,8 +82,8 @@ open class TwoDWorldView: Widget, GUIMouseEventConsumer, StatefulWidget {
                     let distance = (mousePosition - intersection).length
                     print("INTERSECTION", intersection, "DISTANCE", distance)
                     if distance < 4 {
-                        highlightedRaycast = raycast
-                        try onRaycastHover.invokeHandlers(raycast)
+                        highlightedRaycast.value = raycast
+                        //try onRaycastHover.invokeHandlers(raycast)
                         state.highlightedRaycastSetFromInside = true
                         invalidateRenderState()
                         return
@@ -70,7 +94,7 @@ open class TwoDWorldView: Widget, GUIMouseEventConsumer, StatefulWidget {
                     print("REMOVE RAYCAST")
                     //try onRaycastHover.invokeHandlers(nil)
                     state.highlightedRaycastSetFromInside = false
-                    highlightedRaycast = nil
+                    highlightedRaycast.value = nil
                     invalidateRenderState()
                 }
             }
@@ -138,7 +162,7 @@ open class TwoDWorldView: Widget, GUIMouseEventConsumer, StatefulWidget {
 
                 try renderer.lineSegment(from: scaledRayStart, to: scaledRayEnd)
                 try renderer.strokeWidth(5)
-                if let highlightedRaycast = self.highlightedRaycast, raycast == highlightedRaycast {
+                if let highlightedRaycast = self.highlightedRaycast.value, raycast == highlightedRaycast {
                     try renderer.strokeColor(.Black)
                 } else {
                     try renderer.strokeColor(.Blue)
@@ -157,5 +181,9 @@ open class TwoDWorldView: Widget, GUIMouseEventConsumer, StatefulWidget {
                 }
             }
         }])
+    }
+
+    override public func destroySelf() {
+        //onRaycastHover.removeAllHandlers()
     }
 }

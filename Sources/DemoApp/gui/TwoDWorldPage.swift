@@ -4,12 +4,20 @@ import CustomGraphicsMath
 
 open class TwoDWorldPage: SingleChildWidget {
     private var world: TwoDVoxelWorld = TwoDVoxelWorld(size: ISize2(40, 40))
-    private var raycasts: [TwoDRaycast] = []
+    private var raycasts = ObservableArray<TwoDRaycast>()
 
-    private var newRaycastStart: DVec2?
-    private var newRaycastEnd: DVec2?
+    private var selectedRaycast = Observable<TwoDRaycast?>(nil)
+    private var highlightedRaycast = Observable<TwoDRaycast?>(nil)
 
-    private var selectedRaycast: TwoDRaycast?
+    public init() {
+        super.init()
+        autoClean(raycasts.onChanged { [unowned self] _ in
+            invalidateChild()
+        })
+        autoClean(selectedRaycast.onChanged { [unowned self] _ in
+            invalidateChild()
+        })
+    }
 
     // TODO: should create a wrapper / optimize / avoid expensive tree traversal
     private var worldView: TwoDWorldView {
@@ -17,18 +25,11 @@ open class TwoDWorldPage: SingleChildWidget {
     }
     
     override open func buildChild() -> Widget {
-        Background(background: Color(120, 160, 255, 255)) {
+        Background(background: Color(120, 160, 255, 255)) { [unowned self] in
             Row {                
                 Column {
                     Padding(all: 20) {
-                    //TextConfigProvider(
-                        /*child: */Text("2D Raycast Visualizer")
-                    /*    config: TextConfig(
-                            fontConfig: FontConfig(
-                                family: context!.defautFontFamily
-                            )
-                        )
-                    ),*/
+                        Text("2D Raycast Visualizer")
                     }
                     Padding(all: 20) {
                         Button {
@@ -38,13 +39,10 @@ open class TwoDWorldPage: SingleChildWidget {
                     ComputedSize {
                         $0.constrain(DSize2($0.maxWidth * 0.75, $0.maxHeight))
                     } child: {
-                        MouseArea(onClick: self.handleWorldViewClick(_:)) {
-                            TwoDWorldView(world: self.world, raycasts: self.raycasts, onRaycastHover: {
-                                self.selectedRaycast = $0
-                                print("ON RAYCSAT HOVER")
-                                self.invalidateChild()
-                            })
-                        }
+                        TwoDWorldView(
+                            world: world,
+                            raycasts: raycasts,
+                            highlightedRaycast: highlightedRaycast)
                     }
                 }
 
@@ -54,12 +52,12 @@ open class TwoDWorldPage: SingleChildWidget {
 
                     Padding(all: 20) {
 
-                        if let selectedRaycast = self.selectedRaycast {
+                        if let selectedRaycast = selectedRaycast.value {
                             
                             Column {
                                 Button { _ in
-                                    self.selectedRaycast = nil
-                                    self.invalidateChild()
+                                    self.selectedRaycast.value = nil
+                                    invalidateChild()
                                 } child: {
                                     Text("Close")
                                 }
@@ -69,19 +67,19 @@ open class TwoDWorldPage: SingleChildWidget {
                         } else {
                             
                             MouseArea(onMouseLeave: { _ in
-                                self.worldView.highlightedRaycast = nil
+                                highlightedRaycast.value = nil
                             }) {
                                 Column(spacing: 20) {
                                     
                                     Text("Raycasts")
 
-                                    self.raycasts.map { raycast in
+                                    raycasts.map { raycast in
 
                                         MouseArea(onClick: { _ in
-                                            self.selectedRaycast = raycast
-                                            self.invalidateChild()
+                                            self.selectedRaycast.value = raycast
+                                            invalidateChild()
                                         }, onMouseEnter: { _ in
-                                            self.worldView.highlightedRaycast = raycast
+                                            highlightedRaycast.value = raycast
                                         }) {
                                             Row(spacing: 20, wrap: true) {
                                                 
@@ -100,26 +98,6 @@ open class TwoDWorldPage: SingleChildWidget {
                         }
                     }
                 }
-            }
-        }
-    }
-
-    private func localToWorld(_ position: DVec2) -> DVec2 {
-        return position / DVec2(worldView.bounds.size) * DVec2(world.size)
-    }
-
-    open func handleWorldViewClick(_ event: GUIMouseButtonClickEvent) throws {
-        if event.button == .Left {
-            let localPosition = event.position - worldView.globalBounds.topLeft
-            let worldPosition = localToWorld(localPosition)
-            if newRaycastStart == nil {
-                newRaycastStart = worldPosition
-            } else if newRaycastEnd == nil {
-                newRaycastEnd = worldPosition
-                raycasts.append(world.raycast(from: newRaycastStart!, to: newRaycastEnd!))
-                invalidateChild()
-                newRaycastStart = nil
-                newRaycastEnd = nil
             }
         }
     }

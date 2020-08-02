@@ -1,0 +1,92 @@
+import VisualAppBase
+
+public class Observable<Value> {
+    private var _value: Value
+    public var value: Value {
+        get {
+            return _value
+        }
+
+        set {
+            _value = newValue
+            onChanged.invokeHandlers(_value)
+        }
+    }
+    public internal(set) var onChanged = EventHandlerManager<Value>()
+    
+    public init(_ initialValue: Value) {
+        _value = initialValue
+    }
+}
+
+public class ObservableArray<Value>: Collection {
+    public typealias Index = Int
+    public typealias Element = Value
+    public typealias Iterator = IndexingIterator<[Value]>
+
+    private var values: [Value]
+
+    public internal(set) var onChanged = EventHandlerManager<[Value]>()
+
+    public init(_ initialValues: [Value] = []) {
+        self.values = initialValues
+    }
+
+    private func invokeOnChangedHandlers() {
+        onChanged.invokeHandlers(values)
+    }
+
+    public var startIndex: Index {
+        values.startIndex
+    }
+
+    public var endIndex: Index {
+        values.endIndex
+    }
+
+    public func makeIterator() -> Iterator {
+        values.makeIterator()
+    }
+
+    public subscript(position: Index) -> Element {
+        get {
+            values[position]
+        }
+
+        set {
+            values[position] = newValue
+            invokeOnChangedHandlers()
+        }
+    }
+
+    public var isEmpty: Bool {
+        values.isEmpty
+    }
+
+    public var count: Int {
+        values.count
+    }
+
+    public func index(after i: Index) -> Index {
+        values.index(after: i)
+    }
+
+    public func append(_ newValue: Value) {
+        values.append(newValue)
+        invokeOnChangedHandlers()
+    }
+
+    public func append<S>(contentsOf newValues: S) where S: Sequence, Value == S.Element {
+        values.append(contentsOf: newValues)
+        invokeOnChangedHandlers()
+    }
+}
+/*
+@propertyWrapper
+public struct Observe<Value> {
+    var wrappedValue: Observable<Value>
+    
+    public init(wrappedValue: Observable<Value>) {
+        self.wrappedValue = wrappedValue
+    }
+}*/

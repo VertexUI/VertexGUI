@@ -31,6 +31,7 @@ public struct GUIMouseButtonDownEvent: GUIMouseEvent {
     }
 }
 
+// TODO: maybe MouseButtonClick is not the right name, MouseClick might be better
 public struct GUIMouseButtonClickEvent: GUIMouseEvent {
     public var button: MouseButton
     public var position: DPoint2

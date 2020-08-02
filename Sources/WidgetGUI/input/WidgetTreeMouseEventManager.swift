@@ -22,28 +22,13 @@ public class WidgetTreeMouseEventManager {
         var mouseEventTargets: [(Widget & GUIMouseEventConsumer)] = []
         var testMouseEventTargets: [Widget] = [rootWidget]
         while let testTarget = testMouseEventTargets.popLast() {
-            //for testTarget in testMouseEventTargets {
-                // TODO: this might be a lot of calculation, can optimize by successively removing x, y while traversing the testTargets
-                if testTarget.globalBounds.contains(point: rawMouseEvent.position) {
-                    if let target = testTarget as? (Widget & GUIMouseEventConsumer) {
-                        mouseEventTargets.append(target)
-                    }
-                    testMouseEventTargets.insert(contentsOf: testTarget.children, at: 0)
-                    /*if testTarget.children.count > 0 {
-                        testMouseEventTargets = testTarget.children
-                    } else {
-                        break checkTargets
-                    }
-                    switch testTarget {
-                    case let testTarget as SingleChildWidget:
-                        testMouseEventTargets = [testTarget.child]
-                    case let testTarget as MultiChildWidget:
-                        testMouseEventTargets = testTarget.children
-                    default:
-                        break checkTargets
-                    }*/
+            // TODO: this might be a lot of calculation, can optimize by successively removing x, y while traversing the testTargets
+            if testTarget.globalBounds.contains(point: rawMouseEvent.position) {
+                if let target = testTarget as? (Widget & GUIMouseEventConsumer) {
+                    mouseEventTargets.append(target)
                 }
-            //}
+                testMouseEventTargets.insert(contentsOf: testTarget.children, at: 0)
+            }
         }
 
         // to let the event bubble up
@@ -82,7 +67,7 @@ public class WidgetTreeMouseEventManager {
                     if let previousButton = previousMouseButtonDownEventButton,
                         rawMouseButtonUpEvent.button == previousButton {
                         for previousTarget in previousMouseEventTargets[ObjectIdentifier(GUIMouseButtonDownEvent.self)]! {
-                            if previousTarget.id == mouseEventTarget.id {
+                            if !previousTarget.destroyed && previousTarget.id == mouseEventTarget.id {
                                 try mouseEventTarget.consume(
                                     GUIMouseButtonClickEvent(
                                         button: rawMouseButtonUpEvent.button,
