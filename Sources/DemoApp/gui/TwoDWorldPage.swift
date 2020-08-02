@@ -11,9 +11,6 @@ open class TwoDWorldPage: SingleChildWidget {
 
     public init() {
         super.init()
-        autoClean(selectedRaycast.onChanged { [unowned self] _ in
-            invalidateChild()
-        })
     }
 
     // TODO: should create a wrapper / optimize / avoid expensive tree traversal
@@ -49,50 +46,55 @@ open class TwoDWorldPage: SingleChildWidget {
 
                     Padding(all: 20) {
 
-                        if let selectedRaycast = selectedRaycast.value {
-                            
-                            Column {
-                                Button {
-                                    Text("Close")
-                                } onClick: { _ in
-                                    self.selectedRaycast.value = nil
-                                    invalidateChild()
-                                } 
+                        ForwardingObservingBuilder(observe: selectedRaycast) { selectedRaycastValue in
 
-                                RaycastDetailView(raycast: selectedRaycast)
-                            }
-
-                        } else {
-
-                            ObservingBuilder([AnyObservable(highlightedRaycast), AnyObservable(raycasts)]) {
+                            if let selectedRaycast = selectedRaycast.value {
                                 
-                                MouseArea(onMouseLeave: { _ in
-                                    highlightedRaycast.value = nil
-                                }) {
-                                    Column(spacing: 20) {
-                                        
-                                        Text("Raycasts")
+                                Column {
+                                    Button {
+                                        Text("Close")
+                                    } onClick: { _ in
+                                        self.selectedRaycast.value = nil
+                                    } 
 
-                                        raycasts.map { raycast in
+                                    RaycastDetailView(raycast: selectedRaycast)
+                                }
 
-                                            MouseArea(onClick: { _ in
-                                                self.selectedRaycast.value = raycast
-                                                invalidateChild()
-                                            }, onMouseEnter: { _ in
-                                                highlightedRaycast.value = raycast
-                                            }) {
-                                                Row(spacing: 20, wrap: true) {
-                                                    
-                                                    if raycast == highlightedRaycast.value {
-                                                        Text("HIGHLIGHTED")
-                                                    }
+                            } else {
 
-                                                    MouseInteraction {
-                                                        Text("Raycast")
-                                                    } hover: {
-                                                        Text("Raycast on HOVER!!")
-                                                    } active: {
-                                                        Text("Raycast on ACTIVE!!")
+                                ObservingBuilder([AnyObservable(highlightedRaycast), AnyObservable(raycasts)]) {
+                                    
+                                    MouseArea(onMouseLeave: { _ in
+                                        highlightedRaycast.value = nil
+                                    }) {
+                                        Column(spacing: 20) {
+                                            
+                                            Text("Raycasts")
+
+                                            raycasts.map { raycast in
+                                            
+                                                MouseArea(onClick: { _ in
+                                                    self.selectedRaycast.value = raycast
+                                                }, onMouseEnter: { _ in
+                                                    highlightedRaycast.value = raycast
+                                                }) {
+                                                    Background(background: .Red) {
+                                                        Padding(all: 16) {
+                                                            Row(spacing: 20, wrap: true) {
+                                                                
+                                                                if raycast == highlightedRaycast.value {
+                                                                    Text("HIGHLIGHTED")
+                                                                }
+
+                                                                MouseInteraction {
+                                                                    Text("Raycast")
+                                                                } hover: {
+                                                                    Text("Raycast on HOVER!!")
+                                                                } active: {
+                                                                    Text("Raycast on ACTIVE!!")
+                                                                }
+                                                            }
+                                                        }
                                                     }
                                                 }
                                             }

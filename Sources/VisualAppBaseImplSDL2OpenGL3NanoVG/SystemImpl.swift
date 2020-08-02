@@ -89,7 +89,7 @@ open class SDL2OpenGL3NanoVGSystem: System {
                         }
                     } else if event.window.event == UInt8(SDL_WINDOWEVENT_CLOSE.rawValue) {
                         if let window = SDL2OpenGL3NanoVGSystem.windows[Int(event.window.windowID)] {
-                            try window.onClose.invokeHandlers(Void())
+                            window.close()
                         }
                     }
                     break

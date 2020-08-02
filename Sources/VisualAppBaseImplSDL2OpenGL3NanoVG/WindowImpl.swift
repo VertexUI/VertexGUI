@@ -108,4 +108,11 @@ open class SDL2OpenGL3NanoVGWindow: Window {
     override open func updateContent() {
         SDL_GL_SwapWindow(sdlWindow)
     } 
+
+    override open func close() {
+        nvgDeleteGL3(nvg)
+        SDL_GL_DeleteContext(glContext)
+        SDL_DestroyWindow(sdlWindow)
+        onClose.invokeHandlers(Void())
+    }
 }

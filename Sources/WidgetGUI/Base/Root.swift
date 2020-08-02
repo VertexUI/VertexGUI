@@ -94,4 +94,8 @@ open class Root: Parent {
         }*/
 
     }
+
+    open func destroy() {
+        rootWidget.destroy()
+    }
 }

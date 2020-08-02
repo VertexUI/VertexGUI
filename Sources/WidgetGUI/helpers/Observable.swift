@@ -80,6 +80,11 @@ public class ObservableArray<Value>: Collection {
         values.append(contentsOf: newValues)
         invokeOnChangedHandlers()
     }
+
+    public func removeAll(where shouldBeRemoved: (Element) throws -> Bool) rethrows {
+        try values.removeAll(where: shouldBeRemoved)
+        invokeOnChangedHandlers()
+    }
 }
 
 public class AnyObservable {
