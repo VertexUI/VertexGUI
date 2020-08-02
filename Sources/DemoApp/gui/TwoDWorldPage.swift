@@ -64,7 +64,7 @@ open class TwoDWorldPage: SingleChildWidget {
 
                         } else {
 
-                            ObservingBuilder(observe: highlightedRaycast) { unwrappedHighlightedRaycast in
+                            ObservingBuilder([AnyObservable(highlightedRaycast), AnyObservable(raycasts)]) {
                                 
                                 MouseArea(onMouseLeave: { _ in
                                     highlightedRaycast.value = nil
@@ -83,7 +83,7 @@ open class TwoDWorldPage: SingleChildWidget {
                                             }) {
                                                 Row(spacing: 20, wrap: true) {
                                                     
-                                                    if raycast == unwrappedHighlightedRaycast {
+                                                    if raycast == highlightedRaycast.value {
                                                         Text("HIGHLIGHTED")
                                                     }
 

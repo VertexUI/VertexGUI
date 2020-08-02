@@ -1,18 +1,20 @@
-public class ObservingBuilder<Value>: SingleChildWidget {
-    private var observable: Observable<Value>
+public class ObservingBuilder: SingleChildWidget {
+    private var observables: [AnyObservable]
 
-    private var childBuilder: (_ value: Value) -> Widget
+    private var childBuilder: () -> Widget
 
-    public init(observe observable: Observable<Value>, @WidgetBuilder child childBuilder: @escaping (_ value: Value) -> Widget) {
-        self.observable = observable
+    public init(_ observables: [AnyObservable], @WidgetBuilder child childBuilder: @escaping () -> Widget) {
+        self.observables = observables
         self.childBuilder = childBuilder
         super.init()
-        autoClean(observable.onChanged { [unowned self] _ in
-            invalidateChild()
-        })
+        for observable in observables {
+            autoClean(observable.onChanged { [unowned self] _ in
+                invalidateChild()
+            })
+        }
     }
 
     override open func buildChild() -> Widget {
-        childBuilder(observable.value)
+        childBuilder()
     }
 }

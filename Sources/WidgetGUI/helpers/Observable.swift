@@ -81,6 +81,31 @@ public class ObservableArray<Value>: Collection {
         invokeOnChangedHandlers()
     }
 }
+
+public class AnyObservable {
+    public internal(set) var onChanged = EventHandlerManager<Any>()
+
+    private var removeOnChangedHandler: (() -> ())?
+    
+    public init<Value>(_ observable: Observable<Value>) {
+        removeOnChangedHandler = observable.onChanged { [unowned self] value in
+            onChanged.invokeHandlers(value)
+        }
+    }
+
+    public init<Value>(_ observable: ObservableArray<Value>) {
+        removeOnChangedHandler = observable.onChanged { [unowned self] value in
+            onChanged.invokeHandlers(value)
+        }
+    }
+
+    deinit {
+        if let remove = removeOnChangedHandler {
+            remove()
+        }
+    }
+}
+
 /*
 @propertyWrapper
 public struct Observe<Value> {

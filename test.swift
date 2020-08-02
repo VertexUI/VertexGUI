@@ -8,7 +8,9 @@ testFunc {
     print("THIS TOO")
 }
 
-
+func testFunc2(params: String...) -> [String] {
+    return params
+}
 
 /*class TestClass {
     public init(_ getVals: () -> [String]) {
