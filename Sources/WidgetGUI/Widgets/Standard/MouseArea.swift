@@ -25,7 +25,7 @@ public class MouseArea: SingleChildWidget, GUIMouseEventConsumer {
         onMouseEnter onMouseEnterHandler: ThrowingEventHandlerManager<GUIMouseEnterEvent>.Handler? = nil,
         onMouseLeave onMouseLeaveHandler: ThrowingEventHandlerManager<GUIMouseLeaveEvent>.Handler? = nil,
         onMouseWheel onMouseWheelHandler: ThrowingEventHandlerManager<GUIMouseWheelEvent>.Handler? = nil,
-        @WidgetBuilder _ inputChild: () -> Widget ) {
+        @WidgetBuilder _ inputChild: () -> Widget) {
             if let onClickHandler = onClickHandler {
                 _ = self.onClick(onClickHandler)
             }

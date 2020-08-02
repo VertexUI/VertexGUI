@@ -42,8 +42,8 @@ public class Button: SingleChildWidget, StatefulWidget {
 
     public init(
         stateStyles: [ButtonState: ButtonStyle] = defaultButtonStyles,
-        onClick onClickHandler: EventHandlerManager<GUIMouseButtonClickEvent>.Handler? = nil,
-        @WidgetBuilder child inputChildBuilder: @escaping () -> Widget) {
+        @WidgetBuilder child inputChildBuilder: () -> Widget,
+        onClick onClickHandler: EventHandlerManager<GUIMouseButtonClickEvent>.Handler? = nil) {
             self.stateStyles = stateStyles
             if onClickHandler != nil {
                 _ = onClick.addHandler(onClickHandler!)

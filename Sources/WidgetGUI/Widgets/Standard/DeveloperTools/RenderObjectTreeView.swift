@@ -32,14 +32,14 @@ public class RenderObjectTreeView: Widget {
     override open func build() {
         var currentLineParentIndices = [-2]
         debuggingData.tree.traverseDepth { [unowned self] object, path, index, parentIndex in
-            let child = Button(onClick: { _ in
-                try! onObjectSelected.invokeHandlers((object, path))
-            }) {
+            let child = Button {
                 if path == selectedObjectPath {
-                    Text("NODE ID Selected!")
+                    return Text("NODE ID Selected!")
                 } else {
-                    Text("NODE ID \(index) at PAT \(path)")
+                    return Text("NODE ID \(index) at PAT \(path)")
                 }
+            } onClick: { _ in
+                try! onObjectSelected.invokeHandlers((object, path))
             }
             children.append(child)
 

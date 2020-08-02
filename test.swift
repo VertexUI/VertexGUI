@@ -1,4 +1,16 @@
-class TestClass {
+func testFunc(param0: String = "", param1: () -> (), param2: (() -> ())? = nil, param3: (() -> ())? = nil) {
+    param1()
+}
+
+testFunc {
+    print("WOW IT WORKS")
+} param2: {
+    print("THIS TOO")
+}
+
+
+
+/*class TestClass {
     public init(_ getVals: () -> [String]) {
         print(getVals())
     }
@@ -31,4 +43,4 @@ if let test2 = test2, test2 is SomeProto {
     print("IT IS")
 }
 
-print(test2Conv)
+print(test2Conv)*/

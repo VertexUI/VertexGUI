@@ -11,9 +11,6 @@ open class TwoDWorldPage: SingleChildWidget {
 
     public init() {
         super.init()
-        autoClean(raycasts.onChanged { [unowned self] _ in
-            invalidateChild()
-        })
         autoClean(selectedRaycast.onChanged { [unowned self] _ in
             invalidateChild()
         })
@@ -32,9 +29,9 @@ open class TwoDWorldPage: SingleChildWidget {
                         Text("2D Raycast Visualizer")
                     }
                     Padding(all: 20) {
-                        Button {
+                        Button(child: {
                             Text("Button without function")
-                        }
+                        })
                     }
                     ComputedSize {
                         $0.constrain(DSize2($0.maxWidth * 0.75, $0.maxHeight))
@@ -55,15 +52,16 @@ open class TwoDWorldPage: SingleChildWidget {
                         if let selectedRaycast = selectedRaycast.value {
                             
                             Column {
-                                Button { _ in
+                                Button {
+                                    Text("Close")
+                                } onClick: { _ in
                                     self.selectedRaycast.value = nil
                                     invalidateChild()
-                                } child: {
-                                    Text("Close")
-                                }
+                                } 
 
                                 RaycastDetailView(raycast: selectedRaycast)
                             }
+
                         } else {
 
                             ObservingBuilder(observe: highlightedRaycast) { unwrappedHighlightedRaycast in
