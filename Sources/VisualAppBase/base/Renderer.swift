@@ -30,6 +30,9 @@ public protocol Renderer {
     @discardableResult func popVirtualScreen() throws -> VirtualScreen?
     func drawVirtualScreens(_ screens: [VirtualScreen], at positions: [DVec2]?) throws
     func beginPath() throws
+    func moveTo(_ point: DPoint2) throws
+    func lineTo(_ point: DPoint2) throws
+    func closePath() throws
     func fillColor(_ color: Color) throws
     func fill() throws
     func strokeWidth(_ width: Double) throws

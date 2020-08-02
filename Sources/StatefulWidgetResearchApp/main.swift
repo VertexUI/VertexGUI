@@ -22,7 +22,7 @@ open class StatefulWidgetsResearchApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2O
     }
 
     override open func createRenderer(for window: Window) -> Renderer {
-        return SDL2OpenGL3NanoVGRenderer(window: window)
+        return SDL2OpenGL3NanoVGRenderer(for: window)
     }
 }
 

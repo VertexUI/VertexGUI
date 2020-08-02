@@ -28,7 +28,7 @@ open class TwoDGraphicalApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3Nano
     }
 
     override open func createRenderer(for window: Window) -> Renderer {
-        return SDL2OpenGL3NanoVGRenderer(window: window)
+        return SDL2OpenGL3NanoVGRenderer(for: window)
     }
 }
 

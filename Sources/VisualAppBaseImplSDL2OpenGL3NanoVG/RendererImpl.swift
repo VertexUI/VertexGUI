@@ -49,7 +49,7 @@ open class SDL2OpenGL3NanoVGRenderer: Renderer {
     // TODO: maybe create RenderTarget --> LiveRenderTarget, CachedRenderTarget (or VirtualRenderTarget, replacement for VirtualScreen)
 
 
-    public init(window: SDL2OpenGL3NanoVGWindow) {
+    public init(for window: SDL2OpenGL3NanoVGWindow) {
         self.window = window
         setup()
     }
@@ -201,6 +201,18 @@ open class SDL2OpenGL3NanoVGRenderer: Renderer {
 
     open func beginPath() throws {
         nvgBeginPath(window.nvg)
+    }
+
+    open func moveTo(_ point: DPoint2) throws {
+        nvgMoveTo(window.nvg, Float(point.x), Float(point.y))
+    }
+
+    open func lineTo(_ point: DPoint2) throws {
+        nvgLineTo(window.nvg, Float(point.x), Float(point.y))
+    }
+
+    open func closePath() throws {
+        nvgClosePath(window.nvg)
     }
 
     open func fillColor(_ color: Color) throws {
