@@ -2,7 +2,7 @@ import WidgetGUI
 import VisualAppBase
 import CustomGraphicsMath
 
-public class StatefulWidgetOne: Widget, StatefulWidget, GUIMouseEventConsumer {
+public class StatefulWidgetOne: SingleChildWidget, StatefulWidget {
     public struct State {
         var statePropertyOne: Color = .Blue
         var statePropertyTwo: String = "Default State String"
@@ -16,39 +16,19 @@ public class StatefulWidgetOne: Widget, StatefulWidget, GUIMouseEventConsumer {
     public init(passedPropertyOne: String) {
         self.passedPropertyOne = passedPropertyOne
     }
-    
-    override open func performLayout() {
-        bounds.size = DSize2(500, 500)
-    }
 
-    public func consume(_ event: GUIMouseEvent) {
-        if let event = event as? GUIMouseButtonClickEvent {
-            if globalBounds.contains(point: event.position) {
+    override open func buildChild() -> Widget {
+        Column { [unowned self] in
+            Text(passedPropertyOne)
+
+            Text("prop three is: \(state.statePropertyThree)")
+
+            Button(onClick: { _ in
                 state.statePropertyThree += 1
-                invalidateRenderState()
+                invalidateChild()
+            }) {
+                Text("Click to invalidate Child one.")
             }
-        }
-    }
-
-    override open func renderContent() -> RenderObject? {
-        return RenderObject.Container {
-            RenderObject.RenderStyle(fillColor: FixedRenderValue(state.statePropertyOne)) {
-                RenderObject.Rect(Rect(topLeft: globalPosition, size: DSize2(200, 300)))
-            }
-
-            RenderObject.Text(passedPropertyOne, fontConfig: FontConfig(
-                family: defaultFontFamily,
-                size: 16,
-                weight: .Regular,
-                style: .Normal
-            ), color: .Black, topLeft: globalPosition + DVec2(0, 300), wrap: false)
-
-            RenderObject.Text("\(state.statePropertyThree)", fontConfig: FontConfig(
-                family: defaultFontFamily,
-                size: 16,
-                weight: .Regular,
-                style: .Normal
-            ), color: .Black, topLeft: globalPosition + DVec2(0, 330), wrap: false)
         }
     }
 }

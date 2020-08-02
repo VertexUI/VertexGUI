@@ -48,21 +48,33 @@ public struct WidgetBuilder {
         return widget != nil ? [widget!] : []
     }
 
+
     public static func buildEither(first: Widget) -> Widget {
         return first
     }
 
-    public static func buildEither(first: Widget) -> [Widget] {
+    /*public static func buildEither(first: Widget) -> [Widget] {
         return [first]
+    }*/
+
+    public static func buildEither(first: [Widget]) -> [Widget] {
+        return first
     }
+
+
 
     public static func buildEither(second: Widget) -> Widget {
         return second
     }
 
-    public static func buildEither(second: Widget) -> [Widget] {
+    /*public static func buildEither(second: Widget) -> [Widget] {
         return [second]
+    }*/
+
+    public static func buildEither(second: [Widget]) -> [Widget] {
+        return second
     }
+
 
     /*public static func buildBlock(_ widgets: [Widget?]...) -> [Widget] {
         return widgets.flatMap { $0 }.compactMap { $0 }

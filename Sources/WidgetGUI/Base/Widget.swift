@@ -3,7 +3,13 @@ import CustomGraphicsMath
 import VisualAppBase
 
 open class Widget: Bounded, Parent, Child {
+    public struct ReplacementContext {
+        public var previousWidget: Widget?
+        public var keyedWidgets: [String: Widget]
+    }
+
     open var id: UInt = UInt.random(in: 0..<UInt.max)
+    open var key: String?
 
     open var _context: WidgetContext?
     open var context: WidgetContext? {
@@ -93,14 +99,38 @@ open class Widget: Bounded, Parent, Child {
         //print("Deinitialized Widget:", id, self)
     }
 
-    public final func mount(parent: Parent, replacing oldSelf: Widget? = nil) {
-        if 
-            let newSelf = self as? AnyStatefulWidget, 
-            let oldSelf = oldSelf as? AnyStatefulWidget,
-            type(of: newSelf) == type(of: oldSelf) {
-                newSelf.anyState = oldSelf.anyState
+    public final func keyed(_ key: String) -> Self {
+        self.key = key
+        return self
+    }
+
+    public final func mount(parent: Parent, with context: ReplacementContext? = nil) {
+        var oldSelf: Widget? = context?.previousWidget
+        if
+            let context = context {
+                if let newKey = self.key {
+                    oldSelf = context.keyedWidgets[newKey]
+                }
+
+                if let newSelf = self as? (Widget & AnyStatefulWidget), let oldSelf = oldSelf as? (Widget & AnyStatefulWidget) {
+                
+                    var attemptStateReplace = false
+
+                    if 
+                        let newKey = newSelf.key,
+                        let oldKey = oldSelf.key,
+                        oldKey == newKey {
+                            attemptStateReplace = true
+                    } else if newSelf.key == nil, oldSelf.key == nil {
+                        attemptStateReplace = true
+                    }
+
+                    if attemptStateReplace && type(of: newSelf) == type(of: oldSelf) {
+                        newSelf.anyState = oldSelf.anyState
+                    }
+                }
         }
- 
+    
         self.parent = parent
  
         build()
@@ -112,7 +142,9 @@ open class Widget: Bounded, Parent, Child {
             } else {
                 oldChild = nil
             }
-            mountChild(children[i], replacing: oldChild)
+            let childContext = oldChild == nil && context == nil ? nil : ReplacementContext(
+                previousWidget: oldChild, keyedWidgets: context?.keyedWidgets ?? [:])
+            mountChild(children[i], with: childContext)
         }
         mounted = true
     }
@@ -123,31 +155,34 @@ open class Widget: Bounded, Parent, Child {
 
     }
 
-    public func mountChild(_ child: Widget, replacing oldChild: Widget? = nil) {
+    public final func mountChild(_ child: Widget, with context: ReplacementContext? = nil) {
         _ = child.onRenderStateInvalidated { [unowned self] in
             invalidateRenderState($0)
         }
-        child.mount(parent: self, replacing: oldChild)
+        child.mount(parent: self, with: context)
     }
 
     // TODO: this function might be better suited to parent
     public func replaceChildren(with newChildren: [Widget]) {
-        //var states: [Any] = []
         let oldChildren = children
-        /*var checkChildren: [Widget] = oldChildren
+
+        var keyedChildren: [String: Widget] = [:]
+
+        var checkChildren: [Widget] = oldChildren
         while let child = checkChildren.popLast() {
-            if let child = child as? AnyStatefulWidget {
-                states.append(child.anyState)
+            if let key = child.key {
+                keyedChildren[key] = child
             }
             checkChildren.append(contentsOf: child.children)
-        }*/
+        }
 
         children = newChildren
         
         for i in 0..<children.count {
             let newChild = children[i]
             let oldChild: Widget? = oldChildren.count > i ? oldChildren[i] : nil
-            mountChild(newChild, replacing: oldChild)
+            let childContext = ReplacementContext(previousWidget: oldChild, keyedWidgets: keyedChildren)
+            mountChild(newChild, with: childContext)
         }
 
         for child in oldChildren {
@@ -159,7 +194,7 @@ open class Widget: Bounded, Parent, Child {
         fatalError("performLayout() not implemented.")
     }
         
-    public func layout() {
+    public final func layout() {
         if !layoutable {
             print("Warning: called layout() on Widget that is not layoutable:", self)
             return
@@ -169,7 +204,7 @@ open class Widget: Bounded, Parent, Child {
     }
 
     // TODO: how to name this?
-    public func destroy() {
+    public final func destroy() {
         for child in children {
             child.destroy()
         }
@@ -188,7 +223,7 @@ open class Widget: Bounded, Parent, Child {
     open func destroySelf() {
     }
 
-    open func findParent(_ condition: (_ parent: Parent) throws -> Bool) rethrows -> Parent? {
+    public final func findParent(_ condition: (_ parent: Parent) throws -> Bool) rethrows -> Parent? {
         var parent: Parent? = self.parent
         while parent != nil {
             if try condition(parent!) {
@@ -201,7 +236,7 @@ open class Widget: Bounded, Parent, Child {
         return nil
     }
 
-    open func parentOfType<T>(_ type: T.Type) -> T? {
+    public final func parentOfType<T>(_ type: T.Type) -> T? {
         var parent: Parent? = self.parent
         while parent != nil {
             if let parent = parent! as? T {
@@ -217,7 +252,7 @@ open class Widget: Bounded, Parent, Child {
     }
 
     // TODO: might need possibility to return all of type + a method that only returns first + in what order depth first / breadth first
-    public func childOfType<W: Widget>(_ type: W.Type) -> W? {
+    public final func childOfType<W: Widget>(_ type: W.Type) -> W? {
         for child in children {
             if let child = child as? W {
                 return child
@@ -234,7 +269,7 @@ open class Widget: Bounded, Parent, Child {
     }
 
     /// This should trigger a rerender of the widget in the next frame.
-    public func invalidateRenderState(_ widget: Widget? = nil) {
+    public final func invalidateRenderState(_ widget: Widget? = nil) {
         if destroyed {
             fatalError("Tried to call invalidateRenderState() on destroyed widget: \(self)")
         }
@@ -247,7 +282,7 @@ open class Widget: Bounded, Parent, Child {
     }
 
     /// Returns the result of renderContent() wrapped in an IdentifiedSubTreeRenderObject
-    public func render() -> IdentifiedSubTreeRenderObject {
+    public final func render() -> IdentifiedSubTreeRenderObject {
         return IdentifiedSubTreeRenderObject(id) {
             renderContent()
         }

@@ -2,10 +2,11 @@ import WidgetGUI
 import VisualAppBase
 import CustomGraphicsMath
 
-public class StatefulView: SingleChildWidget, StatefulWidget, GUIMouseEventConsumer {
+public class StatefulView: SingleChildWidget, StatefulWidget {
     public struct State {
-        var viewStatePropertyOne: Color = .Red
-        var viewStatePropertyTwo: String = "Default View State String"
+        var viewStatePropertyOne: String = "StatefulView prop one before click"
+        var viewStatePropertyTwo: Bool = false
+        var invalidationCount = 0
     }
 
     public var state: State = State()
@@ -13,9 +14,25 @@ public class StatefulView: SingleChildWidget, StatefulWidget, GUIMouseEventConsu
     private lazy var widgetTwo = childOfType(StatefulWidgetTwo.self)!
 
     override open func buildChild() -> Widget {
-        Column {
-            StatefulWidgetOne(passedPropertyOne: state.viewStatePropertyTwo)
-            StatefulWidgetTwo()
+        Column(spacing: 32) {
+            if state.viewStatePropertyTwo {
+                Text("without additional wrapping")
+                StatefulWidgetOne(passedPropertyOne: state.viewStatePropertyOne).keyed("test")
+            } else {
+                Row {
+                    Text("with additional wrapping")
+                    StatefulWidgetOne(passedPropertyOne: state.viewStatePropertyOne).keyed("test")
+                }
+            }
+
+            Button(onClick: { [unowned self] _ in
+                state.invalidationCount += 1
+                state.viewStatePropertyOne = "View State String After invalidation \(state.invalidationCount)"
+                state.viewStatePropertyTwo = !state.viewStatePropertyTwo 
+                invalidateChild()
+            }) {
+                Text("Click to invalidate")
+            }
         }
     }
 
@@ -23,14 +40,5 @@ public class StatefulView: SingleChildWidget, StatefulWidget, GUIMouseEventConsu
         child.constraints = constraints
         child.layout()
         bounds.size = child.bounds.size
-    }
-
-    public func consume(_ event: GUIMouseEvent) {
-        if let event = event as? GUIMouseButtonClickEvent {
-            if widgetTwo.globalBounds.contains(point: event.position) {
-                state.viewStatePropertyTwo = "View State String After Click"
-                invalidateChild()
-            }
-        }
     }
 }
