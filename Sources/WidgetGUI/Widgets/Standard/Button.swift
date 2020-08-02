@@ -53,26 +53,22 @@ public class Button: SingleChildWidget, StatefulWidget {
     }
 
     override open func buildChild() -> Widget {
-        let mouseArea = MouseArea {
+        MouseArea(onClick: { [unowned self] in
+            onClick.invokeHandlers($0)
+        }, onMouseEnter: { [unowned self] _ in
+            state = .Hover
+            // TODO: might need to implement cursor via render object and check in RenderObjectTree renderer which renderobject below mouse
+            dropCursorRequest = context!.requestCursor(.Hand)
+        }, onMouseLeave: { [unowned self] _ in
+            state = .Normal
+            dropCursorRequest!()
+        }) {
             Padding(all: 16) {
                 TextConfigProvider(config: defaultButtonTextConfig) {
                     inputChild
                 }
             }
         }
-        _ = mouseArea.onClick { [unowned self] in
-            onClick.invokeHandlers($0)
-        }
-        _ = mouseArea.onMouseEnter { [unowned self] _ in
-            state = .Hover
-            // TODO: might need to implement cursor via render object and check in RenderObjectTree renderer which renderobject below mouse
-            dropCursorRequest = context!.requestCursor(.Hand)
-        }
-        _ = mouseArea.onMouseLeave { [unowned self] _ in
-            state = .Normal
-            dropCursorRequest!()
-        }
-        return mouseArea
     }
 
     open func forwardOnClick(_ event: GUIMouseButtonClickEvent) throws {

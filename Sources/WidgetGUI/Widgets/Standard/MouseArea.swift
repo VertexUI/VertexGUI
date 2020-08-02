@@ -25,7 +25,7 @@ public class MouseArea: SingleChildWidget, GUIMouseEventConsumer {
         onMouseEnter onMouseEnterHandler: ThrowingEventHandlerManager<GUIMouseEnterEvent>.Handler? = nil,
         onMouseLeave onMouseLeaveHandler: ThrowingEventHandlerManager<GUIMouseLeaveEvent>.Handler? = nil,
         onMouseWheel onMouseWheelHandler: ThrowingEventHandlerManager<GUIMouseWheelEvent>.Handler? = nil,
-        child inputChild: Widget) {
+        @WidgetBuilder _ inputChild: () -> Widget ) {
             if let onClickHandler = onClickHandler {
                 _ = self.onClick(onClickHandler)
             }
@@ -44,26 +44,8 @@ public class MouseArea: SingleChildWidget, GUIMouseEventConsumer {
             if let onMouseWheelHandler = onMouseWheelHandler {
                 _ = self.onMouseWheel(onMouseWheelHandler)
             }
-            self.inputChild = inputChild
-        super.init()
-    }
-
-    public convenience init(
-        onClick onClickHandler: ThrowingEventHandlerManager<GUIMouseButtonClickEvent>.Handler? = nil,
-        onMouseButtonDown onMouseButtonDownHandler: ThrowingEventHandlerManager<GUIMouseButtonDownEvent>.Handler? = nil,
-        onMouseMove onMouseMoveHandler: ThrowingEventHandlerManager<GUIMouseMoveEvent>.Handler? = nil,
-        onMouseEnter onMouseEnterHandler: ThrowingEventHandlerManager<GUIMouseEnterEvent>.Handler? = nil,
-        onMouseLeave onMouseLeaveHandler: ThrowingEventHandlerManager<GUIMouseLeaveEvent>.Handler? = nil,
-        onMouseWheel onMouseWheelHandler: ThrowingEventHandlerManager<GUIMouseWheelEvent>.Handler? = nil,
-        @WidgetBuilder child: () -> Widget) {
-            self.init(
-                onClick: onClickHandler,
-                onMouseButtonDown: onMouseButtonDownHandler,
-                onMouseMove: onMouseMoveHandler,
-                onMouseEnter: onMouseEnterHandler,
-                onMouseLeave: onMouseLeaveHandler,
-                onMouseWheel: onMouseWheelHandler,
-                child: child())
+            self.inputChild = inputChild()
+            super.init()
     }
 
     override open func buildChild() -> Widget {

@@ -24,7 +24,6 @@ open class SDL2OpenGL3NanoVGSystem: System {
     }
 
     public var mousePosition: DPoint2 = DPoint2(0, 0)
-    //public var mouseEventConsumers = [MouseEventConsumer]()
     private var pressedMouseButtons = [
         MouseButton.Left: false
     ]
@@ -78,66 +77,64 @@ open class SDL2OpenGL3NanoVGSystem: System {
 
         while SDL2OpenGL3NanoVGSystem.isRunning && SDL_PollEvent(&event) != 0 {
             let eventType = SDL_EventType(rawValue: event.type)
-            //DispatchQueue.global().async {
-                do {
-                    switch eventType {
-                    case SDL_QUIT, SDL_APP_TERMINATING:
-                        try self.exit()
-                    case SDL_WINDOWEVENT:
-                        // TODO: implement focus change
-                        if event.window.event == UInt8(SDL_WINDOWEVENT_SIZE_CHANGED.rawValue) {
-                            if let window = SDL2OpenGL3NanoVGSystem.windows[Int(event.window.windowID)] {
-                                try window.updateSize()
-                            }
-                        } else if event.window.event == UInt8(SDL_WINDOWEVENT_CLOSE.rawValue) {
-                            if let window = SDL2OpenGL3NanoVGSystem.windows[Int(event.window.windowID)] {
-                                try window.onClose.invokeHandlers(Void())
-                            }
+            do {
+                switch eventType {
+                case SDL_QUIT, SDL_APP_TERMINATING:
+                    try self.exit()
+                case SDL_WINDOWEVENT:
+                    // TODO: implement focus change
+                    if event.window.event == UInt8(SDL_WINDOWEVENT_SIZE_CHANGED.rawValue) {
+                        if let window = SDL2OpenGL3NanoVGSystem.windows[Int(event.window.windowID)] {
+                            try window.updateSize()
                         }
-                        break
-                    case SDL_KEYDOWN:
-                        if let key = Key(sdlKeycode: event.key.keysym.sym) {
-                            self.keyStates[key] = true
-                            try self.forwardKeyboardEvent(KeyDownEvent(key: key, keyStates: self.keyStates), windowId: Int(event.key.windowID))
-                        } else {
-                            print("Key not mapped from sdl", event.key.keysym.sym, event.key.keysym.scancode, event.key.keysym.scancode == SDL_SCANCODE_Y)
+                    } else if event.window.event == UInt8(SDL_WINDOWEVENT_CLOSE.rawValue) {
+                        if let window = SDL2OpenGL3NanoVGSystem.windows[Int(event.window.windowID)] {
+                            try window.onClose.invokeHandlers(Void())
                         }
-                    case SDL_KEYUP:
-                        if let key = Key(sdlKeycode: event.key.keysym.sym) {
-                            self.keyStates[key] = false
-                            try self.forwardKeyboardEvent(KeyUpEvent(key: key, keyStates: self.keyStates), windowId: Int(event.key.windowID))
-                        } else {
-                            print("Key not mapped from sdl", event.key.keysym.sym)
-                        }
-                    case SDL_MOUSEBUTTONDOWN:
-                        self.pressedMouseButtons[.Left] = self.pressedMouseButtons[.Left]! || event.button.button == UInt8(SDL_BUTTON_LEFT)
-                        if event.button.button == UInt8(SDL_BUTTON_LEFT) {
-                            try self.forwardMouseEvent(RawMouseButtonDownEvent(button: .Left, position: DPoint2(Double(event.button.x), Double(event.button.y))), windowId: Int(event.button.windowID))
-                        }
-                    case SDL_MOUSEBUTTONUP:
-                        //let previousPressedState = pressedMouseButtons
-                        self.pressedMouseButtons[.Left] = event.button.button == UInt8(SDL_BUTTON_LEFT) ? false : self.pressedMouseButtons[.Left]
-                        if event.button.button == UInt8(SDL_BUTTON_LEFT) {
-                            try self.forwardMouseEvent(RawMouseButtonUpEvent(button: .Left, position: DPoint2(Double(event.button.x), Double(event.button.y))), windowId: Int(event.button.windowID))
-                        }
-                    case SDL_MOUSEWHEEL:
-                        //print("TIMESTAMP", event.wheel.timestamp, event.wheel.x, event.wheel.y)
-                        print("FORWARD MOUSE EVENT", self.mousePosition)
-                        try self.forwardMouseEvent(
-                            RawMouseWheelEvent(scrollAmount: DVec2(Double(event.wheel.x), Double(event.wheel.y)), position: self.mousePosition),
-                            windowId: Int(event.wheel.windowID))//provideMouseEvent(event: MouseWheelEvent(scrollAmount: Vector(Double(event.wheel.x), Double(event.wheel.y)), position: mousePosition))
-                    case SDL_MOUSEMOTION:
-                        self.mousePosition = DPoint2(Double(event.motion.x), Double(event.motion.y))
-                        try self.forwardMouseEvent(
-                            RawMouseMoveEvent(position: self.mousePosition, previousPosition: DPoint2(Double(event.motion.x - event.motion.xrel), Double(event.motion.y - event.motion.yrel))),
-                            windowId: Int(event.motion.windowID))
-                    default:
-                        break
                     }
-                } catch {
-                    print("Error while processing event", error)
+                    break
+                case SDL_KEYDOWN:
+                    if let key = Key(sdlKeycode: event.key.keysym.sym) {
+                        self.keyStates[key] = true
+                        try self.forwardKeyboardEvent(KeyDownEvent(key: key, keyStates: self.keyStates), windowId: Int(event.key.windowID))
+                    } else {
+                        print("Key not mapped from sdl", event.key.keysym.sym, event.key.keysym.scancode, event.key.keysym.scancode == SDL_SCANCODE_Y)
+                    }
+                case SDL_KEYUP:
+                    if let key = Key(sdlKeycode: event.key.keysym.sym) {
+                        self.keyStates[key] = false
+                        try self.forwardKeyboardEvent(KeyUpEvent(key: key, keyStates: self.keyStates), windowId: Int(event.key.windowID))
+                    } else {
+                        print("Key not mapped from sdl", event.key.keysym.sym)
+                    }
+                case SDL_MOUSEBUTTONDOWN:
+                    self.pressedMouseButtons[.Left] = self.pressedMouseButtons[.Left]! || event.button.button == UInt8(SDL_BUTTON_LEFT)
+                    if event.button.button == UInt8(SDL_BUTTON_LEFT) {
+                        try self.forwardMouseEvent(RawMouseButtonDownEvent(button: .Left, position: DPoint2(Double(event.button.x), Double(event.button.y))), windowId: Int(event.button.windowID))
+                    }
+                case SDL_MOUSEBUTTONUP:
+                    //let previousPressedState = pressedMouseButtons
+                    self.pressedMouseButtons[.Left] = event.button.button == UInt8(SDL_BUTTON_LEFT) ? false : self.pressedMouseButtons[.Left]
+                    if event.button.button == UInt8(SDL_BUTTON_LEFT) {
+                        try self.forwardMouseEvent(RawMouseButtonUpEvent(button: .Left, position: DPoint2(Double(event.button.x), Double(event.button.y))), windowId: Int(event.button.windowID))
+                    }
+                case SDL_MOUSEWHEEL:
+                    //print("TIMESTAMP", event.wheel.timestamp, event.wheel.x, event.wheel.y)
+                    print("FORWARD MOUSE EVENT", self.mousePosition)
+                    try self.forwardMouseEvent(
+                        RawMouseWheelEvent(scrollAmount: DVec2(Double(event.wheel.x), Double(event.wheel.y)), position: self.mousePosition),
+                        windowId: Int(event.wheel.windowID))//provideMouseEvent(event: MouseWheelEvent(scrollAmount: Vector(Double(event.wheel.x), Double(event.wheel.y)), position: mousePosition))
+                case SDL_MOUSEMOTION:
+                    self.mousePosition = DPoint2(Double(event.motion.x), Double(event.motion.y))
+                    try self.forwardMouseEvent(
+                        RawMouseMoveEvent(position: self.mousePosition, previousPosition: DPoint2(Double(event.motion.x - event.motion.xrel), Double(event.motion.y - event.motion.yrel))),
+                        windowId: Int(event.motion.windowID))
+                default:
+                    break
                 }
-            //}
+            } catch {
+                print("Error while processing event", error)
+            }
 
             event.type = 0
         }
@@ -150,38 +147,35 @@ open class SDL2OpenGL3NanoVGSystem: System {
     }
 
     override open func mainLoop() throws {
-        //while SDL2OpenGL3NanoVGSystem.isRunning {
-            // TODO: maybe this wrapping function should be given as an argument? --> could be different for different systems/apps
-            DispatchQueue.main.async {
-                do {
-                    // increment ticker
-                    let startTime = SDL_GetTicks()
-                    let deltaTime = startTime - self.lastFrameTime
-                    self.currentFps = Int(1000 / deltaTime)
-                    self.fpsBufferIndex += 1
-                    self.fpsBufferIndex = self.fpsBufferIndex % SDL2OpenGL3NanoVGSystem.fpsBufferCount
-                    self.fpsBuffer[self.fpsBufferIndex] = self.currentFps
-                    self.calcAverageFps()
+        // TODO: maybe this wrapping function should be given as an argument? --> could be different for different systems/apps
+        DispatchQueue.main.async {
+            do {
+                // increment ticker
+                let startTime = SDL_GetTicks()
+                let deltaTime = startTime - self.lastFrameTime
+                self.currentFps = Int(1000 / deltaTime)
+                self.fpsBufferIndex += 1
+                self.fpsBufferIndex = self.fpsBufferIndex % SDL2OpenGL3NanoVGSystem.fpsBufferCount
+                self.fpsBuffer[self.fpsBufferIndex] = self.currentFps
+                self.calcAverageFps()
 
-                    self.lastFrameTime = startTime
-                    self.totalTime += deltaTime
+                self.lastFrameTime = startTime
+                self.totalTime += deltaTime
 
-                    try! self.onFrame.invokeHandlers(Int(deltaTime))
+                try! self.onFrame.invokeHandlers(Int(deltaTime))
 
-                    let frameDuration = SDL_GetTicks() - startTime
-                    if frameDuration < 1000 / UInt32(self.targetFps) {
-                        SDL_Delay((1000 / UInt32(self.targetFps)) - frameDuration)
-                    }
-
-                    try self.processEvents()
-                    if SDL2OpenGL3NanoVGSystem.isRunning {
-                        try! self.mainLoop()
-                    } 
-                } catch {
-                    print("Error in main loop", error)
+                let frameDuration = SDL_GetTicks() - startTime
+                if frameDuration < 1000 / UInt32(self.targetFps) {
+                    SDL_Delay((1000 / UInt32(self.targetFps)) - frameDuration)
                 }
-            //}
-        //}
+
+                try self.processEvents()
+                if SDL2OpenGL3NanoVGSystem.isRunning {
+                    try! self.mainLoop()
+                } 
+            } catch {
+                print("Error in main loop", error)
+            }
         }
     }
 
