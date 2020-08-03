@@ -2,6 +2,7 @@ import Foundation
 import VisualAppBase
 import WidgetGUI
 import CustomGraphicsMath
+import Dispatch
 
 public class GameView: Widget {
     private var state: GameState
@@ -16,15 +17,20 @@ public class GameView: Widget {
 
     override open func renderContent() -> RenderObject? {
         return RenderObject.Custom(id: id) { [unowned self] renderer in
+           // let group = DispatchGroup()
+
+            //state.
+
             try renderer.scale(DVec2(1, -1))
             try renderer.translate(DVec2(0, -globalBounds.size.height - globalBounds.min.y))
         
             let currentTimestamp = Date.timeIntervalSinceReferenceDate
             
-            for blob in state.blobs {
+            for i in 0..<state.blobs.count {
+                let blob = state.blobs[i]
 
                 blob.updateVertices(at: currentTimestamp)
-                
+
                 if blob.vertices.count > 0 {
 
                     try renderer.beginPath()
@@ -35,7 +41,11 @@ public class GameView: Widget {
                     }
                     
                     try renderer.closePath()
-                    try renderer.fillColor(.Red)
+                    if blob.consumed {
+                        try renderer.fillColor(.Red)
+                    } else {
+                        try renderer.fillColor(.Green)
+                    }
                     //try renderer.strokeColor(.Green)
                     //try renderer.strokeWidth(2)
                     //try renderer.stroke()

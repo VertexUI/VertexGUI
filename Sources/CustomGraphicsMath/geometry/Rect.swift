@@ -4,15 +4,8 @@
 
 import Foundation
 
-/// axis aligned rect in 2 coordinate space
-// TODO: maybe this belongs into UIPackage?
+/// Axis aligned rect in 2 coordinate space.
 public struct Rect<E: BinaryFloatingPoint>: Equatable, Hashable {
-    /*public enum Edge: CaseIterable {
-        case Top, Right, Bottom, Left
-    }*/
-
-    //@available(*, deprecated, message: "Use min, max, orientations depend on setup of coordinate system.")
-    //public var topLeft: AnyVector2<E>
     public var min: AnyVector2<E>
     public var max: AnyVector2<E>
     public var size: AnySize2<E> {
@@ -26,7 +19,6 @@ public struct Rect<E: BinaryFloatingPoint>: Equatable, Hashable {
     public var center: AnyVector2<E> {
         min + AnyVector2(size) / 2
     }
-    //public var layout: VectorLayout2<AnyVector2<E>>
 
     // TODO: maybe implement as protocol as well and don't use AnyVector2<E> but Vector2 where Vector2.E == E?
     public init(min: AnyVector2<E>, size: AnySize2<E>) {
@@ -34,25 +26,23 @@ public struct Rect<E: BinaryFloatingPoint>: Equatable, Hashable {
         self.max = min + AnyVector2(size)
     }
 
-    /*public init(topLeft: AnyVector2<E>, bottomRight: AnyVector2<E>) {
-        self.init(topLeft: topLeft, size: AnySize2<E>(bottomRight.x - topLeft.x, bottomRight.y - topLeft.y))
-    }*/
-
     public init(min: AnyVector2<E>, max: AnyVector2<E>/*, layout: VectorLayout2<AnyVector2<E>> = .bottomLeftToTopRight*/) {
         self.min = min
         self.max = max
-        //self.size = AnySize2(max - min)
-        //self.topLeft = min
-        //self.layout = layout
     }
 
     public init(center: AnyVector2<E>, size: AnySize2<E>) {
         self.init(min: AnyVector2<E>(center.x - size.width / 2, center.y - size.height / 2), size: size)
     }
-    /*
-    public init(x: E, y: E, width: E, height: E) {
-        self.init(topLeft: AnyVector2<E>(x, y), size: AnySize2<E>(width, height))
-    }*/
+
+    public var vertices: [AnyVector2<E>] {
+        [
+            min,
+            min + AnyVector2(size.x, 0),
+            min + AnyVector2(0, size.y),
+            max
+        ]
+    }
 
     // TODO: might add set operations as well
     /*public var topLeft: AnyVector2<E> {
@@ -81,25 +71,24 @@ public struct Rect<E: BinaryFloatingPoint>: Equatable, Hashable {
     }*/
 
     public func contains(point: AnyVector2<E>) -> Bool {
-        return point.x >= min.x && point.x <= max.x && point.y >= min.y && point.y <= max.y
+        point.x >= min.x && point.x <= max.x && point.y >= min.y && point.y <= max.y
     }
 
-    /*public var translation: Vector
-
-    public init(_ translation: Vector) {
-        self.translation = translation
-    }*/
-
-    /*public enum Geometry {
-        public static func edgeVertices<Vector: Vector2>(_ translation: Vector) -> [Edge: (Vector, Vector)] {
-            return [
-                .Top: (translation, translation + Vector(1, 0)),
-                .Right: (translation + Vector(1, 0), translation + Vector(1, 1)),
-                .Bottom: (translation + Vector(1, 1), translation + Vector(0, 1)),
-                .Left: (translation, translation + Vector(0, 1))
-            ]
+    public func intersects(_ otherRect: Rect<E>) -> Bool {
+        for ownVertex in self.vertices {
+            if otherRect.contains(point: ownVertex) {
+                return true
+            }
         }
-    }*/
+        for otherVertex in otherRect.vertices {
+            if contains(point: otherVertex) {
+                return true
+            }
+        }           
+        return false
+    }
 }
 
+/// An axis aligned Rect in 2 coordinate space.
+/// - SeeAlso: Rect
 public typealias DRect = Rect<Double>

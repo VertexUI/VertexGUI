@@ -5,7 +5,7 @@ import VisualAppBase
 public extension Key {
     init?(sdlKeycode: SDL_Keycode) {
         switch sdlKeycode {
-        case SDL_Keycode(SDLK_UP): self = .ArrowTop
+        case SDL_Keycode(SDLK_UP): self = .ArrowUp
         case SDL_Keycode(SDLK_RIGHT): self = .ArrowRight
         case SDL_Keycode(SDLK_DOWN): self = .ArrowDown
         case SDL_Keycode(SDLK_LEFT): self = .ArrowLeft

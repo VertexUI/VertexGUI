@@ -2,19 +2,34 @@ import Foundation
 import CustomGraphicsMath
 
 public class Blob {
-    public var creationTimestamp: TimeInterval = 0
-    public var position: DVec2
-    public internal(set) var radius: Double = 100
+    public enum Direction: CaseIterable {
+        case Up, Right, Down, Left
+    }
 
+    public var creationTimestamp: TimeInterval
+    public var position: DVec2
+    public internal(set) var mass: Double
+
+    public var radius: Double {
+        mass
+    }
     public internal(set) var vertices: [DPoint2] = []
     public internal(set) var bounds: DRect
+
+    public var throttles: [Direction: Bool] =
+        Direction.allCases.reduce(into: [:]) {
+            $0[$1] = false
+        }
+
+    public internal(set) var consumed = false
 
     public var vertexCount: Int {
         return Int(radius * 2)
     }
 
-    public init(position: DVec2, timestamp: TimeInterval) {
+    public init(position: DVec2, mass: Double, timestamp: TimeInterval) {
         self.position = position
+        self.mass = mass
         self.creationTimestamp = timestamp
         self.bounds = DRect(center: position, size: DSize2.zero)
     }
@@ -31,8 +46,8 @@ public class Blob {
             let direction = DVec2(cos(angle), sin(angle))
             let radialOffset = direction * radius
 
-            let maxWobbleHeight = cos(cyclicalProgress * Double.pi * 2) * 10
-            let cyclicalOffset = direction * sin(angle * 20 + cyclicalProgress * Double.pi * 2) * maxWobbleHeight
+            let maxWobbleHeight = cos(cyclicalProgress * Double.pi * 2) * 15
+            let cyclicalOffset = direction * sin(angle * 30 + cyclicalProgress * Double.pi * 2) * maxWobbleHeight
 
             let vertex = position + radialOffset + cyclicalOffset
             vertices.append(vertex)
@@ -58,16 +73,27 @@ public class Blob {
         self.vertices = vertices
     }
 
-    public func contains(point: DPoint2) {
+    /*public func contains(point: DPoint2) {
 
+    }*/
+
+    public func consume(_ other: Blob) {
+        self.mass += other.mass
+        other.consumed = true
     }
 
-
-
-    public func interact(other: Blob) {
-        for ownVertex in vertices {
-            let direction = ownVertex - position
-
+    public func interact(with other: Blob) {
+        if other.consumed {
+            return
+        }
+        if
+            self.mass > other.mass,
+            (other.position - position).length - self.radius < other.radius / 2 {
+                self.consume(other)
+        } else if
+            other.mass > self.mass,
+            (other.position - position).length - other.radius < self.radius / 2 {
+                other.consume(self)
         }
     }
 }

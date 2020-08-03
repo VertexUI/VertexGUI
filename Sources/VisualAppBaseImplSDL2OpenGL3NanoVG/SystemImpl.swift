@@ -96,14 +96,14 @@ open class SDL2OpenGL3NanoVGSystem: System {
                 case SDL_KEYDOWN:
                     if let key = Key(sdlKeycode: event.key.keysym.sym) {
                         self.keyStates[key] = true
-                        try self.forwardKeyboardEvent(KeyDownEvent(key: key, keyStates: self.keyStates), windowId: Int(event.key.windowID))
+                        try self.forwardKeyboardEvent(KeyDownEvent(key: key, keyStates: self.keyStates, repetition: event.key.repeat != 0), windowId: Int(event.key.windowID))
                     } else {
                         print("Key not mapped from sdl", event.key.keysym.sym, event.key.keysym.scancode, event.key.keysym.scancode == SDL_SCANCODE_Y)
                     }
                 case SDL_KEYUP:
                     if let key = Key(sdlKeycode: event.key.keysym.sym) {
                         self.keyStates[key] = false
-                        try self.forwardKeyboardEvent(KeyUpEvent(key: key, keyStates: self.keyStates), windowId: Int(event.key.windowID))
+                        try self.forwardKeyboardEvent(KeyUpEvent(key: key, keyStates: self.keyStates, repetition: event.key.repeat != 0), windowId: Int(event.key.windowID))
                     } else {
                         print("Key not mapped from sdl", event.key.keysym.sym)
                     }
