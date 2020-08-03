@@ -16,6 +16,6 @@ public class Center: SingleChildWidget {
         child.constraints = BoxConstraints(minSize: DSize2.zero, maxSize: constraints!.maxSize)
         child.layout()
         bounds.size = constraints!.constrain(child.bounds.size)
-        child.bounds.topLeft = DVec2(bounds.size - child.bounds.size) / 2
+        child.bounds.min = DVec2(bounds.size - child.bounds.size) / 2
     }
 }

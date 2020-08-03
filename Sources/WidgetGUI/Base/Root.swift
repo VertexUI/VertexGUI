@@ -10,7 +10,7 @@ open class Root: Parent {
         }
     }
     
-    open var bounds: DRect = DRect(topLeft: DPoint2(0,0), size: DSize2(0,0)) {
+    open var bounds: DRect = DRect(min: DPoint2(0,0), size: DSize2(0,0)) {
         didSet {
             try! layout()
             updateRenderObjectTree()
@@ -19,7 +19,7 @@ open class Root: Parent {
 
     open var globalPosition: DPoint2 {
         get {
-            return bounds.topLeft
+            return bounds.min
         }
     }
 

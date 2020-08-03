@@ -15,7 +15,7 @@ public class StatefulWidgetTwo: Widget, StatefulWidget {
 
     override open func renderContent() -> RenderObject? {
         RenderObject.RenderStyle(fillColor: FixedRenderValue(.Green)) {
-            RenderObject.Rect(Rect(topLeft: globalPosition, size: DSize2(state.statePropertyOne, 300)))
+            RenderObject.Rect(Rect(min: globalPosition, size: DSize2(state.statePropertyOne, 300)))
         }
     }
 }

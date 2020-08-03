@@ -329,11 +329,11 @@ public class RenderObjectTreeRenderer {
                 /*if var group = renderSequence[i] as? CachableRenderGroup {
                     if group.cache == nil {
                         if var cache = availableCaches.popLast() {
-                            try backendRenderer.resizeVirtualScreen(&cache, DSize2(bounds.topLeft + DVec2(bounds.size)))
+                            try backendRenderer.resizeVirtualScreen(&cache, DSize2(bounds.min + DVec2(bounds.size)))
                             group.cache = cache
                             print("Reused render cache.", "Old caches available:", availableCaches.count)
                         } else {
-                            group.cache = try backendRenderer.makeVirtualScreen(size: DSize2(bounds.topLeft + DVec2(bounds.size)))
+                            group.cache = try backendRenderer.makeVirtualScreen(size: DSize2(bounds.min + DVec2(bounds.size)))
                         }
                         group.cacheInvalidated = true
                     }

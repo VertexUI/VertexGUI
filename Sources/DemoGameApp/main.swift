@@ -9,8 +9,11 @@ public class DemoGameApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGW
     
     public init() {
         let gameState = GameState()
-        controllableBlob = Blob(position: DVec2(300, 300), timestamp: Date.timeIntervalSinceReferenceDate)
+        controllableBlob = Blob(position: DVec2(600, 600), timestamp: Date.timeIntervalSinceReferenceDate)
         gameState.blobs.append(controllableBlob)
+        gameState.blobs.append(Blob(position: DVec2(100, 600), timestamp: Date.timeIntervalSinceReferenceDate))
+        gameState.blobs.append(Blob(position: DVec2(500, 700), timestamp: Date.timeIntervalSinceReferenceDate))
+        gameState.blobs.append(Blob(position: DVec2(800, 900), timestamp: Date.timeIntervalSinceReferenceDate))
 
         let guiRoot = Root(rootWidget: GameView(state: gameState))
 

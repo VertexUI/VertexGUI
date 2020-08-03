@@ -40,7 +40,7 @@ public class Column: Widget {
                     currentColumnWidth = 0
                 }
             }
-            child.bounds.topLeft = DPoint2(currentX, currentY)
+            child.bounds.min = DPoint2(currentX, currentY)
             currentY += child.bounds.size.height
             currentY += spacing
 

@@ -13,7 +13,7 @@ open class Flow: Widget {
                 currentY = height
             } 
 
-            child.bounds.topLeft = DPoint2(currentX, currentY)
+            child.bounds.min = DPoint2(currentX, currentY)
             currentX += child.bounds.size.width
 
             if width < constraints.maxSize.width {

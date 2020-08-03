@@ -72,7 +72,7 @@ public class RenderObjectTreeView: Widget {
                     var child = groupedChildren[i].groups[j].children[k]
                     child.constraints = constraints
                     try child.layout()
-                    child.bounds.topLeft = DPoint2(nextX, nextY)
+                    child.bounds.min = DPoint2(nextX, nextY)
                     nextX += child.bounds.size.width + spacing
                     if child.bounds.size.height > currentLineHeight {
                         currentLineHeight = child.bounds.size.height

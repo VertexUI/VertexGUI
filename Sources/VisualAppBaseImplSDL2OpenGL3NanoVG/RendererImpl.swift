@@ -249,7 +249,7 @@ open class SDL2OpenGL3NanoVGRenderer: Renderer {
 
     open func rect(_ rect: DRect) throws {
         //nvgBeginPath(window.nvg)
-        nvgRect(window.nvg, Float(rect.topLeft.x), Float(rect.topLeft.y), Float(rect.size.width), Float(rect.size.height))
+        nvgRect(window.nvg, Float(rect.min.x), Float(rect.min.y), Float(rect.size.width), Float(rect.size.height))
         //if let fillColor = style.fillColor {
         //    nvgFillColor(window.nvg, fillColor.toNVG())
         //    nvgFill(window.nvg)
@@ -313,7 +313,7 @@ open class SDL2OpenGL3NanoVGRenderer: Renderer {
     }
 
     open func clipArea(bounds: DRect) throws {
-        nvgScissor(window.nvg, Float(bounds.topLeft.x), Float(bounds.topLeft.y), Float(bounds.size.width), Float(bounds.size.height))
+        nvgScissor(window.nvg, Float(bounds.min.x), Float(bounds.min.y), Float(bounds.size.width), Float(bounds.size.height))
     }
 
     open func releaseClipArea() throws {

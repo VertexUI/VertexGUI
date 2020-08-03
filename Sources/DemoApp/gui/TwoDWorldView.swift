@@ -47,7 +47,7 @@ open class TwoDWorldView: Widget, GUIMouseEventConsumer, StatefulWidget {
 
     public func handleClick(_ event: GUIMouseButtonClickEvent) {
         if event.button == .Left {
-            let localPosition = event.position - globalBounds.topLeft
+            let localPosition = event.position - globalBounds.min
             let worldPosition = localToWorld(position: localPosition)
             if newRaycastStart == nil {
                 newRaycastStart = worldPosition
@@ -105,7 +105,7 @@ open class TwoDWorldView: Widget, GUIMouseEventConsumer, StatefulWidget {
         // TODO: optimize/cache tileSize
         let tileSize = DSize2(bounds.size) / DSize2(world.size)
         let topLeft = globalPosition + DVec2(tileSize.width * Double(index.x), tileSize.height * Double(index.y))
-        return DRect(topLeft: topLeft, size: tileSize)
+        return DRect(min: topLeft, size: tileSize)
     }
 
     override open func renderContent() -> RenderObject {

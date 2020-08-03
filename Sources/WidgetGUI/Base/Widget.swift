@@ -67,7 +67,7 @@ open class Widget: Bounded, Parent, Child {
     private var unregisterFunctions = [() -> ()]()
 
     // TODO: might need to create something like layoutBounds and renderBounds (area that is invalidated on rerender request --> could be more than layoutBounds and affect outside widgets (e.g. a drop shadow that is not included in layoutBounds))
-    open var bounds: DRect = DRect(topLeft: DPoint2(0,0), size: DSize2(0,0)) {
+    open var bounds: DRect = DRect(min: DPoint2(0,0), size: DSize2(0,0)) {
         didSet {
             // TODO: maybe let the parent list for onUpdateBounds on it's children instead of calling the parent
             if oldValue != bounds {
@@ -80,16 +80,16 @@ open class Widget: Bounded, Parent, Child {
 
     open var globalBounds: DRect {
         get {
-            return DRect(topLeft: globalPosition, size: bounds.size)
+            return DRect(min: globalPosition, size: bounds.size)
         }
     }
     
     open var globalPosition: DPoint2 {
         get {
             if parent != nil {
-                return parent!.globalPosition + bounds.topLeft
+                return parent!.globalPosition + bounds.min
             }
-            return bounds.topLeft
+            return bounds.min
         }
     }
 

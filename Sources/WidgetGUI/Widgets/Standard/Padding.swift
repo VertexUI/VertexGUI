@@ -26,7 +26,7 @@ public class Padding: SingleChildWidget {
             minSize: DSize2(min(constraints!.minSize.width, maxSize.width), min(constraints!.minSize.height, maxSize.height)),
             maxSize: maxSize)
         try child.layout()
-        child.bounds.topLeft = DVec2(padding.left, padding.top)
+        child.bounds.min = DVec2(padding.left, padding.top)
         bounds.size = child.bounds.size + paddingSize
     }
 }

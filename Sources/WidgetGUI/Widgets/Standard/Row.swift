@@ -38,7 +38,7 @@ public class Row: Widget {
                 child.layout()
             }
 
-            child.bounds.topLeft = DPoint2(currentX, currentY)
+            child.bounds.min = DPoint2(currentX, currentY)
             currentX += child.bounds.size.width + spacing
 
             if child.bounds.size.height > currentRowHeight {
