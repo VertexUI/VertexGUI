@@ -12,17 +12,17 @@ public class MainView: SingleChildWidget {
                 Column {
                     Text("MainView")
 
-                    Button(onClick: { [unowned self] _ in
+                    Button {
+                        Text("Click this Button")
+                    } onClick: { [unowned self] _ in
                         buttonClickCount += 1
                         sharedContent.value = "Content After Click On Button \(buttonClickCount) times"
-                    }) {
-                        Text("Click this Button")
                     }
 
-                    Button(onClick: { [unowned self] _ in
-                        invalidateChild()
-                    }) {
+                    Button  {
                         Text("Click this to invalidate the whole View.")
+                    } onClick: { [unowned self] _ in
+                        invalidateChild()
                     }
                 }
 

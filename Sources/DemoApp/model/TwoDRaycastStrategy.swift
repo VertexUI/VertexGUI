@@ -5,15 +5,15 @@ public struct TwoDRaycastStrategy {
     public func cast(in world: TwoDVoxelWorld, from start: AnyVector2<Double>, to end: AnyVector2<Double>) -> TwoDRaycast {
         var results = [TwoDRaycastResult]()
         
-        var path = end - start 
-        var direction = path.normalized()
-        var rayLine = AnyLine(point: start, direction: direction)
-        var drivingAxis = direction.abs().firstIndex(of: direction.abs().max()!)!
-        var otherAxis = drivingAxis == 0 ? 1 : 0
-        var targetSlope = direction[otherAxis] / direction[drivingAxis]
+        let path = end - start 
+        let direction = path.normalized()
+        let rayLine = AnyLine(point: start, direction: direction)
+        let drivingAxis = direction.abs().firstIndex(of: direction.abs().max()!)!
+        let otherAxis = drivingAxis == 0 ? 1 : 0
+        let targetSlope = direction[otherAxis] / direction[drivingAxis]
         
-        var startIndex = start.rounded(.down)
-        var endIndex = end.rounded(.down)
+        let startIndex = start.rounded(.down)
+        let endIndex = end.rounded(.down)
         var currentOffset = DVec2()
         
         var testedOffsets = [DVec2]()

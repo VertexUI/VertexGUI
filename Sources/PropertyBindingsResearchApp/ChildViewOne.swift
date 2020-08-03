@@ -17,10 +17,10 @@ public class ChildViewOne: SingleChildWidget {
     }
 
     override open func buildChild() -> Widget {
-        Button(onClick: { [unowned self] _ in
-            content.value = "Content from ChildViewOne"
-        }) {
+        Button {
             Text("Click to change content")
+        } onClick: { [unowned self] _ in
+            content.value = "Content from ChildViewOne"
         }
     }
 

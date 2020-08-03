@@ -25,14 +25,14 @@ public class StatefulView: SingleChildWidget, StatefulWidget {
                 }
             }
 
-            Button(onClick: { [unowned self] _ in
+            Button {
+                Text("Click to invalidate")
+            } onClick: { [unowned self] _ in
                 state.invalidationCount += 1
                 state.viewStatePropertyOne = "View State String After invalidation \(state.invalidationCount)"
                 state.viewStatePropertyTwo = !state.viewStatePropertyTwo 
                 invalidateChild()
-            }) {
-                Text("Click to invalidate")
-            }
+            } 
         }
     }
 

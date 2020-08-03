@@ -23,11 +23,11 @@ public class StatefulWidgetOne: SingleChildWidget, StatefulWidget {
 
             Text("prop three is: \(state.statePropertyThree)")
 
-            Button(onClick: { _ in
+            Button {
+                Text("Click to invalidate Child one.")
+            } onClick: { _ in
                 state.statePropertyThree += 1
                 invalidateChild()
-            }) {
-                Text("Click to invalidate Child one.")
             }
         }
     }
