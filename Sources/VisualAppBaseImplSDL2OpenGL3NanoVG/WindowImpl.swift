@@ -39,13 +39,6 @@ open class SDL2OpenGL3NanoVGWindow: Window {
        /* sdlWindow = try SDL.SDLWindow(title: "SDLDemo",
                 frame: (x: .centered, y: .centered, width: Int(size.width), height: Int(size.height)),
                 options: [.resizable, .shown, .opengl, .allowRetina])*/
-        sdlWindow = SDL_CreateWindow(
-            "WOW A TITLE",
-            Int32(SDL_WINDOWPOS_CENTERED_MASK),
-            Int32(SDL_WINDOWPOS_CENTERED_MASK),
-            Int32(size.width),
-            Int32(size.height),
-            SDL_WINDOW_OPENGL.rawValue | SDL_WINDOW_RESIZABLE.rawValue | SDL_WINDOW_ALLOW_HIGHDPI.rawValue)
 
         SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 		8);
         SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 		1);
@@ -54,6 +47,14 @@ open class SDL2OpenGL3NanoVGWindow: Window {
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3)
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3)
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, Int32(SDL_GL_CONTEXT_PROFILE_CORE.rawValue))
+
+        sdlWindow = SDL_CreateWindow(
+            "WOW A TITLE",
+            Int32(SDL_WINDOWPOS_CENTERED_MASK),
+            Int32(SDL_WINDOWPOS_CENTERED_MASK),
+            Int32(size.width),
+            Int32(size.height),
+            SDL_WINDOW_OPENGL.rawValue | SDL_WINDOW_RESIZABLE.rawValue | SDL_WINDOW_ALLOW_HIGHDPI.rawValue)
 
         glContext = SDL_GL_CreateContext(sdlWindow)
         SDL_GL_MakeCurrent(sdlWindow, glContext)
@@ -71,7 +72,6 @@ open class SDL2OpenGL3NanoVGWindow: Window {
 
         //glVertexAttribPointer(0, 3, GLMap.FLOAT, false, Int32(3 * MemoryLayout<GLMap.Float>.stride), UnsafeRawPointer(bitPattern: 0))
         //glEnableVertexAttribArray(0)
-
 
 
         //print("NVG", nvgCreateGL3(Int32(NVG_DEBUG.rawValue)))
