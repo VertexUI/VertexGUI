@@ -17,6 +17,7 @@ public struct SDL2OpenGL3NanoVGVirtualScreen: VirtualScreen {
     public var size: DSize2
     public var framebuffer = GLMap.UInt()
     public var texture = GLMap.UInt()
+    public var depthStencilBuffer = GLMap.UInt()
 
     public init(_ size: DSize2) {
         self.size = size
@@ -27,6 +28,7 @@ public struct SDL2OpenGL3NanoVGVirtualScreen: VirtualScreen {
         print("Warning: delete function of screen called and due to current implementation called outside of parent renderer.")
         glDeleteFramebuffers(1, [framebuffer])
         glDeleteTextures(1, [texture])
+        glDeleteRenderbuffers(1, [depthStencilBuffer])
     }
 }
 
@@ -126,6 +128,12 @@ open class SDL2OpenGL3NanoVGRenderer: Renderer {
 
         glFramebufferTexture2D(GLMap.FRAMEBUFFER, GLMap.COLOR_ATTACHMENT0, GLMap.TEXTURE_2D, screen.texture, 0)
         
+        glGenRenderbuffers(1, &screen.depthStencilBuffer)
+        glBindRenderbuffer(GLMap.RENDERBUFFER, screen.depthStencilBuffer)
+        glRenderbufferStorage(GLMap.RENDERBUFFER, GLMap.DEPTH24_STENCIL8, GLMap.Size(size.width), GLMap.Size(size.height))
+        glFramebufferRenderbuffer(GLMap.FRAMEBUFFER, GLMap.DEPTH_STENCIL_ATTACHMENT, GLMap.RENDERBUFFER, screen.depthStencilBuffer)
+        glBindRenderbuffer(GLMap.RENDERBUFFER, 0)
+
         glBindFramebuffer(GLMap.FRAMEBUFFER, 0)
 
         return screen
@@ -213,6 +221,10 @@ open class SDL2OpenGL3NanoVGRenderer: Renderer {
 
     open func closePath() throws {
         nvgClosePath(window.nvg)
+    }
+
+    open func fillRule(_ rule: FillRule) throws {
+        nvgPathWinding(window.nvg, rule == .Solid ? Int32(NVG_SOLID.rawValue) : Int32(NVG_HOLE.rawValue))
     }
 
     open func fillColor(_ color: Color) throws {
