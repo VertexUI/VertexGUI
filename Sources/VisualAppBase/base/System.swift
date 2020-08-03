@@ -1,7 +1,5 @@
 open class System {
-    public var keyStates = Key.allCases.reduce(into: [Key: Bool]()) {
-        $0[$1] = false
-    }
+    public var keyStates = KeyStatesContainer()
 
     public var cursorRequests: [UInt64: Cursor] = [:] // TODO: maybe handle first come first or z index
     public var nextCursorRequestId: UInt64 = 0
