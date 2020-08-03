@@ -2,10 +2,14 @@ import VisualAppBase
 import VisualAppBaseImplSDL2OpenGL3NanoVG
 import WidgetGUI
 import CustomGraphicsMath
+import Foundation
 
 public class DemoGameApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGWindow, SDL2OpenGL3NanoVGRenderer> {
     public init() {
-        let guiRoot = Root(rootWidget: TestShapeWidget())
+        let gameState = GameState()
+        gameState.blobs.append(Blob(position: DVec2(300, 300), timestamp: Date.timeIntervalSinceReferenceDate))
+
+        let guiRoot = Root(rootWidget: GameView(state: gameState))
 
         super.init(system: try! SDL2OpenGL3NanoVGSystem())
         

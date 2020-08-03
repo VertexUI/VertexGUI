@@ -34,6 +34,7 @@ public protocol Renderer {
     func lineTo(_ point: DPoint2) throws
     func closePath() throws
     func fillColor(_ color: Color) throws
+    func fillRule(_ rule: FillRule) throws
     func fill() throws
     func strokeWidth(_ width: Double) throws
     func strokeColor(_ color: Color) throws
@@ -57,4 +58,8 @@ public protocol Renderer {
 
 public extension Renderer {
     func drawVirtualScreens(_ screens: [VirtualScreen], at positions: [DVec2]? = nil) throws {}
+}
+
+public enum FillRule {
+    case Solid, Hole 
 }

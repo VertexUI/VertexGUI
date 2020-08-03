@@ -101,7 +101,7 @@ open class SDL2OpenGL3NanoVGRenderer: Renderer {
 
     open func clear(_ color: Color) throws {
         GL.glClearColor(color.glR, color.glG, color.glB, color.glA)
-        GL.glClear(GLMap.COLOR_BUFFER_BIT)
+        GL.glClear(GLMap.COLOR_BUFFER_BIT | GLMap.DEPTH_BUFFER_BIT | GLMap.STENCIL_BUFFER_BIT)
     }
 
     open func beginFrame() throws {

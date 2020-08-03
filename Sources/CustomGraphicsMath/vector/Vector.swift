@@ -94,6 +94,10 @@ public extension Vector {
         }
         return result
     }
+
+    static func * (lhs: Element, rhs: Self) -> Self {
+        rhs * lhs
+    }
 }
 
  /*   init<Other: ConvertibleScalar>(_ elements: [Other]) where Self.Element: ConvertibleScalar, Self.Element.OOther.OtherScalar == Self. {
