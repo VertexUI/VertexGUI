@@ -1,7 +1,7 @@
 import Foundation
 import CustomGraphicsMath
 
-public struct Blob {
+public class Blob {
     public var creationTimestamp: TimeInterval = 0
     public var position: DVec2
     public internal(set) var radius: Double = 100

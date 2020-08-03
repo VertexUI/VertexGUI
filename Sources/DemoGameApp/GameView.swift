@@ -16,8 +16,11 @@ public class GameView: Widget {
 
     override open func renderContent() -> RenderObject? {
         return RenderObject.Custom(id: id) { [unowned self] renderer in
-            let currentTimestamp = Date.timeIntervalSinceReferenceDate
+            try renderer.scale(DVec2(1, -1))
+            try renderer.translate(DVec2(0, -globalBounds.size.height - globalBounds.topLeft.y))
         
+            let currentTimestamp = Date.timeIntervalSinceReferenceDate
+            
             for blob in state.blobs {
 
                 let vertices = blob.generateVertices(at: currentTimestamp)

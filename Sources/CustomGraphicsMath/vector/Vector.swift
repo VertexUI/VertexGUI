@@ -87,6 +87,12 @@ public extension Vector {
         }
     }
 
+    static func -= (lhs: inout Self, rhs: Self) {
+        for i in 0..<Swift.min(lhs.rows, rhs.rows) {
+            lhs[i] -= rhs[i]
+        }
+    }
+
     static func * (lhs: Self, rhs: Element) -> Self {
         var result = Self(rows: lhs.rows)
         for i in 0..<lhs.rows {
