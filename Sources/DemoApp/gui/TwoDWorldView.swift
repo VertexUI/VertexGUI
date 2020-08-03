@@ -15,8 +15,6 @@ open class TwoDWorldView: Widget, GUIMouseEventConsumer, StatefulWidget {
     private var newRaycastStart: DVec2?
     private var newRaycastEnd: DVec2?
 
-    //public var onRaycastHover = ThrowingEventHandlerManager<TwoDRaycast?>()
-
     public var highlightedRaycast: Observable<TwoDRaycast?>
 
     private var mouseThrottle = 0
@@ -110,7 +108,6 @@ open class TwoDWorldView: Widget, GUIMouseEventConsumer, StatefulWidget {
 
     override open func renderContent() -> RenderObject {
         return .CacheSplit([.Custom(id: self.id) { renderer in
-            //print("MANUAL RAYCAST RENDER")
             try renderer.scale(DVec2(1, -1))
             try renderer.translate(DVec2(0, -(2 * self.globalPosition.y + self.bounds.size.height)))
             
@@ -181,9 +178,5 @@ open class TwoDWorldView: Widget, GUIMouseEventConsumer, StatefulWidget {
                 }
             }
         }])
-    }
-
-    override public func destroySelf() {
-        //onRaycastHover.removeAllHandlers()
     }
 }

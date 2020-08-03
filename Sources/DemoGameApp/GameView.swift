@@ -5,10 +5,10 @@ import CustomGraphicsMath
 import Dispatch
 
 public class GameView: Widget {
-    private var state: GameState
+    private var getDrawableState: () -> DrawableGameState
     
-    public init(state: GameState) {
-        self.state = state
+    public init(getDrawableState: @escaping () -> DrawableGameState) {
+        self.getDrawableState = getDrawableState
     }
 
     override open func performLayout() {
@@ -17,9 +17,7 @@ public class GameView: Widget {
 
     override open func renderContent() -> RenderObject? {
         return RenderObject.Custom(id: id) { [unowned self] renderer in
-           // let group = DispatchGroup()
-
-            //state.
+            let state = getDrawableState()
 
             try renderer.scale(DVec2(1, -1))
             try renderer.translate(DVec2(0, -globalBounds.size.height - globalBounds.min.y))

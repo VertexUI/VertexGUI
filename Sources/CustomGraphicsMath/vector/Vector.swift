@@ -244,6 +244,13 @@ public extension Vector2 {
     }
 }
 
+
+public extension Vector2 where Element: BinaryFloatingPoint, Element.RawSignificand: FixedWidthInteger {
+    static func random(in bounds: Rect<Element>) -> Self {
+        self.init(Element.random(in: bounds.min.x...bounds.max.x), Element.random(in: bounds.min.y...bounds.max.y))
+    }
+}
+
 public struct AnyVector2<E: Numeric & Hashable>: Vector2 {
     public typealias Element = E
     public var rows: Int
