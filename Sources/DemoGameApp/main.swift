@@ -11,6 +11,9 @@ public class DemoGameApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGW
     private let drawableGameState: DrawableGameState
     private let controllableBlob: PlayerBlob
 
+    private lazy var guiRoot: Root = buildGuiRoot()
+    private let gameView: GameView
+
     private let updateQueue = DispatchQueue(label: "swift-cross-platform-demo.game", qos: .background)
 
     public init() {
@@ -24,11 +27,25 @@ public class DemoGameApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGW
 
         drawableManager = DrawableGameStateManager(drawableState: drawableGameState)
 
+        let gameRenderer = GameRenderer(drawableState: drawableGameState)
+        
+        gameView = GameView(gameRenderer: gameRenderer)
+
         super.init(system: try! SDL2OpenGL3NanoVGSystem())
 
-        let gameRenderer = GameRenderer(drawableState: drawableGameState)
+        let window = newWindow(guiRoot: guiRoot, background: Color(20, 20, 40, 255))
+        _ = window.onMouse { [unowned self] in
+            guiRoot.consumeMouseEvent($0)
+        }
+ 
+        _ = system.onFrame { [unowned self] deltaTimeMilliseconds in
+            let deltaTime = Double(deltaTimeMilliseconds) / 1000
+            updateDrawableState(deltaTime: deltaTime)
+        }
+    }
 
-        let guiRoot = Root(rootWidget: Column {
+    private func buildGuiRoot() -> Root {
+        Root(rootWidget: Column {
             ComputedSize {
                 Background(background: Color(40, 40, 80, 255)) {
                     Padding(all: 32) {
@@ -41,26 +58,27 @@ public class DemoGameApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGW
                 BoxConstraints(minSize: DSize2($0.maxSize.width, $0.minSize.height), maxSize: $0.maxSize)
             }
 
-            GameView(gameRenderer: gameRenderer)
+            MouseArea(onMouseMove: { [unowned self] in handleGameMouseMove($0) }) {
+                gameView
+            }
         })
+    }
 
-        let window = newWindow(guiRoot: guiRoot, background: Color(20, 20, 40, 255))
-        _ = window.onKey { [unowned self] in
-            if $0.repetition {
-                return
-            }
+    private func handleGameMouseMove(_ event: GUIMouseEvent) {
+        let localPosition = event.position - gameView.bounds.min
+        let center = gameView.bounds.center
+        let distance = localPosition - center
+        
+        let accelerationDirection = distance.normalized() * DVec2(1, -1) // multiply to convert between coordinate systems
+        
+        let referenceLength = (gameView.bounds.size.width > gameView.bounds.size.height ?
+            gameView.bounds.size.width : gameView.bounds.size.height) / 4
+        let accelerationFactor = min(1, distance.length / referenceLength)
 
-            updateQueue.async {
-                controllableBlob.throttles[.Up] = system.keyStates[.ArrowUp]
-                controllableBlob.throttles[.Right] = system.keyStates[.ArrowRight]
-                controllableBlob.throttles[.Down] = system.keyStates[.ArrowDown]
-                controllableBlob.throttles[.Left] = system.keyStates[.ArrowLeft]
-            }
-        }
-
-        _ = system.onFrame { [unowned self] deltaTimeMilliseconds in
-            let deltaTime = Double(deltaTimeMilliseconds) / 1000
-            updateDrawableState(deltaTime: deltaTime)
+        print("ACC FACTOR", accelerationFactor)
+        updateQueue.async { [unowned self] in
+            controllableBlob.accelerationDirection = accelerationDirection
+            controllableBlob.accelerationFactor = accelerationFactor
         }
     }
 

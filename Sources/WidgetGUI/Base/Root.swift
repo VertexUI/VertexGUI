@@ -56,7 +56,7 @@ open class Root: Parent {
         self.rootWidget.layout()
     }
 
-    open func consumeMouseEvent(_ rawMouseEvent: RawMouseEvent) -> Bool {
+    @discardableResult open func consumeMouseEvent(_ rawMouseEvent: RawMouseEvent) -> Bool {
         self.mouseEventManager.propagate(event: rawMouseEvent, through: self.rootWidget)
         return false
     }

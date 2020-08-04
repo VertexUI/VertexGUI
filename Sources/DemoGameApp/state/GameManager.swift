@@ -3,17 +3,15 @@ import Foundation
 import CustomGraphicsMath
 
 public class GameManager {
+
     /// Food per LengthUnit².
     private var minFoodDensity: Double = 1 / 30
 
     /// Food per TimeUnit.
     private var foodGenerationRate: Double = 10 / 1
 
-    /// Force that leads to acceleration of a blob. 
-    private var accelerationForce: Double = 1000
-
-    /// Force that reduces a blobs speed over time. In ForceUnit.
-    private var frictionForce: Double = 2
+    /// In LengthUnits per TimeUnit².
+    private var frictionDeceleration: Double = 2 / 1
 
     private var state: GameState
     private var foodTimebuffer: Double = 0
@@ -69,7 +67,7 @@ public class GameManager {
     }
 
     /// Check whether the first passed blob consumes the second passed blob.
-    public func checkCanConsume(_ blob1: Blob, _ blob2: Blob) {
+    private func checkConsume(_ blob1: Blob, _ blob2: Blob) {
         if blob1.consumed || blob2.consumed {
             return
         }
@@ -83,32 +81,30 @@ public class GameManager {
         }
     }
 
+    private func getAcceleration(mass: Double) -> Double {
+        return min(50, 5000 / mass)
+    }
+
+    private func getFrictionDeceleration(mass: Double) -> Double {
+        return mass / 10
+    }
+
     /// - Parameter deltaTime: Time since last call to update, in TimeUnits.
     public func update(deltaTime: Double) {
         for (id, blob) in state.blobs {
-            let step = deltaTime * 200
             let previousPosition = blob.position
 
             if let blob = blob as? PlayerBlob {
-                var newAcceleration = DVec2.zero
-                var accelerationPotential = accelerationForce / blob.mass
-                if blob.throttles[.Up]! {
-                    newAcceleration.y += accelerationPotential
-                }
-                if blob.throttles[.Down]! {
-                    newAcceleration.y -= accelerationPotential
-                }
-                if blob.throttles[.Right]! {
-                    newAcceleration.x += accelerationPotential
-                }
-                if blob.throttles[.Left]! {
-                    newAcceleration.x -= accelerationPotential
-                }
-                blob.acceleration = newAcceleration
-
-                // TODO: add FRIcTION
+                var accelerationPotential = getAcceleration(mass: blob.mass)
+                
+                blob.acceleration = blob.accelerationDirection * blob.accelerationFactor * accelerationPotential
 
                 blob.speed += blob.acceleration * deltaTime
+
+                let deceleration = getFrictionDeceleration(mass: blob.mass) * deltaTime
+                let targetSpeedMagnitude = max(0, blob.speed.length - deceleration)
+
+                blob.speed = blob.speed.normalized() * targetSpeedMagnitude
 
                 blob.position += blob.speed * deltaTime
             }
@@ -119,7 +115,7 @@ public class GameManager {
             
             for (_, otherBlob) in state.blobs {
                 if otherBlob !== blob {
-                    checkCanConsume(blob, otherBlob)
+                    checkConsume(blob, otherBlob)
                 }
             }
         }

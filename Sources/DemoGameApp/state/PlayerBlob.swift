@@ -18,11 +18,9 @@ public class PlayerBlob: Blob {
         GamePerspective(visibleArea: fieldOfVision)
     }
 
-    public var throttles: [MoveDirection: Bool] =
-        MoveDirection.allCases.reduce(into: [:]) {
-            $0[$1] = false
-        }
-
+    public var accelerationDirection: DVec2 = DVec2(0, 0)
+    /// 0 - 1, Apply none of the possible acceleration or all of the possible acceleration.
+    public var accelerationFactor: Double = 0
     /// Realised acceleration along both axes. LengthUnits per TimeUnit².
     public var acceleration: DVec2 = .zero
 
