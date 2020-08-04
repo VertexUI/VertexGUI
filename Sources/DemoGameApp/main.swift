@@ -9,13 +9,13 @@ public class DemoGameApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGW
     private let gameState: GameState
     private let drawableManager: DrawableGameStateManager
     private let drawableGameState: DrawableGameState
-    private let controllableBlob: Blob
+    private let controllableBlob: PlayerBlob
 
     private let updateQueue = DispatchQueue(label: "swift-cross-platform-demo.game", qos: .background)
 
     public init() {
         gameState = GameState()
-        controllableBlob = Blob(position: DVec2(600, 600), mass: 100, timestamp: Date.timeIntervalSinceReferenceDate)
+        controllableBlob = PlayerBlob(position: DVec2(600, 600), mass: 100, timestamp: Date.timeIntervalSinceReferenceDate)
 
         gameManager = GameManager(state: gameState)
         gameManager.add(blob: controllableBlob)
@@ -26,13 +26,15 @@ public class DemoGameApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGW
 
         super.init(system: try! SDL2OpenGL3NanoVGSystem())
 
-        let guiRoot = Root(rootWidget: GameView(getDrawableState: { [unowned self] in
+        let gameRenderer = GameRenderer(getRenderData: { [unowned self] in
             let events = updateQueue.sync {
                 return gameManager.popEventQueue()
             }
             drawableManager.process(events: events)
-            return drawableGameState
-        }))
+            return (drawableState: drawableGameState, perspective: controllableBlob.perspective)
+        })
+
+        let guiRoot = Root(rootWidget: GameView(gameRenderer: gameRenderer))
 
         let window = newWindow(guiRoot: guiRoot, background: Color(20, 20, 40, 255))
         _ = window.onKey { [unowned self] in

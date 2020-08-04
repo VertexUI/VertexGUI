@@ -1,7 +1,7 @@
 import CustomGraphicsMath
 import Foundation
 
-public class DrawableBlob {
+public class BlobDrawable {
     public let id: UInt
     public var creationTimestamp: Double
     public var position: DPoint2

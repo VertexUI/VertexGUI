@@ -14,7 +14,7 @@ public class DrawableGameStateManager {
     public func process(event: GameEvent) {
         switch event {
         case .Add(let id, let position, let radius, let creationTimestamp):
-            let blob = DrawableBlob(
+            let blob = BlobDrawable(
                 id: id, position: position, radius: radius, creationTimestamp: creationTimestamp)
             drawableState.blobs[id] = blob
         case .Move(let id, let position):
