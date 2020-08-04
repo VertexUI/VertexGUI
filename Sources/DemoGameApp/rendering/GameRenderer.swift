@@ -11,10 +11,18 @@ public class GameRenderer {
 
     public func render(in screenArea: DRect, with renderer: Renderer) throws {
         let (state, perspective) = getRenderData()
-        //let centerPosition = perspective.visibleArea
 
+        let gameScreenFitScale: Double 
+        if screenArea.size.height > screenArea.size.width {
+            gameScreenFitScale = screenArea.size.height / perspective.visibleArea.size.height
+        } else {
+            gameScreenFitScale = screenArea.size.width / perspective.visibleArea.size.width
+        }
+
+        try renderer.translate(screenArea.min)
+        try renderer.translate(DVec2(screenArea.size / 2))
+        try renderer.scale(DVec2(gameScreenFitScale, gameScreenFitScale))
         try renderer.scale(DVec2(1, -1))
-        try renderer.translate(DVec2(0, -screenArea.size.height - screenArea.min.y))
     
         let currentTimestamp = Date.timeIntervalSinceReferenceDate
         
@@ -24,10 +32,10 @@ public class GameRenderer {
             if blob.vertices.count > 0 {
 
                 try renderer.beginPath()
-                try renderer.moveTo(blob.vertices[0])
+                try renderer.moveTo(blob.vertices[0] - perspective.center)
 
                 for vertex in blob.vertices[1...] {
-                    try renderer.lineTo(vertex)
+                    try renderer.lineTo(vertex - perspective.center)
                 }
                 
                 try renderer.closePath()

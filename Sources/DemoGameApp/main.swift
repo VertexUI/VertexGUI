@@ -34,7 +34,19 @@ public class DemoGameApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGW
             return (drawableState: drawableGameState, perspective: controllableBlob.perspective)
         })
 
-        let guiRoot = Root(rootWidget: GameView(gameRenderer: gameRenderer))
+        let guiRoot = Root(rootWidget: Column {
+            ComputedSize {
+                Background(background: .Blue) {
+                    Padding(all: 200) {
+                        Text("An awesome game.")
+                    }
+                }
+            } calculate: {
+                BoxConstraints(minSize: DSize2($0.maxSize.width, $0.minSize.height), maxSize: $0.maxSize)
+            }
+            
+            GameView(gameRenderer: gameRenderer)
+        })
 
         let window = newWindow(guiRoot: guiRoot, background: Color(20, 20, 40, 255))
         _ = window.onKey { [unowned self] in
