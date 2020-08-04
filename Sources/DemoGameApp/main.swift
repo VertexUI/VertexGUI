@@ -36,15 +36,15 @@ public class DemoGameApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGW
 
         let guiRoot = Root(rootWidget: Column {
             ComputedSize {
-                Background(background: .Blue) {
-                    Padding(all: 200) {
-                        Text("An awesome game.")
+                Background(background: Color(40, 40, 80, 255)) {
+                    Padding(all: 32) {
+                        Text("An awesome game.", config: Text.PartialConfig(fontConfig: PartialFontConfig(size: 24, weight: .Bold)))
                     }
                 }
             } calculate: {
                 BoxConstraints(minSize: DSize2($0.maxSize.width, $0.minSize.height), maxSize: $0.maxSize)
             }
-            
+
             GameView(gameRenderer: gameRenderer)
         })
 

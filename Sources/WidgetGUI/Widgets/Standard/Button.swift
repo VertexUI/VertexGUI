@@ -11,8 +11,8 @@ public struct ButtonStyle {
     var cursor: Cursor
 }
 
-public let defaultButtonTextConfig = TextConfig(
-    fontConfig: FontConfig(
+public let defaultButtonTextConfig = Text.PartialConfig(
+    fontConfig: PartialFontConfig(
         family: defaultFontFamily, size: 16, weight: .Bold, style: .Normal),
     transform: .Uppercase,
     color: .Black,
