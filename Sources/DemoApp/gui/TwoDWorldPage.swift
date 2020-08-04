@@ -31,18 +31,16 @@ open class TwoDWorldPage: SingleChildWidget {
                         })
                     }
                     ComputedSize {
-                        $0.constrain(DSize2($0.maxWidth * 0.75, $0.maxHeight))
-                    } child: {
                         TwoDWorldView(
                             world: world,
                             raycasts: raycasts,
                             highlightedRaycast: highlightedRaycast)
+                    } calculate: {
+                        BoxConstraints(size: $0.constrain(DSize2($0.maxWidth * 0.75, $0.maxHeight)))
                     }
                 }
 
                 ComputedSize {
-                    $0.constrain(DSize2($0.maxWidth, $0.maxHeight))
-                } child: {
 
                     Padding(all: 20) {
 
@@ -104,6 +102,8 @@ open class TwoDWorldPage: SingleChildWidget {
                             }
                         }
                     }
+                } calculate: {
+                    BoxConstraints(size: $0.constrain(DSize2($0.maxWidth, $0.maxHeight)))
                 }
             }
         }

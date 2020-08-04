@@ -2,7 +2,7 @@ import VisualAppBase
 import CustomGraphicsMath
 
 public class ComputedSize: SingleChildWidget {
-    public typealias CalculationFunction = (_ constraints: BoxConstraints) -> DSize2
+    public typealias CalculationFunction = (_ constraints: BoxConstraints) -> BoxConstraints
 
     public var calculate: CalculationFunction
 
@@ -14,7 +14,7 @@ public class ComputedSize: SingleChildWidget {
         super.init()
     }*/
 
-    public init(calculate: @escaping CalculationFunction, @WidgetBuilder child inputChild: () -> Widget) {
+    public init(@WidgetBuilder child inputChild: () -> Widget, calculate: @escaping CalculationFunction) {
         //self.init(calculate: calculate, child: inputChild())
         self.calculate = calculate
         self.inputChild = inputChild()
@@ -26,8 +26,8 @@ public class ComputedSize: SingleChildWidget {
     }
 
     override open func performLayout() {
-        bounds.size = calculate(constraints!)
-        child.constraints = BoxConstraints(size: bounds.size)
-        try child.layout()
+        child.constraints = calculate(constraints!)
+        child.layout()
+        bounds.size = child.bounds.size
     }
 }
