@@ -2,10 +2,6 @@ import Foundation
 import CustomGraphicsMath
 
 public class Blob {
-    public enum Direction: CaseIterable {
-        case Up, Right, Down, Left
-    }
-
     private static var nextId: UInt = 0
     public internal(set) var id: UInt
 
@@ -16,12 +12,6 @@ public class Blob {
     public var radius: Double {
         mass
     }
-
-    public var throttles: [Direction: Bool] =
-        Direction.allCases.reduce(into: [:]) {
-            $0[$1] = false
-        }
-
     public internal(set) var consumed = false
 
     public var vertexCount: Int {

@@ -19,6 +19,9 @@ public struct Rect<E: BinaryFloatingPoint>: Equatable, Hashable {
     public var center: AnyVector2<E> {
         min + AnyVector2(size) / 2
     }
+    public var area: E {
+        size.width * size.height
+    }
 
     // TODO: maybe implement as protocol as well and don't use AnyVector2<E> but Vector2 where Vector2.E == E?
     public init(min: AnyVector2<E>, size: AnySize2<E>) {

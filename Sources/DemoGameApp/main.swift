@@ -38,7 +38,9 @@ public class DemoGameApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGW
             ComputedSize {
                 Background(background: Color(40, 40, 80, 255)) {
                     Padding(all: 32) {
-                        Text("An awesome game.", config: Text.PartialConfig(fontConfig: PartialFontConfig(size: 24, weight: .Bold)))
+                        Text("An awesome game.", config: Text.PartialConfig(
+                            fontConfig: PartialFontConfig(size: 24, weight: .Bold),
+                            color: .White))
                     }
                 }
             } calculate: {

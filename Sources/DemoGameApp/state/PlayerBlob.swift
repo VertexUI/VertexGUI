@@ -13,4 +13,9 @@ public class PlayerBlob: Blob {
     public var perspective: GamePerspective {
         GamePerspective(visibleArea: fieldOfVision)
     }
+
+    public var throttles: [MoveDirection: Bool] =
+        MoveDirection.allCases.reduce(into: [:]) {
+            $0[$1] = false
+        }
 }
