@@ -18,4 +18,10 @@ public class PlayerBlob: Blob {
         MoveDirection.allCases.reduce(into: [:]) {
             $0[$1] = false
         }
+
+    /// Realised acceleration along both axes. LengthUnits per TimeUnit².
+    public var acceleration: DVec2 = .zero
+
+    /// LengthUnits per TimeUnit.
+    public var speed: DVec2 = .zero
 }

@@ -7,6 +7,8 @@ public class Blob {
 
     public var creationTimestamp: TimeInterval
     public var position: DVec2
+
+    /// Mass. In MassUnits.
     public internal(set) var mass: Double
 
     public var radius: Double {

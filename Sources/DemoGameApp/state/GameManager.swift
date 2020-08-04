@@ -3,10 +3,17 @@ import Foundation
 import CustomGraphicsMath
 
 public class GameManager {
-    /// Food per square units.
+    /// Food per LengthUnit².
     private var minFoodDensity: Double = 1 / 30
-    /// Food per second.
+
+    /// Food per TimeUnit.
     private var foodGenerationRate: Double = 10 / 1
+
+    /// Force that leads to acceleration of a blob. 
+    private var accelerationForce: Double = 1000
+
+    /// Force that reduces a blobs speed over time. In ForceUnit.
+    private var frictionForce: Double = 2
 
     private var state: GameState
     private var foodTimebuffer: Double = 0
@@ -68,25 +75,32 @@ public class GameManager {
         }
     }
 
-    /// - Parameter deltaTime: Time since last call to update, in seconds.
+    /// - Parameter deltaTime: Time since last call to update, in TimeUnits.
     public func update(deltaTime: Double) {
         for (id, blob) in state.blobs {
             let step = deltaTime * 200
             let previousPosition = blob.position
 
             if let blob = blob as? PlayerBlob {
+                var newAcceleration = DVec2.zero
+                var accelerationPotential = accelerationForce / blob.mass
                 if blob.throttles[.Up]! {
-                    blob.position += DVec2(0, step)
+                    newAcceleration.y += accelerationPotential
                 }
                 if blob.throttles[.Down]! {
-                    blob.position -= DVec2(0, step)
+                    newAcceleration.y -= accelerationPotential
                 }
                 if blob.throttles[.Right]! {
-                    blob.position += DVec2(step, 0)
+                    newAcceleration.x += accelerationPotential
                 }
                 if blob.throttles[.Left]! {
-                    blob.position -= DVec2(step, 0)
+                    newAcceleration.x -= accelerationPotential
                 }
+                blob.acceleration = newAcceleration
+
+                blob.speed += blob.acceleration * deltaTime
+
+                blob.position += blob.speed * deltaTime
             }
 
             if previousPosition != blob.position {
