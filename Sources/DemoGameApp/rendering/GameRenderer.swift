@@ -23,6 +23,13 @@ public class GameRenderer {
         try renderer.scale(DVec2(1, -1))
     
         for blob in state.blobs.values {
+            let paddedVisibleArea = DRect(
+                min: state.perspective.visibleArea.min - DVec2(blob.radius, blob.radius),
+                max: state.perspective.visibleArea.max - DVec2(blob.radius, blob.radius))
+            
+            if !paddedVisibleArea.contains(point: blob.position) {
+                continue
+            }
 
             if blob.vertices.count > 0 {
 

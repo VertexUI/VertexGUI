@@ -24,10 +24,13 @@ public class GameManager {
 
     private func balanceFood(deltaTime: Double) {
         var foodCount = 0
+        var playerBlobs = [PlayerBlob]()
 
         for blob in state.blobs.values {
             if blob is FoodBlob {
                 foodCount += 1
+            } else if let blob = blob as? PlayerBlob {
+                playerBlobs.append(blob)
             }
         }
 
@@ -43,8 +46,13 @@ public class GameManager {
             foodTimebuffer -= Double(generationCount) / foodGenerationRate
 
             for _ in 0..<generationCount {
+                var foodPosition: DVec2 
+                repeat {
+                    foodPosition = DVec2.random(in: state.areaBounds)
+                } while playerBlobs.contains { ($0.position - foodPosition).length < $0.radius }
+
                 add(blob: FoodBlob(
-                    position: DVec2.random(in: state.areaBounds),
+                    position: foodPosition,
                     mass: 10,
                     timestamp: Date.timeIntervalSinceReferenceDate))
             }
