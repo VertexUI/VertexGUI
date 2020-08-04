@@ -29,10 +29,16 @@ public class GameManager {
     }
 
     private func removeConsumedBlobs() {
-        //state.blobs.removeAll(where: \.consumed)
+        for (id, blob) in state.blobs {
+            if blob.consumed {
+                state.eventQueue.append(GameEvent.Remove(id: id))
+                state.blobs.removeValue(forKey: id)
+            }
+        }
     }
 
-    public func interactBlobs(_ blob1: Blob, _ blob2: Blob) {
+    /// Check whether the first passed blob consumes the second passed blob.
+    public func checkCanConsume(_ blob1: Blob, _ blob2: Blob) {
         if blob1.consumed || blob2.consumed {
             return
         }
@@ -43,21 +49,19 @@ public class GameManager {
                 blob1.mass += blob2.mass
                 state.eventQueue.append(GameEvent.Grow(id: blob1.id, radius: blob1.mass))
                 // TODO: implement other get consumed event
-        } else if
+        }/* else if
             blob2.mass > blob1.mass,
             (blob2.position - blob1.position).length - blob2.radius < blob1.radius / 2 {
                 blob1.consumed = true
                 blob2.mass += blob1.mass
                 state.eventQueue.append(GameEvent.Grow(id: blob2.id, radius: blob2.mass))
                 // TODO: implement other get consumed event
-        }
+        }*/
     }
 
     /// - Parameter deltaTime: Time since last call to update, in seconds.
     public func update(deltaTime: Double) {
-        for i in 0..<state.blobs.count {
-            let blob = state.blobs[i]
-
+        for (id, blob) in state.blobs {
             let step = deltaTime * 200
             let previousPosition = blob.position
 
@@ -78,8 +82,10 @@ public class GameManager {
                 state.eventQueue.append(GameEvent.Move(id: blob.id, position: blob.position))
             }
             
-            for blob2Blob in state.blobs[i + 1..<state.blobs.count] {
-                interactBlobs(blob, blob2Blob)
+            for (_, otherBlob) in state.blobs {
+                if otherBlob !== blob {
+                    checkCanConsume(blob, otherBlob)
+                }
             }
         }
         removeConsumedBlobs()
@@ -87,7 +93,7 @@ public class GameManager {
     }
 
     public func add(blob: Blob) {
-        state.blobs.append(blob)
+        state.blobs[blob.id] = blob
         state.eventQueue.append(GameEvent.Add(
             id: blob.id,
             position: blob.position,

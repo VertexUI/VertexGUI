@@ -24,9 +24,7 @@ public class GameView: Widget {
         
             let currentTimestamp = Date.timeIntervalSinceReferenceDate
             
-            for i in 0..<state.blobs.count {
-                let blob = state.blobs[i]
-
+            for blob in state.blobs.values {
                 blob.updateVertices(at: currentTimestamp)
 
                 if blob.vertices.count > 0 {

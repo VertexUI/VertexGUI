@@ -14,23 +14,21 @@ public class DrawableGameStateManager {
     public func process(event: GameEvent) {
         switch event {
         case .Add(let id, let position, let radius, let creationTimestamp):
-            drawableState.blobs.append(DrawableBlob(
-                id: id, position: position, radius: radius, creationTimestamp: creationTimestamp))
+            let blob = DrawableBlob(
+                id: id, position: position, radius: radius, creationTimestamp: creationTimestamp)
+            drawableState.blobs[id] = blob
         case .Move(let id, let position):
-            for blob in drawableState.blobs {
-                if blob.id == id {
-                    blob.position = position
-                    break
-                }
+            if let blob = drawableState.blobs[id] {
+                blob.position = position
+                break
             }
         case .Grow(let id, let radius):
-            // TODO: implement id dictionary
-            for blob in drawableState.blobs {
-                if blob.id == id {
-                    blob.radius = radius
-                    break
-                }
+            if let blob = drawableState.blobs[id] {
+                blob.radius = radius
+                break
             }
+        case .Remove(let id):
+            drawableState.blobs.removeValue(forKey: id)
         }
     }
 }
