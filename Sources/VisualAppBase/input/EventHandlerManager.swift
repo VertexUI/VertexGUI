@@ -11,6 +11,7 @@ public class EventHandlerManager<Data> {
         addHandler(handler)
     }
 
+    // TODO: implement function to add to start of handler list
     public func addHandler(_ handler: @escaping Handler) -> UnregisterCallback {
         let currentHandlerId = nextHandlerId
         handlers[currentHandlerId] = handler
@@ -21,6 +22,7 @@ public class EventHandlerManager<Data> {
     }
 
     public func invokeHandlers(_ data: Data) {
+        // TODO: call handlers in same order as they were added
         for handler in handlers.values {
             try handler(data)
         }

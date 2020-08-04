@@ -3,20 +3,18 @@ import VisualAppBase
 import CustomGraphicsMath
 
 public class GameRenderer {
-    private let getRenderData: () -> (drawableState: DrawableGameState, perspective: GamePerspective)
+    private let state: DrawableGameState
     
-    public init(getRenderData: @escaping () -> (drawableState: DrawableGameState, perspective: GamePerspective)) {
-        self.getRenderData = getRenderData
+    public init(drawableState state: DrawableGameState) {
+        self.state = state
     }
 
     public func render(in screenArea: DRect, with renderer: Renderer) throws {
-        let (state, perspective) = getRenderData()
-
         let gameScreenFitScale: Double 
         if screenArea.size.height > screenArea.size.width {
-            gameScreenFitScale = screenArea.size.height / perspective.visibleArea.size.height
+            gameScreenFitScale = screenArea.size.height / state.perspective.visibleArea.size.height
         } else {
-            gameScreenFitScale = screenArea.size.width / perspective.visibleArea.size.width
+            gameScreenFitScale = screenArea.size.width / state.perspective.visibleArea.size.width
         }
 
         try renderer.translate(screenArea.min)
@@ -24,18 +22,15 @@ public class GameRenderer {
         try renderer.scale(DVec2(gameScreenFitScale, gameScreenFitScale))
         try renderer.scale(DVec2(1, -1))
     
-        let currentTimestamp = Date.timeIntervalSinceReferenceDate
-        
         for blob in state.blobs.values {
-            blob.updateVertices(at: currentTimestamp)
 
             if blob.vertices.count > 0 {
 
                 try renderer.beginPath()
-                try renderer.moveTo(blob.vertices[0] - perspective.center)
+                try renderer.moveTo(blob.vertices[0] - state.perspective.center)
 
                 for vertex in blob.vertices[1...] {
-                    try renderer.lineTo(vertex - perspective.center)
+                    try renderer.lineTo(vertex - state.perspective.center)
                 }
                 
                 try renderer.closePath()

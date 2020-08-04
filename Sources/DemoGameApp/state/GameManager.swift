@@ -98,6 +98,8 @@ public class GameManager {
                 }
                 blob.acceleration = newAcceleration
 
+                // TODO: add FRIcTION
+
                 blob.speed += blob.acceleration * deltaTime
 
                 blob.position += blob.speed * deltaTime
@@ -121,9 +123,9 @@ public class GameManager {
         state.blobs[blob.id] = blob
         state.eventQueue.append(GameEvent.Add(
             id: blob.id,
+            type: blob.type,
             position: blob.position,
-            radius: blob.radius,
-            creationTimestamp: blob.creationTimestamp))
+            radius: blob.radius))
     }
 
     public func popEventQueue() -> [GameEvent] {

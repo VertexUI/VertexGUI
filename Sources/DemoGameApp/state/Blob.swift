@@ -5,6 +5,10 @@ public class Blob {
     private static var nextId: UInt = 0
     public internal(set) var id: UInt
 
+    public var type: BlobType {
+        fatalError("type not implemented.")
+    }
+
     public var creationTimestamp: TimeInterval
     public var position: DVec2
 

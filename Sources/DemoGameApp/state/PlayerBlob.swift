@@ -1,6 +1,10 @@
 import CustomGraphicsMath
 
 public class PlayerBlob: Blob {
+    override open var type: BlobType {
+        .Player
+    }
+
     /// Perpendicular distance to the sides of a square.
     public var visionDistance: Double {
         radius * 5

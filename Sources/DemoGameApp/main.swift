@@ -26,13 +26,7 @@ public class DemoGameApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGW
 
         super.init(system: try! SDL2OpenGL3NanoVGSystem())
 
-        let gameRenderer = GameRenderer(getRenderData: { [unowned self] in
-            let events = updateQueue.sync {
-                return gameManager.popEventQueue()
-            }
-            drawableManager.process(events: events)
-            return (drawableState: drawableGameState, perspective: controllableBlob.perspective)
-        })
+        let gameRenderer = GameRenderer(drawableState: drawableGameState)
 
         let guiRoot = Root(rootWidget: Column {
             ComputedSize {
@@ -63,6 +57,11 @@ public class DemoGameApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGW
                 controllableBlob.throttles[.Left] = system.keyStates[.ArrowLeft]
             }
         }
+
+        _ = system.onFrame { [unowned self] deltaTimeMilliseconds in
+            let deltaTime = Double(deltaTimeMilliseconds) / 1000
+            updateDrawableState(deltaTime: deltaTime)
+        }
     }
 
     private func loopUpdate() {
@@ -75,6 +74,14 @@ public class DemoGameApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGW
                 gameManager.update(deltaTime: deltaTime)
                 loopUpdate()
         }
+    }
+
+    private func updateDrawableState(deltaTime: Double) {
+        let events = updateQueue.sync {
+            return gameManager.popEventQueue()
+        }
+        drawableManager.process(events: events, deltaTime: deltaTime)
+        drawableGameState.perspective = controllableBlob.perspective
     }
     
     override open func createRenderer(for window: Window) -> Renderer {

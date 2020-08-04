@@ -7,4 +7,5 @@ public class DrawableGameState {
             print("DRAWABLE GAME STATE DID SET")
         }
     }
+    public var perspective = GamePerspective(visibleArea: DRect(min: .zero, max: .zero))
 }
