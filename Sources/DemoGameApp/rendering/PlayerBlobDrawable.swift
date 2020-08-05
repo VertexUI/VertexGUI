@@ -2,6 +2,11 @@ import CustomGraphicsMath
 import Foundation
 
 public class PlayerBlobDrawable: BlobDrawable {
+    public var vertexCount: Int {
+        return Int(sqrt(radius))
+    }
+    public var acceleration: DVec2 = .zero
+
     override public func updateVertices() {
         let cyclicalProgress = lifetime.truncatingRemainder(dividingBy: 1)
 
@@ -14,10 +19,16 @@ public class PlayerBlobDrawable: BlobDrawable {
             let direction = DVec2(cos(angle), sin(angle))
             let radialOffset = direction * radius
 
-            let maxWobbleHeight = cos(cyclicalProgress * Double.pi * 2) * 15
-            let cyclicalOffset = direction * sin(angle * 30 + cyclicalProgress * Double.pi * 2) * maxWobbleHeight
+            var accelerationWeight = acceleration.normalized().dot(direction) > 0 ? 1.0 : 0.0
+            accelerationWeight *= acceleration.length / GameRule.maxAcceleration
+            print("ACCELERATION LENGTH", acceleration.length)
+            let accelerationOffset = acceleration.normalized() * 30 * accelerationWeight
 
-            let vertex = position + radialOffset + cyclicalOffset
+            let maxWobbleHeight = cos(cyclicalProgress * Double.pi * 2) * 5
+            var cyclicalOffset = direction * sin(angle * 30 + cyclicalProgress * Double.pi * 2) * maxWobbleHeight
+            //cyclicalOffset *= 1 - accelerationWeight * 0.8
+
+            let vertex = position + radialOffset + cyclicalOffset + accelerationOffset
             vertices.append(vertex)
 
             if vertex.x < min.x {

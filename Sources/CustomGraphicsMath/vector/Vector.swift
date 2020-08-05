@@ -81,6 +81,18 @@ public extension Vector {
         return resultVector
     }
 
+    static func * (lhs: Self, rhs: Element) -> Self {
+        var result = Self(rows: lhs.rows)
+        for i in 0..<lhs.rows {
+            result[i] = lhs[i] * rhs
+        }
+        return result
+    }
+
+    static func * (lhs: Element, rhs: Self) -> Self {
+        rhs * lhs
+    }
+
     static func += (lhs: inout Self, rhs: Self) {
         for i in 0..<Swift.min(lhs.rows, rhs.rows) {
             lhs[i] += rhs[i]
@@ -93,16 +105,10 @@ public extension Vector {
         }
     }
 
-    static func * (lhs: Self, rhs: Element) -> Self {
-        var result = Self(rows: lhs.rows)
-        for i in 0..<lhs.rows {
-            result[i] = lhs[i] * rhs
+    static func *= (lhs: inout Self, rhs: Element) {
+        for i in 0..<lhs.count {
+            lhs[i] *= rhs
         }
-        return result
-    }
-
-    static func * (lhs: Element, rhs: Self) -> Self {
-        rhs * lhs
     }
 }
 
@@ -122,7 +128,7 @@ public extension Vector where Element: BinaryInteger {
 }
 
 public extension Vector where Element: FloatingPoint {
-    // TODO: might store length
+    @available(*, deprecated, message: "Use .magnitude instead.")
     var length: Element {
         get {
             var sum: Element = 0
@@ -130,6 +136,11 @@ public extension Vector where Element: FloatingPoint {
                 sum += element * element
             }
             return sqrt(sum)
+        }
+    }
+    var magnitude: Element {
+        get {
+            length
         }
     }
 

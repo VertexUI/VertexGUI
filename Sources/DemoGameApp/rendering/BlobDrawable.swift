@@ -5,9 +5,6 @@ public class BlobDrawable {
     public let id: UInt
     public var position: DPoint2
     public var radius: Double
-    public var vertexCount: Int {
-        return Int(radius * 2)
-    }
     public internal(set) var vertices: [DPoint2] = []
     public internal(set) var bounds: DRect
 

@@ -82,7 +82,7 @@ public class GameManager {
     }
 
     private func getAcceleration(mass: Double) -> Double {
-        return min(50, 5000 / mass)
+        return min(GameRule.maxAcceleration, 5000 / mass)
     }
 
     private func getFrictionDeceleration(mass: Double) -> Double {
@@ -95,9 +95,15 @@ public class GameManager {
             let previousPosition = blob.position
 
             if let blob = blob as? PlayerBlob {
+                let previousAcceleration = blob.acceleration
+
                 var accelerationPotential = getAcceleration(mass: blob.mass)
                 
                 blob.acceleration = blob.accelerationDirection * blob.accelerationFactor * accelerationPotential
+
+                if blob.acceleration != previousAcceleration {
+                    state.eventQueue.append(GameEvent.Accelerate(id: blob.id, acceleration: blob.acceleration))
+                }
 
                 blob.speed += blob.acceleration * deltaTime
 
@@ -107,6 +113,19 @@ public class GameManager {
                 blob.speed = blob.speed.normalized() * targetSpeedMagnitude
 
                 blob.position += blob.speed * deltaTime
+
+                if blob.position.x < state.areaBounds.min.x {
+                    blob.position.x = state.areaBounds.min.x
+                }
+                if blob.position.y < state.areaBounds.min.y {
+                    blob.position.y = state.areaBounds.min.y
+                }
+                if blob.position.x > state.areaBounds.max.x {
+                    blob.position.x = state.areaBounds.max.x
+                }
+                if blob.position.y > state.areaBounds.max.y {
+                    blob.position.y = state.areaBounds.max.y
+                }
             }
 
             if previousPosition != blob.position {

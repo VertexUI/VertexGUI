@@ -2,7 +2,7 @@ import CustomGraphicsMath
 import Foundation
 
 public class FoodBlobDrawable: BlobDrawable {
-    override public var vertexCount: Int {
+    public var vertexCount: Int {
         return Int(radius)
     }
 
