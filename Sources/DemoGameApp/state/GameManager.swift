@@ -3,16 +3,6 @@ import Foundation
 import CustomGraphicsMath
 
 public class GameManager {
-
-    /// Food per LengthUnit².
-    private var minFoodDensity: Double = 1 / 30
-
-    /// Food per TimeUnit.
-    private var foodGenerationRate: Double = 10 / 1
-
-    /// In LengthUnits per TimeUnit².
-    private var frictionDeceleration: Double = 2 / 1
-
     private var state: GameState
     private var foodTimebuffer: Double = 0
     
@@ -32,27 +22,31 @@ public class GameManager {
             }
         }
 
-        let targetFoodCount = Int(state.areaBounds.area * minFoodDensity)
+        let targetFoodCount = Int(state.areaBounds.area * state.rules.minFoodDensity)
 
         let foodShortage = targetFoodCount - foodCount
 
         if foodShortage > 0 {
             foodTimebuffer += deltaTime
 
-            let generationCount = Int(foodTimebuffer * foodGenerationRate)
+            let generationCount = Int(foodTimebuffer * state.rules.foodGenerationRate)
             
-            foodTimebuffer -= Double(generationCount) / foodGenerationRate
+            foodTimebuffer -= Double(generationCount) / state.rules.foodGenerationRate
 
             for _ in 0..<generationCount {
-                var foodPosition: DVec2 
+                var foodPosition: DVec2
+                var tries = 0
                 repeat {
                     foodPosition = DVec2.random(in: state.areaBounds)
-                } while playerBlobs.contains { ($0.position - foodPosition).length < $0.radius }
-
-                add(blob: FoodBlob(
-                    position: foodPosition,
-                    mass: 10,
-                    timestamp: Date.timeIntervalSinceReferenceDate))
+                    tries += 1
+                } while tries < 20 && playerBlobs.contains { ($0.position - foodPosition).length < $0.radius }
+                
+                if tries < 20 {
+                    add(blob: FoodBlob(
+                        position: foodPosition,
+                        mass: 10,
+                        timestamp: Date.timeIntervalSinceReferenceDate))
+                }
             }
         }
     }
@@ -82,7 +76,7 @@ public class GameManager {
     }
 
     private func getAcceleration(mass: Double) -> Double {
-        return min(GameRule.maxAcceleration, 5000 / mass)
+        return min(state.rules.maxAcceleration, 5000 / mass)
     }
 
     private func getFrictionDeceleration(mass: Double) -> Double {

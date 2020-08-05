@@ -3,7 +3,7 @@ import Foundation
 
 public class PlayerBlobDrawable: BlobDrawable {
     public var vertexCount: Int {
-        return Int(sqrt(radius))
+        return Int(sqrt(radius)) * 2
     }
     public var acceleration: DVec2 = .zero
 
@@ -20,13 +20,14 @@ public class PlayerBlobDrawable: BlobDrawable {
             let radialOffset = direction * radius
 
             var accelerationWeight = acceleration.normalized().dot(direction) > 0 ? 1.0 : 0.0
-            accelerationWeight *= acceleration.length / GameRule.maxAcceleration
-            print("ACCELERATION LENGTH", acceleration.length)
-            let accelerationOffset = acceleration.normalized() * 30 * accelerationWeight
+            accelerationWeight *= acceleration.length / 50 // GameRule.maxAcceleration
+            
+            let accelerationStretch = radius * 0.1
+            let accelerationOffset = acceleration.normalized() * accelerationStretch * accelerationWeight
 
-            let maxWobbleHeight = cos(cyclicalProgress * Double.pi * 2) * 5
-            var cyclicalOffset = direction * sin(angle * 30 + cyclicalProgress * Double.pi * 2) * maxWobbleHeight
-            //cyclicalOffset *= 1 - accelerationWeight * 0.8
+            let maxWobbleHeight = cos(cyclicalProgress * Double.pi * 2) * radius * 0.05
+            let wobblePeriodCount = floor(Double(vertexCount) * 0.5)
+            var cyclicalOffset = direction * sin(angle * wobblePeriodCount + cyclicalProgress * Double.pi * 2) * maxWobbleHeight
 
             let vertex = position + radialOffset + cyclicalOffset + accelerationOffset
             vertices.append(vertex)
