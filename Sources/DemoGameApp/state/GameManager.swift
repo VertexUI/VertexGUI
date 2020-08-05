@@ -3,6 +3,13 @@ import Foundation
 import CustomGraphicsMath
 
 public class GameManager {
+    private var _nextBlobId: UInt = 0
+    private var nextBlobId: UInt {
+        get {
+            defer { _nextBlobId += 1 }
+            return _nextBlobId
+        }
+    }
     private var state: GameState
     private var foodTimebuffer: Double = 0
     private var ruleset: GameRuleset
@@ -18,10 +25,10 @@ public class GameManager {
 
     /// - Parameter deltaTime: Time since last call to update, in TimeUnits.
     public func update(deltaTime: Double) {
-        for (id, blob) in state.blobs {
+        for var (id, blob) in state.blobs {
             let previousPosition = blob.position
 
-            if let blob = blob as? PlayerBlob {
+            if var blob = blob as? PlayerBlob {
                 let previousAcceleration = blob.acceleration
 
                 let maxAcceleration = ruleset.calcMaxAcceleration(blob.mass)
@@ -55,9 +62,9 @@ public class GameManager {
                     blob.position.y = state.areaBounds.max.y
                 }
 
-                for (_, otherBlob) in state.blobs {
-                    if otherBlob !== blob {
-                        checkConsume(blob, otherBlob)
+                for var (_, otherBlob) in state.blobs {
+                    if otherBlob.id != blob.id {
+                        checkConsume(&blob, &otherBlob)
                     }
                 }
             }
@@ -72,10 +79,10 @@ public class GameManager {
     public func createPlayerBlob() -> PlayerBlob {
         let position = DVec2.random(in: state.areaBounds)
         let blob = PlayerBlob(
+            id: nextBlobId,
             position: position,
             mass: ruleset.initialPlayerBlobMass,
-            timestamp: Date.timeIntervalSinceReferenceDate)
-        blob.radius = ruleset.calcRadius(blob.mass)
+            radius: ruleset.calcRadius(ruleset.initialPlayerBlobMass))
         state.blobs[blob.id] = blob
         state.eventQueue.append(GameEvent.Add(
             id: blob.id,
@@ -87,10 +94,10 @@ public class GameManager {
 
     @discardableResult public func createFoodBlob(at position: DVec2) -> FoodBlob {
         let blob = FoodBlob(
+            id: nextBlobId,
             position: position,
             mass: ruleset.foodBlobMass,
-            timestamp: Date.timeIntervalSinceReferenceDate)
-        blob.radius = ruleset.calcRadius(blob.mass)
+            radius: ruleset.calcRadius(ruleset.foodBlobMass))
         state.blobs[blob.id] = blob
         state.eventQueue.append(GameEvent.Add(
             id: blob.id,
@@ -139,7 +146,7 @@ public class GameManager {
     }
 
     /// Check whether the first passed blob consumes the second passed blob.
-    private func checkConsume(_ blob1: Blob, _ blob2: Blob) {
+    private func checkConsume(_ blob1: inout PlayerBlob, _ blob2: inout Blob) {
         if blob1.consumed || blob2.consumed {
             return
         }

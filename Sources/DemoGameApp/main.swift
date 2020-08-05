@@ -7,8 +7,8 @@ import Foundation
 public class DemoGameApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGWindow, SDL2OpenGL3NanoVGRenderer> {
     private let gameManager: GameManager
     private let gameState: GameState
-    private let drawableManager: DrawableGameStateManager
-    private let drawableGameState: DrawableGameState
+    //private let drawableManager: DrawableGameStateManager
+    //private let drawableGameState: DrawableGameState
     private let playerBlob: PlayerBlob
 
     private lazy var guiRoot: Root = buildGuiRoot()
@@ -22,13 +22,13 @@ public class DemoGameApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGW
         gameManager = GameManager(state: gameState, ruleset: GameRuleset())
         playerBlob = gameManager.createPlayerBlob()
         
-        drawableGameState = DrawableGameState()
+        //drawableGameState = DrawableGameState()
 
-        drawableManager = DrawableGameStateManager(drawableState: drawableGameState)
+       // drawableManager = DrawableGameStateManager(drawableState: drawableGameState)
 
-        let gameRenderer = GameRenderer(drawableState: drawableGameState)
+        //let gameRenderer = GameRenderer(state: gameState)
         
-        gameView = GameView(gameRenderer: gameRenderer)
+        gameView = GameView(state: gameState, perspective: playerBlob.perspective)
 
         super.init(system: try! SDL2OpenGL3NanoVGSystem())
 
@@ -39,7 +39,7 @@ public class DemoGameApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGW
  
         _ = system.onFrame { [unowned self] deltaTimeMilliseconds in
             let deltaTime = Double(deltaTimeMilliseconds) / 1000
-            updateDrawableState(deltaTime: deltaTime)
+            gameView.perspective = playerBlob.perspective
         }
     }
 
@@ -74,7 +74,6 @@ public class DemoGameApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGW
             gameView.bounds.size.width : gameView.bounds.size.height) / 4
         let accelerationFactor = min(1, distance.length / referenceLength)
 
-        print("ACC FACTOR", accelerationFactor)
         updateQueue.async { [unowned self] in
             playerBlob.accelerationDirection = accelerationDirection
             playerBlob.accelerationFactor = accelerationFactor
@@ -93,13 +92,13 @@ public class DemoGameApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGW
         }
     }
 
-    private func updateDrawableState(deltaTime: Double) {
+    /*private func updateDrawableState(deltaTime: Double) {
         let events = updateQueue.sync {
             return gameManager.popEventQueue()
         }
         drawableManager.process(events: events, deltaTime: deltaTime)
         drawableGameState.perspective = playerBlob.perspective
-    }
+    }*/
     
     override open func createRenderer(for window: Window) -> Renderer {
         return SDL2OpenGL3NanoVGRenderer(for: window)

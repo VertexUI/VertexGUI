@@ -1,32 +1,17 @@
 import Foundation
 import CustomGraphicsMath
 
-public class Blob {
-    private static var nextId: UInt = 0
-    public internal(set) var id: UInt
+public protocol Blob {
+    var id: UInt { get }
 
-    public var type: BlobType {
-        fatalError("type not implemented.")
-    }
+    var type: BlobType { get }
 
-    public var creationTimestamp: TimeInterval
-    public var position: DVec2
+    var position: DVec2 { get set }
 
     /// Mass. In MassUnits.
-    public internal(set) var mass: Double
+    var mass: Double { get set }
 
-    public var radius: Double = 0
-    public internal(set) var consumed = false
+    var radius: Double { get set }
 
-    public var vertexCount: Int {
-        return Int(radius * 2)
-    }
-
-    public init(position: DVec2, mass: Double, timestamp: TimeInterval) {
-        self.id = Blob.nextId
-        Blob.nextId += 1
-        self.position = position
-        self.mass = mass
-        self.creationTimestamp = timestamp
-    }
+    var consumed: Bool { get set }
 }

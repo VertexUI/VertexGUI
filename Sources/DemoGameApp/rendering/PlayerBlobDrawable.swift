@@ -1,9 +1,9 @@
 import CustomGraphicsMath
 import Foundation
 
-public class PlayerBlobDrawable: BlobDrawable {
+public class PlayerBlobDrawable: BlobDrawable<PlayerBlob> {
     public var vertexCount: Int {
-        return max(10, Int(sqrt(radius)) * 2)
+        return max(10, Int(sqrt(blobState.radius)) * 2)
     }
     public var acceleration: DVec2 = .zero
 
@@ -17,19 +17,19 @@ public class PlayerBlobDrawable: BlobDrawable {
         for i in 0..<vertexCount {
             let angle = 2 * Double.pi / Double(vertexCount) * Double(i)
             let direction = DVec2(cos(angle), sin(angle))
-            let radialOffset = direction * radius
+            let radialOffset = direction * blobState.radius
 
             var accelerationWeight = acceleration.normalized().dot(direction) > 0 ? 1.0 : 0.0
             accelerationWeight *= acceleration.length / 50 // GameRule.maxAcceleration
             
-            let accelerationStretch = radius * 0.1
+            let accelerationStretch = blobState.radius * 0.1
             let accelerationOffset = acceleration.normalized() * accelerationStretch * accelerationWeight
 
-            let maxWobbleHeight = cos(cyclicalProgress * Double.pi * 2) * radius * 0.05
+            let maxWobbleHeight = cos(cyclicalProgress * Double.pi * 2) * blobState.radius * 0.05
             let wobblePeriodCount = floor(Double(vertexCount) * 0.5)
             var cyclicalOffset = direction * sin(angle * wobblePeriodCount + cyclicalProgress * Double.pi * 2) * maxWobbleHeight
 
-            let vertex = position + radialOffset + cyclicalOffset + accelerationOffset
+            let vertex = blobState.position + radialOffset + cyclicalOffset + accelerationOffset
             vertices.append(vertex)
 
             if vertex.x < min.x {

@@ -1,7 +1,9 @@
 public class DrawableGameStateManager {
+  /*  private var state: GameState
     private var drawableState: DrawableGameState
 
-    public init(drawableState: DrawableGameState) {
+    public init(state: GameState, drawableState: DrawableGameState) {
+        self.state = state
         self.drawableState = drawableState
     }
 
@@ -47,5 +49,5 @@ public class DrawableGameStateManager {
         if let blob = updatedBlob {
             blob.update(deltaTime: deltaTime)
         }
-    }
+    }*/
 }
