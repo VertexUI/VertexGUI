@@ -3,7 +3,7 @@ import Foundation
 
 public class FoodBlobDrawable: BlobDrawable {
     public var vertexCount: Int {
-        return Int(radius)
+        return max(10, Int(radius))
     }
 
     override public func updateVertices() {

@@ -5,78 +5,11 @@ import CustomGraphicsMath
 public class GameManager {
     private var state: GameState
     private var foodTimebuffer: Double = 0
+    private var ruleset: GameRuleset
     
-    public init(state: GameState) {
+    public init(state: GameState, ruleset: GameRuleset) {
         self.state = state
-    }
-
-    private func balanceFood(deltaTime: Double) {
-        var foodCount = 0
-        var playerBlobs = [PlayerBlob]()
-
-        for blob in state.blobs.values {
-            if blob is FoodBlob {
-                foodCount += 1
-            } else if let blob = blob as? PlayerBlob {
-                playerBlobs.append(blob)
-            }
-        }
-
-        let targetFoodCount = Int(state.areaBounds.area * state.rules.minFoodDensity)
-
-        let foodShortage = targetFoodCount - foodCount
-
-        if foodShortage > 0 {
-            foodTimebuffer += deltaTime
-
-            let generationCount = Int(foodTimebuffer * state.rules.foodGenerationRate)
-            
-            foodTimebuffer -= Double(generationCount) / state.rules.foodGenerationRate
-
-            for _ in 0..<generationCount {
-                var foodPosition: DVec2
-                var tries = 0
-                repeat {
-                    foodPosition = DVec2.random(in: state.areaBounds)
-                    tries += 1
-                } while tries < 20 && playerBlobs.contains { ($0.position - foodPosition).length < $0.radius }
-                
-                if tries < 20 {
-                    add(blob: FoodBlob(
-                        position: foodPosition,
-                        mass: 10,
-                        timestamp: Date.timeIntervalSinceReferenceDate))
-                }
-            }
-        }
-    }
-
-    private func removeConsumedBlobs() {
-        for (id, blob) in state.blobs {
-            if blob.consumed {
-                state.eventQueue.append(GameEvent.Remove(id: id))
-                state.blobs.removeValue(forKey: id)
-            }
-        }
-    }
-
-    /// Check whether the first passed blob consumes the second passed blob.
-    private func checkConsume(_ blob1: Blob, _ blob2: Blob) {
-        if blob1.consumed || blob2.consumed {
-            return
-        }
-        if
-            blob1.mass > blob2.mass,
-            (blob2.position - blob1.position).length - blob1.radius < blob2.radius / 2 {
-                blob2.consumed = true
-                blob1.mass += blob2.mass
-                state.eventQueue.append(GameEvent.Grow(id: blob1.id, radius: blob1.mass))
-                // TODO: implement other get consumed event
-        }
-    }
-
-    private func getAcceleration(mass: Double) -> Double {
-        return min(state.rules.maxAcceleration, 5000 / mass)
+        self.ruleset = ruleset
     }
 
     private func getFrictionDeceleration(mass: Double) -> Double {
@@ -91,9 +24,10 @@ public class GameManager {
             if let blob = blob as? PlayerBlob {
                 let previousAcceleration = blob.acceleration
 
-                var accelerationPotential = getAcceleration(mass: blob.mass)
-                
-                blob.acceleration = blob.accelerationDirection * blob.accelerationFactor * accelerationPotential
+                let maxAcceleration = ruleset.calcMaxAcceleration(blob.mass)
+                blob.maxAcceleration = maxAcceleration
+
+                blob.acceleration = blob.accelerationDirection * blob.accelerationFactor * blob.maxAcceleration
 
                 if blob.acceleration != previousAcceleration {
                     state.eventQueue.append(GameEvent.Accelerate(id: blob.id, acceleration: blob.acceleration))
@@ -120,31 +54,110 @@ public class GameManager {
                 if blob.position.y > state.areaBounds.max.y {
                     blob.position.y = state.areaBounds.max.y
                 }
+
+                for (_, otherBlob) in state.blobs {
+                    if otherBlob !== blob {
+                        checkConsume(blob, otherBlob)
+                    }
+                }
             }
 
             if previousPosition != blob.position {
                 state.eventQueue.append(GameEvent.Move(id: blob.id, position: blob.position))
             }
-            
-            for (_, otherBlob) in state.blobs {
-                if otherBlob !== blob {
-                    checkConsume(blob, otherBlob)
-                }
-            }
         }
-        removeConsumedBlobs()
         balanceFood(deltaTime: deltaTime)
     }
 
-    public func add(blob: Blob) {
+    public func createPlayerBlob() -> PlayerBlob {
+        let position = DVec2.random(in: state.areaBounds)
+        let blob = PlayerBlob(
+            position: position,
+            mass: ruleset.initialPlayerBlobMass,
+            timestamp: Date.timeIntervalSinceReferenceDate)
+        blob.radius = ruleset.calcRadius(blob.mass)
         state.blobs[blob.id] = blob
         state.eventQueue.append(GameEvent.Add(
             id: blob.id,
             type: blob.type,
             position: blob.position,
             radius: blob.radius))
+        return blob
     }
 
+    @discardableResult public func createFoodBlob(at position: DVec2) -> FoodBlob {
+        let blob = FoodBlob(
+            position: position,
+            mass: ruleset.foodBlobMass,
+            timestamp: Date.timeIntervalSinceReferenceDate)
+        blob.radius = ruleset.calcRadius(blob.mass)
+        state.blobs[blob.id] = blob
+        state.eventQueue.append(GameEvent.Add(
+            id: blob.id,
+            type: blob.type,
+            position: blob.position,
+            radius: blob.radius))
+        return blob
+    }
+
+    private func balanceFood(deltaTime: Double) {
+        var foodCount = 0
+        var playerBlobs = [PlayerBlob]()
+
+        for blob in state.blobs.values {
+            if blob is FoodBlob {
+                foodCount += 1
+            } else if let blob = blob as? PlayerBlob {
+                playerBlobs.append(blob)
+            }
+        }
+
+        let targetFoodCount = Int(state.areaBounds.area * ruleset.minFoodDensity)
+
+        let foodShortage = targetFoodCount - foodCount
+
+        if foodShortage > 0 {
+            foodTimebuffer += deltaTime
+
+            let generationCount = Int(foodTimebuffer * ruleset.foodGenerationRate)
+            
+            foodTimebuffer -= Double(generationCount) / ruleset.foodGenerationRate
+
+            for _ in 0..<generationCount {
+                var foodPosition: DVec2
+                var tries = 0
+                repeat {
+                    foodPosition = DVec2.random(in: state.areaBounds)
+                    tries += 1
+                } while tries < 20 && playerBlobs.contains { ($0.position - foodPosition).length < $0.radius }
+                
+                if tries < 20 {
+                    createFoodBlob(at: foodPosition)
+                }
+            }
+        }
+    }
+
+    /// Check whether the first passed blob consumes the second passed blob.
+    private func checkConsume(_ blob1: Blob, _ blob2: Blob) {
+        if blob1.consumed || blob2.consumed {
+            return
+        }
+        if
+            blob1.mass > blob2.mass,
+            (blob2.position - blob1.position).length - blob1.radius < blob2.radius / 2 {
+                blob2.consumed = true
+         
+                state.eventQueue.append(GameEvent.Remove(id: blob2.id))
+                state.blobs.removeValue(forKey: blob2.id)
+                
+                blob1.mass += blob2.mass
+                blob1.radius = ruleset.calcRadius(blob1.mass)
+                
+                state.eventQueue.append(GameEvent.Grow(id: blob1.id, radius: blob1.mass))
+        }
+    }
+ 
     public func popEventQueue() -> [GameEvent] {
         let queue = state.eventQueue 
         state.eventQueue = []

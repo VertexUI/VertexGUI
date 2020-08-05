@@ -3,7 +3,7 @@ import Foundation
 
 public class PlayerBlobDrawable: BlobDrawable {
     public var vertexCount: Int {
-        return Int(sqrt(radius)) * 2
+        return max(10, Int(sqrt(radius)) * 2)
     }
     public var acceleration: DVec2 = .zero
 

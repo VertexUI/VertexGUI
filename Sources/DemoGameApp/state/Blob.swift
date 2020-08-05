@@ -15,9 +15,7 @@ public class Blob {
     /// Mass. In MassUnits.
     public internal(set) var mass: Double
 
-    public var radius: Double {
-        mass
-    }
+    public var radius: Double = 0
     public internal(set) var consumed = false
 
     public var vertexCount: Int {
