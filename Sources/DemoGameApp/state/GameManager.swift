@@ -37,7 +37,7 @@ public class GameManager {
                 blob.acceleration = blob.accelerationDirection * blob.accelerationFactor * blob.maxAcceleration
 
                 if blob.acceleration != previousAcceleration {
-                    state.eventQueue.append(GameEvent.Accelerate(id: blob.id, acceleration: blob.acceleration))
+                    state.add(event: GameEvent.Accelerate(id: blob.id, acceleration: blob.acceleration))
                 }
 
                 blob.speed += blob.acceleration * deltaTime
@@ -70,7 +70,7 @@ public class GameManager {
             }
 
             if previousPosition != blob.position {
-                state.eventQueue.append(GameEvent.Move(id: blob.id, position: blob.position))
+                state.add(event: GameEvent.Move(id: blob.id, position: blob.position))
             }
         }
         balanceFood(deltaTime: deltaTime)
@@ -84,7 +84,7 @@ public class GameManager {
             mass: ruleset.initialPlayerBlobMass,
             radius: ruleset.calcRadius(ruleset.initialPlayerBlobMass))
         state.blobs[blob.id] = blob
-        state.eventQueue.append(GameEvent.Add(
+        state.add(event: GameEvent.Add(
             id: blob.id,
             type: blob.type,
             position: blob.position,
@@ -99,7 +99,7 @@ public class GameManager {
             mass: ruleset.foodBlobMass,
             radius: ruleset.calcRadius(ruleset.foodBlobMass))
         state.blobs[blob.id] = blob
-        state.eventQueue.append(GameEvent.Add(
+        state.add(event: GameEvent.Add(
             id: blob.id,
             type: blob.type,
             position: blob.position,
@@ -155,19 +155,13 @@ public class GameManager {
             (blob2.position - blob1.position).length - blob1.radius < blob2.radius / 2 {
                 blob2.consumed = true
          
-                state.eventQueue.append(GameEvent.Remove(id: blob2.id))
+                state.add(event: GameEvent.Remove(id: blob2.id))
                 state.blobs.removeValue(forKey: blob2.id)
                 
                 blob1.mass += blob2.mass
                 blob1.radius = ruleset.calcRadius(blob1.mass)
                 
-                state.eventQueue.append(GameEvent.Grow(id: blob1.id, radius: blob1.mass))
+                state.add(event: GameEvent.Grow(id: blob1.id, radius: blob1.mass))
         }
-    }
- 
-    public func popEventQueue() -> [GameEvent] {
-        let queue = state.eventQueue 
-        state.eventQueue = []
-        return queue
     }
 }

@@ -4,15 +4,30 @@ import CustomGraphicsMath
 
 public class GameRenderer {
     private let state: GameState
+    private let eventBuffer: GameEventBuffer
+    private let eventBufferId: UInt
     private var foodBlobDrawables: [UInt: FoodBlobDrawable] = [:]
     private var playerBlobDrawables: [UInt: PlayerBlobDrawable] = [:]
     
     public init(state: GameState) {
         self.state = state
+        eventBuffer = GameEventBuffer()
+        eventBufferId = state.register(buffer: eventBuffer)
+    }
+
+    deinit {
+        state.unregister(bufferId: eventBufferId)
     }
 
     public func updateRenderState(from perspective: GamePerspective, deltaTime: Double) {
-        // TODO: consumed blobs must be removed, subscribe to an event emitter --> GameState?
+        for event in eventBuffer {
+            if case let .Remove(id) = event {
+                foodBlobDrawables[id] = nil
+                playerBlobDrawables[id] = nil
+            }
+        }
+        eventBuffer.clear()
+
         for blob in state.blobs.values {
             if let blob = blob as? PlayerBlob {
                 if let drawable = playerBlobDrawables[blob.id] {
