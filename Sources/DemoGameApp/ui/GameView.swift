@@ -8,10 +8,12 @@ public class GameView: Widget {
     public var perspective: GamePerspective
     private let gameRenderer: GameRenderer
     private var previousRenderTimestamp: Double = Date.timeIntervalSinceReferenceDate
+    private var synchronize: (_ block: () -> ()) -> ()
     
-    public init(state: GameState, perspective: GamePerspective) {
+    public init(state: GameState, perspective: GamePerspective, synchronize: @escaping (_ block: () -> ()) -> ()) {
         self.perspective = perspective
         self.gameRenderer = GameRenderer(state: state)
+        self.synchronize = synchronize
     }
 
     override open func performLayout() {
@@ -24,7 +26,9 @@ public class GameView: Widget {
             let deltaTime = currentRenderTimestamp - previousRenderTimestamp
             previousRenderTimestamp = currentRenderTimestamp
             // TODO: retrieve delta time from RenderObject render function
-            gameRenderer.updateRenderState(from: perspective, deltaTime: deltaTime)
+            synchronize {
+                gameRenderer.updateRenderState(from: perspective, deltaTime: deltaTime)
+            }
             try gameRenderer.render(from: perspective, in: globalBounds, with: renderer)
         }
     }

@@ -12,7 +12,7 @@ public class DemoGameApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGW
     private let playerBlob: PlayerBlob
 
     private lazy var guiRoot: Root = buildGuiRoot()
-    private let gameView: GameView
+    private lazy var gameView: GameView = buildGameView()
 
     private let updateQueue = DispatchQueue(label: "swift-cross-platform-demo.game", qos: .background)
 
@@ -28,8 +28,6 @@ public class DemoGameApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGW
 
         //let gameRenderer = GameRenderer(state: gameState)
         
-        gameView = GameView(state: gameState, perspective: playerBlob.perspective)
-
         super.init(system: try! SDL2OpenGL3NanoVGSystem())
 
         let window = newWindow(guiRoot: guiRoot, background: Color(20, 20, 40, 255))
@@ -41,6 +39,17 @@ public class DemoGameApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGW
             let deltaTime = Double(deltaTimeMilliseconds) / 1000
             gameView.perspective = playerBlob.perspective
         }
+    }
+
+    private func buildGameView() -> GameView {
+        GameView(
+            state: gameState,
+            perspective: playerBlob.perspective,
+            synchronize: { [unowned self] block in
+                updateQueue.sync {
+                    block()
+                }
+        })
     }
 
     private func buildGuiRoot() -> Root {

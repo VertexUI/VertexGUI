@@ -16,6 +16,7 @@ public class GameRenderer {
         for blob in state.blobs.values {
             if let blob = blob as? PlayerBlob {
                 if let drawable = playerBlobDrawables[blob.id] {
+                    drawable.blobState = blob
                     drawable.update(deltaTime: deltaTime)
                 } else {
                     playerBlobDrawables[blob.id] = PlayerBlobDrawable(blobState: blob)
