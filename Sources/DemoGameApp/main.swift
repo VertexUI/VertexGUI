@@ -81,11 +81,11 @@ public class DemoGameApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGW
         
         let referenceLength = (gameView.bounds.size.width > gameView.bounds.size.height ?
             gameView.bounds.size.width : gameView.bounds.size.height) / 4
-        let accelerationFactor = min(1, distance.length / referenceLength)
+        let speedFactor = min(1, distance.length / referenceLength)
 
         updateQueue.async { [unowned self] in
             playerBlob.accelerationDirection = accelerationDirection
-            playerBlob.accelerationFactor = accelerationFactor
+            playerBlob.speedFactor = speedFactor
         }
     }
 

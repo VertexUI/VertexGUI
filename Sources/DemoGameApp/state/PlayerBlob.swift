@@ -31,14 +31,14 @@ public class PlayerBlob: Blob {
 
     public var accelerationDirection: DVec2 = DVec2(0, 0)
 
-    /// 0 - 1, Apply none of the possible acceleration or all of the possible acceleration.
-    public var accelerationFactor: Double = 0
-
     /// The maximum acceleration possible.
     public var maxAcceleration: Double = 0
 
     /// Realised acceleration along both axes. LengthUnits per TimeUnit².
     public var acceleration: DVec2 = .zero
+
+    /// 0 - 1, 0 go to none of the possible speed, 1 go to the full possible speed.
+    public var speedFactor: Double = 0
 
     /// LengthUnits per TimeUnit.
     public var speed: DVec2 = .zero

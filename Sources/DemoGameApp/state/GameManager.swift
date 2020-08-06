@@ -19,10 +19,6 @@ public class GameManager {
         self.ruleset = ruleset
     }
 
-    private func getFrictionDeceleration(mass: Double) -> Double {
-        return mass / 10
-    }
-
     /// - Parameter deltaTime: Time since last call to update, in TimeUnits.
     public func update(deltaTime: Double) {
         for var (id, blob) in state.blobs {
@@ -34,7 +30,7 @@ public class GameManager {
                 let maxAcceleration = ruleset.calcMaxAcceleration(blob.mass)
                 blob.maxAcceleration = maxAcceleration
 
-                blob.acceleration = blob.accelerationDirection * blob.accelerationFactor * blob.maxAcceleration
+                blob.acceleration = blob.accelerationDirection * blob.maxAcceleration
 
                 if blob.acceleration != previousAcceleration {
                     state.add(event: GameEvent.Accelerate(id: blob.id, acceleration: blob.acceleration))
@@ -42,8 +38,11 @@ public class GameManager {
 
                 blob.speed += blob.acceleration * deltaTime
 
-                let deceleration = getFrictionDeceleration(mass: blob.mass) * deltaTime
-                let targetSpeedMagnitude = max(0, blob.speed.length - deceleration)
+                let deceleration = ruleset.frictionDeceleration * deltaTime
+                var targetSpeedMagnitude = min(
+                    ruleset.calcMaxSpeed(blob.mass) * blob.speedFactor,
+                    max(0, blob.speed.length - deceleration))
+                // TODO: make slowing down also take time!
 
                 blob.speed = blob.speed.normalized() * targetSpeedMagnitude
 
@@ -51,15 +50,19 @@ public class GameManager {
 
                 if blob.position.x < state.areaBounds.min.x {
                     blob.position.x = state.areaBounds.min.x
+                    blob.speed.x = 0
                 }
                 if blob.position.y < state.areaBounds.min.y {
                     blob.position.y = state.areaBounds.min.y
+                    blob.speed.y = 0
                 }
                 if blob.position.x > state.areaBounds.max.x {
                     blob.position.x = state.areaBounds.max.x
+                    blob.speed.x = 0
                 }
                 if blob.position.y > state.areaBounds.max.y {
                     blob.position.y = state.areaBounds.max.y
+                    blob.speed.y = 0
                 }
 
                 for var (_, otherBlob) in state.blobs {

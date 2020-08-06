@@ -14,20 +14,20 @@ public struct GameRuleset {
     public var foodGenerationRate: Double = 100 / 1
 
     /// In LengthUnits per TimeUnit²
-    public var frictionDeceleration: Double = 2 / 1
+    public var frictionDeceleration: Double = 10 / 1
 
     /// - Returns: LengthUnits
     public var calcRadius = { (mass: Double) in
-        mass// TODO: grow slower when already big: sqrt(mass)
+        sqrt(mass / Double.pi) * 10
     }
 
     /// - Returns: LengthUnits per TimeUnits²
     public var calcMaxAcceleration = { (mass: Double) in 
-        max(20, 50 - 0.1 * mass)
+        max(150, 300 - 0.01 * mass)
     }
 
     /// - Returns: LengthUnits per TimeUnits
     public var calcMaxSpeed = { (mass: Double) in
-        min(200, 500 / mass)
+        max(200, 400 - 0.01 * mass)
     }
 }
