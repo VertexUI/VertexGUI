@@ -47,6 +47,8 @@ open class SDL2OpenGL3NanoVGWindow: Window {
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3)
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3)
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, Int32(SDL_GL_CONTEXT_PROFILE_CORE.rawValue))
+        SDL_GL_SetSwapInterval(1)
+
 
         sdlWindow = SDL_CreateWindow(
             "WOW A TITLE",

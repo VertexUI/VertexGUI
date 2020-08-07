@@ -8,12 +8,11 @@ import VisualAppBase
 open class SDL2OpenGL3NanoVGSystem: System {
     public static var windows = [Int: SDL2OpenGL3NanoVGWindow]()
     public static var isRunning = true
-    public var targetFps = 60
+    //public var targetFps = 60
     public var currentFps = 0
     public static let fpsBufferCount = 100
     public var fpsBuffer = [Int](repeating: 0, count: SDL2OpenGL3NanoVGSystem.fpsBufferCount) // history of fpsBufferCount fps values
     public var fpsBufferIndex = 0
-    public var averageFps = 0 // average fps of fpsBuffer
     var lastFrameTime = SDL_GetTicks()
     var totalTime: UInt32 = 0
     
@@ -148,28 +147,29 @@ open class SDL2OpenGL3NanoVGSystem: System {
 
     override open func mainLoop() throws {
         // TODO: maybe this wrapping function should be given as an argument? --> could be different for different systems/apps
-        DispatchQueue.main.async {
+        DispatchQueue.main.async { [unowned self] in
             do {
                 // increment ticker
-                let startTime = SDL_GetTicks()
-                let deltaTime = startTime - self.lastFrameTime
+                let currentTime = SDL_GetTicks()
+                let deltaTime = currentTime - self.lastFrameTime
                 self.currentFps = Int(1000 / deltaTime)
                 self.fpsBufferIndex += 1
                 self.fpsBufferIndex = self.fpsBufferIndex % SDL2OpenGL3NanoVGSystem.fpsBufferCount
                 self.fpsBuffer[self.fpsBufferIndex] = self.currentFps
                 self.calcAverageFps()
 
-                self.lastFrameTime = startTime
+                self.lastFrameTime = currentTime
                 self.totalTime += deltaTime
+
+                try self.processEvents()
 
                 try! self.onFrame.invokeHandlers(Int(deltaTime))
 
-                let frameDuration = SDL_GetTicks() - startTime
+                /*let frameDuration = SDL_GetTicks() - currentTime
                 if frameDuration < 1000 / UInt32(self.targetFps) {
                     SDL_Delay((1000 / UInt32(self.targetFps)) - frameDuration)
-                }
+                }*/
 
-                try self.processEvents()
                 if SDL2OpenGL3NanoVGSystem.isRunning {
                     try! self.mainLoop()
                 } 

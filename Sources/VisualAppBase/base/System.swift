@@ -5,6 +5,8 @@ open class System {
     public var nextCursorRequestId: UInt64 = 0
     public var onFrame = ThrowingEventHandlerManager<Int>()
 
+    public var averageFps = 0 // average FPS over a certain time, TODO: which time?
+
     public init() throws {
 
     }
