@@ -28,15 +28,17 @@ public class GameRenderer {
         }
         eventBuffer.clear()
 
-        for blob in state.blobs.values {
-            if let blob = blob as? PlayerBlob {
-                if let drawable = playerBlobDrawables[blob.id] {
-                    drawable.blobState = blob
-                    drawable.update(deltaTime: deltaTime)
-                } else {
-                    playerBlobDrawables[blob.id] = PlayerBlobDrawable(blobState: blob)
-                }
-            } else if let blob = blob as? FoodBlob {
+        for blob in state.playerBlobs.values {
+            if let drawable = playerBlobDrawables[blob.id] {
+                drawable.blobState = blob
+                drawable.update(deltaTime: deltaTime)
+            } else {
+                playerBlobDrawables[blob.id] = PlayerBlobDrawable(blobState: blob)
+            }
+        }
+
+        for chunk in state.chunksIn(area: perspective.visibleArea) {
+            for blob in chunk.blobs.values {
                 if foodBlobDrawables[blob.id] == nil {
                     foodBlobDrawables[blob.id] = FoodBlobDrawable(blobState: blob)
                 }

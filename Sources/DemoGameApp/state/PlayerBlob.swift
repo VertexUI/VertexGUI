@@ -12,6 +12,10 @@ public class PlayerBlob: Blob {
 
     public var radius: Double
 
+    public var bounds: DRect {
+        DRect(min: position - DVec2(radius, radius), max: position + DVec2(radius, radius))
+    }
+
     public var consumed: Bool = false
 
     /// Perpendicular distance to the sides of a square.

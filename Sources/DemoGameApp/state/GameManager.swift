@@ -21,51 +21,51 @@ public class GameManager {
 
     /// - Parameter deltaTime: Time since last call to update, in TimeUnits.
     public func update(deltaTime: Double) {
-        for var (id, blob) in state.blobs {
+        for var (id, blob) in state.playerBlobs {
             let previousPosition = blob.position
 
-            if var blob = blob as? PlayerBlob {
-                let previousAcceleration = blob.acceleration
+            let previousAcceleration = blob.acceleration
 
-                let maxAcceleration = ruleset.calcMaxAcceleration(blob.mass)
-                blob.maxAcceleration = maxAcceleration
+            let maxAcceleration = ruleset.calcMaxAcceleration(blob.mass)
+            blob.maxAcceleration = maxAcceleration
 
-                blob.acceleration = blob.accelerationDirection * blob.maxAcceleration
+            blob.acceleration = blob.accelerationDirection * blob.maxAcceleration
 
-                if blob.acceleration != previousAcceleration {
-                    state.record(event: GameEvent.Accelerate(id: blob.id, acceleration: blob.acceleration))
-                }
+            if blob.acceleration != previousAcceleration {
+                state.record(event: GameEvent.Accelerate(id: blob.id, acceleration: blob.acceleration))
+            }
 
-                blob.speed += blob.acceleration * deltaTime
+            blob.speed += blob.acceleration * deltaTime
 
-                let deceleration = ruleset.frictionDeceleration * deltaTime
-                var targetSpeedMagnitude = min(
-                    ruleset.calcMaxSpeed(blob.mass) * blob.speedFactor,
-                    max(0, blob.speed.length - deceleration))
-                // TODO: make slowing down also take time!
+            let deceleration = ruleset.frictionDeceleration * deltaTime
+            var targetSpeedMagnitude = min(
+                ruleset.calcMaxSpeed(blob.mass) * blob.speedFactor,
+                max(0, blob.speed.length - deceleration))
+            // TODO: make slowing down also take time!
 
-                blob.speed = blob.speed.normalized() * targetSpeedMagnitude
+            blob.speed = blob.speed.normalized() * targetSpeedMagnitude
 
-                blob.position += blob.speed * deltaTime
+            blob.position += blob.speed * deltaTime
 
-                if blob.position.x < state.areaBounds.min.x {
-                    blob.position.x = state.areaBounds.min.x
-                    blob.speed.x = 0
-                }
-                if blob.position.y < state.areaBounds.min.y {
-                    blob.position.y = state.areaBounds.min.y
-                    blob.speed.y = 0
-                }
-                if blob.position.x > state.areaBounds.max.x {
-                    blob.position.x = state.areaBounds.max.x
-                    blob.speed.x = 0
-                }
-                if blob.position.y > state.areaBounds.max.y {
-                    blob.position.y = state.areaBounds.max.y
-                    blob.speed.y = 0
-                }
+            if blob.position.x < state.areaBounds.min.x {
+                blob.position.x = state.areaBounds.min.x
+                blob.speed.x = 0
+            }
+            if blob.position.y < state.areaBounds.min.y {
+                blob.position.y = state.areaBounds.min.y
+                blob.speed.y = 0
+            }
+            if blob.position.x > state.areaBounds.max.x {
+                blob.position.x = state.areaBounds.max.x
+                blob.speed.x = 0
+            }
+            if blob.position.y > state.areaBounds.max.y {
+                blob.position.y = state.areaBounds.max.y
+                blob.speed.y = 0
+            }
 
-                for var (_, otherBlob) in state.blobs {
+            for chunk in state.chunksIn(area: blob.bounds) {
+                for var (_, otherBlob) in chunk.blobs {
                     if otherBlob.id != blob.id {
                         checkConsume(&blob, &otherBlob)
                     }
@@ -112,14 +112,10 @@ public class GameManager {
 
     private func balanceFood(deltaTime: Double) {
         var foodCount = 0
-        var playerBlobs = [PlayerBlob]()
+        //var playerBlobs = [PlayerBlob]()
 
-        for blob in state.blobs.values {
-            if blob is FoodBlob {
-                foodCount += 1
-            } else if let blob = blob as? PlayerBlob {
-                playerBlobs.append(blob)
-            }
+        for chunk in state.chunks {
+            foodCount += chunk.blobs.count
         }
 
         let targetFoodCount = Int(state.areaBounds.area * ruleset.minFoodDensity)
@@ -139,7 +135,7 @@ public class GameManager {
                 repeat {
                     foodPosition = DVec2.random(in: state.areaBounds)
                     tries += 1
-                } while tries < 20 && playerBlobs.contains { ($0.position - foodPosition).length < $0.radius }
+                } while tries < 20 && state.playerBlobs.values.contains { ($0.position - foodPosition).length < $0.radius }
                 
                 if tries < 20 {
                     createFoodBlob(at: foodPosition)
@@ -149,7 +145,7 @@ public class GameManager {
     }
 
     /// Check whether the first passed blob consumes the second passed blob.
-    private func checkConsume(_ blob1: inout PlayerBlob, _ blob2: inout Blob) {
+    private func checkConsume(_ blob1: inout PlayerBlob, _ blob2: inout FoodBlob) {
         if blob1.consumed || blob2.consumed {
             return
         }
@@ -159,7 +155,11 @@ public class GameManager {
                 blob2.consumed = true
          
                 state.record(event: GameEvent.Remove(id: blob2.id))
-                state.blobs.removeValue(forKey: blob2.id)
+                guard let chunk = state.chunkAt(position: blob2.position) else {
+                    preconditionFailure("No chunk found for blob: \(blob2)")
+                }
+                chunk.blobs.removeValue(forKey: blob2.id)
+                print("RMOVE BLOB??", blob2.id)
                 
                 blob1.mass += blob2.mass
                 blob1.radius = ruleset.calcRadius(blob1.mass)
