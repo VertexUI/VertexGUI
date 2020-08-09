@@ -64,7 +64,7 @@ public class GameManager {
                 blob.speed.y = 0
             }
 
-            for chunk in state.chunksIn(area: blob.bounds) {
+            for chunk in state.chunksContaining(area: blob.bounds) {
                 for var (_, otherBlob) in chunk.blobs {
                     if otherBlob.id != blob.id {
                         checkConsume(&blob, &otherBlob)
@@ -155,11 +155,10 @@ public class GameManager {
                 blob2.consumed = true
          
                 state.record(event: GameEvent.Remove(id: blob2.id))
-                guard let chunk = state.chunkAt(position: blob2.position) else {
+                guard let chunk = state.chunkAt(blob2.position) else {
                     preconditionFailure("No chunk found for blob: \(blob2)")
                 }
                 chunk.blobs.removeValue(forKey: blob2.id)
-                print("RMOVE BLOB??", blob2.id)
                 
                 blob1.mass += blob2.mass
                 blob1.radius = ruleset.calcRadius(blob1.mass)

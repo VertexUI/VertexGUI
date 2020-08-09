@@ -46,7 +46,7 @@ public class GameState {
     }
 
     public func add(blob: FoodBlob) {
-        guard let chunk = chunkAt(position: blob.position) else {
+        guard let chunk = chunkAt(blob.position) else {
             preconditionFailure("No chunk found that can accomodate blob \(blob)")
         }
         chunk.blobs[blob.id] = blob
@@ -58,7 +58,7 @@ public class GameState {
         // TODO: record event, also record added to which chunk maybe
     }
 
-    public func chunkAt(position: DVec2) -> GameChunk? {
+    public func chunkAt(_ position: DVec2) -> GameChunk? {
         let index = IVec2((position - areaBounds.min) / DVec2(GameChunk.size))
         for chunk in chunks {
             if chunk.index == index {
@@ -68,11 +68,13 @@ public class GameState {
         return nil
     }
 
-    public func chunksIn(area selectAreaBounds: DRect) -> [GameChunk] {
-        chunks.filter {
-            let minPosition = areaBounds.min + DVec2($0.index) * DVec2(GameChunk.size)
-            let maxPosition = areaBounds.min + DVec2($0.index) * DVec2(GameChunk.size) + DVec2(GameChunk.size)
-            return selectAreaBounds.contains(point: minPosition) || selectAreaBounds.contains(point: maxPosition)
-        }
+    public func chunksContaining(area selectAreaBounds: DRect) -> [GameChunk] {
+        let chunks: [GameChunk?] = [
+            chunkAt(selectAreaBounds.min),
+            chunkAt(selectAreaBounds.min + DVec2(selectAreaBounds.size.x, 0)),
+            chunkAt(selectAreaBounds.min + DVec2(0, selectAreaBounds.size.y)),
+            chunkAt(selectAreaBounds.max)
+        ]
+        return chunks.compactMap { $0 }
     }
 }

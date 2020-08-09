@@ -37,7 +37,7 @@ public class GameRenderer {
             }
         }
 
-        for chunk in state.chunksIn(area: perspective.visibleArea) {
+        for chunk in state.chunksContaining(area: perspective.visibleArea) {
             for blob in chunk.blobs.values {
                 if foodBlobDrawables[blob.id] == nil {
                     foodBlobDrawables[blob.id] = FoodBlobDrawable(blobState: blob)
