@@ -26,9 +26,12 @@ open class WidgetsApp<S: System, W: Window, R: Renderer>: VisualApp<S, W> {
         fatalError("createRenderer() not implemented.")
     }
 
-    @discardableResult public func newWindow(guiRoot: Root, background: Color) -> Window {
+    /// - Parameter guiRoot: is an autoclosure. This ensures, that the window
+    /// has already been created when the guiRoot is evaluated and e.g. the OpenGL context was created.
+    @discardableResult public func newWindow(guiRoot guiRootBuilder: @autoclosure () -> Root, background: Color) -> Window {
         let window = try! Window(background: background, size: DSize2(500, 500))
         let renderer = createRenderer(for: window)
+        let guiRoot = guiRootBuilder()
         guiRoot.context = WidgetContext(
             getTextBoundsSize: { self.getTextBoundsSize($0, $1, $2, renderer) },
             requestCursor: {

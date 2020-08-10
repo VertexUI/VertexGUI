@@ -29,7 +29,7 @@ public class PlayerBlobDrawable: BlobDrawable<PlayerBlob> {
             let wobblePeriodCount = floor(Double(vertexCount) * 0.5)
             var cyclicalOffset = direction * sin(angle * wobblePeriodCount + cyclicalProgress * Double.pi * 2) * maxWobbleHeight
 
-            let vertex = blobState.position + radialOffset + cyclicalOffset + accelerationOffset
+            let vertex = blobState.position + radialOffset + cyclicalOffset// + accelerationOffset
             vertices.append(vertex)
 
             if vertex.x < min.x {

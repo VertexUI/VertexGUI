@@ -263,7 +263,6 @@ open class SDL2OpenGL3NanoVGRenderer: Renderer {
     }
 
     open func circle(center: DPoint2, radius: Double) throws {
-        nvgBeginPath(window.nvg)
         nvgCircle(window.nvg, Float(center.x), Float(center.y), Float(radius))
     }
 
