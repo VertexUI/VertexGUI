@@ -126,6 +126,8 @@ public class GameRenderer {
         try renderer.scale(DVec2(1, -1))*/
         
         var foodCount = 0
+        // TODO: might need radius as instanced vertex attribute for each food
+        var foodRadius: GLMap.Float = 0
         var foodPositions: [GLMap.Float] = []
 
         for drawable in foodBlobDrawables.values {
@@ -140,6 +142,7 @@ public class GameRenderer {
             //try renderVertices(vertices: drawable.vertices, from: perspective, with: renderer)
             foodPositions.append(GLMap.Float(drawable.blobState.position.x))
             foodPositions.append(GLMap.Float(drawable.blobState.position.y))
+            foodRadius = GLMap.Float(drawable.blobState.radius)
             foodCount += 1
         }
 
@@ -152,6 +155,10 @@ public class GameRenderer {
             foodShaderProgram.uniformPerspectiveMaxLocation,
             GLMap.Float(perspective.visibleArea.max.x),
             GLMap.Float(perspective.visibleArea.max.y))
+        glUniform1f(
+            foodShaderProgram.uniformRadiusLocation,
+            foodRadius
+        )
         glUniform4f(
             foodShaderProgram.uniformColorLocation,
             foodColor.glR,
