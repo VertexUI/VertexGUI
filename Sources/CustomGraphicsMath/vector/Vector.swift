@@ -275,6 +275,7 @@ public struct AnyVector2<E: Numeric & Hashable>: Vector2 {
     }
 }
 public typealias DVec2 = AnyVector2<Double>
+public typealias FVec2 = AnyVector2<Float>
 public typealias IVec2 = AnyVector2<Int>
 
 public protocol Vector3: Vector {

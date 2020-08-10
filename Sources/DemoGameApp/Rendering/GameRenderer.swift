@@ -26,11 +26,11 @@ public class GameRenderer {
             vertices.append(cos(startVertexAngle))
             vertices.append(sin(startVertexAngle))
         }
-        print("VERTICES", vertices)
         return vertices
     }()
     private var foodPositionsVbo = GLMap.UInt()
 
+    private var playerShaderProgram = PlayerShaderProgram()
     private var playerVao = GLMap.UInt()
     private var playerVerticesVbo = GLMap.UInt()
 
@@ -38,7 +38,8 @@ public class GameRenderer {
         self.state = state
         eventBuffer = GameEventBuffer()
         eventBufferId = state.register(buffer: eventBuffer)
-        
+
+        // GL setup for food        
         try! foodShaderProgram.compile()
 
         glGenVertexArrays(1, &foodVao)
@@ -57,6 +58,21 @@ public class GameRenderer {
         glEnableVertexAttribArray(1)
         glVertexAttribPointer(1, 2, GLMap.FLOAT, false, GLMap.Size(MemoryLayout<GLMap.Float>.size * 2), nil)
         glVertexAttribDivisor(1, 1)
+
+        glBindVertexArray(0)
+        glBindBuffer(GLMap.ARRAY_BUFFER, 0)
+
+        // GL setup for player
+        try! playerShaderProgram.compile()
+
+        glGenVertexArrays(1, &playerVao)
+        glBindVertexArray(playerVao)
+
+        glGenBuffers(1, &playerVerticesVbo)
+        glBindBuffer(GLMap.ARRAY_BUFFER, playerVerticesVbo)
+
+        glEnableVertexAttribArray(0)
+        glVertexAttribPointer(0, 2, GLMap.FLOAT, false, GLMap.Size(MemoryLayout<GLMap.Float>.size * 2), nil)
 
         glBindVertexArray(0)
         glBindBuffer(GLMap.ARRAY_BUFFER, 0)
@@ -118,7 +134,7 @@ public class GameRenderer {
                 continue
             }
 
-            try renderVertices(vertices: drawable.vertices, from: perspective, with: renderer)
+            //try renderVertices(vertices: drawable.vertices, from: perspective, with: renderer)
             foodPositions.append(GLMap.Float(drawable.blobState.position.x))
             foodPositions.append(GLMap.Float(drawable.blobState.position.y))
             foodCount += 1
@@ -138,6 +154,9 @@ public class GameRenderer {
         glBufferData(GLMap.ARRAY_BUFFER, foodPositions.count * MemoryLayout<GLMap.Float>.size, foodPositions, GLMap.DYNAMIC_DRAW)
         glDrawArraysInstanced(GLMap.TRIANGLES, 0, GLMap.Size(foodVertices.count), GLMap.Size(foodCount))
 
+
+        var playerVertices: [GLMap.Float] = []
+
         for drawable in playerBlobDrawables.values {
             let paddedVisibleArea = DRect(
                 min: perspective.visibleArea.min - DVec2(drawable.blobState.radius, drawable.blobState.radius),
@@ -147,14 +166,36 @@ public class GameRenderer {
                 continue
             }
 
-            try renderVertices(vertices: drawable.vertices, from: perspective, with: renderer)
+            /*try renderVertices(vertices: drawable.vertices, from: perspective, with: renderer)
             try renderer.beginPath()
             try renderer.circle(center: drawable.blobState.position - perspective.center, radius: drawable.blobState.radius)
             try renderer.strokeColor(.Black)
             try renderer.strokeWidth(1)
-            try renderer.stroke()
-            print("RENDERED RICLE")
+            try renderer.stroke()*/
+
+            for i in 0..<drawable.vertices.count {
+                playerVertices.append(GLMap.Float(drawable.blobState.position.x))
+                playerVertices.append(GLMap.Float(drawable.blobState.position.y))
+                playerVertices.append(GLMap.Float(drawable.vertices[(i + 1) % drawable.vertices.count].x))
+                playerVertices.append(GLMap.Float(drawable.vertices[(i + 1) % drawable.vertices.count].y))
+                playerVertices.append(GLMap.Float(drawable.vertices[i].x))
+                playerVertices.append(GLMap.Float(drawable.vertices[i].y))
+            }
         }
+
+        playerShaderProgram.use()
+        glUniform2f(
+            foodShaderProgram.uniformPerspectiveMinLocation,
+            GLMap.Float(perspective.visibleArea.min.x),
+            GLMap.Float(perspective.visibleArea.min.y))
+        glUniform2f(
+            foodShaderProgram.uniformPerspectiveMaxLocation,
+            GLMap.Float(perspective.visibleArea.max.x),
+            GLMap.Float(perspective.visibleArea.max.y))
+        glBindVertexArray(playerVao)
+        glBindBuffer(GLMap.ARRAY_BUFFER, playerVerticesVbo)
+        glBufferData(GLMap.ARRAY_BUFFER, playerVertices.count * MemoryLayout<GLMap.Float>.size, playerVertices, GLMap.DYNAMIC_DRAW)
+        glDrawArrays(GLMap.TRIANGLES, 0, GLMap.Size(Double(playerVertices.count) / 2))
     }
 
     private func renderVertices(vertices: [DPoint2], from perspective: GamePerspective, with renderer: Renderer) throws {
