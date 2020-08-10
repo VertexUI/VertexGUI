@@ -7,9 +7,7 @@ import Foundation
 public class DemoGameApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGWindow, SDL2OpenGL3NanoVGRenderer> {
     private let gameManager: GameManager
     private let gameState: GameState
-    //private let drawableManager: DrawableGameStateManager
-    //private let drawableGameState: DrawableGameState
-    private let playerBlob: PlayerBlob
+    private var playerBlobId: UInt 
 
     private lazy var guiRoot: Root = buildGuiRoot()
     private lazy var gameView: GameView = buildGameView()
@@ -20,13 +18,8 @@ public class DemoGameApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGW
         gameState = GameState()
 
         gameManager = GameManager(state: gameState, ruleset: GameRuleset())
-        playerBlob = gameManager.createPlayerBlob()
-        
-        //drawableGameState = DrawableGameState()
 
-       // drawableManager = DrawableGameStateManager(drawableState: drawableGameState)
-
-        //let gameRenderer = GameRenderer(state: gameState)
+        playerBlobId = gameManager.createPlayerBlob()
         
         super.init(system: try! SDL2OpenGL3NanoVGSystem())
 
@@ -37,14 +30,14 @@ public class DemoGameApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGW
  
         _ = system.onFrame { [unowned self] deltaTimeMilliseconds in
             let deltaTime = Double(deltaTimeMilliseconds) / 1000
-            gameView.perspective = playerBlob.perspective
+            gameView.perspective = gameState.playerBlobs[playerBlobId]!.perspective
         }
     }
 
     private func buildGameView() -> GameView {
         GameView(
             state: gameState,
-            perspective: playerBlob.perspective,
+            perspective: gameState.playerBlobs[playerBlobId]!.perspective,
             synchronize: { [unowned self] block in
                 updateQueue.sync {
                     block()
@@ -84,8 +77,8 @@ public class DemoGameApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGW
         let speedFactor = min(1, distance.length / referenceLength)
 
         updateQueue.async { [unowned self] in
-            playerBlob.accelerationDirection = accelerationDirection
-            playerBlob.speedFactor = speedFactor
+            gameState.playerBlobs[playerBlobId]!.accelerationDirection = accelerationDirection
+            gameState.playerBlobs[playerBlobId]!.speedFactor = speedFactor
         }
     }
 

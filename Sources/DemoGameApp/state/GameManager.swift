@@ -75,11 +75,13 @@ public class GameManager {
             if previousPosition != blob.position {
                 state.record(event: GameEvent.Move(id: blob.id, position: blob.position))
             }
+
+            state.playerBlobs[id] = blob
         }
         balanceFood(deltaTime: deltaTime)
     }
 
-    public func createPlayerBlob() -> PlayerBlob {
+    public func createPlayerBlob() -> UInt {
         let position = DVec2.random(in: state.areaBounds)
         let blob = PlayerBlob(
             id: nextBlobId,
@@ -92,10 +94,10 @@ public class GameManager {
             type: blob.type,
             position: blob.position,
             radius: blob.radius))
-        return blob
+        return blob.id
     }
 
-    @discardableResult public func createFoodBlob(at position: DVec2) -> FoodBlob {
+    @discardableResult public func createFoodBlob(at position: DVec2) -> UInt {
         let blob = FoodBlob(
             id: nextBlobId,
             position: position,
@@ -107,7 +109,7 @@ public class GameManager {
             type: blob.type,
             position: blob.position,
             radius: blob.radius))
-        return blob
+        return blob.id
     }
 
     private func balanceFood(deltaTime: Double) {

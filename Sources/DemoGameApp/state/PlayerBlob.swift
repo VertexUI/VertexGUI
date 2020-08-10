@@ -1,6 +1,6 @@
 import CustomGraphicsMath
 
-public class PlayerBlob: Blob {
+public struct PlayerBlob: Blob {
     public var id: UInt
 
     public let type: BlobType = .Player

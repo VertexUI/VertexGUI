@@ -146,6 +146,7 @@ public class GameRenderer {
             foodCount += 1
         }
 
+        // TODO: display in correct width/height ratio
         foodShaderProgram.use()
         glUniform2f(
             foodShaderProgram.uniformPerspectiveMinLocation,
