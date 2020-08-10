@@ -30,7 +30,9 @@ public class DemoGameApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGW
  
         _ = system.onFrame { [unowned self] deltaTimeMilliseconds in
             let deltaTime = Double(deltaTimeMilliseconds) / 1000
-            gameView.perspective = gameState.playerBlobs[playerBlobId]!.perspective
+            updateQueue.sync {
+                gameView.perspective = gameState.playerBlobs[playerBlobId]!.perspective
+            }
         }
     }
 
