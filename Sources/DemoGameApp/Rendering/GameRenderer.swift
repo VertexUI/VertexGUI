@@ -10,14 +10,7 @@ public class GameRenderer {
     private var foodBlobDrawables: [UInt: FoodBlobDrawable] = [:]
     private var playerBlobDrawables: [UInt: PlayerBlobDrawable] = [:]
 
-    private var shaderProgram = ShaderProgram(
-        vertex: try! String(contentsOf: Bundle.module.path(forResource: "FoodBlobVertexShader", ofType: "glsl")!),
-        fragment: try! String(contentsOf: Bundle.module.path(forResource: "BlobFragmentShader", ofType: "glsl")!)
-    )
-
-    private var uniformPerspectiveMinLocation = GLMap.Int()
-    private var uniformPerspectiveMaxLocation = GLMap.Int()
-
+    private var foodShaderProgram = FoodShaderProgram()
     private var foodVao = GLMap.UInt()
     private var foodVerticesVbo = GLMap.UInt()
     private var foodVertices: [GLMap.Float] = {
@@ -38,14 +31,15 @@ public class GameRenderer {
     }()
     private var foodPositionsVbo = GLMap.UInt()
 
+    private var playerVao = GLMap.UInt()
+    private var playerVerticesVbo = GLMap.UInt()
+
     public init(state: GameState) {
         self.state = state
         eventBuffer = GameEventBuffer()
         eventBufferId = state.register(buffer: eventBuffer)
         
-        try! shaderProgram.compile()
-        uniformPerspectiveMinLocation = glGetUniformLocation(shaderProgram.id!, "perspectiveMin")
-        uniformPerspectiveMaxLocation = glGetUniformLocation(shaderProgram.id!, "perspectiveMax")
+        try! foodShaderProgram.compile()
 
         glGenVertexArrays(1, &foodVao)
         glBindVertexArray(foodVao)
@@ -130,13 +124,13 @@ public class GameRenderer {
             foodCount += 1
         }
 
-        shaderProgram.use()
+        foodShaderProgram.use()
         glUniform2f(
-            uniformPerspectiveMinLocation,
+            foodShaderProgram.uniformPerspectiveMinLocation,
             GLMap.Float(perspective.visibleArea.min.x),
             GLMap.Float(perspective.visibleArea.min.y))
         glUniform2f(
-            uniformPerspectiveMaxLocation,
+            foodShaderProgram.uniformPerspectiveMaxLocation,
             GLMap.Float(perspective.visibleArea.max.x),
             GLMap.Float(perspective.visibleArea.max.y))
         glBindVertexArray(foodVao)
