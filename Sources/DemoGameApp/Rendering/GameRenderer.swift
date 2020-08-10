@@ -1,6 +1,7 @@
 import Foundation
 import VisualAppBase
 import CustomGraphicsMath
+import GLGraphicsMath
 import GL
 
 public class GameRenderer {
@@ -11,6 +12,7 @@ public class GameRenderer {
     private var playerBlobDrawables: [UInt: PlayerBlobDrawable] = [:]
 
     private var foodShaderProgram = FoodShaderProgram()
+    private var foodColor = Color.Green
     private var foodVao = GLMap.UInt()
     private var foodVerticesVbo = GLMap.UInt()
     private var foodVertices: [GLMap.Float] = {
@@ -31,6 +33,7 @@ public class GameRenderer {
     private var foodPositionsVbo = GLMap.UInt()
 
     private var playerShaderProgram = PlayerShaderProgram()
+    private var playerColor = Color(180, 120, 255, 255)
     private var playerVao = GLMap.UInt()
     private var playerVerticesVbo = GLMap.UInt()
 
@@ -149,6 +152,13 @@ public class GameRenderer {
             foodShaderProgram.uniformPerspectiveMaxLocation,
             GLMap.Float(perspective.visibleArea.max.x),
             GLMap.Float(perspective.visibleArea.max.y))
+        glUniform4f(
+            foodShaderProgram.uniformColorLocation,
+            foodColor.glR,
+            foodColor.glG,
+            foodColor.glB,
+            foodColor.glA
+        )
         glBindVertexArray(foodVao)
         glBindBuffer(GLMap.ARRAY_BUFFER, foodPositionsVbo)
         glBufferData(GLMap.ARRAY_BUFFER, foodPositions.count * MemoryLayout<GLMap.Float>.size, foodPositions, GLMap.DYNAMIC_DRAW)
@@ -192,6 +202,13 @@ public class GameRenderer {
             foodShaderProgram.uniformPerspectiveMaxLocation,
             GLMap.Float(perspective.visibleArea.max.x),
             GLMap.Float(perspective.visibleArea.max.y))
+        glUniform4f(
+            playerShaderProgram.uniformColorLocation,
+            playerColor.glR,
+            playerColor.glG,
+            playerColor.glB,
+            playerColor.glA
+        )
         glBindVertexArray(playerVao)
         glBindBuffer(GLMap.ARRAY_BUFFER, playerVerticesVbo)
         glBufferData(GLMap.ARRAY_BUFFER, playerVertices.count * MemoryLayout<GLMap.Float>.size, playerVertices, GLMap.DYNAMIC_DRAW)

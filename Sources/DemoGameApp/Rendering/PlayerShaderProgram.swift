@@ -4,6 +4,7 @@ import GL
 public class PlayerShaderProgram: ShaderProgram {    
     public internal(set) var uniformPerspectiveMinLocation = GLMap.Int()
     public internal(set) var uniformPerspectiveMaxLocation = GLMap.Int()
+    public internal(set) var uniformColorLocation = GLMap.Int()
     
     public init() {
         super.init(
@@ -17,5 +18,6 @@ public class PlayerShaderProgram: ShaderProgram {
 
         uniformPerspectiveMinLocation = glGetUniformLocation(id!, "perspectiveMin")
         uniformPerspectiveMaxLocation = glGetUniformLocation(id!, "perspectiveMax")
+        uniformColorLocation = glGetUniformLocation(id!, "color")
     }
 }
