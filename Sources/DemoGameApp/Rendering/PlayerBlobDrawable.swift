@@ -49,7 +49,8 @@ public class PlayerBlobDrawable: BlobDrawable<PlayerBlob> {
     }
 
     public func updateVertices() {
-        let cyclicalProgress = abs((lifetime.truncatingRemainder(dividingBy: 3) / 3 - 0.5) * 2)
+        let linearProgress = lifetime.truncatingRemainder(dividingBy: 3) / 3
+        let cyclicalProgress = abs(linearProgress - 0.5) * 2 //abs((lifetime.truncatingRemainder(dividingBy: 3) / 3 - 0.5) * 2)
 
         var updatedVertices: [DVec2] = []
         var max = DPoint2(-.infinity, -.infinity)
@@ -63,7 +64,7 @@ public class PlayerBlobDrawable: BlobDrawable<PlayerBlob> {
             let restingOffset = direction * blobState.radius
 
             let wobbleDisplacement = wobbleConfigs.reduce(into: 0.0) {
-                let angleDisplacement = cyclicalProgress * Double.pi * 2
+                let angleDisplacement = linearProgress * Double.pi * 2
                 let displacedWobbleAngle = ($1.angle + angleDisplacement).truncatingRemainder(dividingBy: Double.pi * 2)
                 var angleDistance = abs(displacedWobbleAngle - vertexAngle).truncatingRemainder(dividingBy: Double.pi * 2) 
                 if angleDistance > Double.pi {
@@ -71,10 +72,11 @@ public class PlayerBlobDrawable: BlobDrawable<PlayerBlob> {
                 }
                 if angleDistance < Double.pi / 2 {
                     let angleProgress = angleDistance / Double.pi * 2
-                    $0 += cos(angleProgress * Double.pi / 2)
+                    let accelerationFactor = blobState.acceleration.normalized().dot(direction)
+                    $0 += cos(angleProgress * Double.pi / 2) * $1.ease(cyclicalProgress) * 4 * accelerationFactor // abs(cyclicalProgress - 0.5) * 2 * 4
+                    // TODO: improve, finish wobble animation
                 }
             }
-            //print("WOBBLE DISPLC", wobbleDisplacement)
 
             let targetWobbleOffset = restingOffset + direction * wobbleDisplacement * cyclicalProgress
 
