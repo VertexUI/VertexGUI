@@ -113,14 +113,23 @@ public class GameRenderer {
         }
     }
 
-    public func render(from perspective: GamePerspective, in screenArea: DRect, with renderer: Renderer) throws {      
-        let gameScreenFitScale: Double 
-        if screenArea.size.height > screenArea.size.width {
-            gameScreenFitScale = screenArea.size.height / perspective.visibleArea.size.height
+    public func render(from perspective: GamePerspective, renderArea: DRect, window: Window, renderer: Renderer) throws {      
+        let gameScreenFitScale: DVec2 
+        if renderArea.size.height > renderArea.size.width {
+            let targetRatio = perspective.visibleArea.size.width / perspective.visibleArea.size.height
+            let scaleX = targetRatio / (renderArea.size.width / renderArea.size.height)
+            gameScreenFitScale = DVec2(scaleX, 1)
         } else {
-            gameScreenFitScale = screenArea.size.width / perspective.visibleArea.size.width
+            let targetRatio = perspective.visibleArea.size.height / perspective.visibleArea.size.width
+            let scaleY = targetRatio / (renderArea.size.height / renderArea.size.width)
+            gameScreenFitScale = DVec2(1, scaleY)
         }
 
+        glViewport(
+            GLMap.Int(renderArea.min.x),
+            GLMap.Int(window.size.height - renderArea.max.y),
+            GLMap.Size(renderArea.size.width),
+            GLMap.Size(renderArea.size.height))
         /*try renderer.translate(screenArea.min)
         try renderer.translate(DVec2(screenArea.size / 2))
         try renderer.scale(DVec2(gameScreenFitScale, gameScreenFitScale))
@@ -157,6 +166,11 @@ public class GameRenderer {
             foodShaderProgram.uniformPerspectiveMaxLocation,
             GLMap.Float(perspective.visibleArea.max.x),
             GLMap.Float(perspective.visibleArea.max.y))
+        glUniform2f(
+            foodShaderProgram.uniformScalingLocation,
+            GLMap.Float(gameScreenFitScale.x),
+            GLMap.Float(gameScreenFitScale.y)
+        )
         glUniform1f(
             foodShaderProgram.uniformRadiusLocation,
             foodRadius
@@ -204,13 +218,18 @@ public class GameRenderer {
 
         playerShaderProgram.use()
         glUniform2f(
-            foodShaderProgram.uniformPerspectiveMinLocation,
+            playerShaderProgram.uniformPerspectiveMinLocation,
             GLMap.Float(perspective.visibleArea.min.x),
             GLMap.Float(perspective.visibleArea.min.y))
         glUniform2f(
-            foodShaderProgram.uniformPerspectiveMaxLocation,
+            playerShaderProgram.uniformPerspectiveMaxLocation,
             GLMap.Float(perspective.visibleArea.max.x),
             GLMap.Float(perspective.visibleArea.max.y))
+        glUniform2f(
+            playerShaderProgram.uniformScalingLocation,
+            GLMap.Float(gameScreenFitScale.x),
+            GLMap.Float(gameScreenFitScale.y)
+        )
         glUniform4f(
             playerShaderProgram.uniformColorLocation,
             playerColor.glR,
@@ -224,7 +243,7 @@ public class GameRenderer {
         glDrawArrays(GLMap.TRIANGLES, 0, GLMap.Size(Double(playerVertices.count) / 2))
     }
 
-    private func renderVertices(vertices: [DPoint2], from perspective: GamePerspective, with renderer: Renderer) throws {
+    /*private func renderVertices(vertices: [DPoint2], from perspective: GamePerspective, with renderer: Renderer) throws {
         if vertices.count > 0 {
 
             try renderer.beginPath()
@@ -243,5 +262,5 @@ public class GameRenderer {
             //try renderer.stroke()
             try renderer.fill()
         }
-    }
+    }*/
 }

@@ -4,6 +4,7 @@ import GL
 public class FoodShaderProgram: ShaderProgram {    
     public internal(set) var uniformPerspectiveMinLocation = GLMap.Int()
     public internal(set) var uniformPerspectiveMaxLocation = GLMap.Int()
+    public internal(set) var uniformScalingLocation = GLMap.Int()
     public internal(set) var uniformRadiusLocation = GLMap.Int()
     public internal(set) var uniformColorLocation = GLMap.Int()
     
@@ -19,6 +20,7 @@ public class FoodShaderProgram: ShaderProgram {
 
         uniformPerspectiveMinLocation = glGetUniformLocation(id!, "perspectiveMin")
         uniformPerspectiveMaxLocation = glGetUniformLocation(id!, "perspectiveMax")
+        uniformScalingLocation = glGetUniformLocation(id!, "scaling")
         uniformRadiusLocation = glGetUniformLocation(id!, "radius")
         uniformColorLocation = glGetUniformLocation(id!, "color")
     }

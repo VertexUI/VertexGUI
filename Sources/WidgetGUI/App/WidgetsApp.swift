@@ -33,6 +33,7 @@ open class WidgetsApp<S: System, W: Window, R: Renderer>: VisualApp<S, W> {
         let renderer = createRenderer(for: window)
         let guiRoot = guiRootBuilder()
         guiRoot.context = WidgetContext(
+            window: window,
             getTextBoundsSize: { self.getTextBoundsSize($0, $1, $2, renderer) },
             requestCursor: {
                 self.system.requestCursor($0)

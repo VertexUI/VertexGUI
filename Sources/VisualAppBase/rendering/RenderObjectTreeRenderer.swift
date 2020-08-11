@@ -440,7 +440,10 @@ public class RenderObjectTreeRenderer {
             }
             try backendRenderer.translate(DVec2.zero)
         case let currentRenderObject as RenderObject.Custom:
+            // TODO: this might be a dirty solution
+            try backendRenderer.endFrame()
             try currentRenderObject.render(backendRenderer)
+            try backendRenderer.beginFrame()
         case let currentRenderObject as RenderObject.Rect:
             try backendRenderer.beginPath()
             try backendRenderer.rect(currentRenderObject.rect)

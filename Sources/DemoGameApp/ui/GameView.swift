@@ -29,7 +29,7 @@ public class GameView: Widget {
             synchronize {
                 gameRenderer.updateRenderState(from: perspective, deltaTime: deltaTime)
             }
-            try gameRenderer.render(from: perspective, in: globalBounds, with: renderer)
+            try gameRenderer.render(from: perspective, renderArea: globalBounds, window: context!.window, renderer: renderer)
         }
     }
 }

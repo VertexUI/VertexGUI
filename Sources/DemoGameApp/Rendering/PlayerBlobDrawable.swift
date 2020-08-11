@@ -40,17 +40,9 @@ public class PlayerBlobDrawable: BlobDrawable<PlayerBlob> {
         self.vertices = vertices
     }
 
-    /*private func cubicBezier(_ a: Double, _ b: Double, _ c: Double, _ d: Double) -> (_ x: Double) -> Double {
-
-    }*/
-
-    private func ease(x: Double) -> Double {
-        x < 0.5 ? 4 * x * x * x : 1 - pow(-2 * x + 2, 3) / 2
-    }
-
     public func updateVertices() {
         let linearProgress = lifetime.truncatingRemainder(dividingBy: 3) / 3
-        let cyclicalProgress = abs(linearProgress - 0.5) * 2 //abs((lifetime.truncatingRemainder(dividingBy: 3) / 3 - 0.5) * 2)
+        let cyclicalProgress = abs(linearProgress - 0.5) * 2
 
         var updatedVertices: [DVec2] = []
         var max = DPoint2(-.infinity, -.infinity)
@@ -74,7 +66,7 @@ public class PlayerBlobDrawable: BlobDrawable<PlayerBlob> {
                     let angleProgress = angleDistance / Double.pi * 2
                     let accelerationFactor = blobState.acceleration.normalized().dot(direction)
                     $0 += cos(angleProgress * Double.pi / 2) * $1.ease(cyclicalProgress) * 4 * accelerationFactor // abs(cyclicalProgress - 0.5) * 2 * 4
-                    // TODO: improve, finish wobble animation
+                    // TODO: improve, finish wobble animation, maybe need afterwards smoothing algo
                 }
             }
 
