@@ -49,7 +49,7 @@ public class Text: Widget {
             style: .Normal
         ), transform: .None, color: .Black, wrap: true)
 
-    public var textConfigProvider: TextConfigProvider?
+    weak public var textConfigProvider: TextConfigProvider?
     public var config: PartialConfig?
 
     public var filledConfig: Config {
@@ -76,6 +76,9 @@ public class Text: Widget {
         self.text = text
         self.config = config
         super.init()
+        _ = onAnyParentChanged { [unowned self] _ in
+            textConfigProvider = parentOfType(TextConfigProvider.self)
+        }
     }
 
     override open func performLayout() {

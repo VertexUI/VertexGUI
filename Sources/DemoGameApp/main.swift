@@ -68,7 +68,7 @@ public class DemoGameApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGW
 
                 Alignable(horizontal: .End) {
                     Padding(all: 32) {
-                        PlayerStatsView()
+                        PlayerStatsView(blob: gameState.playerBlobs[playerBlobId]!)
                     }
                 }
             }
