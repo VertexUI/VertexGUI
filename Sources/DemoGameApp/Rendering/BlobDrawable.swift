@@ -8,15 +8,10 @@ public class BlobDrawable<BlobState: Blob>: Drawable {
         self.blobState = blobState
         super.init()
         self.bounds = DRect(center: blobState.position, size: DSize2.zero)
-        updateVertices()
+        generateVertices()
     }
 
-    public func update(deltaTime: Double) {
-        lifetime += deltaTime
-        updateVertices()
-    }
-
-    public func updateVertices() {
-        fatalError("updateVertices() not implemented.")
+    public func generateVertices() {
+        fatalError("generateVertices() not implemented.")
     }
 }

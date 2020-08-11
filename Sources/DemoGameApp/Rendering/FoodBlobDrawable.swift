@@ -6,7 +6,7 @@ public class FoodBlobDrawable: BlobDrawable<FoodBlob> {
         return max(10, Int(blobState.radius))
     }
 
-    override public func updateVertices() {
+    override public func generateVertices() {
         //let cyclicalProgress = lifetime.truncatingRemainder(dividingBy: 1)
 
         var vertices = [DPoint2]()

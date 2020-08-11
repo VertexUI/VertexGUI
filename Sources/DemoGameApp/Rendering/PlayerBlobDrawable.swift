@@ -2,35 +2,85 @@ import CustomGraphicsMath
 import Foundation
 
 public class PlayerBlobDrawable: BlobDrawable<PlayerBlob> {
-    public var vertexCount: Int {
-        return max(10, Int(sqrt(blobState.radius)) * 2)
+    private struct WobbleConfig {
+        public var angle: Double
+        public var ease: (_ x: Double) -> Double
     }
-    public var acceleration: DVec2 = .zero
 
-    override public func updateVertices() {
-        let cyclicalProgress = lifetime.truncatingRemainder(dividingBy: 1)
+    private var wobbleConfigs: [WobbleConfig] = [
+        WobbleConfig(angle: Double.pi, ease: { pow($0 * 2, 2) / 4 }),
+       // WobbleConfig(angle: Double.pi * 1.7, ease: { $0 }),
+       // WobbleConfig(angle: Double.pi * 0.2, ease: { $0 }),
+    ]
 
+    public var vertexCount: Int {
+        return max(60, Int(sqrt(blobState.radius)) * 2)
+    }
+
+    public func update(deltaTime: Double) {
+        lifetime += deltaTime
+        updateVertices()
+    }
+
+    override public func generateVertices() {
         var vertices = [DPoint2]()
-        var max = DPoint2(-.infinity, -.infinity)
-        var min = DPoint2(.infinity, .infinity)
 
         for i in 0..<vertexCount {
             let angle = 2 * Double.pi / Double(vertexCount) * Double(i)
             let direction = DVec2(cos(angle), sin(angle))
             let radialOffset = direction * blobState.radius
-
-            var accelerationWeight = acceleration.normalized().dot(direction) > 0 ? 1.0 : 0.0
-            accelerationWeight *= acceleration.length / 50 // GameRule.maxAcceleration
-            
-            let accelerationStretch = blobState.radius * 0.1
-            let accelerationOffset = acceleration.normalized() * accelerationStretch * accelerationWeight
-
-            let maxWobbleHeight = cos(cyclicalProgress * Double.pi * 2) * blobState.radius * 0.05
-            let wobblePeriodCount = floor(Double(vertexCount) * 0.5)
-            var cyclicalOffset = direction * sin(angle * wobblePeriodCount + cyclicalProgress * Double.pi * 2) * maxWobbleHeight
-
-            let vertex = blobState.position + radialOffset + cyclicalOffset// + accelerationOffset
+ 
+            let vertex = blobState.position + radialOffset
+ 
             vertices.append(vertex)
+        }
+
+        self.bounds = blobState.bounds
+
+        self.vertices = vertices
+    }
+
+    /*private func cubicBezier(_ a: Double, _ b: Double, _ c: Double, _ d: Double) -> (_ x: Double) -> Double {
+
+    }*/
+
+    private func ease(x: Double) -> Double {
+        x < 0.5 ? 4 * x * x * x : 1 - pow(-2 * x + 2, 3) / 2
+    }
+
+    public func updateVertices() {
+        let cyclicalProgress = abs((lifetime.truncatingRemainder(dividingBy: 3) / 3 - 0.5) * 2)
+
+        var updatedVertices: [DVec2] = []
+        var max = DPoint2(-.infinity, -.infinity)
+        var min = DPoint2(.infinity, .infinity)
+
+        for i in 0..<vertices.count {
+            let vertexAngle = 2 * Double.pi / Double(vertexCount) * Double(i)
+
+            let direction = DVec2(cos(vertexAngle), sin(vertexAngle))
+            
+            let restingOffset = direction * blobState.radius
+
+            let wobbleDisplacement = wobbleConfigs.reduce(into: 0.0) {
+                let angleDisplacement = cyclicalProgress * Double.pi * 2
+                let displacedWobbleAngle = ($1.angle + angleDisplacement).truncatingRemainder(dividingBy: Double.pi * 2)
+                var angleDistance = abs(displacedWobbleAngle - vertexAngle).truncatingRemainder(dividingBy: Double.pi * 2) 
+                if angleDistance > Double.pi {
+                    angleDistance = 2 * Double.pi - angleDistance
+                }
+                if angleDistance < Double.pi / 2 {
+                    let angleProgress = angleDistance / Double.pi * 2
+                    $0 += cos(angleProgress * Double.pi / 2)
+                }
+            }
+            //print("WOBBLE DISPLC", wobbleDisplacement)
+
+            let targetWobbleOffset = restingOffset + direction * wobbleDisplacement * cyclicalProgress
+
+            let vertex = blobState.position + targetWobbleOffset
+
+            updatedVertices.append(vertex)
 
             if vertex.x < min.x {
                 min.x = vertex.x
@@ -46,8 +96,7 @@ public class PlayerBlobDrawable: BlobDrawable<PlayerBlob> {
             }
         }
 
+        self.vertices = updatedVertices
         self.bounds = DRect(min: min, max: max)
-
-        self.vertices = vertices
     }
 }
