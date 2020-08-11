@@ -50,7 +50,7 @@ public class DemoGameApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGW
     private func buildGuiRoot() -> Root {
         Root(rootWidget: Column {
             ComputedSize {
-                Background(background: Color(40, 40, 80, 255)) {
+                Background(Color(40, 40, 80, 255)) {
                     Padding(all: 32) {
                         Text("An awesome game.", config: Text.PartialConfig(
                             fontConfig: PartialFontConfig(size: 24, weight: .Bold),
@@ -61,8 +61,16 @@ public class DemoGameApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGW
                 BoxConstraints(minSize: DSize2($0.maxSize.width, $0.minSize.height), maxSize: $0.maxSize)
             }
 
-            MouseArea(onMouseMove: { [unowned self] in handleGameMouseMove($0) }) {
-                gameView
+            Aligner {
+                MouseArea(onMouseMove: { [unowned self] in handleGameMouseMove($0) }) {
+                    gameView
+                }
+
+                Alignable(horizontal: .End) {
+                    Padding(all: 32) {
+                        PlayerStatsView()
+                    }
+                }
             }
         })
     }

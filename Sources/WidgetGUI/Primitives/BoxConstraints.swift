@@ -5,6 +5,7 @@ public struct BoxConstraints {
     public var minSize: DSize2
     public var maxSize: DSize2
 
+    // TODO: maybe add overflow property to indicate whether overflowing is allowed instead of using infinity in maxSize?
     public init(minSize: DSize2, maxSize: DSize2) {
         self.minSize = minSize
         self.maxSize = maxSize

@@ -19,7 +19,7 @@ open class TwoDWorldPage: SingleChildWidget {
     }
     
     override open func buildChild() -> Widget {
-        Background(background: Color(120, 160, 255, 255)) { [unowned self] in
+        Background( Color(120, 160, 255, 255)) { [unowned self] in
             Row {                
                 Column {
                     Padding(all: 20) {
@@ -76,7 +76,7 @@ open class TwoDWorldPage: SingleChildWidget {
                                                 }, onMouseEnter: { _ in
                                                     highlightedRaycast.value = raycast
                                                 }) {
-                                                    Background(background: .Red) {
+                                                    Background( .Red) {
                                                         Padding(all: 16) {
                                                             Row(spacing: 20, wrap: true) {
                                                                 

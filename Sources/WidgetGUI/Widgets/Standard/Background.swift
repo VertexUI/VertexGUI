@@ -6,7 +6,7 @@ open class Background: SingleChildWidget {
 
     private var inputChild: Widget
 
-    public init(background: Color, @WidgetBuilder child inputChildBuilder: () -> Widget) {
+    public init(_ background: Color, @WidgetBuilder child inputChildBuilder: () -> Widget) {
         self.background = background
         self.inputChild = inputChildBuilder()
         super.init()

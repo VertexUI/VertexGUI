@@ -25,7 +25,7 @@ public class DeveloperToolsView: SingleChildWidget, StatefulWidget {
 
     override open func buildChild() -> Widget {
         if let debuggingData = debuggingData {
-             return Background(background: .White) { [unowned self] in
+             return Background(.White) { [unowned self] in
                 Column { [unowned self] in
                     ScrollArea {
                         RenderObjectTreeView(debuggingData: debuggingData, selectedObjectPath: state.selectedObjectPath) {

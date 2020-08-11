@@ -1,21 +1,24 @@
-//
-
-//
-
 import Foundation
 
 /// Axis aligned rect in 2 coordinate space.
 public struct Rect<E: BinaryFloatingPoint>: Equatable, Hashable {
     public var min: AnyVector2<E>
-    public var max: AnyVector2<E>
-    public var size: AnySize2<E> {
+    public var max: AnyVector2<E> {
+        get {
+            min + AnyVector2<E>(size)
+        }
+        /*set {
+            size = AnySize2<E>(max - min)
+        }*/
+    }
+    public var size: AnySize2<E>/* {
         get {
             AnySize2(max - min)
         }
         set {
             max = min + AnyVector2(newValue)
         }
-    }
+    }*/
     public var center: AnyVector2<E> {
         min + AnyVector2(size) / 2
     }
@@ -26,12 +29,12 @@ public struct Rect<E: BinaryFloatingPoint>: Equatable, Hashable {
     // TODO: maybe implement as protocol as well and don't use AnyVector2<E> but Vector2 where Vector2.E == E?
     public init(min: AnyVector2<E>, size: AnySize2<E>) {
         self.min = min
-        self.max = min + AnyVector2(size)
+        self.size = size
     }
 
     public init(min: AnyVector2<E>, max: AnyVector2<E>/*, layout: VectorLayout2<AnyVector2<E>> = .bottomLeftToTopRight*/) {
         self.min = min
-        self.max = max
+        self.size = AnySize2(max - min)
     }
 
     public init(center: AnyVector2<E>, size: AnySize2<E>) {
