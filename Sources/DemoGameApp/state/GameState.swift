@@ -1,17 +1,5 @@
 import CustomGraphicsMath
 
-public class GameChunk {
-    public static let size = DSize2(100, 100)
-    
-    public let index: IVec2
-
-    public var blobs = [UInt: FoodBlob]()
-
-    public init(index: IVec2) {
-        self.index = index
-    }
-}
-
 public class GameState {
     public var chunks = [GameChunk]()
     public var playerBlobs = [UInt: PlayerBlob]()
@@ -68,13 +56,17 @@ public class GameState {
         return nil
     }
 
-    public func chunksContaining(area selectAreaBounds: DRect) -> [GameChunk] {
-        let chunks: [GameChunk?] = [
-            chunkAt(selectAreaBounds.min),
-            chunkAt(selectAreaBounds.min + DVec2(selectAreaBounds.size.x, 0)),
-            chunkAt(selectAreaBounds.min + DVec2(0, selectAreaBounds.size.y)),
-            chunkAt(selectAreaBounds.max)
-        ]
-        return chunks.compactMap { $0 }
+    public func findChunks(intersecting selectedAreaBounds: DRect) -> [GameChunk] {
+        var result: [GameChunk] = []
+        for chunk in chunks {
+            let min = areaBounds.min + DVec2(GameChunk.size) * DVec2(chunk.index)
+            let max = areaBounds.min + DVec2(GameChunk.size) * DVec2(chunk.index) + DVec2(GameChunk.size)
+            let chunkBounds = DRect(min: min, max: max)
+            if selectedAreaBounds.contains(point: min) || selectedAreaBounds.contains(point: max) ||
+                chunkBounds.contains(point: selectedAreaBounds.min) || chunkBounds.contains(point: selectedAreaBounds.max) {
+                    result.append(chunk)
+                }
+        }
+        return result
     }
 }

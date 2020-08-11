@@ -64,7 +64,7 @@ public class GameManager {
                 blob.speed.y = 0
             }
 
-            for chunk in state.chunksContaining(area: blob.bounds) {
+            for chunk in state.findChunks(intersecting: blob.bounds) {
                 for var (_, otherBlob) in chunk.blobs {
                     if otherBlob.id != blob.id {
                         checkConsume(&blob, &otherBlob)
@@ -75,7 +75,7 @@ public class GameManager {
             if previousPosition != blob.position {
                 state.record(event: GameEvent.Move(id: blob.id, position: blob.position))
             }
-
+ 
             state.playerBlobs[id] = blob
         }
         balanceFood(deltaTime: deltaTime)
@@ -114,7 +114,6 @@ public class GameManager {
 
     private func balanceFood(deltaTime: Double) {
         var foodCount = 0
-        //var playerBlobs = [PlayerBlob]()
 
         for chunk in state.chunks {
             foodCount += chunk.blobs.count

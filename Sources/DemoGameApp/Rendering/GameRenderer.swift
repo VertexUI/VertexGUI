@@ -103,7 +103,8 @@ public class GameRenderer {
             }
         }
 
-        for chunk in state.chunksContaining(area: perspective.visibleArea) {
+        //print("UPDATE RENDER STATE", state.findChunks(intersecting: perspective.visibleArea).count)
+        for chunk in state.findChunks(intersecting: perspective.visibleArea) {
             for blob in chunk.blobs.values {
                 if foodBlobDrawables[blob.id] == nil {
                     foodBlobDrawables[blob.id] = FoodBlobDrawable(blobState: blob)
