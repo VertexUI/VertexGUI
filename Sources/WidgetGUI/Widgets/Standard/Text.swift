@@ -112,8 +112,6 @@ public class Text: Widget {
             preferredSize = context!.getTextBoundsSize(filledConfig.transform.apply(to: text), fontConfig: filledConfig.fontConfig)
         }
         bounds.size = constraints!.constrain(preferredSize)
-
-        print("PERFORM TEXT LAYOUT", text, filledConfig.wrap, constraints!.maxSize)
     }
 
     override public func renderContent() -> RenderObject? {

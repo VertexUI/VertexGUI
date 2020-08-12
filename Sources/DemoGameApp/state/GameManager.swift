@@ -39,7 +39,7 @@ public class GameManager {
 
             let deceleration = ruleset.frictionDeceleration * deltaTime
             var targetSpeedMagnitude = min(
-                ruleset.calcMaxSpeed(blob.mass) * blob.speedFactor,
+                ruleset.calcMaxSpeed(blob.mass) * blob.speedLimit,
                 max(0, blob.speed.length - deceleration))
             // TODO: make slowing down also take time!
 

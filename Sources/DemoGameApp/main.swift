@@ -74,8 +74,14 @@ public class DemoGameApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGW
                 }
 
                 Alignable(horizontal: .End) {
-                    Padding(all: 32) {
-                        PlayerStatsView(blob: playerBlobObservable)
+                    ComputedSize {
+                        Padding(all: 32) {
+                            PlayerStatsView(blob: playerBlobObservable)
+                        }
+                    } calculate: {
+                        BoxConstraints(
+                            minSize: DSize2(500, $0.minSize.height),
+                            maxSize: DSize2(500, $0.maxSize.height))
                     }
                 }
             }
@@ -91,11 +97,11 @@ public class DemoGameApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGW
         
         let referenceLength = (gameView.bounds.size.width > gameView.bounds.size.height ?
             gameView.bounds.size.width : gameView.bounds.size.height) / 4
-        let speedFactor = min(1, distance.length / referenceLength)
+        let speedLimit = min(1, distance.length / referenceLength)
 
         updateQueue.async { [unowned self] in
             gameState.playerBlobs[playerBlobId]!.accelerationDirection = accelerationDirection
-            gameState.playerBlobs[playerBlobId]!.speedFactor = speedFactor
+            gameState.playerBlobs[playerBlobId]!.speedLimit = speedLimit
         }
     }
 

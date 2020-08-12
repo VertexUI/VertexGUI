@@ -42,7 +42,7 @@ public struct PlayerBlob: Blob {
     public var acceleration: DVec2 = .zero
 
     /// 0 - 1, 0 go to none of the possible speed, 1 go to the full possible speed.
-    public var speedFactor: Double = 0
+    public var speedLimit: Double = 0
 
     /// LengthUnits per TimeUnit.
     public var speed: DVec2 = .zero

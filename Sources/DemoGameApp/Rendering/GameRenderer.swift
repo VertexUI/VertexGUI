@@ -17,7 +17,7 @@ public class GameRenderer {
     private var foodVerticesVbo = GLMap.UInt()
     private var foodVertices: [GLMap.Float] = {
         var vertices = [GLMap.Float]()
-        let triangleCount = 100
+        let triangleCount = 10 
         for i in 0..<triangleCount {
             vertices.append(0)
             vertices.append(0)
