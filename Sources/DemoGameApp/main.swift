@@ -75,8 +75,12 @@ public class DemoGameApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGW
 
                 Alignable(horizontal: .End) {
                     ComputedSize {
-                        Padding(all: 32) {
-                            PlayerStatsView(blob: playerBlobObservable)
+                        Column {
+                            TextField()
+                            
+                            Padding(all: 32) {
+                                PlayerStatsView(blob: playerBlobObservable)
+                            }
                         }
                     } calculate: {
                         BoxConstraints(

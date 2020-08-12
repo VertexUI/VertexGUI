@@ -60,6 +60,9 @@ open class Widget: Bounded, Parent, Child {
         }
     }
 
+    public var focusable  = false
+    public var focused = false
+
     public var mounted = false
     // TODO: maybe something better
     public var layoutable: Bool {
