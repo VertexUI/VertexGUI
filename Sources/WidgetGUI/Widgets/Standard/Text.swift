@@ -81,6 +81,29 @@ public class Text: Widget {
         }
     }
 
+    public convenience init(
+        _ text: String,
+        fontFamily: FontFamily? = nil,
+        fontSize: Double? = nil,
+        fontWeight: FontWeight? = nil,
+        fontStyle: FontStyle? = nil,
+        transform: TextTransform? = nil,
+        color: Color? = nil,
+        wrap: Bool? = nil
+        ) {
+            self.init(text, config: PartialConfig(
+                fontConfig: PartialFontConfig(
+                    family: fontFamily,
+                    size: fontSize,
+                    weight: fontWeight,
+                    style: fontStyle
+                ),
+                transform: transform,
+                color: color,
+                wrap: wrap
+            ))
+    }
+
     override open func performLayout() {
         // TODO: check whether to have wrap in config, or a property of Text and whether to pass maxWidth extra or put it into textconfig and whether to always pass it
         var preferredSize = DSize2.zero

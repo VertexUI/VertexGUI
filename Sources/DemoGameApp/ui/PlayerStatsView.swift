@@ -14,12 +14,10 @@ public class PlayerStatsView: SingleChildWidget {
     }
 
     override open func buildChild() -> Widget {
-        Background(Color(0, 0, 0, 140)) {
-            Padding(all: 16) {
+        Background(Color(0, 0, 0, 200)) {
+            Padding(all: 32) {
                 // TODO: make Text init more convenient (less nesting of config objects)
-                TextConfigProvider(config: Text.PartialConfig(
-                    color: .White
-                )) {
+                TextConfigProvider(fontSize: 20, color: .White) {
                     Column(spacing: 32) {
                         Text(
                             "Stats",
@@ -27,6 +25,12 @@ public class PlayerStatsView: SingleChildWidget {
                                 fontConfig: PartialFontConfig(size: 24, weight: .Bold), color: .White))
 
                         Text("Mass: \(blob.mass)")
+
+                        Text("Acceleration: \(blob.acceleration)")
+
+                        Text("Speed: \(blob.speed)")
+
+
                     }
                 }
             }
