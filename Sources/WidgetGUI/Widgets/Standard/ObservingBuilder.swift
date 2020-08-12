@@ -14,6 +14,10 @@ public class ObservingBuilder: SingleChildWidget {
         }
     }
 
+    public convenience init(_ observables: AnyObservable..., @WidgetBuilder child childBuilder: @escaping () -> Widget) {
+        self.init(observables, child: childBuilder)
+    }
+
     override open func buildChild() -> Widget {
         childBuilder()
     }

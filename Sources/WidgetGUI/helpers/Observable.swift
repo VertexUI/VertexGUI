@@ -1,5 +1,6 @@
 import VisualAppBase
 
+// TODO: maybe have Observable as base protocol with onChanged and then implement things like ObservableValue, ObservableArray on top of that
 public class Observable<Value> {
     private var _value: Value
     public var value: Value {
@@ -9,6 +10,7 @@ public class Observable<Value> {
 
         set {
             _value = newValue
+            // TODO: maybe implement check whether value really has changed (for comparable things)
             onChanged.invokeHandlers(_value)
         }
     }
