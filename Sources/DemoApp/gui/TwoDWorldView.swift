@@ -119,7 +119,7 @@ open class TwoDWorldView: Widget, GUIMouseEventConsumer, StatefulWidget {
                     let fillColor = ((yIndex % 2 == 0 ? 1 : 0) + xIndex) % 2 == 0 ? Color(240, 240, 240, 255) : Color.White
                     try renderer.beginPath()
                     try renderer.fillColor(fillColor)
-                    try renderer.rect(tileRect)
+                    try renderer.rectangle(tileRect)
                     try renderer.fill()
                 }
             }
@@ -137,13 +137,13 @@ open class TwoDWorldView: Widget, GUIMouseEventConsumer, StatefulWidget {
                         let fillColor = Color.Blue.adjusted(alpha: 50)
                         try renderer.beginPath()
                         try renderer.fillColor(fillColor)
-                        try renderer.rect(tileRect)
+                        try renderer.rectangle(tileRect)
                         try renderer.fill()
                     case .Hit(let tileIndex, let edge):
                         let tileRect = self.getTileRect(index: tileIndex)
                         try renderer.beginPath()
                         try renderer.fillColor(Color(255, 0, 0, 255))
-                        try renderer.rect(tileRect)
+                        try renderer.rectangle(tileRect)
                         try renderer.fill()
 
                         let scale = DVec2(DSize2(self.bounds.size) / DSize2(self.world.size))

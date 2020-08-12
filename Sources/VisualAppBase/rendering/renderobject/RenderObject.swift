@@ -10,7 +10,7 @@ open class RenderObject: CustomDebugStringConvertible, TreeNode {
     public typealias CacheSplit = VisualAppBase.CacheSplitRenderObject
     public typealias RenderStyle = VisualAppBase.RenderStyleRenderObject
     public typealias Translation = VisualAppBase.TranslationRenderObject
-    public typealias Rect = VisualAppBase.RectRenderObject
+    public typealias Rectangle = VisualAppBase.RectangleRenderObject
     public typealias LineSegment = VisualAppBase.LineSegmentRenderObject
     public typealias Custom = VisualAppBase.CustomRenderObject
     public typealias Text = VisualAppBase.TextRenderObject
@@ -300,15 +300,16 @@ open class CacheSplitRenderObject: SubTreeRenderObject {
     }
 }
 
-open class RectRenderObject: RenderObject {
+open class RectangleRenderObject: RenderObject {
     public var rect: DRect
+    public var cornerRadii: CornerRadii?
 
     override open var hasTimedRenderValue: Bool {
         return false
     }
     
     override open var debugDescription: String {
-        "RectRenderObject"
+        "RectangleRenderObject"
     }
     
     override open var individualHash: Int {
@@ -317,8 +318,9 @@ open class RectRenderObject: RenderObject {
         return hasher.finalize()
     }
     
-    public init(_ rect: DRect) {
+    public init(_ rect: DRect, cornerRadii: CornerRadii? = nil) {
         self.rect = rect
+        self.cornerRadii = cornerRadii
     }
 }
 

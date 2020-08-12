@@ -329,32 +329,32 @@ public class RenderObjectTreeRenderer {
                 /*if var group = renderSequence[i] as? CachableRenderGroup {
                     if group.cache == nil {
                         if var cache = availableCaches.popLast() {
-                            try backendRenderer.resizeVirtualScreen(&cache, DSize2(bounds.min + DVec2(bounds.size)))
+                            backendRenderer.resizeVirtualScreen(&cache, DSize2(bounds.min + DVec2(bounds.size)))
                             group.cache = cache
                             print("Reused render cache.", "Old caches available:", availableCaches.count)
                         } else {
-                            group.cache = try backendRenderer.makeVirtualScreen(size: DSize2(bounds.min + DVec2(bounds.size)))
+                            group.cache = backendRenderer.makeVirtualScreen(size: DSize2(bounds.min + DVec2(bounds.size)))
                         }
                         group.cacheInvalidated = true
                     }
                     if group.cacheInvalidated  {
-                        try backendRenderer.pushVirtualScreen(group.cache!)
-                        try backendRenderer.beginFrame()
-                        try backendRenderer.clear(Color(0, 0, 0, 0))
+                        backendRenderer.pushVirtualScreen(group.cache!)
+                        backendRenderer.beginFrame()
+                        backendRenderer.clear(Color(0, 0, 0, 0))
                         try render(range: range, with: backendRenderer)
-                        try backendRenderer.endFrame()
-                        try backendRenderer.popVirtualScreen()
+                        backendRenderer.endFrame()
+                        backendRenderer.popVirtualScreen()
                         group.cacheInvalidated = false
                         renderSequence[i] = group
                     }
-                    try backendRenderer.beginFrame()
+                    backendRenderer.beginFrame()
                     // TODO: if multiple cached things follow each other, draw them in one step
-                    try backendRenderer.drawVirtualScreens([group.cache!], at: [DVec2(0, 0)])
-                    try backendRenderer.endFrame()
+                    backendRenderer.drawVirtualScreens([group.cache!], at: [DVec2(0, 0)])
+                    backendRenderer.endFrame()
                 } else {*/
-                    try backendRenderer.beginFrame()
+                    backendRenderer.beginFrame()
                     try render(range: range, with: backendRenderer)
-                    try backendRenderer.endFrame()
+                    backendRenderer.endFrame()
                // }
             }
         }
@@ -412,53 +412,57 @@ public class RenderObjectTreeRenderer {
             var performFill = false
             var performStroke = false
             if let fillColor = currentRenderObject.fillColor {
-                try backendRenderer.fillColor(fillColor.getValue(at: timestamp))
+                backendRenderer.fillColor(fillColor.getValue(at: timestamp))
                 performFill = true
             } else {
-                try backendRenderer.fillColor(.Transparent)
+                backendRenderer.fillColor(.Transparent)
             }
             if let strokeWidth = currentRenderObject.strokeWidth,
                 let strokeColor = currentRenderObject.strokeColor {
-                try backendRenderer.strokeWidth(strokeWidth)
-                try backendRenderer.strokeColor(strokeColor.getValue(at: timestamp))
+                backendRenderer.strokeWidth(strokeWidth)
+                backendRenderer.strokeColor(strokeColor.getValue(at: timestamp))
                 performStroke = true
             } else {
-                try backendRenderer.strokeWidth(0)
-                try backendRenderer.strokeColor(.Transparent)
+                backendRenderer.strokeWidth(0)
+                backendRenderer.strokeColor(.Transparent)
             }
             for i in 0..<nextPaths.count {
                 try render(object: nextRenderObjects[i], at: nextPaths[i], in: range, with: backendRenderer)
             }
-            try backendRenderer.fillColor(.Transparent)
-            try backendRenderer.strokeWidth(0)
-            try backendRenderer.strokeColor(.Transparent)
+            backendRenderer.fillColor(.Transparent)
+            backendRenderer.strokeWidth(0)
+            backendRenderer.strokeColor(.Transparent)
             // TODO: after render, reset style to style that was present before
         case let currentRenderObject as RenderObject.Translation:
-            try backendRenderer.translate(currentRenderObject.translation)
+            backendRenderer.translate(currentRenderObject.translation)
             for i in 0..<nextPaths.count {
                 try render(object: nextRenderObjects[i], at: nextPaths[i], in: range, with: backendRenderer)
             }
-            try backendRenderer.translate(DVec2.zero)
+            backendRenderer.translate(DVec2.zero)
         case let currentRenderObject as RenderObject.Custom:
             // TODO: this might be a dirty solution
-            try backendRenderer.endFrame()
+            backendRenderer.endFrame()
             try currentRenderObject.render(backendRenderer)
-            try backendRenderer.beginFrame()
-        case let currentRenderObject as RenderObject.Rect:
-            try backendRenderer.beginPath()
-            try backendRenderer.rect(currentRenderObject.rect)
-            try backendRenderer.fill()
-            try backendRenderer.stroke()
+            backendRenderer.beginFrame()
+        case let currentRenderObject as RenderObject.Rectangle:
+            backendRenderer.beginPath()
+            if let cornerRadii = currentRenderObject.cornerRadii {
+                backendRenderer.roundedRectangle(currentRenderObject.rect, cornerRadii: cornerRadii)
+            } else {
+                backendRenderer.rectangle(currentRenderObject.rect)
+            }
+            backendRenderer.fill()
+            backendRenderer.stroke()
         case let currentRenderObject as RenderObject.LineSegment:
-            try backendRenderer.beginPath()
-            try backendRenderer.lineSegment(from: currentRenderObject.start, to: currentRenderObject.end)
-            try backendRenderer.fill()
-            try backendRenderer.stroke()
+            backendRenderer.beginPath()
+            backendRenderer.lineSegment(from: currentRenderObject.start, to: currentRenderObject.end)
+            backendRenderer.fill()
+            backendRenderer.stroke()
         case let currentRenderObject as RenderObject.Text:
             if currentRenderObject.wrap {
-                try backendRenderer.multilineText(currentRenderObject.text, fontConfig: currentRenderObject.fontConfig, color: currentRenderObject.color,  topLeft: currentRenderObject.topLeft, maxWidth: currentRenderObject.maxWidth ?? 0)
+                backendRenderer.multilineText(currentRenderObject.text, fontConfig: currentRenderObject.fontConfig, color: currentRenderObject.color,  topLeft: currentRenderObject.topLeft, maxWidth: currentRenderObject.maxWidth ?? 0)
             } else {
-                try backendRenderer.text(currentRenderObject.text, fontConfig: currentRenderObject.fontConfig, color: currentRenderObject.color, topLeft: currentRenderObject.topLeft)
+                backendRenderer.text(currentRenderObject.text, fontConfig: currentRenderObject.fontConfig, color: currentRenderObject.color, topLeft: currentRenderObject.topLeft)
             }
         default:
             print("Could not render RenderObject, implementation missing for:", currentRenderObject)

@@ -10,7 +10,7 @@ import CustomGraphicsMath
 public protocol VirtualScreen {
     var size: DSize2 { get set }
 
-    func delete() throws
+    func delete() 
 }
 
 /// Rendering is relative to topLeft of whatever area the renderer is rendering in.
@@ -21,43 +21,44 @@ public protocol Renderer {
 
     // TODO: maybe resolution belongs to window?
     //var resolution: Double { get }
-    func beginFrame() throws
-    func endFrame() throws
-    func clear(_ color: Color) throws
-    func makeVirtualScreen(size: DSize2) throws -> VirtualScreen
-    func resizeVirtualScreen(_ screen: inout VirtualScreen, _ size: DSize2) throws
-    func pushVirtualScreen(_ screen: VirtualScreen) throws
-    @discardableResult func popVirtualScreen() throws -> VirtualScreen?
-    func drawVirtualScreens(_ screens: [VirtualScreen], at positions: [DVec2]?) throws
-    func beginPath() throws
-    func moveTo(_ point: DPoint2) throws
-    func lineTo(_ point: DPoint2) throws
-    func closePath() throws
-    func fillColor(_ color: Color) throws
-    func fillRule(_ rule: FillRule) throws
-    func fill() throws
-    func strokeWidth(_ width: Double) throws
-    func strokeColor(_ color: Color) throws
-    func stroke() throws
-    func rect(_ rect: DRect) throws
+    func beginFrame() 
+    func endFrame() 
+    func clear(_ color: Color) 
+    func makeVirtualScreen(size: DSize2)  -> VirtualScreen
+    func resizeVirtualScreen(_ screen: inout VirtualScreen, _ size: DSize2) 
+    func pushVirtualScreen(_ screen: VirtualScreen) 
+    @discardableResult func popVirtualScreen()  -> VirtualScreen?
+    func drawVirtualScreens(_ screens: [VirtualScreen], at positions: [DVec2]?) 
+    func beginPath() 
+    func moveTo(_ point: DPoint2) 
+    func lineTo(_ point: DPoint2) 
+    func closePath() 
+    func fillColor(_ color: Color) 
+    func fillRule(_ rule: FillRule) 
+    func fill() 
+    func strokeWidth(_ width: Double) 
+    func strokeColor(_ color: Color) 
+    func stroke() 
+    func rectangle(_ rect: DRect) 
+    func roundedRectangle(_ rect: DRect, cornerRadii: CornerRadii)
     // TODO: update to remove style argument
-    func circle(center: DPoint2, radius: Double) throws
-    func ellipse(center: DPoint2, radius: DVec2) throws
-    func text(_ text: String, fontConfig: FontConfig, color: Color, topLeft: DPoint2) throws
-    func lineSegment(from: DPoint2, to: DPoint2) throws
-    func getTextBoundsSize(_ text: String, fontConfig: FontConfig) throws -> DSize2
-    func multilineText(_ text: String, fontConfig: FontConfig, color: Color, topLeft: DPoint2, maxWidth: Double) throws
-    func getMultilineTextBoundsSize(_ text: String, fontConfig: FontConfig, maxWidth: Double) throws -> DSize2
-    func globalOpacity(_ opacity: Float) throws
-    func clipArea(bounds: DRect) throws
-    func releaseClipArea() throws
-    func translate(_ translation: DVec2) throws 
-    func scale(_ amount: DVec2) throws
+    func circle(center: DPoint2, radius: Double) 
+    func ellipse(center: DPoint2, radius: DVec2) 
+    func text(_ text: String, fontConfig: FontConfig, color: Color, topLeft: DPoint2) 
+    func lineSegment(from: DPoint2, to: DPoint2) 
+    func getTextBoundsSize(_ text: String, fontConfig: FontConfig)  -> DSize2
+    func multilineText(_ text: String, fontConfig: FontConfig, color: Color, topLeft: DPoint2, maxWidth: Double) 
+    func getMultilineTextBoundsSize(_ text: String, fontConfig: FontConfig, maxWidth: Double)  -> DSize2
+    func globalOpacity(_ opacity: Float) 
+    func clipArea(bounds: DRect) 
+    func releaseClipArea() 
+    func translate(_ translation: DVec2)  
+    func scale(_ amount: DVec2) 
     func resetTransform()
 }
 
 public extension Renderer {
-    func drawVirtualScreens(_ screens: [VirtualScreen], at positions: [DVec2]? = nil) throws {}
+    func drawVirtualScreens(_ screens: [VirtualScreen], at positions: [DVec2]? = nil)  {}
 }
 
 public enum FillRule {

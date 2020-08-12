@@ -102,11 +102,11 @@ public class ScrollArea: SingleChildWidget {
     }
 
     override public func renderContent() -> RenderObject? {
-        var scrollBarX = RenderObject.Rect(DRect(
+        var scrollBarX = RenderObject.Rectangle(DRect(
             min: DPoint2(globalPosition.x, globalPosition.y + globalBounds.size.height - scrollBarWidth.x),
             size: DSize2(scrollBarLength.x, scrollBarWidth.x)
         ))
-        var scrollBarY = RenderObject.Rect(DRect(
+        var scrollBarY = RenderObject.Rectangle(DRect(
             min: DPoint2(globalPosition.x + globalBounds.size.width - scrollBarWidth.x, globalPosition.y),
             size: DSize2(scrollBarWidth.x, scrollBarLength.y)
         ))

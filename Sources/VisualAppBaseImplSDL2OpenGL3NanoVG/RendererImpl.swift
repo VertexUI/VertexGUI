@@ -23,7 +23,7 @@ public struct SDL2OpenGL3NanoVGVirtualScreen: VirtualScreen {
         self.size = size
     }
 
-    public func delete() throws {
+    public func delete() {
         // TODO: handle delete in renderer / attach to renderer and track whether should be deleted
         print("Warning: delete function of screen called and due to current implementation called outside of parent renderer.")
         glDeleteFramebuffers(1, [framebuffer])
@@ -99,22 +99,22 @@ open class SDL2OpenGL3NanoVGRenderer: Renderer {
         return id > -1
     }
 
-    open func clear(_ color: Color) throws {
+    open func clear(_ color: Color) {
         GL.glClearColor(color.glR, color.glG, color.glB, color.glA)
         GL.glClear(GLMap.COLOR_BUFFER_BIT | GLMap.DEPTH_BUFFER_BIT | GLMap.STENCIL_BUFFER_BIT)
     }
 
-    open func beginFrame() throws {
+    open func beginFrame() {
         SDL_GL_MakeCurrent(window.sdlWindow, window.glContext)
         glViewport(x: 0, y: 0, width: GLMap.Size(window.drawableSize.width), height: GLMap.Size(window.drawableSize.height))
         nvgBeginFrame(window.nvg, Float(window.size.width), Float(window.size.height), window.pixelRatio)
     }
 
-    open func endFrame() throws {
+    open func endFrame() {
 	    nvgEndFrame(window.nvg)
     }
 
-    open func makeVirtualScreen(size: DSize2) throws -> VirtualScreen {
+    open func makeVirtualScreen(size: DSize2) -> VirtualScreen {
         var screen = SDL2OpenGL3NanoVGVirtualScreen(size)
         glGenFramebuffers(1, &screen.framebuffer)
         glBindFramebuffer(GLMap.FRAMEBUFFER, screen.framebuffer)
@@ -147,7 +147,7 @@ open class SDL2OpenGL3NanoVGRenderer: Renderer {
     }
 
     // TODO: maybe handle resizing differently? is inplace modification really required?
-    open func resizeVirtualScreen(_ screen: inout VirtualScreen, _ size: DSize2) throws {
+    open func resizeVirtualScreen(_ screen: inout VirtualScreen, _ size: DSize2) {
         let checkedScreen = checkVirtualScreen(screen)
         screen.size = size // mutate input screen
         glBindTexture(GLMap.TEXTURE_2D, checkedScreen.texture)
@@ -155,7 +155,7 @@ open class SDL2OpenGL3NanoVGRenderer: Renderer {
         glBindTexture(GLMap.TEXTURE_2D, 0)
     }
 
-    private func virtualScreenStackContains(_ screen: VirtualScreen) throws -> Bool {
+    private func virtualScreenStackContains(_ screen: VirtualScreen) -> Bool {
         let screen = checkVirtualScreen(screen)
         for otherScreen in virtualScreenStack {
             let otherScreen = checkVirtualScreen(otherScreen)
@@ -166,7 +166,7 @@ open class SDL2OpenGL3NanoVGRenderer: Renderer {
         return false
     }
 
-    open func pushVirtualScreen(_ screen: VirtualScreen) throws {
+    open func pushVirtualScreen(_ screen: VirtualScreen) {
         if try virtualScreenStackContains(screen) {
             fatalError("Tried to add same virtual screen to the stack twice.")
         }
@@ -176,7 +176,7 @@ open class SDL2OpenGL3NanoVGRenderer: Renderer {
         virtualScreenStack.append(screen)
     }
 
-    @discardableResult open func popVirtualScreen() throws -> VirtualScreen? {
+    @discardableResult open func popVirtualScreen() -> VirtualScreen? {
         if let popped = virtualScreenStack.popLast() {
             if virtualScreenStack.count == 0 {
                 glBindFramebuffer(GLMap.FRAMEBUFFER, 0)
@@ -191,7 +191,7 @@ open class SDL2OpenGL3NanoVGRenderer: Renderer {
         return nil
     }
 
-    open func drawVirtualScreens(_ screens: [VirtualScreen], at positions: [DVec2]? = nil) throws {
+    open func drawVirtualScreens(_ screens: [VirtualScreen], at positions: [DVec2]? = nil) {
         let screen = checkVirtualScreen(screens[0])
         // TODO: implement rendering of all in array
         let positions = positions ?? screens.map { _ in DVec2.zero }
@@ -207,66 +207,84 @@ open class SDL2OpenGL3NanoVGRenderer: Renderer {
         glBindVertexArray(0)
     }
 
-    open func beginPath() throws {
+    open func beginPath() {
         nvgBeginPath(window.nvg)
     }
 
-    open func moveTo(_ point: DPoint2) throws {
+    open func moveTo(_ point: DPoint2) {
         nvgMoveTo(window.nvg, Float(point.x), Float(point.y))
     }
 
-    open func lineTo(_ point: DPoint2) throws {
+    open func lineTo(_ point: DPoint2) {
         nvgLineTo(window.nvg, Float(point.x), Float(point.y))
     }
 
-    open func closePath() throws {
+    open func closePath() {
         nvgClosePath(window.nvg)
     }
 
-    open func fillRule(_ rule: FillRule) throws {
+    open func fillRule(_ rule: FillRule) {
         nvgPathWinding(window.nvg, rule == .Solid ? Int32(NVG_SOLID.rawValue) : Int32(NVG_HOLE.rawValue))
     }
 
-    open func fillColor(_ color: Color) throws {
+    open func fillColor(_ color: Color) {
         nvgFillColor(window.nvg, color.toNVG())
     }
 
-    open func fill() throws {
+    open func fill() {
         nvgFill(window.nvg)
     }
 
-    open func strokeWidth(_ width: Double) throws {
+    open func strokeWidth(_ width: Double) {
         nvgStrokeWidth(window.nvg, Float(width))
     }
 
-    open func strokeColor(_ color: Color) throws {
+    open func strokeColor(_ color: Color) {
         nvgStrokeColor(window.nvg, color.toNVG())
     }
 
-    open func stroke() throws {
+    open func stroke() {
         nvgStroke(window.nvg)
     }
 
-    open func rect(_ rect: DRect) throws {
+    open func rectangle(_ rect: DRect) {
         //nvgBeginPath(window.nvg)
-        nvgRect(window.nvg, Float(rect.min.x), Float(rect.min.y), Float(rect.size.width), Float(rect.size.height))
+        nvgRect(
+            window.nvg,
+            Float(rect.min.x),
+            Float(rect.min.y),
+            Float(rect.size.width),
+            Float(rect.size.height))
         //if let fillColor = style.fillColor {
         //    nvgFillColor(window.nvg, fillColor.toNVG())
         //    nvgFill(window.nvg)
         //}
     }
 
-    open func lineSegment(from: DPoint2, to: DPoint2) throws {
+    open func roundedRectangle(_ rect: DRect, cornerRadii: CornerRadii) {
+        nvgRoundedRectVarying(
+            window.nvg,
+            Float(rect.min.x),
+            Float(rect.min.y),
+            Float(rect.size.width),
+            Float(rect.size.height),
+            Float(cornerRadii.topLeft),
+            Float(cornerRadii.topRight),
+            Float(cornerRadii.bottomLeft),
+            Float(cornerRadii.bottomRight))
+    }
+
+    open func lineSegment(from: DPoint2, to: DPoint2) {
         nvgBeginPath(window.nvg)
         nvgMoveTo(window.nvg, Float(from.x), Float(from.y))
         nvgLineTo(window.nvg, Float(to.x), Float(to.y))
     }
 
-    open func circle(center: DPoint2, radius: Double) throws {
+    open func circle(center: DPoint2, radius: Double) {
         nvgCircle(window.nvg, Float(center.x), Float(center.y), Float(radius))
     }
 
-    public func ellipse(center: DPoint2, radius: DVec2) throws {
+    public func ellipse(center: DPoint2, radius: DVec2) {
         fatalError("ellipse not implemented")
     }
 
@@ -279,51 +297,51 @@ open class SDL2OpenGL3NanoVGRenderer: Renderer {
         nvgTextAlign(window.nvg, Int32(NVG_ALIGN_LEFT.rawValue | NVG_ALIGN_TOP.rawValue))
     }
 
-    open func text(_ text: String, fontConfig: FontConfig, color: Color, topLeft: DPoint2) throws {
+    open func text(_ text: String, fontConfig: FontConfig, color: Color, topLeft: DPoint2) {
         nvgBeginPath(window.nvg)
         applyFontConfig(fontConfig)
         nvgFillColor(window.nvg, color.toNVG())
         nvgText(window.nvg, Float(topLeft.x), Float(topLeft.y), text, nil)
     }
 
-    open func getTextBoundsSize(_ text: String, fontConfig: FontConfig) throws -> DSize2 {
+    open func getTextBoundsSize(_ text: String, fontConfig: FontConfig) -> DSize2 {
         applyFontConfig(fontConfig)
         var bounds = [Float](repeating: 0, count: 4)
         nvgTextBounds(window.nvg, 0, 0, text, nil, &bounds)
         return DSize2(Double(bounds[2]), Double(bounds[3]))
     }
 
-    open func multilineText(_ text: String, fontConfig: FontConfig, color: Color, topLeft: DPoint2, maxWidth: Double) throws {
+    open func multilineText(_ text: String, fontConfig: FontConfig, color: Color, topLeft: DPoint2, maxWidth: Double) {
         nvgBeginPath(window.nvg)
         applyFontConfig(fontConfig)
         nvgFillColor(window.nvg, color.toNVG())
         nvgTextBox(window.nvg, Float(topLeft.x), Float(topLeft.y), Float(maxWidth), text, nil)
     }
 
-    open func getMultilineTextBoundsSize(_ text: String, fontConfig: FontConfig, maxWidth: Double) throws -> DSize2 {
+    open func getMultilineTextBoundsSize(_ text: String, fontConfig: FontConfig, maxWidth: Double) -> DSize2 {
         applyFontConfig(fontConfig)
         var bounds = [Float](repeating: 0, count: 4)
         nvgTextBoxBounds(window.nvg, 0, 0, Float(maxWidth), text, nil, &bounds)
         return DSize2(Double(bounds[2]), Double(bounds[3]))
     }
 
-    open func globalOpacity(_ opacity: Float) throws {
+    open func globalOpacity(_ opacity: Float) {
         nvgGlobalAlpha(window.nvg, opacity)
     }
 
-    open func clipArea(bounds: DRect) throws {
+    open func clipArea(bounds: DRect) {
         nvgScissor(window.nvg, Float(bounds.min.x), Float(bounds.min.y), Float(bounds.size.width), Float(bounds.size.height))
     }
 
-    open func releaseClipArea() throws {
+    open func releaseClipArea() {
         nvgResetScissor(window.nvg)
     }
 
-    open func scale(_ amount: DVec2) throws {
+    open func scale(_ amount: DVec2) {
         nvgScale(window.nvg, Float(amount.x), Float(amount.y))
     }
 
-    open func translate(_ translation: DVec2) throws {
+    open func translate(_ translation: DVec2) {
         nvgTranslate(window.nvg, Float(translation.x), Float(translation.y))
     }
 
@@ -331,7 +349,7 @@ open class SDL2OpenGL3NanoVGRenderer: Renderer {
         nvgResetTransform(window.nvg)
     }
 
-    /*open func flush() throws {
+    /*open func flush() {
         SDL_GL_SwapWindow(window.sdlWindow)
     }*/
 }

@@ -26,7 +26,7 @@ open class Divider<S: System<W, R>, W: Window, R: Renderer>: Widget<S, W, R> {
 
     override open func render(renderer: R) throws {
         //print("RENDERME")
-        try renderer.rect(globalBounds, style: RenderStyle(fillColor: color))
+        try renderer.rectangle(globalBounds, style: RenderStyle(fillColor: color))
     }
 }
 */

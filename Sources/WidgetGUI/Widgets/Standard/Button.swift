@@ -79,15 +79,16 @@ public class Button: SingleChildWidget, StatefulWidget {
         let style = stateStyles[state] ?? defaultButtonStyles[state]!
         return RenderObject.Container {
             if state == .Normal {
-                RenderObject.RenderStyle(fillColor: FixedRenderValue(Color(0, 255, 120, 255))) {
-                    RenderObject.Rect(globalBounds)
+                RenderObject.RenderStyle(
+                    fillColor: FixedRenderValue(Color(0, 255, 120, 255))) {
+                        RenderObject.Rectangle(globalBounds)
                 }
             } else if state == .Hover {
                 RenderObject.RenderStyle(
                     fillColor: TimedRenderValue(
                         startTimestamp: Date.timeIntervalSinceReferenceDate, 
                         duration: 3, id: 0, valueAt: { progress in Color(UInt8(progress * 255), 0, 0, 255) })) {
-                    RenderObject.Rect(globalBounds)
+                    RenderObject.Rectangle(globalBounds)
                 }
             }
             child.render() 
