@@ -5,12 +5,12 @@ import CustomGraphicsMath
 import Dispatch
 
 public class GameView: Widget {
-    public var perspective: GamePerspective
+    public var perspective: Observable<GamePerspective>
     private let gameRenderer: GameRenderer
     private var previousRenderTimestamp: Double = Date.timeIntervalSinceReferenceDate
     private var synchronize: (_ block: () -> ()) -> ()
     
-    public init(state: GameState, perspective: GamePerspective, synchronize: @escaping (_ block: () -> ()) -> ()) {
+    public init(state: GameState, perspective: Observable<GamePerspective>, synchronize: @escaping (_ block: () -> ()) -> ()) {
         self.perspective = perspective
         self.gameRenderer = GameRenderer(state: state)
         self.synchronize = synchronize
@@ -27,9 +27,9 @@ public class GameView: Widget {
             previousRenderTimestamp = currentRenderTimestamp
             // TODO: retrieve delta time from RenderObject render function
             synchronize {
-                gameRenderer.updateRenderState(from: perspective, deltaTime: deltaTime)
+                gameRenderer.updateRenderState(from: perspective.value, deltaTime: deltaTime)
             }
-            try gameRenderer.render(from: perspective, renderArea: globalBounds, window: context!.window, renderer: renderer)
+            try gameRenderer.render(from: perspective.value, renderArea: globalBounds, window: context!.window, renderer: renderer)
         }
     }
 }

@@ -3,33 +3,33 @@ import CustomGraphicsMath
 import WidgetGUI
 
 public class PlayerStatsView: SingleChildWidget {
-    public var blob: PlayerBlob {
-        didSet {
-            invalidateChild()
-        }
-    }
+    public var blob: Observable<PlayerBlob>
     
-    public init(blob: PlayerBlob) {
+    public init(blob: Observable<PlayerBlob>) {
         self.blob = blob
+        super.init()
+        _ = onDestroy(blob.onChanged { [unowned self] _ in
+            invalidateChild()
+        })
     }
 
     override open func buildChild() -> Widget {
         Background(
             Color(0, 0, 0, 200), 
             shape: .RoundedRectangle(CornerRadii(all: 16))) {
-                Padding(all: 32) {
-                    TextConfigProvider(fontSize: 20, color: .White) {
+                Padding(top: 32, right: 32, bottom: 48, left: 32) {
+                    TextConfigProvider(fontSize: 20, color: .White, wrap: true) {
                         Column(spacing: 32) {
                             Text(
                                 "Stats",
                                 config: Text.PartialConfig(
                                     fontConfig: PartialFontConfig(size: 24, weight: .Bold), color: .White))
 
-                            Text("Mass: \(blob.mass)")
+                            Text("Mass: \(blob.value.mass)")
 
-                            Text("Acceleration: \(blob.acceleration)")
+                            Text("Acceleration: \(blob.value.acceleration)")
 
-                            Text("Speed: \(blob.speed)")
+                            Text("Speed: \(blob.value.speed)")
 
 
                         }

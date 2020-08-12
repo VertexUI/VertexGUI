@@ -105,7 +105,6 @@ public class Text: Widget {
     }
 
     override open func performLayout() {
-        // TODO: check whether to have wrap in config, or a property of Text and whether to pass maxWidth extra or put it into textconfig and whether to always pass it
         var preferredSize = DSize2.zero
         if filledConfig.wrap {
             preferredSize = context!.getTextBoundsSize(filledConfig.transform.apply(to: text), fontConfig: filledConfig.fontConfig, maxWidth: constraints!.maxWidth)// try context!.renderer.getMultilineTextSize(text, maxWidth: constraints!.maxWidth, fontConfig: config.fontConfig)
@@ -113,6 +112,8 @@ public class Text: Widget {
             preferredSize = context!.getTextBoundsSize(filledConfig.transform.apply(to: text), fontConfig: filledConfig.fontConfig)
         }
         bounds.size = constraints!.constrain(preferredSize)
+
+        print("PERFORM TEXT LAYOUT", text, filledConfig.wrap, constraints!.maxSize)
     }
 
     override public func renderContent() -> RenderObject? {

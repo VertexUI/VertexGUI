@@ -108,8 +108,8 @@ open class TwoDWorldView: Widget, GUIMouseEventConsumer, StatefulWidget {
 
     override open func renderContent() -> RenderObject {
         return .CacheSplit([.Custom(id: self.id) { renderer in
-            try renderer.scale(DVec2(1, -1))
-            try renderer.translate(DVec2(0, -(2 * self.globalPosition.y + self.bounds.size.height)))
+            renderer.scale(DVec2(1, -1))
+            renderer.translate(DVec2(0, -(2 * self.globalPosition.y + self.bounds.size.height)))
             
             for xIndex in 0..<self.world.size.width {
                 for yIndex in 0..<self.world.size.height {
@@ -117,14 +117,14 @@ open class TwoDWorldView: Widget, GUIMouseEventConsumer, StatefulWidget {
                     let tileRect = self.getTileRect(index: index)
 
                     let fillColor = ((yIndex % 2 == 0 ? 1 : 0) + xIndex) % 2 == 0 ? Color(240, 240, 240, 255) : Color.White
-                    try renderer.beginPath()
-                    try renderer.fillColor(fillColor)
-                    try renderer.rectangle(tileRect)
-                    try renderer.fill()
+                    renderer.beginPath()
+                    renderer.fillColor(fillColor)
+                    renderer.rectangle(tileRect)
+                    renderer.fill()
                 }
             }
 
-            try renderer.resetTransform()
+            renderer.resetTransform()
             
             for raycast in self.raycasts {
                 let scaledRayStart = self.globalPosition + raycast.start / DVec2(self.world.size) * self.bounds.size
@@ -135,43 +135,43 @@ open class TwoDWorldView: Widget, GUIMouseEventConsumer, StatefulWidget {
                     case .Test(let tileIndex):
                         let tileRect = self.getTileRect(index: tileIndex)
                         let fillColor = Color.Blue.adjusted(alpha: 50)
-                        try renderer.beginPath()
-                        try renderer.fillColor(fillColor)
-                        try renderer.rectangle(tileRect)
-                        try renderer.fill()
+                        renderer.beginPath()
+                        renderer.fillColor(fillColor)
+                        renderer.rectangle(tileRect)
+                        renderer.fill()
                     case .Hit(let tileIndex, let edge):
                         let tileRect = self.getTileRect(index: tileIndex)
-                        try renderer.beginPath()
-                        try renderer.fillColor(Color(255, 0, 0, 255))
-                        try renderer.rectangle(tileRect)
-                        try renderer.fill()
+                        renderer.beginPath()
+                        renderer.fillColor(Color(255, 0, 0, 255))
+                        renderer.rectangle(tileRect)
+                        renderer.fill()
 
                         let scale = DVec2(DSize2(self.bounds.size) / DSize2(self.world.size))
                         let vertices = Tile.edgeVertices(topLeft: DVec2(tileIndex), vectorLayout: .topLeftToBottomRight)[edge]!
-                        try renderer.lineSegment(from: self.globalPosition + scale * vertices.0, to: self.globalPosition + scale * vertices.1)
-                        try renderer.strokeWidth(10)
-                        try renderer.strokeColor(.Yellow)
-                        try renderer.stroke()
+                        renderer.lineSegment(from: self.globalPosition + scale * vertices.0, to: self.globalPosition + scale * vertices.1)
+                        renderer.strokeWidth(10)
+                        renderer.strokeColor(.Yellow)
+                        renderer.stroke()
                     default:
                         break
                     }
                 }
 
-                try renderer.lineSegment(from: scaledRayStart, to: scaledRayEnd)
-                try renderer.strokeWidth(5)
+                renderer.lineSegment(from: scaledRayStart, to: scaledRayEnd)
+                renderer.strokeWidth(5)
                 if let highlightedRaycast = self.highlightedRaycast.value, raycast == highlightedRaycast {
-                    try renderer.strokeColor(.Black)
+                    renderer.strokeColor(.Black)
                 } else {
-                    try renderer.strokeColor(.Blue)
+                    renderer.strokeColor(.Blue)
                 }
-                try renderer.stroke()
+                renderer.stroke()
 
                 for result in raycast.results {
                     switch result {
                     case .Intersection(let position):
-                        try renderer.circle(center: self.worldToLocal(position: position) + self.globalPosition, radius: 5)
-                        try renderer.fillColor(Color(230, 200, 255, 255))
-                        try renderer.fill()
+                        renderer.circle(center: self.worldToLocal(position: position) + self.globalPosition, radius: 5)
+                        renderer.fillColor(Color(230, 200, 255, 255))
+                        renderer.fill()
                     default:
                         break
                     }

@@ -42,7 +42,6 @@ public class Column: Widget {
             }
             child.bounds.min = DPoint2(currentX, currentY)
             currentY += child.bounds.size.height
-            currentY += spacing
 
             if currentColumnWidth < child.bounds.size.width {
                 currentColumnWidth = child.bounds.size.width
@@ -51,6 +50,8 @@ public class Column: Widget {
             if currentY > currentMaxHeight {
                 currentMaxHeight = currentY
             }
+
+            currentY += spacing
         }
 
         bounds.size = DSize2(currentX + currentColumnWidth, currentMaxHeight)

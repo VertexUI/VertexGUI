@@ -39,16 +39,17 @@ public class Row: Widget {
             }
 
             child.bounds.min = DPoint2(currentX, currentY)
-            currentX += child.bounds.size.width + spacing
+            currentX += child.bounds.size.width
 
             if child.bounds.size.height > currentRowHeight {
                 currentRowHeight = child.bounds.size.height
             }
 
-
             if currentX > maxWidth {
                 maxWidth = currentX
             }
+
+            currentX += spacing
         }
         bounds.size = DSize2(max(constraints!.minWidth, maxWidth), max(constraints!.minHeight, currentY + currentRowHeight))
     }

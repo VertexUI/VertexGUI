@@ -8,7 +8,7 @@ public class ObservingBuilder: SingleChildWidget {
         self.childBuilder = childBuilder
         super.init()
         for observable in observables {
-            autoClean(observable.onChanged { [unowned self] _ in
+            _ = onDestroy(observable.onChanged { [unowned self] _ in
                 invalidateChild()
             })
         }

@@ -7,7 +7,7 @@ public class ForwardingObservingBuilder<Value>: SingleChildWidget {
         self.observable = observable
         self.childBuilder = childBuilder
         super.init()
-        autoClean(observable.onChanged { [unowned self] _ in
+        _ = onDestroy(observable.onChanged { [unowned self] _ in
             invalidateChild()
         })
     }

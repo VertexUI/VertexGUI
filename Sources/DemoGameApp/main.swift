@@ -12,6 +12,9 @@ public class DemoGameApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGW
     private lazy var guiRoot: Root = buildGuiRoot()
     private lazy var gameView: GameView = buildGameView()
 
+    private var playerBlobObservable: Observable<PlayerBlob>
+    private var perspectiveObservable: Observable<GamePerspective>
+
     private let updateQueue = DispatchQueue(label: "swift-cross-platform-demo.game", qos: .background)
 
     public init() {
@@ -20,6 +23,9 @@ public class DemoGameApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGW
         gameManager = GameManager(state: gameState, ruleset: GameRuleset())
 
         playerBlobId = gameManager.createPlayerBlob()
+
+        playerBlobObservable = Observable<PlayerBlob>(gameState.playerBlobs[playerBlobId]!)
+        perspectiveObservable = Observable<GamePerspective>(gameState.playerBlobs[playerBlobId]!.perspective)
         
         super.init(system: try! SDL2OpenGL3NanoVGSystem())
 
@@ -31,7 +37,8 @@ public class DemoGameApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGW
         _ = system.onFrame { [unowned self] deltaTimeMilliseconds in
             let deltaTime = Double(deltaTimeMilliseconds) / 1000
             updateQueue.sync {
-                gameView.perspective = gameState.playerBlobs[playerBlobId]!.perspective
+                playerBlobObservable.value = gameState.playerBlobs[playerBlobId]!
+                perspectiveObservable.value = gameState.playerBlobs[playerBlobId]!.perspective
             }
         }
     }
@@ -39,7 +46,7 @@ public class DemoGameApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGW
     private func buildGameView() -> GameView {
         GameView(
             state: gameState,
-            perspective: gameState.playerBlobs[playerBlobId]!.perspective,
+            perspective: perspectiveObservable,
             synchronize: { [unowned self] block in
                 updateQueue.sync {
                     block()
@@ -68,7 +75,7 @@ public class DemoGameApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGW
 
                 Alignable(horizontal: .End) {
                     Padding(all: 32) {
-                        PlayerStatsView(blob: gameState.playerBlobs[playerBlobId]!)
+                        PlayerStatsView(blob: playerBlobObservable)
                     }
                 }
             }

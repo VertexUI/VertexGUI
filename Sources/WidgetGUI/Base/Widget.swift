@@ -35,7 +35,11 @@ open class Widget: Bounded, Parent, Child {
     public var onParentChanged = EventHandlerManager<Parent?>()
     public var onAnyParentChanged = EventHandlerManager<Parent?>()
     public var onRenderStateInvalidated = EventHandlerManager<Widget>()
+    public var onBoundsChanged = EventHandlerManager<DRect>()
+    public var onDestroy = EventHandlerManager<Void>()
+    
     private var unregisterAnyParentChangedHandler: EventHandlerManager<Parent?>.UnregisterCallback?
+
     weak open var parent: Parent? = nil {
         willSet {
             if unregisterAnyParentChangedHandler != nil {
@@ -64,16 +68,17 @@ open class Widget: Bounded, Parent, Child {
     public var layouted = false
     public internal(set) var destroyed = false
 
-    private var unregisterFunctions = [() -> ()]()
+    //private var unregisterFunctions = [() -> ()]()
 
     // TODO: might need to create something like layoutBounds and renderBounds (area that is invalidated on rerender request --> could be more than layoutBounds and affect outside widgets (e.g. a drop shadow that is not included in layoutBounds))
     open var bounds: DRect = DRect(min: DPoint2(0,0), size: DSize2(0,0)) {
         didSet {
             // TODO: maybe let the parent list for onUpdateBounds on it's children instead of calling the parent
             if oldValue != bounds {
-                if let parent = self.parent {
+                onBoundsChanged.invokeHandlers(bounds)
+                //if let parent = self.parent {
                     //try! parent.relayout()
-                }
+                //}
             }
         }
     }
@@ -106,11 +111,11 @@ open class Widget: Bounded, Parent, Child {
         return self
     }
 
-    /// Record unregister functions for handlers that were added to some handler list during the lifetime
+    /*/// Record unregister functions for handlers that were added to some handler list during the lifetime
     /// of the widget. The unregister functions will be called during destroy().
     public func autoClean(_ unregister: @escaping () -> ()) {
         unregisterFunctions.append(unregister)
-    }
+    }*/
 
     public final func mount(parent: Parent, with context: ReplacementContext? = nil) {
         var oldSelf: Widget? = context?.previousWidget
@@ -167,6 +172,10 @@ open class Widget: Bounded, Parent, Child {
         _ = child.onRenderStateInvalidated { [unowned self] in
             invalidateRenderState($0)
         }
+        // TODO: buffer updates over a certain timespan and then relayout
+        _ = child.onBoundsChanged { [unowned self] _ in
+            layout()
+        }
         child.mount(parent: self, with: context)
     }
 
@@ -220,10 +229,8 @@ open class Widget: Bounded, Parent, Child {
         onAnyParentChanged.removeAllHandlers()
         onRenderStateInvalidated.removeAllHandlers()
         parent = nil
-        for unregister in unregisterFunctions {
-            unregister()
-        }
         destroySelf()
+        onDestroy.invokeHandlers(Void())
         destroyed = true
         //print("Destroyed Widget:", id, self)
     }
