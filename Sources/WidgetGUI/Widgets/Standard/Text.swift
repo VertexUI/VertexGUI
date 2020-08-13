@@ -39,7 +39,14 @@ public class Text: Widget {
         }
     }
 
-    public var text: String
+    public var text: String {
+        didSet {
+            if oldValue != text {
+                performLayout()
+                invalidateRenderState()
+            }
+        }
+    }
 
     public static var defaultConfig = Config(
         fontConfig: FontConfig(
