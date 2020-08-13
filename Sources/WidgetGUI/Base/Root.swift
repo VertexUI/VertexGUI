@@ -66,6 +66,11 @@ open class Root: Parent {
         return false
     }
 
+    @discardableResult open func consume(_ rawTextEvent: TextEvent) -> Bool {
+        propagate(rawTextEvent)
+        return false
+    }
+
     /// - Parameter widget: If a specific widget is passed only the sub tree that was created by the widget will be updated.
     open func updateRenderObjectTree(_ widget: Widget? = nil) {
         if renderObjectTree.children.count == 0 {

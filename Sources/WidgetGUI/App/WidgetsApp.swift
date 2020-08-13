@@ -45,6 +45,9 @@ open class WidgetsApp<S: System, W: Window, R: Renderer>: VisualApp<S, W> {
         _ = window.onKey {
             guiRoot.consume($0)
         }
+        _ = window.onText {
+            guiRoot.consume($0)
+        }
         _ = window.onResize {
             guiRoot.bounds.size = $0
             //guiRoot.layout()

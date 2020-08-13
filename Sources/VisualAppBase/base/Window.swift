@@ -23,8 +23,9 @@ open class Window {
         }
     }
 
-    public var onKey = EventHandlerManager<KeyEvent>()
     public var onMouse = EventHandlerManager<RawMouseEvent>()
+    public var onKey = EventHandlerManager<KeyEvent>()
+    public var onText = EventHandlerManager<TextEvent>()
     public var onResize = EventHandlerManager<DSize2>()
     public var onFocusChange = EventHandlerManager<Bool>()
     public var onClose = EventHandlerManager<Void>()

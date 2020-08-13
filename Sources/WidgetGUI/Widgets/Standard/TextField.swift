@@ -1,7 +1,7 @@
 import CustomGraphicsMath
 import VisualAppBase
 
-public class TextField: Widget, GUIMouseEventConsumer, GUIKeyEventConsumer {
+public class TextField: Widget, GUIMouseEventConsumer, GUIKeyEventConsumer, GUITextEventConsumer {
     public init() {
         super.init()
         self.focusable = true
@@ -17,11 +17,15 @@ public class TextField: Widget, GUIMouseEventConsumer, GUIKeyEventConsumer {
             if focused {
                 invalidateRenderState()
             }
-            print("FOCUSED?", focused)
         }
     }
 
     public func consume(_ event: GUIKeyEvent) {
+        if let event = event as? GUIKeyUpEvent {
+        }
+    }
+
+    public func consume(_ event: GUITextEvent) {
     }
 
     override public func renderContent() -> RenderObject? {

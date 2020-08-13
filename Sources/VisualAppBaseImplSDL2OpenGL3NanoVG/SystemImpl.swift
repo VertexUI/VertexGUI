@@ -59,15 +59,21 @@ open class SDL2OpenGL3NanoVGSystem: System {
         SDL_ShowCursor(shown ? SDL_ENABLE : SDL_DISABLE)
     }
 
-    open func forwardMouseEvent(_ event: RawMouseEvent, windowId: Int) throws {
+    open func forward(_ event: RawMouseEvent, windowId: Int) {
         if let window = SDL2OpenGL3NanoVGSystem.windows[windowId] {
-            try window.onMouse.invokeHandlers(event)
+            window.onMouse.invokeHandlers(event)
         }
     }
 
-    open func forwardKeyboardEvent(_ event: KeyEvent, windowId: Int) throws {
+    open func forward(_ event: KeyEvent, windowId: Int) {
         if let window = SDL2OpenGL3NanoVGSystem.windows[windowId] {
-            try window.onKey.invokeHandlers(event)
+            window.onKey.invokeHandlers(event)
+        }
+    }
+
+    open func forward(_ event: TextEvent, windowId: Int) {
+        if let window = SDL2OpenGL3NanoVGSystem.windows[windowId] {
+            window.onText.invokeHandlers(event)
         }
     }
 
@@ -94,38 +100,50 @@ open class SDL2OpenGL3NanoVGSystem: System {
                     break
                 case SDL_KEYDOWN:
                     if let key = Key(sdlKeycode: event.key.keysym.sym) {
-                        self.keyStates[key] = true
-                        try self.forwardKeyboardEvent(KeyDownEvent(key: key, keyStates: self.keyStates, repetition: event.key.repeat != 0), windowId: Int(event.key.windowID))
+                        keyStates[key] = true
+                        forward(KeyDownEvent(key: key, keyStates: self.keyStates, repetition: event.key.repeat != 0), windowId: Int(event.key.windowID))
                     } else {
                         print("Key not mapped from sdl", event.key.keysym.sym, event.key.keysym.scancode, event.key.keysym.scancode == SDL_SCANCODE_Y)
+                    }
+                case SDL_TEXTINPUT:
+                    var bytes: [UInt8] = []
+
+                    // TODO: this might be slow
+                    for (_, value) in Mirror(reflecting: event.text.text).children {
+                        let byteValue = UInt8(bitPattern: value as! Int8)
+                        if byteValue == 0 {
+                            break
+                        }
+                        bytes.append(byteValue)
+                    }
+
+                    if let text = String(data: Data(bytes), encoding: .utf8) {
+                        forward(TextInputEvent(text), windowId: Int(event.text.windowID))
                     }
                 case SDL_KEYUP:
                     if let key = Key(sdlKeycode: event.key.keysym.sym) {
                         self.keyStates[key] = false
-                        try self.forwardKeyboardEvent(KeyUpEvent(key: key, keyStates: self.keyStates, repetition: event.key.repeat != 0), windowId: Int(event.key.windowID))
+                        try self.forward(KeyUpEvent(key: key, keyStates: self.keyStates, repetition: event.key.repeat != 0), windowId: Int(event.key.windowID))
                     } else {
                         print("Key not mapped from sdl", event.key.keysym.sym)
                     }
                 case SDL_MOUSEBUTTONDOWN:
                     self.pressedMouseButtons[.Left] = self.pressedMouseButtons[.Left]! || event.button.button == UInt8(SDL_BUTTON_LEFT)
                     if event.button.button == UInt8(SDL_BUTTON_LEFT) {
-                        try self.forwardMouseEvent(RawMouseButtonDownEvent(button: .Left, position: DPoint2(Double(event.button.x), Double(event.button.y))), windowId: Int(event.button.windowID))
+                        try self.forward(RawMouseButtonDownEvent(button: .Left, position: DPoint2(Double(event.button.x), Double(event.button.y))), windowId: Int(event.button.windowID))
                     }
                 case SDL_MOUSEBUTTONUP:
-                    //let previousPressedState = pressedMouseButtons
                     self.pressedMouseButtons[.Left] = event.button.button == UInt8(SDL_BUTTON_LEFT) ? false : self.pressedMouseButtons[.Left]
                     if event.button.button == UInt8(SDL_BUTTON_LEFT) {
-                        try self.forwardMouseEvent(RawMouseButtonUpEvent(button: .Left, position: DPoint2(Double(event.button.x), Double(event.button.y))), windowId: Int(event.button.windowID))
+                        try self.forward(RawMouseButtonUpEvent(button: .Left, position: DPoint2(Double(event.button.x), Double(event.button.y))), windowId: Int(event.button.windowID))
                     }
                 case SDL_MOUSEWHEEL:
-                    //print("TIMESTAMP", event.wheel.timestamp, event.wheel.x, event.wheel.y)
-                    print("FORWARD MOUSE EVENT", self.mousePosition)
-                    try self.forwardMouseEvent(
+                    try self.forward(
                         RawMouseWheelEvent(scrollAmount: DVec2(Double(event.wheel.x), Double(event.wheel.y)), position: self.mousePosition),
-                        windowId: Int(event.wheel.windowID))//provideMouseEvent(event: MouseWheelEvent(scrollAmount: Vector(Double(event.wheel.x), Double(event.wheel.y)), position: mousePosition))
+                        windowId: Int(event.wheel.windowID))
                 case SDL_MOUSEMOTION:
                     self.mousePosition = DPoint2(Double(event.motion.x), Double(event.motion.y))
-                    try self.forwardMouseEvent(
+                    try self.forward(
                         RawMouseMoveEvent(position: self.mousePosition, previousPosition: DPoint2(Double(event.motion.x - event.motion.xrel), Double(event.motion.y - event.motion.yrel))),
                         windowId: Int(event.motion.windowID))
                 default:
