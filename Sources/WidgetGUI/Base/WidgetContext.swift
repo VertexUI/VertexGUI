@@ -5,6 +5,8 @@ public class WidgetContext {
     public internal(set) var window: Window
     private var _getTextBoundsSize: (_ text: String, _ fontConfig: FontConfig, _ maxWidth: Double?) -> DSize2
     private var _requestCursor: (_ cursor: Cursor) -> () -> Void
+    public internal(set) var focus: Widget?
+    private var unregisterOnFocusChanged: (() -> ())?
 
     public init(
         window: Window,
@@ -21,5 +23,22 @@ public class WidgetContext {
 
     public func requestCursor(_ cursor: Cursor) -> () -> Void {
         return _requestCursor(cursor)
+    }
+
+    // TODO: maybe need an extra focus context for specific areas / child trees
+    public func requestFocus(_ widget: Widget) -> Bool {
+        if let oldFocus = focus {
+            oldFocus.dropFocus()
+        }
+        focus = widget
+        unregisterOnFocusChanged = focus!.onFocusChanged { [unowned self] _ in
+            if !focus!.focused {
+                focus = nil
+                if let unregister = unregisterOnFocusChanged {
+                    unregister()
+                }
+            }
+        }
+        return true
     }
 }

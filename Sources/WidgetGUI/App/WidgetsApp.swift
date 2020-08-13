@@ -40,7 +40,10 @@ open class WidgetsApp<S: System, W: Window, R: Renderer>: VisualApp<S, W> {
             })
         guiRoot.bounds.size = window.size
         _ = window.onMouse {
-            guiRoot.consumeMouseEvent($0)
+            guiRoot.consume($0)
+        }
+        _ = window.onKey {
+            guiRoot.consume($0)
         }
         _ = window.onResize {
             guiRoot.bounds.size = $0

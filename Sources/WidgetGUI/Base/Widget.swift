@@ -32,11 +32,12 @@ open class Widget: Bounded, Parent, Child {
 
     public lazy var children: [Widget] = []
 
-    public var onParentChanged = EventHandlerManager<Parent?>()
-    public var onAnyParentChanged = EventHandlerManager<Parent?>()
-    public var onRenderStateInvalidated = EventHandlerManager<Widget>()
-    public var onBoundsChanged = EventHandlerManager<DRect>()
-    public var onDestroy = EventHandlerManager<Void>()
+    public internal(set) var onParentChanged = EventHandlerManager<Parent?>()
+    public internal(set) var onAnyParentChanged = EventHandlerManager<Parent?>()
+    public internal(set) var onRenderStateInvalidated = EventHandlerManager<Widget>()
+    public internal(set) var onBoundsChanged = EventHandlerManager<DRect>()
+    public internal(set) var onFocusChanged = EventHandlerManager<Bool>()
+    public internal(set) var onDestroy = EventHandlerManager<Void>()
     
     private var unregisterAnyParentChangedHandler: EventHandlerManager<Parent?>.UnregisterCallback?
 
@@ -60,8 +61,12 @@ open class Widget: Bounded, Parent, Child {
         }
     }
 
-    public var focusable  = false
-    public var focused = false
+    public var focusable = false
+    public internal(set) var focused = false {
+        didSet {
+            onFocusChanged.invokeHandlers(focused)
+        }
+    }
 
     public var mounted = false
     // TODO: maybe something better
@@ -239,6 +244,20 @@ open class Widget: Bounded, Parent, Child {
     }
 
     open func destroySelf() {
+    }
+
+    public func requestFocus() {
+        if focusable {
+            if context!.requestFocus(self) {
+                focused = true
+            }
+        }
+    }
+
+    public func dropFocus() {
+        if focusable {
+            focused = false
+        }
     }
 
     public final func findParent(_ condition: (_ parent: Parent) throws -> Bool) rethrows -> Parent? {

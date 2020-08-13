@@ -1,20 +1,32 @@
 import CustomGraphicsMath
 import VisualAppBase
 
-public class TextField: Widget, GUIMouseEventConsumer {
+public class TextField: Widget, GUIMouseEventConsumer, GUIKeyEventConsumer {
+    public init() {
+        super.init()
+        self.focusable = true
+    }
+
     override public func performLayout() {
-        self.bounds.size = DSize2(100, 40)
+        self.bounds.size = DSize2(50, 40)
     }
 
     public func consume(_ event: GUIMouseEvent) {
         if event is GUIMouseButtonClickEvent {
-            
+            requestFocus()
+            if focused {
+                invalidateRenderState()
+            }
+            print("FOCUSED?", focused)
         }
-        print("TEXT FIELD CONSUME EVENT")
+    }
+
+    public func consume(_ event: GUIKeyEvent) {
     }
 
     override public func renderContent() -> RenderObject? {
-        RenderObject.RenderStyle(fillColor: FixedRenderValue(.Yellow)) {
+        let color: Color = focused ? Color.Yellow : Color.Red
+        return RenderObject.RenderStyle(fillColor: FixedRenderValue(color)) {
             RenderObject.Rectangle(globalBounds)
         }
     }

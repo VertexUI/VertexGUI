@@ -30,10 +30,6 @@ public class DemoGameApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGW
         super.init(system: try! SDL2OpenGL3NanoVGSystem())
 
         let window = newWindow(guiRoot: guiRoot, background: Color(20, 20, 40, 255))
-        _ = window.onMouse { [unowned self] in
-            guiRoot.consumeMouseEvent($0)
-        }
- 
         _ = system.onFrame { [unowned self] deltaTimeMilliseconds in
             let deltaTime = Double(deltaTimeMilliseconds) / 1000
             updateQueue.sync {
@@ -74,18 +70,18 @@ public class DemoGameApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGW
                 }
 
                 Alignable(horizontal: .End) {
-                    ComputedSize {
-                        Column {
-                            TextField()
+                    Column {
+                        TextField()
                             
+                        ComputedSize {
                             Padding(all: 32) {
                                 PlayerStatsView(blob: playerBlobObservable)
                             }
+                        } calculate: {
+                            BoxConstraints(
+                                minSize: DSize2(500, $0.minSize.height),
+                                maxSize: DSize2(500, $0.maxSize.height))
                         }
-                    } calculate: {
-                        BoxConstraints(
-                            minSize: DSize2(500, $0.minSize.height),
-                            maxSize: DSize2(500, $0.maxSize.height))
                     }
                 }
             }
