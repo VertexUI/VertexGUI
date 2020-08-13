@@ -106,11 +106,22 @@ public class Text: Widget {
 
     override open func performLayout() {
         var preferredSize = DSize2.zero
-        if filledConfig.wrap {
-            preferredSize = context!.getTextBoundsSize(filledConfig.transform.apply(to: text), fontConfig: filledConfig.fontConfig, maxWidth: constraints!.maxWidth)// try context!.renderer.getMultilineTextSize(text, maxWidth: constraints!.maxWidth, fontConfig: config.fontConfig)
+
+        let transformedText = filledConfig.transform.apply(to: text)
+
+        if transformedText.isEmpty {
+         
+            preferredSize.height = context!.getTextBoundsSize(" ", fontConfig: filledConfig.fontConfig).height
+        
         } else {
-            preferredSize = context!.getTextBoundsSize(filledConfig.transform.apply(to: text), fontConfig: filledConfig.fontConfig)
+
+            if filledConfig.wrap {
+                preferredSize = context!.getTextBoundsSize(transformedText, fontConfig: filledConfig.fontConfig, maxWidth: constraints!.maxWidth)
+            } else {
+                preferredSize = context!.getTextBoundsSize(transformedText, fontConfig: filledConfig.fontConfig)
+            }
         }
+
         bounds.size = constraints!.constrain(preferredSize)
     }
 
