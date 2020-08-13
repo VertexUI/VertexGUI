@@ -6,12 +6,15 @@ public class TextInput: Widget, GUIMouseEventConsumer, GUIKeyEventConsumer, GUIT
         didSet {
             onTextChanged.invokeHandlers(text)
             textWidget.text = text
+            invalidateRenderState()
         }
     }
 
-    public internal(set) var onTextChanged = EventHandlerManager<String>()
+    private var carretPosition: Int = 0
 
     lazy private var textWidget = Text(text)
+
+    public internal(set) var onTextChanged = EventHandlerManager<String>()
 
     private var dropCursorRequest: (() -> ())?
 
@@ -49,14 +52,27 @@ public class TextInput: Widget, GUIMouseEventConsumer, GUIKeyEventConsumer, GUIT
     }
 
     public func consume(_ event: GUIKeyEvent) {
-        if let event = event as? GUIKeyUpEvent {
+        if let event = event as? GUIKeyDownEvent {
+            switch event.key {
+            case .Backspace:
+                if carretPosition > 0 && text.count >= carretPosition {
+                    text.remove(at: text.index(text.startIndex, offsetBy: carretPosition - 1))
+                    carretPosition -= 1
+                }
+            case .Delete:
+                if carretPosition < text.count {
+                    text.remove(at: text.index(text.startIndex, offsetBy: carretPosition))
+                }
+            default:
+                break
+            }
         }
     }
 
     public func consume(_ event: GUITextEvent) {
         if let event = event as? GUITextInputEvent {
-            text += event.text
-            invalidateRenderState()
+            text.insert(contentsOf: event.text, at: text.index(text.startIndex, offsetBy: carretPosition))
+            carretPosition += event.text.count
         }
     }
 

@@ -2,7 +2,6 @@ import VisualAppBase
 import CustomGraphicsMath
 import Dispatch
 
-// TODO: maybe make this the root thing to render, and have a RenderStrategy
 open class Root: Parent {
     open var context: WidgetContext? {
         didSet {
@@ -25,29 +24,26 @@ open class Root: Parent {
 
     public var rootWidget: Widget
 
-    //private var widgetRenderObjectTreeGenerator = WidgetRenderObjectTreeGenerator()
     private var renderObjectTreeRenderer: RenderObjectTreeRenderer
     private var renderObjectTree: RenderObjectTree
-    //private var renderTreeInvalidated = false
-    //private var invalidatedWidgets = [UInt: Widget]()
     
     private var mouseEventManager = WidgetTreeMouseEventManager()
 
     public var onDebuggingDataAvailable = ThrowingEventHandlerManager<RenderObjectTreeRenderer.DebuggingData>()
 
     public init(rootWidget contentRootWidget: Widget) {
-        self.rootWidget = ThemeProvider {
+        rootWidget = ThemeProvider {
             contentRootWidget
         }
-        //super.init()
-        self.renderObjectTree = RenderObjectTree()
-        self.renderObjectTreeRenderer = RenderObjectTreeRenderer(renderObjectTree)
-        self.rootWidget.mount(parent: self)
-        // TODO: maybe dangling closure
-        _ = self.rootWidget.onRenderStateInvalidated {
-            //self.renderTreeInvalidated = true
-            self.updateRenderObjectTree($0)
-            //self.invalidatedWidgets[$0.id] = $0
+        
+        renderObjectTree = RenderObjectTree()
+        
+        renderObjectTreeRenderer = RenderObjectTreeRenderer(renderObjectTree)
+        
+        rootWidget.mount(parent: self)
+        
+        _ = rootWidget.onRenderStateInvalidated { [unowned self] in
+            updateRenderObjectTree($0)
         }
     }
 
@@ -74,7 +70,7 @@ open class Root: Parent {
     /// - Parameter widget: If a specific widget is passed only the sub tree that was created by the widget will be updated.
     open func updateRenderObjectTree(_ widget: Widget? = nil) {
         if renderObjectTree.children.count == 0 {
-            // TODO: provide an insert action
+            // TODO: provide an insert function
             renderObjectTree.children.append(rootWidget.render())
             renderObjectTreeRenderer.refresh()
         } else {
@@ -90,19 +86,6 @@ open class Root: Parent {
     // TODO: --> A Game scene could also be a render object with custom logic which is redrawn on every frame by render strategy.
     open func render(with renderer: Renderer) throws {
         try renderObjectTreeRenderer.render(with: renderer, in: bounds)
-        //try renderer.clipArea(bounds: globalBounds)
-        /*if renderTreeInvalidated {
-            if invalidatedWidgets.count > 0 {
-                for widget in invalidatedWidgets.values {
-                    updateRenderObjectTree(widget)
-                }
-                invalidatedWidgets.removeAll()
-            } else {
-                updateRenderObjectTree()
-            }
-            renderTreeInvalidated = false
-        }*/
-
     }
 
     open func destroy() {

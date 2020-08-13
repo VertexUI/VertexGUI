@@ -5,14 +5,23 @@ import VisualAppBase
 public extension Key {
     init?(sdlKeycode: SDL_Keycode) {
         switch sdlKeycode {
+        case SDL_Keycode(SDLK_RETURN): self = .Return 
+        case SDL_Keycode(SDLK_KP_ENTER): self = .Enter
+        case SDL_Keycode(SDLK_BACKSPACE): self = .Backspace
+        case SDL_Keycode(SDLK_DELETE): self = .Delete
+        case SDL_Keycode(SDLK_SPACE): self = .Space
+        case SDL_Keycode(SDLK_ESCAPE): self = .Escape
+
         case SDL_Keycode(SDLK_UP): self = .ArrowUp
         case SDL_Keycode(SDLK_RIGHT): self = .ArrowRight
         case SDL_Keycode(SDLK_DOWN): self = .ArrowDown
         case SDL_Keycode(SDLK_LEFT): self = .ArrowLeft
+
         case SDL_Keycode(SDLK_a): self = .LA
         case SDL_Keycode(SDLK_s): self = .LS
         case SDL_Keycode(SDLK_d): self = .LD
         case SDL_Keycode(SDLK_w): self = .LW
+
         case SDL_Keycode(SDLK_F1): self = .F1
         case SDL_Keycode(SDLK_F2): self = .F2
         case SDL_Keycode(SDLK_F3): self = .F3
@@ -25,7 +34,6 @@ public extension Key {
         case SDL_Keycode(SDLK_F10): self = .F10
         case SDL_Keycode(SDLK_F11): self = .F11
         case SDL_Keycode(SDLK_F12): self = .F12
-        case SDL_Keycode(SDLK_ESCAPE): self = .Esc
         default: return nil
         }
     }

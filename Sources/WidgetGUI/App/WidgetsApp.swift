@@ -63,7 +63,7 @@ open class WidgetsApp<S: System, W: Window, R: Renderer>: VisualApp<S, W> {
                 }
                 let devToolsWindow = newWindow(guiRoot: devToolsGuiRoot, background: .Grey)
                 _ = devToolsWindow.onKey { [unowned devToolsWindow] in
-                    if let event = $0 as? KeyUpEvent, event.key == Key.Esc {
+                    if let event = $0 as? KeyUpEvent, event.key == Key.Escape {
                         removeDebuggingDataHandler()
                         devToolsWindow.close()
                     }

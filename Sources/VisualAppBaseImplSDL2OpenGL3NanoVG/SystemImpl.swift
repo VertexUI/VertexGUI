@@ -109,9 +109,8 @@ open class SDL2OpenGL3NanoVGSystem: System {
                         print("Key not mapped from sdl", event.key.keysym.sym, event.key.keysym.scancode, event.key.keysym.scancode == SDL_SCANCODE_Y)
                     }
                 case SDL_TEXTINPUT:
-                    if let text = String(validatingUTF8: &event.text.text.0) {
-                        forward(TextInputEvent(text), windowId: Int(event.text.windowID))
-                    }
+                    let text = String(cString: &event.text.text.0)
+                    forward(TextInputEvent(text), windowId: Int(event.text.windowID))
                 case SDL_KEYUP:
                     if let key = Key(sdlKeycode: event.key.keysym.sym) {
                         keyStates[key] = false
