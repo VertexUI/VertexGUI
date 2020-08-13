@@ -42,13 +42,16 @@ open class SDL2OpenGL3NanoVGSystem: System {
     override open func updateCursor() {
         if cursorRequests.count > 0 {
             print("HAVE CURSOR REQUEST")
-            switch Array(cursorRequests.values)[0] {
+            let cursor = Array(cursorRequests.values)[0] 
+            switch cursor {
             case .Arrow:
                 SDL_SetCursor(SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_ARROW))
             case .Hand:
                 SDL_SetCursor(SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_HAND))
+            case .Text:
+                SDL_SetCursor(SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_IBEAM))
             default:
-                break
+                fatalError("Cursor type not implemented: \(cursor)")
             }
         } else {
             SDL_SetCursor(SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_ARROW))

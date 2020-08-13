@@ -13,6 +13,8 @@ public class TextInput: Widget, GUIMouseEventConsumer, GUIKeyEventConsumer, GUIT
 
     lazy private var textWidget = Text(text)
 
+    private var dropCursorRequest: (() -> ())?
+
     public init(_ initialText: String = "") {
         self.text = initialText
         super.init()
@@ -36,6 +38,12 @@ public class TextInput: Widget, GUIMouseEventConsumer, GUIKeyEventConsumer, GUIT
             requestFocus()
             if focused {
                 invalidateRenderState()
+            }
+        } else if event is GUIMouseEnterEvent {
+            dropCursorRequest = context!.requestCursor(.Text)
+        } else if event is GUIMouseLeaveEvent {
+            if let drop = dropCursorRequest {
+                drop()
             }
         }
     }
@@ -64,5 +72,8 @@ public class TextInput: Widget, GUIMouseEventConsumer, GUIKeyEventConsumer, GUIT
 
     override public func destroySelf() {
         onTextChanged.removeAllHandlers()
+        if let drop = dropCursorRequest {
+            drop()
+        }
     }
 }
