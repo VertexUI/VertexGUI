@@ -86,8 +86,10 @@ public class Button: SingleChildWidget, StatefulWidget {
             } else if state == .Hover {
                 RenderObject.RenderStyle(
                     fillColor: TimedRenderValue(
+                        id: 0, 
                         startTimestamp: Date.timeIntervalSinceReferenceDate, 
-                        duration: 3, id: 0, valueAt: { progress in Color(UInt8(progress * 255), 0, 0, 255) })) {
+                        duration: 3,
+                        valueAt: { progress in Color(UInt8(progress * 255), 0, 0, 255) })) {
                     RenderObject.Rectangle(globalBounds)
                 }
             }

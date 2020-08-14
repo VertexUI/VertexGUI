@@ -1,3 +1,4 @@
+import Foundation
 import CustomGraphicsMath
 import VisualAppBase
 
@@ -91,8 +92,17 @@ public class TextInput: Widget, GUIMouseEventConsumer, GUIKeyEventConsumer, GUIT
         let carretBounds = DRect(min: globalBounds.min + DVec2(preCarretBounds.max.x, 0), size: carretSize)
 
         return RenderObject.Container {
-            RenderObject.RenderStyle(fillColor: FixedRenderValue(.Blue)) {
-                RenderObject.Rectangle(carretBounds)
+            if focused {
+                RenderObject.RenderStyle(
+                    fillColor: TimedRenderValue(
+                        id: 0, 
+                        startTimestamp: Date.timeIntervalSinceReferenceDate, 
+                        duration: 1, 
+                        repetitions: 0) {
+                            Color(100, 100, 255, $0 > 0.5 ? 255 : 0) 
+                    }) {
+                        RenderObject.Rectangle(carretBounds)
+                    }
             }
 
             textWidget.render()
