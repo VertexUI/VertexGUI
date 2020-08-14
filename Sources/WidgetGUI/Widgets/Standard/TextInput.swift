@@ -2,7 +2,13 @@ import Foundation
 import CustomGraphicsMath
 import VisualAppBase
 
-public class TextInput: Widget, GUIMouseEventConsumer, GUIKeyEventConsumer, GUITextEventConsumer {
+public class TextInput: Widget, StatefulWidget, GUIMouseEventConsumer, GUIKeyEventConsumer, GUITextEventConsumer {
+    public struct State {
+        public var carretBlinkStartTimestamp: Double = Date.timeIntervalSinceReferenceDate
+    }
+
+    public var state = State()
+    
     public internal(set) var text: String
 
     private var carretPosition: Int = 0
@@ -96,7 +102,7 @@ public class TextInput: Widget, GUIMouseEventConsumer, GUIKeyEventConsumer, GUIT
                 RenderObject.RenderStyle(
                     fillColor: TimedRenderValue(
                         id: 0, 
-                        startTimestamp: Date.timeIntervalSinceReferenceDate, 
+                        startTimestamp: state.carretBlinkStartTimestamp, 
                         duration: 1, 
                         repetitions: 0) {
                             Color(100, 100, 255, $0 > 0.5 ? 255 : 0) 
