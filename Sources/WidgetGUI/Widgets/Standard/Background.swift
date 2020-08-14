@@ -2,24 +2,32 @@ import CustomGraphicsMath
 import VisualAppBase
 
 open class Background: SingleChildWidget {
+    public struct Config {
+        public var fill: Color
+        public var shape: Shape
+    }
+
     public enum Shape {       
         case Rectangle
         case RoundedRectangle(_ cornerRadii: CornerRadii)
     }
     
-    open var background: Color
-    open var shape: Shape
+    private var config: Config
 
     private var inputChild: Widget
 
     public init(
-        _ background: Color,
+        config: Config,
+        @WidgetBuilder child inputChildBuilder: () -> Widget) {
+            self.config = config
+            self.inputChild = inputChildBuilder()
+    }
+
+    public convenience init(
+        fill: Color,
         shape: Shape = .Rectangle,
         @WidgetBuilder child inputChildBuilder: () -> Widget) {
-            self.background = background
-            self.shape = shape
-            self.inputChild = inputChildBuilder()
-            super.init()
+            self.init(config: Config(fill: fill, shape: shape), child: inputChildBuilder)
     }
 
     override open func buildChild() -> Widget {
@@ -32,16 +40,12 @@ open class Background: SingleChildWidget {
         bounds.size = constraints!.constrain(child.bounds.size)
     }
 
-    /*override open func render(renderer: R) throws {
-        try renderer.rectangle(globalBounds, style: RenderStyle(fillColor: backgroundColor))
-        try child.render(renderer: renderer)
-    }*/
     override open func renderContent() -> RenderObject? {
         return .Container { [unowned self] in
-            RenderObject.RenderStyle(fillColor: FixedRenderValue(background)) {
-                if case let .Rectangle = shape {
+            RenderObject.RenderStyle(fillColor: FixedRenderValue(config.fill)) {
+                if case .Rectangle = config.shape {
                     RenderObject.Rectangle(globalBounds)
-                } else if case let .RoundedRectangle(cornerRadii) = shape {
+                } else if case let .RoundedRectangle(cornerRadii) = config.shape {
                     RenderObject.Rectangle(globalBounds, cornerRadii: cornerRadii)
                 }
             }

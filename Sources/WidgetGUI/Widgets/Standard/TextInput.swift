@@ -3,15 +3,39 @@ import CustomGraphicsMath
 import VisualAppBase
 
 public class TextInput: Widget, StatefulWidget, GUIMouseEventConsumer, GUIKeyEventConsumer, GUITextEventConsumer {
-    public struct State {
-        public var carretBlinkStartTimestamp: Double = Date.timeIntervalSinceReferenceDate
+    public struct Config {
+        public init(caretColor: Color) {
+            self.caretColor = caretColor
+        }
+
+        public init(partials: [PartialConfig], default defaultConfig: Config) {
+            var caretColor: Color?
+            for partial in partials {
+                caretColor = partial.caretColor ?? caretColor
+            }
+            self.caretColor = caretColor ?? defaultConfig.caretColor
+        }
+        
+        public var caretColor: Color
     }
+
+    public struct PartialConfig {
+        public var caretColor: Color?
+    }
+
+    public static let defaultConfig = Config(caretColor: .Blue)
+    
+    public struct State {
+        public var caretBlinkStartTimestamp: Double = Date.timeIntervalSinceReferenceDate
+    }
+
+    private var config: Config
 
     public var state = State()
     
     public internal(set) var text: String
 
-    private var carretPosition: Int = 0
+    private var caretPosition: Int = 0
 
     lazy private var textWidget = Text(text)
 
@@ -19,10 +43,15 @@ public class TextInput: Widget, StatefulWidget, GUIMouseEventConsumer, GUIKeyEve
 
     private var dropCursorRequest: (() -> ())?
 
-    public init(_ initialText: String = "") {
+    public init(_ initialText: String = "", config: Config = TextInput.defaultConfig) {
         self.text = initialText
+        self.config = config //!= nil ? Config(partials: [config!], default: Self.defaultConfig) : Self.defaultConfig
         super.init()
         self.focusable = true
+    }
+
+    public convenience init(_ initialText: String = "", caretColor: Color) {
+        self.init(initialText, config: Config(caretColor: caretColor))
     }
 
     override public func build() {
@@ -62,17 +91,17 @@ public class TextInput: Widget, StatefulWidget, GUIMouseEventConsumer, GUIKeyEve
         if let event = event as? GUIKeyDownEvent {
             switch event.key {
             case .Backspace:
-                if carretPosition > 0 && text.count >= carretPosition {
+                if caretPosition > 0 && text.count >= caretPosition {
                     invalidateRenderState {
-                        text.remove(at: text.index(text.startIndex, offsetBy: carretPosition - 1))
-                        carretPosition -= 1
+                        text.remove(at: text.index(text.startIndex, offsetBy: caretPosition - 1))
+                        caretPosition -= 1
                         syncText()
                     }
                 }
             case .Delete:
-                if carretPosition < text.count {
+                if caretPosition < text.count {
                     invalidateRenderState {
-                        text.remove(at: text.index(text.startIndex, offsetBy: carretPosition))
+                        text.remove(at: text.index(text.startIndex, offsetBy: caretPosition))
                         syncText()
                     }
                 }
@@ -85,29 +114,29 @@ public class TextInput: Widget, StatefulWidget, GUIMouseEventConsumer, GUIKeyEve
     public func consume(_ event: GUITextEvent) {
         if let event = event as? GUITextInputEvent {
             invalidateRenderState {
-                text.insert(contentsOf: event.text, at: text.index(text.startIndex, offsetBy: carretPosition))
-                carretPosition += event.text.count
+                text.insert(contentsOf: event.text, at: text.index(text.startIndex, offsetBy: caretPosition))
+                caretPosition += event.text.count
                 syncText()
             }
         }
     }
 
     override public func renderContent() -> RenderObject? {
-        let preCarretBounds = textWidget.getSubBounds(to: carretPosition)
-        let carretSize = DSize2(5, globalBounds.size.height)
-        let carretBounds = DRect(min: globalBounds.min + DVec2(preCarretBounds.max.x, 0), size: carretSize)
+        let preCaretBounds = textWidget.getSubBounds(to: caretPosition)
+        let caretSize = DSize2(5, globalBounds.size.height)
+        let caretBounds = DRect(min: globalBounds.min + DVec2(preCaretBounds.max.x, 0), size: caretSize)
 
         return RenderObject.Container {
             if focused {
                 RenderObject.RenderStyle(
                     fillColor: TimedRenderValue(
                         id: 0, 
-                        startTimestamp: state.carretBlinkStartTimestamp, 
+                        startTimestamp: state.caretBlinkStartTimestamp, 
                         duration: 1, 
                         repetitions: 0) {
                             Color(100, 100, 255, $0 > 0.5 ? 255 : 0) 
                     }) {
-                        RenderObject.Rectangle(carretBounds)
+                        RenderObject.Rectangle(caretBounds)
                     }
             }
 

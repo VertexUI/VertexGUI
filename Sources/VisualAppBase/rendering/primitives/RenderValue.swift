@@ -1,3 +1,4 @@
+// TODO: might rename to just Value, FixedValue, TimedValue to have a more neutral name if maybe used as Widget params
 public protocol RenderValue: Hashable {
     associatedtype Value: Hashable
 }

@@ -53,7 +53,7 @@ public class DemoGameApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGW
     private func buildGuiRoot() -> Root {
         Root(rootWidget: Column {
             ComputedSize {
-                Background(Color(40, 40, 80, 255)) {
+                Background(fill:Color(40, 40, 80, 255)) {
                     Padding(all: 32) {
                         Text("An awesome game.", config: Text.PartialConfig(
                             fontConfig: PartialFontConfig(size: 24, weight: .Bold),

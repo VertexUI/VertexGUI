@@ -134,7 +134,7 @@ public class Text: Widget {
         bounds.size = constraints!.constrain(preferredSize)
     }
 
-    /// This function is used in TextInput to get the coordinates where the carret should be displayed.
+    /// This function is used in TextInput to get the coordinates where the caret should be displayed.
     /// - Returns: The local bounding rect (origin: self -> topLeft) up to (including) the specified index inside the text.
     /// - Parameter to: Up to which character index (including the index) to return the bounds.
     /// - Misc:

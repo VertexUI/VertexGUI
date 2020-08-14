@@ -11,7 +11,7 @@ public class PlayerStatsView: SingleChildWidget {
     }
 
     override open func buildChild() -> Widget {
-        Background(
+        Background(fill:
             Color(0, 0, 0, 200), 
             shape: .RoundedRectangle(CornerRadii(all: 16))) { [unowned self] in
                 Padding(top: 32, right: 32, bottom: 48, left: 32) {

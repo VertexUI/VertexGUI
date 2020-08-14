@@ -58,11 +58,11 @@ public class RenderGroupsListView: SingleChildWidget, StatefulWidget {
 
             print("GROUP COUNT", groups.count)
 
-            return Background( .White) {
+            return Background(fill: .White) {
                 Row {
                     ScrollArea {
                         Column {
-                            Background( .Blue) {
+                            Background(fill: .Blue) {
                                 Space(size: DSize2(400, 400))
                             }
                             groups.compactMap { $0 }
@@ -92,7 +92,7 @@ public class RenderGroupsListView: SingleChildWidget, StatefulWidget {
 
         return Column {
             MouseArea(onClick: { _ in self.onObjectClick(object, at: path) }) {
-                Background( background) {
+                Background(fill: background) {
                     Padding(padding: Insets(16)) {
                         Text(String(describing: object))
                     }
