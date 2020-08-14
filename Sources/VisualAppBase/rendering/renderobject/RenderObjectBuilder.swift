@@ -92,6 +92,15 @@ public struct RenderObjectBuilder {
         return second
     }
 
+
+    public static func buildArray(_ renderObjects: [RenderObject]) -> [RenderObject] {
+        return renderObjects
+    }
+
+    public static func buildArray(_ renderObjects: [[RenderObject]]) -> [RenderObject] {
+        return renderObjects.flatMap { $0 }
+    }
+
     /*public static func buildOptional(_ renderObject: [RenderObject?]) -> [RenderObject?] {
         return renderObject
     }*/
