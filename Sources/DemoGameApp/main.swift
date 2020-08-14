@@ -71,7 +71,7 @@ public class DemoGameApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGW
 
                 Alignable(horizontal: .End) {
                     Column {
-                        TextInput()
+                        TextField()
                             
                         ComputedSize {
                             Padding(all: 32) {
