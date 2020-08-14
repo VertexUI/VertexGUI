@@ -129,7 +129,36 @@ public class Text: Widget {
             }
         }
 
+        preferredSize.width += 1
+
         bounds.size = constraints!.constrain(preferredSize)
+    }
+
+    /// This function is used in TextInput to get the coordinates where the carret should be displayed.
+    /// - Returns: The local bounding rect (origin: self -> topLeft) up to (including) the specified index inside the text.
+    /// - Parameter to: Up to which character index (including the index) to return the bounds.
+    /// - Misc:
+    /// TODO: maybe put this somewhere else
+    public func getSubBounds(to index: Int) -> DRect {
+        var preferredSize = DSize2.zero
+
+        let partialText = text.substring(to: text.index(text.startIndex, offsetBy: index))
+        let transformedText = filledConfig.transform.apply(to: partialText)
+
+        if transformedText.isEmpty {
+         
+            preferredSize.height = context!.getTextBoundsSize(" ", fontConfig: filledConfig.fontConfig).height
+        
+        } else {
+
+            if filledConfig.wrap {
+                preferredSize = context!.getTextBoundsSize(transformedText, fontConfig: filledConfig.fontConfig, maxWidth: constraints!.maxWidth)
+            } else {
+                preferredSize = context!.getTextBoundsSize(transformedText, fontConfig: filledConfig.fontConfig)
+            }
+        }
+
+        return DRect(min: .zero, max: DVec2(preferredSize))
     }
 
     override public func renderContent() -> RenderObject? {

@@ -2,13 +2,7 @@ import CustomGraphicsMath
 import VisualAppBase
 
 public class TextInput: Widget, GUIMouseEventConsumer, GUIKeyEventConsumer, GUITextEventConsumer {
-    public internal(set) var text: String {
-        didSet {
-            onTextChanged.invokeHandlers(text)
-            textWidget.text = text
-            invalidateRenderState()
-        }
-    }
+    public internal(set) var text: String
 
     private var carretPosition: Int = 0
 
@@ -25,6 +19,7 @@ public class TextInput: Widget, GUIMouseEventConsumer, GUIKeyEventConsumer, GUIT
     }
 
     override public func build() {
+        textWidget.text = text
         children = [textWidget]
     }
 
@@ -34,6 +29,11 @@ public class TextInput: Widget, GUIMouseEventConsumer, GUIKeyEventConsumer, GUIT
             maxSize: constraints!.maxSize)
         textWidget.layout()
         bounds.size = textWidget.bounds.size
+    }
+
+    private func syncText() {
+        textWidget.text = text
+        onTextChanged.invokeHandlers(text)
     }
 
     public func consume(_ event: GUIMouseEvent) {
@@ -56,12 +56,18 @@ public class TextInput: Widget, GUIMouseEventConsumer, GUIKeyEventConsumer, GUIT
             switch event.key {
             case .Backspace:
                 if carretPosition > 0 && text.count >= carretPosition {
-                    text.remove(at: text.index(text.startIndex, offsetBy: carretPosition - 1))
-                    carretPosition -= 1
+                    invalidateRenderState {
+                        text.remove(at: text.index(text.startIndex, offsetBy: carretPosition - 1))
+                        carretPosition -= 1
+                        syncText()
+                    }
                 }
             case .Delete:
                 if carretPosition < text.count {
-                    text.remove(at: text.index(text.startIndex, offsetBy: carretPosition))
+                    invalidateRenderState {
+                        text.remove(at: text.index(text.startIndex, offsetBy: carretPosition))
+                        syncText()
+                    }
                 }
             default:
                 break
@@ -71,16 +77,23 @@ public class TextInput: Widget, GUIMouseEventConsumer, GUIKeyEventConsumer, GUIT
 
     public func consume(_ event: GUITextEvent) {
         if let event = event as? GUITextInputEvent {
-            text.insert(contentsOf: event.text, at: text.index(text.startIndex, offsetBy: carretPosition))
-            carretPosition += event.text.count
+            invalidateRenderState {
+                text.insert(contentsOf: event.text, at: text.index(text.startIndex, offsetBy: carretPosition))
+                carretPosition += event.text.count
+                syncText()
+            }
         }
     }
 
     override public func renderContent() -> RenderObject? {
-        let color: Color = focused ? Color.Yellow : Color.Red
-        
-        return RenderObject.RenderStyle(fillColor: FixedRenderValue(color)) {
-            RenderObject.Rectangle(globalBounds)
+        let preCarretBounds = textWidget.getSubBounds(to: carretPosition)
+        let carretSize = DSize2(5, globalBounds.size.height)
+        let carretBounds = DRect(min: globalBounds.min + DVec2(preCarretBounds.max.x, 0), size: carretSize)
+
+        return RenderObject.Container {
+            RenderObject.RenderStyle(fillColor: FixedRenderValue(.Blue)) {
+                RenderObject.Rectangle(carretBounds)
+            }
 
             textWidget.render()
         }

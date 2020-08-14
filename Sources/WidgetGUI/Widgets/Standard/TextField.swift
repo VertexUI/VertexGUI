@@ -10,19 +10,21 @@ public class TextField: Widget {
         if let handler = textChangedHandler {
             _ = onDestroy(textInput.onTextChanged(handler))
         }
-        _ = onDestroy(textInput.onRenderStateInvalidated { [unowned self] _ in
-            invalidateRenderState()
-        })
     }
 
     override public func build() {
-        children = [textInput]
+        children = [
+            Padding(all: 8) {
+                textInput
+            }
+        ]
     }
 
     override public func performLayout() {
-        textInput.constraints = constraints
-        textInput.layout()
-        bounds.size = textInput.bounds.size
+        let child = children[0]
+        child.constraints = constraints
+        child.layout()
+        bounds.size = child.bounds.size
     }
 
     override public func renderContent() -> RenderObject? {
@@ -31,7 +33,9 @@ public class TextField: Widget {
                 RenderObject.Rectangle(globalBounds)
             }
             
-            textInput.render()
+            for child in children {
+                child.render()
+            }
         }
     }
 }

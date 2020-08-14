@@ -83,10 +83,14 @@ open class Widget: Bounded, Parent, Child {
         didSet {
             // TODO: maybe let the parent list for onUpdateBounds on it's children instead of calling the parent
             if oldValue != bounds {
-                onBoundsChanged.invokeHandlers(bounds)
+                if mounted && layouted && !destroyed {
+                    onBoundsChanged.invokeHandlers(bounds)
                 //if let parent = self.parent {
                     //try! parent.relayout()
                 //}
+                    invalidateRenderState()
+                    //print("BOUNDS UPDATED", self)
+                }
             }
         }
     }
@@ -233,6 +237,7 @@ open class Widget: Bounded, Parent, Child {
         for child in children {
             child.destroy()
         }
+        mounted = false
         onParentChanged.removeAllHandlers()
         onAnyParentChanged.removeAllHandlers()
         onRenderStateInvalidated.removeAllHandlers()
@@ -317,6 +322,11 @@ open class Widget: Bounded, Parent, Child {
         }
         let widget = widget ?? self
         try! onRenderStateInvalidated.invokeHandlers(widget)
+    }
+
+    public final func invalidateRenderState(after block: () -> ()) {
+        block()
+        invalidateRenderState()
     }
 
     /// Returns the result of renderContent() wrapped in an IdentifiedSubTreeRenderObject

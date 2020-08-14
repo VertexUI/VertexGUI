@@ -76,8 +76,9 @@ open class Root: Parent {
         } else {
             var updatedWidget = widget ?? rootWidget
             var updatedSubTree = updatedWidget.render()
-            let update = renderObjectTree.replace(updatedSubTree)
-            renderObjectTreeRenderer.processUpdate(update)
+            if let update = renderObjectTree.replace(updatedSubTree) {
+                renderObjectTreeRenderer.processUpdate(update)
+            }
         }
         try! onDebuggingDataAvailable.invokeHandlers(renderObjectTreeRenderer.debuggingData)
     }

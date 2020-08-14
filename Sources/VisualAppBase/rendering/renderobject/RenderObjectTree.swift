@@ -148,7 +148,7 @@ public class RenderObjectTree: SubTreeRenderObject {
         }
         return (updatedRenderObjects, updatePath)
     }*/
-    public func replace(_ identifiedSubTree: IdentifiedSubTreeRenderObject) -> Update {
+    public func replace(_ identifiedSubTree: IdentifiedSubTreeRenderObject) -> Update? {
         //let identifiedPath = idPaths[identifiedSubTree.id]!
 
         var replacedIdentifiedSubTreePath: TreePath?
@@ -204,12 +204,12 @@ public class RenderObjectTree: SubTreeRenderObject {
             fatalError("Could not generate a new tree in updated().")
         }
 
-        guard let unwrappedReplacedIdentifiedSubTree = replacedIdentifiedSubTree, let replacedPath = replacedIdentifiedSubTreePath else {
-            fatalError("No SubTree with same id was present.")
+        if let unwrappedReplacedIdentifiedSubTree = replacedIdentifiedSubTree, let replacedPath = replacedIdentifiedSubTreePath {
+            return .Replace(path: replacedPath, old: unwrappedReplacedIdentifiedSubTree, new: identifiedSubTree)
+        } else {
+            //print("Warning: No SubTree with same id was present: \(identifiedSubTree.id)")
+            return nil
         }
-
-        //let (replacedC updatePath) = replaceRecursively(children, TreePath([]), identifiedSubTree)
-        return .Replace(path: replacedPath, old: unwrappedReplacedIdentifiedSubTree, new: identifiedSubTree)
     }
 
     /// - Warnings: Unused, untested
