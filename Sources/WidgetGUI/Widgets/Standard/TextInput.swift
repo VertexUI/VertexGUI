@@ -4,16 +4,16 @@ import VisualAppBase
 
 public final class TextInput: Widget, StatefulWidget, ConfigurableWidget, GUIMouseEventConsumer, GUIKeyEventConsumer, GUITextEventConsumer {
     public struct Config: WidgetGUI.Config {
-        public var textConfig: Text.Config
+        public var textConfig: Text.PartialConfig
         public var caretColor: Color
         
-        public init(textConfig: Text.Config, caretColor: Color) {
+        public init(textConfig: Text.PartialConfig, caretColor: Color) {
             self.textConfig = textConfig
             self.caretColor = caretColor
         }
 
         public init(partial partialConfig: PartialConfig?, default defaultConfig: Config) {
-            self.textConfig = Text.Config(partial: partialConfig?.textConfig, default: defaultConfig.textConfig)
+            self.textConfig = Text.PartialConfig(partials: [partialConfig?.textConfig, defaultConfig.textConfig].compactMap { $0 })
             self.caretColor = partialConfig?.caretColor ?? defaultConfig.caretColor
         }
     }
@@ -43,7 +43,7 @@ public final class TextInput: Widget, StatefulWidget, ConfigurableWidget, GUIMou
     }
 
     public static let defaultConfig = Config(
-        textConfig: Text.defaultConfig,
+        textConfig: Text.PartialConfig(),
         caretColor: Color(80, 255, 240, 255))
     
     public struct State {
@@ -60,7 +60,7 @@ public final class TextInput: Widget, StatefulWidget, ConfigurableWidget, GUIMou
 
     private var caretPosition: Int = 0
 
-    lazy private var textWidget = Text(text)
+    lazy private var textWidget = Text(text).with(config: config.textConfig)
 
     public internal(set) var onTextChanged = EventHandlerManager<String>()
 

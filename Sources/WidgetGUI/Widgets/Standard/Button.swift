@@ -63,7 +63,7 @@ public class Button: SingleChildWidget, StatefulWidget {
             state = .Normal
             dropCursorRequest!()
         }) {
-            Padding(all: 16) {
+            Padding(all: 16) { [unowned self] in
                 TextConfigProvider(config: defaultButtonTextConfig) {
                     inputChild
                 }

@@ -19,10 +19,7 @@ public class PlayerStatsView: SingleChildWidget {
                     TextConfigProvider(fontSize: 20, color: .White, wrap: false) {
                         ObservingBuilder(AnyObservable(blob)) {
                             Column(spacing: 32) {
-                                Text(
-                                    "Stats",
-                                    config: Text.PartialConfig(
-                                        fontConfig: PartialFontConfig(size: 24, weight: .Bold), color: .White))
+                                Text("Stats", fontSize: 24, fontWeight: .Bold, color: .White)
 
                                 Text("Id: \(blob.value.id)")
 

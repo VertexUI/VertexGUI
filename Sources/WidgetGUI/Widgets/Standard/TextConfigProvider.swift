@@ -1,14 +1,9 @@
 import VisualAppBase
 import CustomGraphicsMath
 
-public class TextConfigProvider: SingleChildWidget {
-    public var config: Text.PartialConfig
-    private var inputChild: Widget
-
-    public init(config: Text.PartialConfig, @WidgetBuilder child inputChild: () -> Widget) {
-        self.config = config
-        self.inputChild = inputChild()
-        super.init()
+public class TextConfigProvider: ConfigProvider {
+    public init(config: Text.PartialConfig, @WidgetBuilder child childBuilder: @escaping () -> Widget) {
+        super.init(configs: [config], child: childBuilder)
     }
 
     public convenience init(
@@ -19,7 +14,7 @@ public class TextConfigProvider: SingleChildWidget {
         transform: TextTransform? = nil,
         color: Color? = nil,
         wrap: Bool? = nil,
-        @WidgetBuilder child childBuilder: () -> Widget
+        @WidgetBuilder child childBuilder: @escaping () -> Widget
         ) {
             self.init(config: Text.PartialConfig(
                 fontConfig: PartialFontConfig(
@@ -32,9 +27,5 @@ public class TextConfigProvider: SingleChildWidget {
                 color: color,
                 wrap: wrap
             ), child: childBuilder)
-    }
-
-    override open func buildChild() -> Widget {
-        inputChild
     }
 }

@@ -13,7 +13,7 @@ public class TextField: Widget {
 
         public init(partial partialConfig: PartialConfig?, default defaultConfig: Config) {
             self.backgroundConfig = partialConfig?.backgroundConfig ?? defaultConfig.backgroundConfig
-            self.textInputConfig = partialConfig?.textInputConfig ?? defaultConfig.textInputConfig
+            self.textInputConfig = TextInput.PartialConfig(partials: [partialConfig?.textInputConfig, defaultConfig.textInputConfig].compactMap { $0 })
         }
     }
 

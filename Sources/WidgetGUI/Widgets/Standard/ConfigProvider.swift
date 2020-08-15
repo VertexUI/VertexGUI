@@ -7,8 +7,12 @@ public class ConfigProvider: SingleChildWidget {
         self.childBuilder = childBuilder
     }
 
+    public convenience init(configs: PartialConfigMarker..., @WidgetBuilder child childBuilder: @escaping () -> Widget) {
+        self.init(configs: configs, child: childBuilder)
+    }
+
     override public func buildChild() -> Widget {
-        return childBuilder()
+        childBuilder()
     }
 
     public func retrieveConfig<Config: PartialConfig>(ofType configType: Config.Type) -> Config? {

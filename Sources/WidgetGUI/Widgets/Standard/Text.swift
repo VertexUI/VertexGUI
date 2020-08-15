@@ -6,8 +6,8 @@ import Foundation
 import CustomGraphicsMath
 import VisualAppBase
 
-public class Text: Widget {
-    public struct PartialConfig {
+public final class Text: Widget, ConfigurableWidget {
+    public struct PartialConfig: WidgetGUI.PartialConfig {
         public var fontConfig: PartialFontConfig?
         public var transform: TextTransform?
         public var color: Color?
@@ -38,7 +38,7 @@ public class Text: Widget {
         }
     }
 
-    public struct Config: Hashable {
+    public struct Config: WidgetGUI.Config, Hashable {
         public var fontConfig: FontConfig
         public var transform: TextTransform
         public var color: Color
@@ -76,10 +76,15 @@ public class Text: Widget {
             style: .Normal
         ), transform: .None, color: .Black, wrap: true)
 
-    weak public var textConfigProvider: TextConfigProvider?
-    public var config: PartialConfig?
+    public var localPartialConfig: PartialConfig?
+    public var localConfig: Config?
+    lazy public var config: Config = combineConfigs()
 
-    public var filledConfig: Config {
+    //weak public var textConfigProvider: TextConfigProvider?
+    
+    /*public var config: PartialConfig?
+
+    public var config: Config {
         let ownConfig = config
         let providerConfig = textConfigProvider?.config
         let defaultConfig = Text.defaultConfig
@@ -97,15 +102,11 @@ public class Text: Widget {
             color: ownConfig?.color ?? providerConfig?.color ?? Text.defaultConfig.color,
             wrap: ownConfig?.wrap ?? providerConfig?.wrap ?? Text.defaultConfig.wrap
         )
-    }
+    }*/
 
-    public init(_ text: String, config: PartialConfig? = nil) {
+    public init(_ text: String) {
         self.text = text
-        self.config = config
         super.init()
-        _ = onAnyParentChanged { [unowned self] _ in
-            textConfigProvider = getParent(ofType: TextConfigProvider.self)
-        }
     }
 
     public convenience init(
@@ -118,7 +119,8 @@ public class Text: Widget {
         color: Color? = nil,
         wrap: Bool? = nil
         ) {
-            self.init(text, config: PartialConfig(
+            self.init(text)
+            with(config: PartialConfig(
                 fontConfig: PartialFontConfig(
                     family: fontFamily,
                     size: fontSize,
@@ -131,21 +133,21 @@ public class Text: Widget {
             ))
     }
 
-    override open func performLayout() {
+    override public func performLayout() {
         var preferredSize = DSize2.zero
 
-        let transformedText = filledConfig.transform.apply(to: text)
+        let transformedText = config.transform.apply(to: text)
 
         if transformedText.isEmpty {
          
-            preferredSize.height = context!.getTextBoundsSize(" ", fontConfig: filledConfig.fontConfig).height
+            preferredSize.height = context!.getTextBoundsSize(" ", fontConfig: config.fontConfig).height
         
         } else {
 
-            if filledConfig.wrap {
-                preferredSize = context!.getTextBoundsSize(transformedText, fontConfig: filledConfig.fontConfig, maxWidth: constraints!.maxWidth)
+            if config.wrap {
+                preferredSize = context!.getTextBoundsSize(transformedText, fontConfig: config.fontConfig, maxWidth: constraints!.maxWidth)
             } else {
-                preferredSize = context!.getTextBoundsSize(transformedText, fontConfig: filledConfig.fontConfig)
+                preferredSize = context!.getTextBoundsSize(transformedText, fontConfig: config.fontConfig)
             }
         }
 
@@ -163,18 +165,18 @@ public class Text: Widget {
         var preferredSize = DSize2.zero
 
         let partialText = text.substring(to: text.index(text.startIndex, offsetBy: index))
-        let transformedText = filledConfig.transform.apply(to: partialText)
+        let transformedText = config.transform.apply(to: partialText)
 
         if transformedText.isEmpty {
          
-            preferredSize.height = context!.getTextBoundsSize(" ", fontConfig: filledConfig.fontConfig).height
+            preferredSize.height = context!.getTextBoundsSize(" ", fontConfig: config.fontConfig).height
         
         } else {
 
-            if filledConfig.wrap {
-                preferredSize = context!.getTextBoundsSize(transformedText, fontConfig: filledConfig.fontConfig, maxWidth: constraints!.maxWidth)
+            if config.wrap {
+                preferredSize = context!.getTextBoundsSize(transformedText, fontConfig: config.fontConfig, maxWidth: constraints!.maxWidth)
             } else {
-                preferredSize = context!.getTextBoundsSize(transformedText, fontConfig: filledConfig.fontConfig)
+                preferredSize = context!.getTextBoundsSize(transformedText, fontConfig: config.fontConfig)
             }
         }
 
@@ -182,6 +184,6 @@ public class Text: Widget {
     }
 
     override public func renderContent() -> RenderObject? {
-        return .Text(filledConfig.transform.apply(to: text), fontConfig: filledConfig.fontConfig, color: filledConfig.color, topLeft: globalPosition, wrap: filledConfig.wrap, maxWidth: bounds.size.width)
+        return .Text(config.transform.apply(to: text), fontConfig: config.fontConfig, color: config.color, topLeft: globalPosition, wrap: config.wrap, maxWidth: bounds.size.width)
     }
 }
