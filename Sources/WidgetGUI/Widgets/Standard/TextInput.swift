@@ -146,7 +146,7 @@ public final class TextInput: Widget, StatefulWidget, ConfigurableWidget, GUIMou
 
     override public func renderContent() -> RenderObject? {
         let preCaretBounds = textWidget.getSubBounds(to: caretPosition)
-        let caretSize = DSize2(5, globalBounds.size.height)
+        let caretSize = DSize2(textWidget.config.fontConfig.size * 0.1, globalBounds.size.height)
         let caretBounds = DRect(min: globalBounds.min + DVec2(preCaretBounds.max.x, 0), size: caretSize)
 
         return RenderObject.Container { [unowned self] in
@@ -154,10 +154,11 @@ public final class TextInput: Widget, StatefulWidget, ConfigurableWidget, GUIMou
                 RenderObject.RenderStyle(
                     fillColor: TimedRenderValue(
                         id: 0, 
-                        startTimestamp: state.caretBlinkStartTimestamp, 
+                        startTimestamp: Date.timeIntervalSinceReferenceDate, 
                         duration: 1, 
                         repetitions: 0) {
-                            config.caretColor.adjusted(alpha: $0 > 0.5 ? 255 : 0) 
+                            let alphaFactor = max(0, min(1, 6 * pow($0 - 0.5, 2) - 0.2))
+                            return config.caretColor.adjusted(alpha: UInt8(255 * alphaFactor)) 
                     }) {
                         RenderObject.Rectangle(caretBounds)
                     }

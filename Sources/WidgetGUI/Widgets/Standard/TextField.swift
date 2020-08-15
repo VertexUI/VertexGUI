@@ -12,7 +12,6 @@ public final class TextField: Widget, ConfigurableWidget {
         }
 
         public init(partial partialConfig: PartialConfig?, default defaultConfig: Config) {
-            print("BUILD TextField Config", partialConfig?.backgroundConfig)
             self.backgroundConfig = partialConfig?.backgroundConfig ?? defaultConfig.backgroundConfig
             self.textInputConfig = TextInput.PartialConfig(partials: [partialConfig?.textInputConfig, defaultConfig.textInputConfig].compactMap { $0 })
         }
@@ -33,7 +32,6 @@ public final class TextField: Widget, ConfigurableWidget {
             for partial in partials.reversed() {
 
                 self.backgroundConfig = partial.backgroundConfig ?? self.backgroundConfig
-                print("MERGE PARTIALS TEXT FIELD", self.backgroundConfig)
 
                 if let partial = partial.textInputConfig {
                     textInputConfigs.append(partial)
@@ -73,7 +71,7 @@ public final class TextField: Widget, ConfigurableWidget {
 
         children = [
             Background(config: config.backgroundConfig) {
-                Padding(all: 8) {
+                Padding(all: 16) {
                     textInput
                 }
             }
