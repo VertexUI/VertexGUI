@@ -43,7 +43,7 @@ public final class TextInput: Widget, StatefulWidget, ConfigurableWidget, GUIMou
     }
 
     public static let defaultConfig = Config(
-        textConfig: Text.PartialConfig(),
+        textConfig: Text.PartialConfig(fontConfig: PartialFontConfig(size: 24)),
         caretColor: Color(80, 255, 240, 255))
     
     public struct State {

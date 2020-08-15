@@ -19,7 +19,7 @@ public class PlayerStatsView: SingleChildWidget {
                     TextConfigProvider(fontSize: 20, color: .White, wrap: false) {
                         ObservingBuilder(AnyObservable(blob)) {
                             Column(spacing: 32) {
-                                Text("Stats", fontSize: 24, fontWeight: .Bold, color: .White)
+                                Text("Stats", fontSize: 48, fontWeight: .Bold, color: .White)
 
                                 Text("Id: \(blob.value.id)")
 

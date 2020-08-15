@@ -29,7 +29,7 @@ public class TextField: Widget {
         public init(partials: [PartialConfig]) {
             var textInputConfigs = [TextInput.PartialConfig]()
             
-            for partial in partials {
+            for partial in partials.reversed() {
 
                 self.backgroundConfig = partial.backgroundConfig ?? self.backgroundConfig
 

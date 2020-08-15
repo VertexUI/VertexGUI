@@ -26,7 +26,7 @@ public final class Text: Widget, ConfigurableWidget {
 
         public init(partials: [PartialConfig]) {
             var fontConfigs = [PartialFontConfig]()
-            for partial in partials {
+            for partial in partials.reversed() {
                 if let partial = partial.fontConfig {
                     fontConfigs.append(partial)
                 }
@@ -79,30 +79,6 @@ public final class Text: Widget, ConfigurableWidget {
     public var localPartialConfig: PartialConfig?
     public var localConfig: Config?
     lazy public var config: Config = combineConfigs()
-
-    //weak public var textConfigProvider: TextConfigProvider?
-    
-    /*public var config: PartialConfig?
-
-    public var config: Config {
-        let ownConfig = config
-        let providerConfig = textConfigProvider?.config
-        let defaultConfig = Text.defaultConfig
-    
-        let fontConfig = FontConfig(
-            family: ownConfig?.fontConfig?.family ?? providerConfig?.fontConfig?.family ?? defaultConfig.fontConfig.family,
-            size: ownConfig?.fontConfig?.size ?? providerConfig?.fontConfig?.size ?? defaultConfig.fontConfig.size,
-            weight: ownConfig?.fontConfig?.weight ?? providerConfig?.fontConfig?.weight ?? defaultConfig.fontConfig.weight,
-            style: ownConfig?.fontConfig?.style ?? providerConfig?.fontConfig?.style ?? defaultConfig.fontConfig.style
-        )
-
-        return Config(
-            fontConfig: fontConfig,
-            transform: ownConfig?.transform ?? providerConfig?.transform ?? Text.defaultConfig.transform,
-            color: ownConfig?.color ?? providerConfig?.color ?? Text.defaultConfig.color,
-            wrap: ownConfig?.wrap ?? providerConfig?.wrap ?? Text.defaultConfig.wrap
-        )
-    }*/
 
     public init(_ text: String) {
         self.text = text
