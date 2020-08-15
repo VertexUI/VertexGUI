@@ -104,7 +104,7 @@ public class Text: Widget {
         self.config = config
         super.init()
         _ = onAnyParentChanged { [unowned self] _ in
-            textConfigProvider = parentOfType(TextConfigProvider.self)
+            textConfigProvider = getParent(ofType: TextConfigProvider.self)
         }
     }
 

@@ -11,7 +11,7 @@ public class StatefulView: SingleChildWidget, StatefulWidget {
 
     public var state: State = State()
 
-    private lazy var widgetTwo = childOfType(StatefulWidgetTwo.self)!
+    private lazy var widgetTwo = getChild(ofType: StatefulWidgetTwo.self)!
 
     override open func buildChild() -> Widget {
         Column(spacing: 32) {

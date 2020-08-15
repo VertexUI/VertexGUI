@@ -15,7 +15,7 @@ open class TwoDWorldPage: SingleChildWidget {
 
     // TODO: should create a wrapper / optimize / avoid expensive tree traversal
     private var worldView: TwoDWorldView {
-        return childOfType(TwoDWorldView.self)!
+        return getChild(ofType: TwoDWorldView.self)!
     }
     
     override open func buildChild() -> Widget {

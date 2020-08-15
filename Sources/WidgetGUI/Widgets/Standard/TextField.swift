@@ -4,18 +4,16 @@ import CustomGraphicsMath
 public class TextField: Widget {
     public struct Config {
         public var backgroundConfig: Background.Config
-        public var textInputConfig: TextInput.Config
+        public var textInputConfig: TextInput.PartialConfig
 
-        public init(backgroundConfig: Background.Config, textInputConfig: TextInput.Config) {
+        public init(backgroundConfig: Background.Config, textInputConfig: TextInput.PartialConfig) {
             self.backgroundConfig = backgroundConfig
             self.textInputConfig = textInputConfig
         }
 
         public init(partial partialConfig: PartialConfig?, default defaultConfig: Config) {
             self.backgroundConfig = partialConfig?.backgroundConfig ?? defaultConfig.backgroundConfig
-            self.textInputConfig = TextInput.Config(
-                partial: partialConfig?.textInputConfig,
-                default: defaultConfig.textInputConfig)
+            self.textInputConfig = partialConfig?.textInputConfig ?? defaultConfig.textInputConfig
         }
     }
 
@@ -46,7 +44,7 @@ public class TextField: Widget {
 
     public static let defaultConfig = Config(
         backgroundConfig: Background.Config(fill: .Blue, shape: .Rectangle),
-        textInputConfig: TextInput.defaultConfig)
+        textInputConfig: TextInput.PartialConfig())
 
     private var config: Config
 

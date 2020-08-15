@@ -18,7 +18,7 @@ public class TextInput: Widget, StatefulWidget, GUIMouseEventConsumer, GUIKeyEve
         }
     }
 
-    public struct PartialConfig {
+    public struct PartialConfig: WidgetGUI.PartialConfig {
         public var textConfig: Text.PartialConfig?
         public var caretColor: Color?
 
@@ -30,7 +30,7 @@ public class TextInput: Widget, StatefulWidget, GUIMouseEventConsumer, GUIKeyEve
         public init(partials: [PartialConfig]) {
             var textConfigs = [Text.PartialConfig]()
 
-            for partial in partials {
+            for partial in partials.reversed() {
                 self.caretColor = partial.caretColor ?? self.caretColor
                 
                 if let partial = partial.textConfig {
@@ -42,13 +42,17 @@ public class TextInput: Widget, StatefulWidget, GUIMouseEventConsumer, GUIKeyEve
         }
     }
 
-    public static let defaultConfig = Config(textConfig: Text.defaultConfig, caretColor: Color(120, 255, 180, 255))
+    public static let defaultConfig = Config(
+        textConfig: Text.defaultConfig,
+        caretColor: Color(80, 255, 240, 255))
     
     public struct State {
         public var caretBlinkStartTimestamp: Double = Date.timeIntervalSinceReferenceDate
     }
 
-    private var config: Config
+    private var ownPartialConfig: PartialConfig?
+    private var ownFullConfig: Config?
+    lazy private var config: Config = combineConfig()
 
     public var state = State()
     
@@ -62,15 +66,42 @@ public class TextInput: Widget, StatefulWidget, GUIMouseEventConsumer, GUIKeyEve
 
     private var dropCursorRequest: (() -> ())?
 
-    public init(_ initialText: String = "", config: Config = TextInput.defaultConfig) {
+    public init(_ initialText: String = "") {
         self.text = initialText
-        self.config = config //!= nil ? Config(partials: [config!], default: Self.defaultConfig) : Self.defaultConfig
         super.init()
         self.focusable = true
     }
 
+    public convenience init(_ initialText: String = "", config ownPartialConfig: PartialConfig? = nil) {
+        self.init(initialText)
+        self.ownPartialConfig = ownPartialConfig
+    }
+
+    public convenience init(_ initialText: String = "", config ownFullConfig: Config) {
+        self.init(initialText)
+        self.ownFullConfig = ownFullConfig
+    }
+
     public convenience init(_ initialText: String = "", caretColor: Color) {
-        self.init(initialText, config: Config(textConfig: Self.defaultConfig.textConfig, caretColor: caretColor))
+        self.init(initialText, config: PartialConfig(caretColor: caretColor))
+    }
+
+    override public func addedToParent() {
+        //updateConfig()
+    }
+
+    private func combineConfig() -> Config {
+        if let ownFullConfig = ownFullConfig {
+            return ownFullConfig
+        }
+
+        let inheritedPartialConfig = getConfig(ofType: PartialConfig.self)
+
+        let mergedPartialConfig = PartialConfig(
+            partials: [ownPartialConfig, inheritedPartialConfig].compactMap { $0 })
+        
+
+        return Config(partial: mergedPartialConfig, default: Self.defaultConfig)
     }
 
     override public func build() {

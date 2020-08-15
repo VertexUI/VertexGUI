@@ -71,16 +71,20 @@ public class DemoGameApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGW
 
                 Alignable(horizontal: .End) {
                     Column {
-                        TextConfigProvider(fontSize: 24) {
-                            TextField(config: TextField.PartialConfig(
-                                backgroundConfig: Background.Config(
-                                    fill: Color(100, 100, 255, 255),
-                                    shape: .RoundedRectangle(CornerRadii(all: 5))
-                                ),
-                                textInputConfig: TextInput.PartialConfig(
-                                    caretColor: .Yellow
-                                )
-                            ))
+                        ConfigProvider(configs: [
+                            TextInput.PartialConfig(caretColor: .Red)
+                        ]) {
+                            TextConfigProvider(fontSize: 24) {
+                                TextField(config: TextField.PartialConfig(
+                                    backgroundConfig: Background.Config(
+                                        fill: Color(100, 100, 255, 255),
+                                        shape: .RoundedRectangle(CornerRadii(all: 5))
+                                    ),
+                                    textInputConfig: TextInput.PartialConfig(
+                                        //caretColor: .Yellow
+                                    )
+                                ))
+                            }
                         }
                             
                         ComputedSize {

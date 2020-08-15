@@ -1,3 +1,23 @@
-public class ConfigProvider {
+public class ConfigProvider: SingleChildWidget {
+    private var configs: [PartialConfigMarker]
+    private var childBuilder: () -> Widget
     
+    public init(configs: [PartialConfigMarker], @WidgetBuilder child childBuilder: @escaping () -> Widget) {
+        self.configs = configs
+        self.childBuilder = childBuilder
+    }
+
+    override public func buildChild() -> Widget {
+        return childBuilder()
+    }
+
+    public func retrieveConfig<Config: PartialConfig>(ofType configType: Config.Type) -> Config? {
+        print("getConfig", configType)
+        for config in configs {
+            if let config = config as? Config {
+                return config
+            }
+        }
+        return nil
+    }
 }
