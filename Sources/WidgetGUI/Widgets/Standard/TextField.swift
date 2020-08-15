@@ -1,8 +1,8 @@
 import VisualAppBase
 import CustomGraphicsMath
 
-public class TextField: Widget {
-    public struct Config {
+public final class TextField: Widget, ConfigurableWidget {
+    public struct Config: WidgetGUI.Config {
         public var backgroundConfig: Background.Config
         public var textInputConfig: TextInput.PartialConfig
 
@@ -12,12 +12,13 @@ public class TextField: Widget {
         }
 
         public init(partial partialConfig: PartialConfig?, default defaultConfig: Config) {
+            print("BUILD TextField Config", partialConfig?.backgroundConfig)
             self.backgroundConfig = partialConfig?.backgroundConfig ?? defaultConfig.backgroundConfig
             self.textInputConfig = TextInput.PartialConfig(partials: [partialConfig?.textInputConfig, defaultConfig.textInputConfig].compactMap { $0 })
         }
     }
 
-    public struct PartialConfig {
+    public struct PartialConfig: WidgetGUI.PartialConfig {
         public var backgroundConfig: Background.Config?
         public var textInputConfig: TextInput.PartialConfig?
 
@@ -32,6 +33,7 @@ public class TextField: Widget {
             for partial in partials.reversed() {
 
                 self.backgroundConfig = partial.backgroundConfig ?? self.backgroundConfig
+                print("MERGE PARTIALS TEXT FIELD", self.backgroundConfig)
 
                 if let partial = partial.textInputConfig {
                     textInputConfigs.append(partial)
@@ -46,20 +48,29 @@ public class TextField: Widget {
         backgroundConfig: Background.Config(fill: .Blue, shape: .Rectangle),
         textInputConfig: TextInput.PartialConfig())
 
-    private var config: Config
+    public var localPartialConfig: PartialConfig?
+    public var localConfig: Config?
+    lazy public var config: Config = combineConfigs()
 
-    lazy private var textInput = TextInput().with(config: config.textInputConfig)
+    lazy private var textInput = TextInput()
+
+    public internal(set) var onTextChanged = EventHandlerManager<String>()
     
-    public init(_ initialText: String = "", config: PartialConfig? = nil, onTextChanged textChangedHandler: ((String) -> ())? = nil) {
-        self.config = Config(partial: config, default: Self.defaultConfig)
+    public init(_ initialText: String = "", onTextChanged textChangedHandler: ((String) -> ())? = nil) {
         super.init()
         textInput.text = initialText
         if let handler = textChangedHandler {
-            _ = onDestroy(textInput.onTextChanged(handler))
+            _ = onDestroy(onTextChanged(handler))
         }
     }
 
     override public func build() {
+        _ = onDestroy(textInput.onTextChanged { [unowned self] in
+            onTextChanged.invokeHandlers($0)
+        })
+        
+        textInput.with(config: config.textInputConfig)
+
         children = [
             Background(config: config.backgroundConfig) {
                 Padding(all: 8) {
@@ -75,12 +86,4 @@ public class TextField: Widget {
         child.layout()
         bounds.size = child.bounds.size
     }
-
-    /*override public func renderContent() -> RenderObject? {
-        RenderObject.Container {
-            for child in children {
-                child.render()
-            }
-        }
-    }*/
 }

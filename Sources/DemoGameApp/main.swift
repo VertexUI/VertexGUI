@@ -51,48 +51,36 @@ public class DemoGameApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGW
     }
 
     private func buildGuiRoot() -> Root {
-        return Root(rootWidget: Column {
-            ComputedSize {
-                Background(fill: Color(40, 40, 80, 255), shape: .Rectangle) {
-                    Padding(all: 32) {
-                        Text("An awesome game.", fontSize: 24, fontWeight: .Bold, color: .White)
-                    }
-                }
-            } calculate: {
-                BoxConstraints(minSize: DSize2($0.maxSize.width, $0.minSize.height), maxSize: $0.maxSize)
-            }
-
-            Aligner {
-                MouseArea(onMouseMove: { [unowned self] in handleGameMouseMove($0) }) {
-                    gameView
-                }
-
-                Alignable(horizontal: .End) {
-                    Column {
-                        ConfigProvider(configs: [
-                            TextInput.PartialConfig(caretColor: .Red)
-                        ]) {
-                            TextConfigProvider(fontSize: 24) {
-                                TextField(config: TextField.PartialConfig(
-                                    backgroundConfig: Background.Config(
-                                        fill: Color(100, 100, 255, 255),
-                                        shape: .RoundedRectangle(CornerRadii(all: 5))
-                                    ),
-                                    textInputConfig: TextInput.PartialConfig(
-                                        //caretColor: .Yellow
-                                    )
-                                ))
-                            }
+        return Root(rootWidget: DefaultThemeProvider(mode: .Dark, primaryColor: .Blue) { [unowned self] in
+            Column {
+                ComputedSize {
+                    Background(fill: Color(40, 40, 80, 255), shape: .Rectangle) {
+                        Padding(all: 32) {
+                            Text("An awesome game.", fontSize: 24, fontWeight: .Bold, color: .White)
                         }
-                            
-                        ComputedSize {
-                            Padding(all: 32) {
-                                PlayerStatsView(blob: playerBlobObservable)
+                    }
+                } calculate: {
+                    BoxConstraints(minSize: DSize2($0.maxSize.width, $0.minSize.height), maxSize: $0.maxSize)
+                }
+
+                Aligner {
+                    MouseArea(onMouseMove: { [unowned self] in handleGameMouseMove($0) }) {
+                        gameView
+                    }
+
+                    Alignable(horizontal: .End) {
+                        Column {
+                            TextField()
+                                
+                            ComputedSize {
+                                Padding(all: 32) {
+                                    PlayerStatsView(blob: playerBlobObservable)
+                                }
+                            } calculate: {
+                                BoxConstraints(
+                                    minSize: DSize2(500, $0.minSize.height),
+                                    maxSize: DSize2(500, $0.maxSize.height))
                             }
-                        } calculate: {
-                            BoxConstraints(
-                                minSize: DSize2(500, $0.minSize.height),
-                                maxSize: DSize2(500, $0.maxSize.height))
                         }
                     }
                 }

@@ -1,3 +1,4 @@
+// TODO: maybe this belongs to CustomGraphicsMath
 public struct CornerRadii {
     public var topLeft: Double
     public var topRight: Double

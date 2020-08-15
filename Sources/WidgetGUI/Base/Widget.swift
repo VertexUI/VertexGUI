@@ -325,18 +325,17 @@ open class Widget: Bounded, Parent, Child {
 
     public final func getConfig<Config: PartialConfig>(ofType type: Config.Type) -> Config? {
         let configProviders = getParents(ofType: ConfigProvider.self)
+        
         let configs = configProviders.compactMap {
             $0.retrieveConfig(ofType: type)
         }
-
-        print("GOT CONFIG PROVIDERS", configProviders)
-        print("GOT CONFIGS", configs)
 
         if configs.count == 0 {
             return nil
         }
 
         let resultConfig = type.init(partials: configs)
+        
         return resultConfig
     }
 

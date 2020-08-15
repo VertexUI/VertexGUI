@@ -24,6 +24,11 @@ public extension ConfigurableWidget {
     }
 
     func combineConfigs() -> Config {
+        // TODO: maybe provide an extra flag through Widget to see whether Widget was added to a parent
+        if parent == nil {
+            fatalError("Tried to call combineConfigs() before Widget was added to parent.")
+        }
+
         if let fullConfig = localConfig {
             return fullConfig
         }

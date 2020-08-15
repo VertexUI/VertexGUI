@@ -16,7 +16,6 @@ public class ConfigProvider: SingleChildWidget {
     }
 
     public func retrieveConfig<Config: PartialConfig>(ofType configType: Config.Type) -> Config? {
-        print("getConfig", configType)
         for config in configs {
             if let config = config as? Config {
                 return config

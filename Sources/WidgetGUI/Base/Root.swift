@@ -32,9 +32,7 @@ open class Root: Parent {
     public var onDebuggingDataAvailable = ThrowingEventHandlerManager<RenderObjectTreeRenderer.DebuggingData>()
 
     public init(rootWidget contentRootWidget: Widget) {
-        rootWidget = ThemeProvider {
-            contentRootWidget
-        }
+        rootWidget = contentRootWidget
         
         renderObjectTree = RenderObjectTree()
         
