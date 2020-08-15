@@ -11,23 +11,37 @@ public class TextField: Widget {
             self.textInputConfig = textInputConfig
         }
 
-        public init(partials: [PartialConfig], defaultConfig: Config) {
-            var backgroundConfig: Background.Config?
-            var textInputConfigs: [TextInput.PartialConfig] = []
-            for partial in partials {
-                backgroundConfig = partial.backgroundConfig ?? backgroundConfig
-                if let partialConfig = partial.textInputConfig {
-                    textInputConfigs.append(partialConfig)
-                }
-            }
-            self.backgroundConfig = backgroundConfig ?? defaultConfig.backgroundConfig
-            self.textInputConfig = TextInput.Config(partials: textInputConfigs, default: defaultConfig.textInputConfig)
+        public init(partial partialConfig: PartialConfig?, default defaultConfig: Config) {
+            self.backgroundConfig = partialConfig?.backgroundConfig ?? defaultConfig.backgroundConfig
+            self.textInputConfig = TextInput.Config(
+                partial: partialConfig?.textInputConfig,
+                default: defaultConfig.textInputConfig)
         }
     }
 
     public struct PartialConfig {
         public var backgroundConfig: Background.Config?
         public var textInputConfig: TextInput.PartialConfig?
+
+        public init(backgroundConfig: Background.Config? = nil, textInputConfig: TextInput.PartialConfig? = nil) {
+            self.backgroundConfig = backgroundConfig
+            self.textInputConfig = textInputConfig
+        }
+
+        public init(partials: [PartialConfig]) {
+            var textInputConfigs = [TextInput.PartialConfig]()
+            
+            for partial in partials {
+
+                self.backgroundConfig = partial.backgroundConfig ?? self.backgroundConfig
+
+                if let partial = partial.textInputConfig {
+                    textInputConfigs.append(partial)
+                }
+            }
+
+            self.textInputConfig = TextInput.PartialConfig(partials: textInputConfigs)            
+        }
     }
 
     public static let defaultConfig = Config(
@@ -39,7 +53,7 @@ public class TextField: Widget {
     lazy private var textInput = TextInput(config: config.textInputConfig)
     
     public init(_ initialText: String = "", config: PartialConfig? = nil, onTextChanged textChangedHandler: ((String) -> ())? = nil) {
-        self.config = config != nil ? Config(partials: [config!], defaultConfig: Self.defaultConfig) : Self.defaultConfig
+        self.config = Config(partial: config, default: Self.defaultConfig)
         super.init()
         textInput.text = initialText
         if let handler = textChangedHandler {

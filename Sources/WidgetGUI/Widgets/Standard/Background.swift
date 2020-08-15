@@ -5,6 +5,11 @@ open class Background: SingleChildWidget {
     public struct Config {
         public var fill: Color
         public var shape: Shape
+
+        public init(fill: Color, shape: Shape) {
+            self.fill = fill
+            self.shape = shape
+        }
     }
 
     public enum Shape {       
@@ -25,7 +30,7 @@ open class Background: SingleChildWidget {
 
     public convenience init(
         fill: Color,
-        shape: Shape = .Rectangle,
+        shape: Shape = Shape.Rectangle,
         @WidgetBuilder child inputChildBuilder: () -> Widget) {
             self.init(config: Config(fill: fill, shape: shape), child: inputChildBuilder)
     }

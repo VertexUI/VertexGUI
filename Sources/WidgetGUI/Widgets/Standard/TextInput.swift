@@ -4,26 +4,45 @@ import VisualAppBase
 
 public class TextInput: Widget, StatefulWidget, GUIMouseEventConsumer, GUIKeyEventConsumer, GUITextEventConsumer {
     public struct Config {
-        public init(caretColor: Color) {
+        public var textConfig: Text.Config
+        public var caretColor: Color
+        
+        public init(textConfig: Text.Config, caretColor: Color) {
+            self.textConfig = textConfig
             self.caretColor = caretColor
         }
 
-        public init(partials: [PartialConfig], default defaultConfig: Config) {
-            var caretColor: Color?
-            for partial in partials {
-                caretColor = partial.caretColor ?? caretColor
-            }
-            self.caretColor = caretColor ?? defaultConfig.caretColor
+        public init(partial partialConfig: PartialConfig?, default defaultConfig: Config) {
+            self.textConfig = Text.Config(partial: partialConfig?.textConfig, default: defaultConfig.textConfig)
+            self.caretColor = partialConfig?.caretColor ?? defaultConfig.caretColor
         }
-        
-        public var caretColor: Color
     }
 
     public struct PartialConfig {
+        public var textConfig: Text.PartialConfig?
         public var caretColor: Color?
+
+        public init(textConfig: Text.PartialConfig? = nil, caretColor: Color? = nil) {
+            self.textConfig = textConfig
+            self.caretColor = caretColor
+        }
+
+        public init(partials: [PartialConfig]) {
+            var textConfigs = [Text.PartialConfig]()
+
+            for partial in partials {
+                self.caretColor = partial.caretColor ?? self.caretColor
+                
+                if let partial = partial.textConfig {
+                    textConfigs.append(partial)
+                }
+            }
+
+            self.textConfig = Text.PartialConfig(partials: textConfigs)
+        }
     }
 
-    public static let defaultConfig = Config(caretColor: .Blue)
+    public static let defaultConfig = Config(textConfig: Text.defaultConfig, caretColor: Color(120, 255, 180, 255))
     
     public struct State {
         public var caretBlinkStartTimestamp: Double = Date.timeIntervalSinceReferenceDate
@@ -51,7 +70,7 @@ public class TextInput: Widget, StatefulWidget, GUIMouseEventConsumer, GUIKeyEve
     }
 
     public convenience init(_ initialText: String = "", caretColor: Color) {
-        self.init(initialText, config: Config(caretColor: caretColor))
+        self.init(initialText, config: Config(textConfig: Self.defaultConfig.textConfig, caretColor: caretColor))
     }
 
     override public func build() {
@@ -126,7 +145,7 @@ public class TextInput: Widget, StatefulWidget, GUIMouseEventConsumer, GUIKeyEve
         let caretSize = DSize2(5, globalBounds.size.height)
         let caretBounds = DRect(min: globalBounds.min + DVec2(preCaretBounds.max.x, 0), size: caretSize)
 
-        return RenderObject.Container {
+        return RenderObject.Container { [unowned self] in
             if focused {
                 RenderObject.RenderStyle(
                     fillColor: TimedRenderValue(
@@ -134,7 +153,7 @@ public class TextInput: Widget, StatefulWidget, GUIMouseEventConsumer, GUIKeyEve
                         startTimestamp: state.caretBlinkStartTimestamp, 
                         duration: 1, 
                         repetitions: 0) {
-                            Color(100, 100, 255, $0 > 0.5 ? 255 : 0) 
+                            config.caretColor.adjusted(alpha: $0 > 0.5 ? 255 : 0) 
                     }) {
                         RenderObject.Rectangle(caretBounds)
                     }

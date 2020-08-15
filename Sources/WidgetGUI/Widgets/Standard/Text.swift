@@ -23,6 +23,19 @@ public class Text: Widget {
                 self.color = color
                 self.wrap = wrap
         }
+
+        public init(partials: [PartialConfig]) {
+            var fontConfigs = [PartialFontConfig]()
+            for partial in partials {
+                if let partial = partial.fontConfig {
+                    fontConfigs.append(partial)
+                }
+                self.transform = partial.transform ?? self.transform
+                self.color = partial.color ?? self.color
+                self.wrap = partial.wrap ?? self.wrap
+            }
+            self.fontConfig = PartialFontConfig(partials: fontConfigs)
+        }
     }
 
     public struct Config: Hashable {
@@ -36,6 +49,13 @@ public class Text: Widget {
             self.transform = transform
             self.color = color
             self.wrap = wrap
+        }
+
+        public init(partial partialConfig: PartialConfig?, default defaultConfig: Config) {
+            self.fontConfig = FontConfig(partial: partialConfig?.fontConfig, default: defaultConfig.fontConfig)
+            self.transform = partialConfig?.transform ?? defaultConfig.transform
+            self.color = partialConfig?.color ?? defaultConfig.color
+            self.wrap = partialConfig?.wrap ?? defaultConfig.wrap
         }
     }
 

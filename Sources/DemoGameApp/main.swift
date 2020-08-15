@@ -51,9 +51,9 @@ public class DemoGameApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGW
     }
 
     private func buildGuiRoot() -> Root {
-        Root(rootWidget: Column {
+        return Root(rootWidget: Column {
             ComputedSize {
-                Background(fill:Color(40, 40, 80, 255)) {
+                Background(fill: Color(40, 40, 80, 255), shape: .Rectangle) {
                     Padding(all: 32) {
                         Text("An awesome game.", config: Text.PartialConfig(
                             fontConfig: PartialFontConfig(size: 24, weight: .Bold),
@@ -72,7 +72,15 @@ public class DemoGameApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGW
                 Alignable(horizontal: .End) {
                     Column {
                         TextConfigProvider(fontSize: 24) {
-                            TextField()
+                            TextField(config: TextField.PartialConfig(
+                                backgroundConfig: Background.Config(
+                                    fill: Color(100, 100, 255, 255),
+                                    shape: .RoundedRectangle(CornerRadii(all: 5))
+                                ),
+                                textInputConfig: TextInput.PartialConfig(
+                                    caretColor: .Yellow
+                                )
+                            ))
                         }
                             
                         ComputedSize {

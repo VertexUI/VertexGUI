@@ -29,6 +29,13 @@ public struct FontConfig: Hashable {
         self.weight = weight
         self.style = style
     }
+
+    public init(partial partialConfig: PartialFontConfig?, default defaultConfig: FontConfig) {
+        self.family = partialConfig?.family ?? defaultConfig.family
+        self.size = partialConfig?.size ?? defaultConfig.size
+        self.weight = partialConfig?.weight ?? defaultConfig.weight
+        self.style = partialConfig?.style ?? defaultConfig.style
+    }
 }
 
 public struct PartialFontConfig {
@@ -46,5 +53,14 @@ public struct PartialFontConfig {
             self.size = size
             self.weight = weight
             self.style = style
+    }
+
+    public init(partials: [Self]) {
+        for partial in partials {
+            self.family = partial.family ?? self.family
+            self.size = partial.size ?? self.size
+            self.weight = partial.weight ?? self.weight
+            self.style = partial.style ?? self.style
+        }
     }
 }
