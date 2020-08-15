@@ -2,8 +2,8 @@ import Foundation
 import CustomGraphicsMath
 import VisualAppBase
 
-public class TextInput: Widget, StatefulWidget, GUIMouseEventConsumer, GUIKeyEventConsumer, GUITextEventConsumer {
-    public struct Config {
+public final class TextInput: Widget, StatefulWidget, ConfigurableWidget, GUIMouseEventConsumer, GUIKeyEventConsumer, GUITextEventConsumer {
+    public struct Config: WidgetGUI.Config {
         public var textConfig: Text.Config
         public var caretColor: Color
         
@@ -50,9 +50,9 @@ public class TextInput: Widget, StatefulWidget, GUIMouseEventConsumer, GUIKeyEve
         public var caretBlinkStartTimestamp: Double = Date.timeIntervalSinceReferenceDate
     }
 
-    private var ownPartialConfig: PartialConfig?
-    private var ownFullConfig: Config?
-    lazy private var config: Config = combineConfig()
+    public var localPartialConfig: PartialConfig?
+    public var localConfig: Config?
+    lazy public var config: Config = combineConfigs()
 
     public var state = State()
     
@@ -72,36 +72,9 @@ public class TextInput: Widget, StatefulWidget, GUIMouseEventConsumer, GUIKeyEve
         self.focusable = true
     }
 
-    public convenience init(_ initialText: String = "", config ownPartialConfig: PartialConfig? = nil) {
-        self.init(initialText)
-        self.ownPartialConfig = ownPartialConfig
-    }
-
-    public convenience init(_ initialText: String = "", config ownFullConfig: Config) {
-        self.init(initialText)
-        self.ownFullConfig = ownFullConfig
-    }
-
     public convenience init(_ initialText: String = "", caretColor: Color) {
-        self.init(initialText, config: PartialConfig(caretColor: caretColor))
-    }
-
-    override public func addedToParent() {
-        //updateConfig()
-    }
-
-    private func combineConfig() -> Config {
-        if let ownFullConfig = ownFullConfig {
-            return ownFullConfig
-        }
-
-        let inheritedPartialConfig = getConfig(ofType: PartialConfig.self)
-
-        let mergedPartialConfig = PartialConfig(
-            partials: [ownPartialConfig, inheritedPartialConfig].compactMap { $0 })
-        
-
-        return Config(partial: mergedPartialConfig, default: Self.defaultConfig)
+        self.init(initialText)
+        with(config: PartialConfig(caretColor: caretColor))
     }
 
     override public func build() {

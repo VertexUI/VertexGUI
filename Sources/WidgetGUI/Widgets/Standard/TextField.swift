@@ -48,7 +48,7 @@ public class TextField: Widget {
 
     private var config: Config
 
-    lazy private var textInput = TextInput(config: config.textInputConfig)
+    lazy private var textInput = TextInput().with(config: config.textInputConfig)
     
     public init(_ initialText: String = "", config: PartialConfig? = nil, onTextChanged textChangedHandler: ((String) -> ())? = nil) {
         self.config = Config(partial: config, default: Self.defaultConfig)
