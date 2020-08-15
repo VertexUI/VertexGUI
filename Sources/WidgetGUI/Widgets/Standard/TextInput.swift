@@ -98,7 +98,28 @@ public final class TextInput: Widget, StatefulWidget, ConfigurableWidget, GUIMou
     public func consume(_ event: GUIMouseEvent) {
         if event is GUIMouseButtonClickEvent {
             requestFocus()
+
             if focused {
+                let localX = event.position.x - textWidget.globalPosition.x
+                
+                var maxIndexBelowX = 0
+
+                var previousBounds = DRect(min: .zero, size: .zero)
+
+                for i in 0..<text.count {
+                    let bounds = textWidget.getSubBounds(to: i + 1)
+                    let letterBounds = DRect(min: previousBounds.max, max: bounds.max)
+                    previousBounds = bounds
+
+                    if localX > letterBounds.min.x + letterBounds.size.width / 2 {
+                        maxIndexBelowX = i + 1
+                    } else {
+                        break
+                    }
+                }
+
+                caretPosition = maxIndexBelowX
+                
                 invalidateRenderState()
             }
         } else if event is GUIMouseEnterEvent {
