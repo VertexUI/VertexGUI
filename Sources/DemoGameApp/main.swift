@@ -51,7 +51,7 @@ public class DemoGameApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGW
     }
 
     private func buildGuiRoot() -> Root {
-        return Root(rootWidget: DefaultThemeProvider(mode: .Dark, primaryColor: .Blue) { [unowned self] in
+        Root(rootWidget: DefaultThemeProvider(mode: .Dark, primaryColor: .Blue) { [unowned self] in
             Column {
                 ComputedSize {
                     Background(fill: Color(40, 40, 80, 255), shape: .Rectangle) {
@@ -70,6 +70,12 @@ public class DemoGameApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGW
 
                     Alignable(horizontal: .End) {
                         Column {
+                            Button {
+                                Text("Button without function")
+                            } onClick: { _ in
+                                print("CLICKED")
+                            }
+
                             TextField()
                                 
                             ComputedSize {

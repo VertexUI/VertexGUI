@@ -26,9 +26,9 @@ open class TwoDWorldPage: SingleChildWidget {
                         Text("2D Raycast Visualizer")
                     }
                     Padding(all: 20) {
-                        Button(child: {
+                        Button {
                             Text("Button without function")
-                        })
+                        }
                     }
                     ComputedSize {
                         TwoDWorldView(

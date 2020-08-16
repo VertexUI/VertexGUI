@@ -24,6 +24,11 @@ public class DefaultThemeProvider: ConfigProvider {
             ),
             TextInput.PartialConfig(
                 caretColor: primaryColor
+            ),
+            Button.PartialConfig(
+                normalStyle: Button.StateStyle(background: primaryColor),
+                hoverStyle: Button.StateStyle(background: primaryColor.adjusted(alpha: 120)),
+                activeStyle: Button.StateStyle(background: primaryColor.adjusted(alpha: 50))
             )
         ], child: childBuilder)
     }

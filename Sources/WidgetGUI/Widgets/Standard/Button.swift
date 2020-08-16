@@ -2,15 +2,6 @@ import Foundation
 import CustomGraphicsMath
 import VisualAppBase
 
-public enum ButtonState {
-    case Normal, Hover
-}
-
-public struct ButtonStyle {
-    var background: Color
-    var cursor: Cursor
-}
-
 public let defaultButtonTextConfig = Text.PartialConfig(
     fontConfig: PartialFontConfig(
         family: defaultFontFamily, size: 16, weight: .Bold, style: .Normal),
@@ -18,21 +9,68 @@ public let defaultButtonTextConfig = Text.PartialConfig(
     color: .Black,
     wrap: false)
 
-public let defaultButtonStyles: [ButtonState: ButtonStyle] = [
-    .Normal: ButtonStyle(background: Color(255, 0, 0, 255), cursor: .Arrow),
-    .Hover: ButtonStyle(background: Color(0, 255, 0, 255), cursor: .Hand)
-]
+public final class Button: SingleChildWidget, StatefulWidget, ConfigurableWidget {
+    public enum State {
+        case Normal, Hover, Active
+    }
 
-public class Button: SingleChildWidget, StatefulWidget {
-    public typealias State = ButtonState
+    public struct StateStyle {
+        public var background: Color
+    }
 
-    public var state: ButtonState = .Normal {
+    public struct Config: WidgetGUI.Config {
+        public var normalStyle: StateStyle
+        public var hoverStyle: StateStyle
+        public var activeStyle: StateStyle
+
+        public init(normalStyle: StateStyle, hoverStyle: StateStyle, activeStyle: StateStyle) {
+            self.normalStyle = normalStyle
+            self.hoverStyle = hoverStyle
+            self.activeStyle = activeStyle
+        }
+
+        public init(partial partialConfig: PartialConfig?, default defaultConfig: Self) {
+            self.normalStyle = partialConfig?.normalStyle ?? defaultConfig.normalStyle
+            self.hoverStyle = partialConfig?.hoverStyle ?? defaultConfig.hoverStyle
+            self.activeStyle = partialConfig?.activeStyle ?? defaultConfig.activeStyle
+        }
+    }
+    
+    public struct PartialConfig: WidgetGUI.PartialConfig {
+        public var normalStyle: StateStyle?
+        public var hoverStyle: StateStyle?
+        public var activeStyle: StateStyle?
+
+        public init(normalStyle: StateStyle?, hoverStyle: StateStyle?, activeStyle: StateStyle?) {
+            self.normalStyle = normalStyle
+            self.hoverStyle = hoverStyle
+            self.activeStyle = activeStyle
+        }
+
+        public init(partials: [Self]) {
+            for partial in partials.reversed() {
+                self.normalStyle = partial.normalStyle ?? self.normalStyle
+                self.hoverStyle = partial.hoverStyle ?? self.hoverStyle
+                self.activeStyle = partial.activeStyle ?? self.activeStyle
+            }
+        }
+    }
+
+    public var state: State = .Normal {
         didSet {
             invalidateRenderState()
         }
     }
+
+    public static let defaultConfig = Config(
+        normalStyle: StateStyle(background: Color(255, 0, 0, 255)),
+        hoverStyle: StateStyle(background: Color(0, 255, 0, 255)),
+        activeStyle: StateStyle(background: Color(0, 0, 255, 255))
+    )
+    public var localConfig: Config?
+    public var localPartialConfig: PartialConfig?
+    lazy public var config = combineConfigs()
     
-    public var stateStyles: [ButtonState: ButtonStyle]
     public var cursorRequestId: UInt64? = nil
     public var onClick = EventHandlerManager<GUIMouseButtonClickEvent>()
 
@@ -41,10 +79,8 @@ public class Button: SingleChildWidget, StatefulWidget {
     private var inputChild: Widget
 
     public init(
-        stateStyles: [ButtonState: ButtonStyle] = defaultButtonStyles,
-        @WidgetBuilder child inputChildBuilder: () -> Widget,
+        @WidgetBuilder _ inputChildBuilder: () -> Widget,
         onClick onClickHandler: EventHandlerManager<GUIMouseButtonClickEvent>.Handler? = nil) {
-            self.stateStyles = stateStyles
             if onClickHandler != nil {
                 _ = onClick.addHandler(onClickHandler!)
             }
@@ -52,7 +88,11 @@ public class Button: SingleChildWidget, StatefulWidget {
             super.init()
     }
 
-    override open func buildChild() -> Widget {
+    public convenience init(@WidgetBuilder _ inputChildBuilder: () -> Widget) {
+        self.init(inputChildBuilder, onClick: nil)
+    }
+
+    override public func buildChild() -> Widget {
         MouseArea(onClick: { [unowned self] in
             onClick.invokeHandlers($0)
         }, onMouseEnter: { [unowned self] _ in
@@ -71,12 +111,21 @@ public class Button: SingleChildWidget, StatefulWidget {
         }
     }
 
-    open func forwardOnClick(_ event: GUIMouseButtonClickEvent) throws {
+    public func forwardOnClick(_ event: GUIMouseButtonClickEvent) throws {
         try onClick.invokeHandlers(event)
     }
 
-    override open func renderContent() -> RenderObject? {
-        let style = stateStyles[state] ?? defaultButtonStyles[state]!
+    override public func renderContent() -> RenderObject? {
+        let style: StateStyle
+        switch state {
+        case .Normal:
+            style = config.normalStyle
+        case .Hover:
+            style = config.hoverStyle
+        case .Active:
+            style = config.activeStyle
+        }
+
         return RenderObject.Container {
             if state == .Normal {
                 RenderObject.RenderStyle(
@@ -97,7 +146,7 @@ public class Button: SingleChildWidget, StatefulWidget {
         }
     }
 
-    override open func destroySelf() {
+    override public func destroySelf() {
         onClick.removeAllHandlers()
         if let drop = dropCursorRequest {
             drop()
