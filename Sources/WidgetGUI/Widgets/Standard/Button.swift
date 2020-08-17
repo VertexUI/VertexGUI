@@ -16,31 +16,31 @@ public final class Button: SingleChildWidget, StatefulWidget, ConfigurableWidget
     }
 
     public struct StateStyle: WidgetGUI.Config {
-        public var backgroundConfig: Background.Config
+        public var backgroundConfig: Background.PartialConfig
         public var textConfig: Text.PartialConfig
 
-        public init(backgroundConfig: Background.Config, textConfig: Text.PartialConfig) {
+        public init(backgroundConfig: Background.PartialConfig, textConfig: Text.PartialConfig) {
             self.backgroundConfig = backgroundConfig
             self.textConfig = textConfig
         }
 
         public init(partial partialConfig: PartialStateStyle?, default defaultConfig: Self) {
-            self.backgroundConfig = partialConfig?.backgroundConfig ?? defaultConfig.backgroundConfig
+            self.backgroundConfig = Background.PartialConfig.merged(partials: [partialConfig?.backgroundConfig, defaultConfig.backgroundConfig].compactMap { $0 })
             self.textConfig = Text.PartialConfig.merged(partials: [partialConfig?.textConfig, defaultConfig.textConfig].compactMap { $0 })
         }
     }
 
     public struct PartialStateStyle: WidgetGUI.PartialConfig {
-        public var backgroundConfig: Background.Config? = nil
-        public var textConfig: Text.PartialConfig? = Text.PartialConfig()
+        public var backgroundConfig: Background.PartialConfig = Background.PartialConfig()
+        public var textConfig: Text.PartialConfig = Text.PartialConfig()
 
         public init() {
         }
 
-        public init(backgroundConfig: Background.Config? = nil, textConfig: Text.PartialConfig? = nil) {
+        /*public init(backgroundConfig: Background.PartialConfig? = nil, textConfig: Text.PartialConfig? = nil) {
             self.backgroundConfig = backgroundConfig
             self.textConfig = textConfig
-        }
+        }*/
 
         public mutating func callAsFunction(_ modifier: (_ target: inout Self) -> ()) {
             modifier(&self)
@@ -86,13 +86,22 @@ public final class Button: SingleChildWidget, StatefulWidget, ConfigurableWidget
 
     public static let defaultConfig = Config(
         normalStyle: StateStyle(
-            backgroundConfig: Background.Config(fill: Color(255, 0, 0, 255), shape: .Rectangle),
+            backgroundConfig: Background.PartialConfig {
+                $0.fill = Color(255, 0, 0, 255)
+                $0.shape = .Rectangle
+            },
             textConfig: defaultButtonTextConfig),
         hoverStyle: StateStyle(
-            backgroundConfig: Background.Config(fill: Color(0, 255, 0, 255), shape: .Rectangle),
+            backgroundConfig: Background.PartialConfig {
+                $0.fill = Color(0, 255, 0, 255)
+                $0.shape = .Rectangle
+            },
             textConfig: defaultButtonTextConfig),
         activeStyle: StateStyle(
-            backgroundConfig: Background.Config(fill: Color(0, 0, 255, 255), shape: .Rectangle),
+            backgroundConfig: Background.PartialConfig {
+                $0.fill = Color(0, 0, 255, 255)
+                $0.shape = .Rectangle
+            },
             textConfig: defaultButtonTextConfig)
     )
     public var localConfig: Config?

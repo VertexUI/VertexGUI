@@ -1,6 +1,7 @@
 import Runtime
 
 public protocol PartialConfigMarker {
+    /// - Parameter partials: will be merged with lower index entries overwriting properties of higher index entries
     func merged(partials: [Any]) -> Any
 }
 
@@ -10,12 +11,23 @@ public protocol PartialConfig: PartialConfigMarker {
     /// - Parameter partials: will be merged with lower index entries overwriting properties of higher index entries
     init(partials: [Self])
 
+    init(_ modifier: (inout Self) -> ())
+
+    /// - Parameter partials: will be merged with lower index entries overwriting properties of higher index entries
     static func merged(partials: [Self]) -> Self
 
+    /// - Parameter partials: will be merged with lower index entries overwriting properties of higher index entries
     static func merged(partials: [Any]) -> Any
+
+    mutating func callAsFunction(_ modifier: (inout Self) -> ())
 }
 
 public extension PartialConfig {
+    init(_ modifier: (inout Self) -> ()) {
+        self.init()
+        modifier(&self)
+    }
+
     static func merged(partials: [Self]) -> Self {
         var instance = try! createInstance(of: Self.self)
 
@@ -79,5 +91,9 @@ public extension PartialConfig {
                 }
             }
         }
+    }
+
+    mutating func callAsFunction(_ modifier: (inout Self) -> ()) {
+        modifier(&self)
     }
 }

@@ -1,4 +1,4 @@
-public protocol ConfigurableWidget: class where Self: Widget, Config.PartialConfig == PartialConfig {
+public protocol ConfigurableWidget where Self: Widget, Config.PartialConfig == PartialConfig {
     associatedtype Config: WidgetGUI.Config
     associatedtype PartialConfig: WidgetGUI.PartialConfig
 
