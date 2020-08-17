@@ -26,9 +26,15 @@ public class DefaultThemeProvider: ConfigProvider {
                 caretColor: primaryColor
             ),
             Button.PartialConfig(
-                normalStyle: Button.StateStyle(background: primaryColor),
-                hoverStyle: Button.StateStyle(background: primaryColor.adjusted(alpha: 120)),
-                activeStyle: Button.StateStyle(background: primaryColor.adjusted(alpha: 50))
+                normalStyle: Button.PartialStateStyle(
+                    backgroundConfig: Background.Config(fill: primaryColor, shape: .Rectangle),
+                    textConfig: Text.PartialConfig(transform: TextTransform.Lowercase, color: .Red)),
+                hoverStyle: Button.PartialStateStyle(
+                    backgroundConfig: Background.Config(fill: primaryColor.adjusted(alpha: 140), shape: .Rectangle),
+                    textConfig: Text.PartialConfig(color: .White)),
+                activeStyle: Button.PartialStateStyle(
+                    backgroundConfig: Background.Config(fill: primaryColor.adjusted(alpha: 60), shape: .Rectangle),
+                    textConfig: Text.PartialConfig(color: .White))
             )
         ], child: childBuilder)
     }

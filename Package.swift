@@ -19,7 +19,8 @@ let package = Package(
         .package(url: "https://github.com/mxcl/Path.swift.git", .branch("master")),
         .package(name: "GL", url: "https://github.com/UnGast/swift-opengl.git", .branch("master")),
         .package(name: "Swim", url: "https://github.com/t-ae/swim.git", .branch("master")),
-        .package(url: "https://github.com/UnGast/Cnanovg.git", .branch("master"))
+        .package(url: "https://github.com/UnGast/Cnanovg.git", .branch("master")),
+        .package(url: "https://github.com/wickwirew/Runtime.git", from: "2.1.1")
     ],
     targets: [
         .systemLibrary(
@@ -37,7 +38,7 @@ let package = Package(
         .target(
                 // TODO: maybe rename to SwiftApplicationFramework or so...? or split to SwiftApplicationFramework and SwiftUIFramework
                 name: "WidgetGUI",
-                dependencies: ["VisualAppBase", "CustomGraphicsMath"],
+                dependencies: ["VisualAppBase", "CustomGraphicsMath", "Runtime"],
                 resources: [.process("Resources")]
         ),
         .target(
