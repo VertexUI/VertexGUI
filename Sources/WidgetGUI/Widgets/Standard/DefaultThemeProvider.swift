@@ -25,17 +25,19 @@ public class DefaultThemeProvider: ConfigProvider {
             TextInput.PartialConfig(
                 caretColor: primaryColor
             ),
-            Button.PartialConfig(
-                normalStyle: Button.PartialStateStyle(
+            Button.PartialConfig {
+                $0.normalStyle = Button.PartialStateStyle(
                     backgroundConfig: Background.Config(fill: primaryColor, shape: .Rectangle),
-                    textConfig: Text.PartialConfig(transform: TextTransform.Lowercase, color: .Red)),
-                hoverStyle: Button.PartialStateStyle(
+                    textConfig: Text.PartialConfig(transform: TextTransform.Lowercase, color: .Red))
+                    
+                $0.hoverStyle = Button.PartialStateStyle(
                     backgroundConfig: Background.Config(fill: primaryColor.adjusted(alpha: 140), shape: .Rectangle),
-                    textConfig: Text.PartialConfig(color: .White)),
-                activeStyle: Button.PartialStateStyle(
+                    textConfig: Text.PartialConfig(color: .White))
+                    
+                $0.activeStyle = Button.PartialStateStyle(
                     backgroundConfig: Background.Config(fill: primaryColor.adjusted(alpha: 60), shape: .Rectangle),
                     textConfig: Text.PartialConfig(color: .White))
-            )
+            }
         ], child: childBuilder)
     }
 }

@@ -21,12 +21,14 @@ public final class TextField: Widget, ConfigurableWidget {
         public var backgroundConfig: Background.Config?
         public var textInputConfig: TextInput.PartialConfig?
 
+        public init() {}
+
         public init(backgroundConfig: Background.Config? = nil, textInputConfig: TextInput.PartialConfig? = nil) {
             self.backgroundConfig = backgroundConfig
             self.textInputConfig = textInputConfig
         }
 
-        public init(partials: [PartialConfig]) {
+        /*public init(partials: [PartialConfig]) {
             var textInputConfigs = [TextInput.PartialConfig]()
             
             for partial in partials.reversed() {
@@ -39,7 +41,7 @@ public final class TextField: Widget, ConfigurableWidget {
             }
 
             self.textInputConfig = TextInput.PartialConfig(partials: textInputConfigs)            
-        }
+        }*/
     }
 
     public static let defaultConfig = Config(

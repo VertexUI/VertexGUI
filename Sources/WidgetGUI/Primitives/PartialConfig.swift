@@ -5,7 +5,7 @@ public protocol PartialConfigMarker {
 }
 
 public protocol PartialConfig: PartialConfigMarker {
-//    init()
+    init()
     
     /// - Parameter partials: will be merged with lower index entries overwriting properties of higher index entries
     init(partials: [Self])
@@ -66,7 +66,7 @@ public extension PartialConfig {
         return Self.merged(partials: partials)
     }
 
-    /*init(partials: [Self]) {
+    init(partials: [Self]) {
         self.init()
 
         let typeInfo = try! Runtime.typeInfo(of: Self.self)
@@ -79,5 +79,5 @@ public extension PartialConfig {
                 }
             }
         }
-    }*/
+    }
 }

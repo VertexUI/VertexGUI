@@ -13,6 +13,10 @@ public final class Text: Widget, ConfigurableWidget {
         public var color: Color?
         public var wrap: Bool?
         
+        public init() {
+
+        }
+
         public init(
             fontConfig: PartialFontConfig? = nil,
             transform: TextTransform? = nil,
@@ -24,17 +28,19 @@ public final class Text: Widget, ConfigurableWidget {
                 self.wrap = wrap
         }
 
-        public init(partials: [PartialConfig]) {
+        public static func merged(partials: [PartialConfig]) -> PartialConfig {
+            var result = Self()
             var fontConfigs = [PartialFontConfig]()
             for partial in partials.reversed() {
                 if let partial = partial.fontConfig {
                     fontConfigs.append(partial)
                 }
-                self.transform = partial.transform ?? self.transform
-                self.color = partial.color ?? self.color
-                self.wrap = partial.wrap ?? self.wrap
+                result.transform = partial.transform ?? result.transform
+                result.color = partial.color ?? result.color
+                result.wrap = partial.wrap ?? result.wrap
             }
-            self.fontConfig = PartialFontConfig(partials: fontConfigs)
+            result.fontConfig = PartialFontConfig(partials: fontConfigs)
+            return result
         }
     }
 

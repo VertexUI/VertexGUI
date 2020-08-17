@@ -1,6 +1,7 @@
 import Foundation
 import CustomGraphicsMath
 import VisualAppBase
+import Runtime
 
 public let defaultButtonTextConfig = Text.PartialConfig(
     fontConfig: PartialFontConfig(
@@ -35,10 +36,10 @@ public final class Button: SingleChildWidget, StatefulWidget, ConfigurableWidget
 
         public init() {
             self.backgroundConfig = nil
-            self.textConfig = nil
+            self.textConfig = Text.PartialConfig()
         }
 
-        public init(backgroundConfig: Background.Config?, textConfig: Text.PartialConfig?) {
+        public init(backgroundConfig: Background.Config? = nil, textConfig: Text.PartialConfig? = nil) {
             self.backgroundConfig = backgroundConfig
             self.textConfig = textConfig
         }        
@@ -78,29 +79,15 @@ public final class Button: SingleChildWidget, StatefulWidget, ConfigurableWidget
     }
     
     public struct PartialConfig: WidgetGUI.PartialConfig {
-        public var normalStyle: PartialStateStyle?
-        public var hoverStyle: PartialStateStyle?
-        public var activeStyle: PartialStateStyle?
+        public var normalStyle: PartialStateStyle? = PartialStateStyle()
+        public var hoverStyle: PartialStateStyle? = PartialStateStyle()
+        public var activeStyle: PartialStateStyle? = PartialStateStyle()
 
-        public init(normalStyle: PartialStateStyle? = nil, hoverStyle: PartialStateStyle? = nil, activeStyle: PartialStateStyle? = nil) {
-            self.normalStyle = normalStyle
-            self.hoverStyle = hoverStyle
-            self.activeStyle = activeStyle
-        }
+        public init() {}
 
-        public init(partials: [Self]) {
-            var normalStyles = [PartialStateStyle]()
-
-            for partial in partials.reversed() {
-                //self.normalStyle = partial.normalStyle ?? self.normalStyle
-                if let normalStyle = partial.normalStyle {
-                    normalStyles.append(normalStyle)
-                }
-                self.hoverStyle = partial.hoverStyle ?? self.hoverStyle
-                self.activeStyle = partial.activeStyle ?? self.activeStyle
-            }
-
-            self.normalStyle = PartialStateStyle.merged(partials: normalStyles)
+        public init(_ builder: (_ target: inout Self) -> ()) {
+            self.init()
+            builder(&self)
         }
     }
 

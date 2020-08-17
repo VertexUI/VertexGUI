@@ -19,15 +19,17 @@ public final class TextInput: Widget, StatefulWidget, ConfigurableWidget, GUIMou
     }
 
     public struct PartialConfig: WidgetGUI.PartialConfig {
-        public var textConfig: Text.PartialConfig?
-        public var caretColor: Color?
+        public var textConfig: Text.PartialConfig? = Text.PartialConfig()
+        public var caretColor: Color? = nil
 
-        public init(textConfig: Text.PartialConfig? = nil, caretColor: Color? = nil) {
+        public init() {}
+
+        public init(textConfig: Text.PartialConfig? = Text.PartialConfig(), caretColor: Color? = nil) {
             self.textConfig = textConfig
             self.caretColor = caretColor
         }
 
-        public init(partials: [PartialConfig]) {
+        /*public init(partials: [PartialConfig]) {
             var textConfigs = [Text.PartialConfig]()
 
             for partial in partials.reversed() {
@@ -39,7 +41,7 @@ public final class TextInput: Widget, StatefulWidget, ConfigurableWidget, GUIMou
             }
 
             self.textConfig = Text.PartialConfig(partials: textConfigs)
-        }
+        }*/
     }
 
     public static let defaultConfig = Config(
