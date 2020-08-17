@@ -13,7 +13,7 @@ public final class TextField: Widget, ConfigurableWidget {
 
         public init(partial partialConfig: PartialConfig?, default defaultConfig: Config) {
             self.backgroundConfig = partialConfig?.backgroundConfig ?? defaultConfig.backgroundConfig
-            self.textInputConfig = TextInput.PartialConfig(partials: [partialConfig?.textInputConfig, defaultConfig.textInputConfig].compactMap { $0 })
+            self.textInputConfig = TextInput.PartialConfig.merged(partials: [partialConfig?.textInputConfig, defaultConfig.textInputConfig].compactMap { $0 })
         }
     }
 
@@ -27,21 +27,6 @@ public final class TextField: Widget, ConfigurableWidget {
             self.backgroundConfig = backgroundConfig
             self.textInputConfig = textInputConfig
         }
-
-        /*public init(partials: [PartialConfig]) {
-            var textInputConfigs = [TextInput.PartialConfig]()
-            
-            for partial in partials.reversed() {
-
-                self.backgroundConfig = partial.backgroundConfig ?? self.backgroundConfig
-
-                if let partial = partial.textInputConfig {
-                    textInputConfigs.append(partial)
-                }
-            }
-
-            self.textInputConfig = TextInput.PartialConfig(partials: textInputConfigs)            
-        }*/
     }
 
     public static let defaultConfig = Config(

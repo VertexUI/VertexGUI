@@ -13,7 +13,7 @@ public final class TextInput: Widget, StatefulWidget, ConfigurableWidget, GUIMou
         }
 
         public init(partial partialConfig: PartialConfig?, default defaultConfig: Config) {
-            self.textConfig = Text.PartialConfig(partials: [partialConfig?.textConfig, defaultConfig.textConfig].compactMap { $0 })
+            self.textConfig = Text.PartialConfig.merged(partials: [partialConfig?.textConfig, defaultConfig.textConfig].compactMap { $0 })
             self.caretColor = partialConfig?.caretColor ?? defaultConfig.caretColor
         }
     }
@@ -28,20 +28,6 @@ public final class TextInput: Widget, StatefulWidget, ConfigurableWidget, GUIMou
             self.textConfig = textConfig
             self.caretColor = caretColor
         }
-
-        /*public init(partials: [PartialConfig]) {
-            var textConfigs = [Text.PartialConfig]()
-
-            for partial in partials.reversed() {
-                self.caretColor = partial.caretColor ?? self.caretColor
-                
-                if let partial = partial.textConfig {
-                    textConfigs.append(partial)
-                }
-            }
-
-            self.textConfig = Text.PartialConfig(partials: textConfigs)
-        }*/
     }
 
     public static let defaultConfig = Config(

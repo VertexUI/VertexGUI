@@ -35,7 +35,7 @@ public extension ConfigurableWidget {
 
         let inheritedPartial = getConfig(ofType: PartialConfig.self)
 
-        let combinedPartial = PartialConfig(partials: [localPartialConfig, inheritedPartial].compactMap { $0 })
+        let combinedPartial = PartialConfig.merged(partials: [localPartialConfig, inheritedPartial].compactMap { $0 })
 
         return Config(partial: combinedPartial, default: Self.defaultConfig)
     }

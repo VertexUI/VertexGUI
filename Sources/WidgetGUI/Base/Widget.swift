@@ -334,7 +334,7 @@ open class Widget: Bounded, Parent, Child {
             return nil
         }
 
-        let resultConfig = type.init(partials: configs)
+        let resultConfig = type.merged(partials: configs)
         
         return resultConfig
     }

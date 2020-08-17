@@ -8,9 +8,6 @@ public protocol PartialConfigMarker {
 public protocol PartialConfig: PartialConfigMarker {
     init()
     
-    /// - Parameter partials: will be merged with lower index entries overwriting properties of higher index entries
-    init(partials: [Self])
-
     init(_ modifier: (inout Self) -> ())
 
     /// - Parameter partials: will be merged with lower index entries overwriting properties of higher index entries
@@ -77,22 +74,7 @@ public extension PartialConfig {
     func merged(partials: [Any]) -> Any {
         return Self.merged(partials: partials)
     }
-
-    init(partials: [Self]) {
-        self.init()
-
-        let typeInfo = try! Runtime.typeInfo(of: Self.self)
-
-        for property in typeInfo.properties {
-            for partial in partials {
-                if let value = try! property.get(from: partial) as Optional<Any> {
-                    try! property.set(value: value, on: &self)
-                    break
-                }
-            }
-        }
-    }
-
+ 
     mutating func callAsFunction(_ modifier: (inout Self) -> ()) {
         modifier(&self)
     }
