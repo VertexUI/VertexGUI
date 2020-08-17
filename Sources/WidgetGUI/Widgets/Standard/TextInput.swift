@@ -4,6 +4,8 @@ import VisualAppBase
 
 public final class TextInput: Widget, StatefulWidget, ConfigurableWidget, GUIMouseEventConsumer, GUIKeyEventConsumer, GUITextEventConsumer {
     public struct Config: WidgetGUI.Config {
+        public typealias PartialConfig = TextInput.PartialConfig
+
         public var textConfig: Text.PartialConfig
         public var caretColor: Color
         
@@ -12,10 +14,10 @@ public final class TextInput: Widget, StatefulWidget, ConfigurableWidget, GUIMou
             self.caretColor = caretColor
         }
 
-        public init(partial partialConfig: PartialConfig?, default defaultConfig: Config) {
+        /*public init(partial partialConfig: PartialConfig?, default defaultConfig: Config) {
             self.textConfig = Text.PartialConfig.merged(partials: [partialConfig?.textConfig, defaultConfig.textConfig].compactMap { $0 })
             self.caretColor = partialConfig?.caretColor ?? defaultConfig.caretColor
-        }
+        }*/
     }
 
     public struct PartialConfig: WidgetGUI.PartialConfig {

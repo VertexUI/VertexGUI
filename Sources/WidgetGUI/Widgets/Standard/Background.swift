@@ -3,6 +3,8 @@ import VisualAppBase
 
 public final class Background: SingleChildWidget, ConfigurableWidget {
     public struct Config: WidgetGUI.Config {
+        public typealias PartialConfig = Background.PartialConfig
+
         public var fill: Color
         public var shape: Shape
 
@@ -11,10 +13,10 @@ public final class Background: SingleChildWidget, ConfigurableWidget {
             self.shape = shape
         }
 
-        public init(partial partialConfig: PartialConfig?, default defaultConfig: Self) {
+        /*public init(partial partialConfig: PartialConfig?, default defaultConfig: Self) {
             self.fill = partialConfig?.fill ?? defaultConfig.fill
             self.shape = partialConfig?.shape ?? defaultConfig.shape
-        }
+        }*/
     }
 
     public struct PartialConfig: WidgetGUI.PartialConfig {

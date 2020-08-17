@@ -3,6 +3,8 @@ import CustomGraphicsMath
 
 public final class TextField: Widget, ConfigurableWidget {
     public struct Config: WidgetGUI.Config {
+        public typealias PartialConfig = TextField.PartialConfig
+
         public var backgroundConfig: Background.Config
         public var textInputConfig: TextInput.PartialConfig
 
@@ -11,10 +13,10 @@ public final class TextField: Widget, ConfigurableWidget {
             self.textInputConfig = textInputConfig
         }
 
-        public init(partial partialConfig: PartialConfig?, default defaultConfig: Config) {
+        /*public init(partial partialConfig: PartialConfig?, default defaultConfig: Config) {
             self.backgroundConfig = partialConfig?.backgroundConfig ?? defaultConfig.backgroundConfig
             self.textInputConfig = TextInput.PartialConfig.merged(partials: [partialConfig?.textInputConfig, defaultConfig.textInputConfig].compactMap { $0 })
-        }
+        }*/
     }
 
     public struct PartialConfig: WidgetGUI.PartialConfig {

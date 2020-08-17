@@ -45,6 +45,8 @@ public final class Text: Widget, ConfigurableWidget {
     }
 
     public struct Config: WidgetGUI.Config, Hashable {
+        public typealias PartialConfig = Text.PartialConfig
+
         public var fontConfig: FontConfig
         public var transform: TextTransform
         public var color: Color
@@ -57,11 +59,13 @@ public final class Text: Widget, ConfigurableWidget {
             self.wrap = wrap
         }
 
-        public init(partial partialConfig: PartialConfig?, default defaultConfig: Config) {
-            self.fontConfig = FontConfig(partial: partialConfig?.fontConfig, default: defaultConfig.fontConfig)
-            self.transform = partialConfig?.transform ?? defaultConfig.transform
-            self.color = partialConfig?.color ?? defaultConfig.color
-            self.wrap = partialConfig?.wrap ?? defaultConfig.wrap
+        public func merged(with partialConfig: PartialConfig?) -> Self {
+            var result = self
+            result.fontConfig = FontConfig(partial: partialConfig?.fontConfig, default: defaultConfig.fontConfig)
+            result.transform = partialConfig?.transform ?? defaultConfig.transform
+            result.color = partialConfig?.color ?? defaultConfig.color
+            result.wrap = partialConfig?.wrap ?? defaultConfig.wrap
+            return result
         }
     }
 

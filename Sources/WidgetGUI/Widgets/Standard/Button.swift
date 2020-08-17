@@ -16,6 +16,8 @@ public final class Button: SingleChildWidget, StatefulWidget, ConfigurableWidget
     }
 
     public struct StateStyle: WidgetGUI.Config {
+        public typealias PartialConfig = Button.PartialStateStyle
+
         public var backgroundConfig: Background.PartialConfig
         public var textConfig: Text.PartialConfig
 
@@ -24,10 +26,10 @@ public final class Button: SingleChildWidget, StatefulWidget, ConfigurableWidget
             self.textConfig = textConfig
         }
 
-        public init(partial partialConfig: PartialStateStyle?, default defaultConfig: Self) {
+        /*public init(partial partialConfig: PartialStateStyle?, default defaultConfig: Self) {
             self.backgroundConfig = Background.PartialConfig.merged(partials: [partialConfig?.backgroundConfig, defaultConfig.backgroundConfig].compactMap { $0 })
             self.textConfig = Text.PartialConfig.merged(partials: [partialConfig?.textConfig, defaultConfig.textConfig].compactMap { $0 })
-        }
+        }*/
     }
 
     public struct PartialStateStyle: WidgetGUI.PartialConfig {
@@ -48,6 +50,8 @@ public final class Button: SingleChildWidget, StatefulWidget, ConfigurableWidget
     }
 
     public struct Config: WidgetGUI.Config {
+        public typealias PartialConfig = Button.PartialConfig
+
         public var normalStyle: StateStyle
         public var hoverStyle: StateStyle
         public var activeStyle: StateStyle
@@ -58,11 +62,11 @@ public final class Button: SingleChildWidget, StatefulWidget, ConfigurableWidget
             self.activeStyle = activeStyle
         }
 
-        public init(partial partialConfig: PartialConfig?, default defaultConfig: Self) {
+        /*public init(partial partialConfig: PartialConfig?, default defaultConfig: Self) {
             self.normalStyle = StateStyle(partial: partialConfig?.normalStyle, default: defaultConfig.normalStyle)
             self.hoverStyle = /*partialConfig?.hoverStyle ??*/ defaultConfig.hoverStyle
             self.activeStyle = /*partialConfig?.activeStyle ??*/ defaultConfig.activeStyle
-        }
+        }*/
     }
     
     public struct PartialConfig: WidgetGUI.PartialConfig {
