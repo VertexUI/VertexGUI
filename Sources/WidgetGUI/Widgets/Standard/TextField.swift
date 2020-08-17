@@ -72,11 +72,11 @@ public final class TextField: Widget, ConfigurableWidget {
         textInput.with(config: config.textInputConfig)
 
         children = [
-            Background(config: config.backgroundConfig) {
+            Background {
                 Padding(all: 16) {
                     textInput
                 }
-            }
+            }.with(config: config.backgroundConfig)
         ]
     }
 

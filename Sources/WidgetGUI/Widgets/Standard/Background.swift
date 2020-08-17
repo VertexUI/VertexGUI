@@ -1,8 +1,8 @@
 import CustomGraphicsMath
 import VisualAppBase
 
-open class Background: SingleChildWidget {
-    public struct Config {
+public final class Background: SingleChildWidget, ConfigurableWidget {
+    public struct Config: WidgetGUI.Config {
         public var fill: Color
         public var shape: Shape
 
@@ -10,21 +10,34 @@ open class Background: SingleChildWidget {
             self.fill = fill
             self.shape = shape
         }
+
+        public init(partial partialConfig: PartialConfig?, default defaultConfig: Self) {
+            self.fill = partialConfig?.fill ?? defaultConfig.fill
+            self.shape = partialConfig?.shape ?? defaultConfig.shape
+        }
+    }
+
+    public struct PartialConfig: WidgetGUI.PartialConfig {
+        public var fill: Color?
+        public var shape: Shape?
+
+        public init() {}
     }
 
     public enum Shape {       
         case Rectangle
         case RoundedRectangle(_ cornerRadii: CornerRadii)
-    }
-    
-    private var config: Config
+    } 
+
+    public static let defaultConfig = Config(fill: .Transparent, shape: .Rectangle)    
+    public var localConfig: Config?
+    public var localPartialConfig: PartialConfig?
+    lazy public var config: Config = combineConfigs()
 
     private var inputChild: Widget
 
     public init(
-        config: Config,
         @WidgetBuilder child inputChildBuilder: () -> Widget) {
-            self.config = config
             self.inputChild = inputChildBuilder()
     }
 
@@ -32,20 +45,21 @@ open class Background: SingleChildWidget {
         fill: Color,
         shape: Shape = Shape.Rectangle,
         @WidgetBuilder child inputChildBuilder: () -> Widget) {
-            self.init(config: Config(fill: fill, shape: shape), child: inputChildBuilder)
+            self.init(child: inputChildBuilder)
+            with(config: Config(fill: fill, shape: shape))
     }
 
-    override open func buildChild() -> Widget {
+    override public func buildChild() -> Widget {
         inputChild
     }
 
-    override open func performLayout() {
+    override public func performLayout() {
         child.constraints = constraints
         try child.layout()
         bounds.size = constraints!.constrain(child.bounds.size)
     }
 
-    override open func renderContent() -> RenderObject? {
+    override public func renderContent() -> RenderObject? {
         return .Container { [unowned self] in
             RenderObject.RenderStyle(fillColor: FixedRenderValue(config.fill)) {
                 if case .Rectangle = config.shape {

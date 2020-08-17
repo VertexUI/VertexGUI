@@ -31,32 +31,19 @@ public final class Button: SingleChildWidget, StatefulWidget, ConfigurableWidget
     }
 
     public struct PartialStateStyle: WidgetGUI.PartialConfig {
-        public var backgroundConfig: Background.Config?
-        public var textConfig: Text.PartialConfig?
+        public var backgroundConfig: Background.Config? = nil
+        public var textConfig: Text.PartialConfig? = Text.PartialConfig()
 
         public init() {
-            self.backgroundConfig = nil
-            self.textConfig = Text.PartialConfig()
         }
 
         public init(backgroundConfig: Background.Config? = nil, textConfig: Text.PartialConfig? = nil) {
             self.backgroundConfig = backgroundConfig
             self.textConfig = textConfig
-        }        
+        }
 
-        public init(partials: [Self]) {
-            self.init()
-
-            let typeInfo = try! Runtime.typeInfo(of: Self.self)
-
-            for property in typeInfo.properties {
-                for partial in partials {
-                    if let value = try! property.get(from: partial) as Optional<Any> {
-                        try! property.set(value: value, on: &self)
-                        break
-                    }
-                }
-            }
+        public mutating func callAsFunction(_ modifier: (_ target: inout Self) -> ()) {
+            modifier(&self)
         }
     }
 
@@ -79,9 +66,9 @@ public final class Button: SingleChildWidget, StatefulWidget, ConfigurableWidget
     }
     
     public struct PartialConfig: WidgetGUI.PartialConfig {
-        public var normalStyle: PartialStateStyle? = PartialStateStyle()
-        public var hoverStyle: PartialStateStyle? = PartialStateStyle()
-        public var activeStyle: PartialStateStyle? = PartialStateStyle()
+        public var normalStyle: PartialStateStyle = PartialStateStyle()
+        public var hoverStyle: PartialStateStyle = PartialStateStyle()
+        public var activeStyle: PartialStateStyle = PartialStateStyle()
 
         public init() {}
 
@@ -144,13 +131,13 @@ public final class Button: SingleChildWidget, StatefulWidget, ConfigurableWidget
             state = .Normal
             dropCursorRequest!()
         }) {
-            Background(config: config.normalStyle.backgroundConfig) {
+            Background {
                 Padding(all: 16) { [unowned self] in
                     TextConfigProvider(config: config.normalStyle.textConfig) {
                         inputChild
                     }
                 }
-            }
+            }.with(config: config.normalStyle.backgroundConfig)
         }
     }
 
