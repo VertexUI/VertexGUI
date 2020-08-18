@@ -5,34 +5,27 @@ public final class TextField: Widget, ConfigurableWidget {
     public struct Config: WidgetGUI.Config {
         public typealias PartialConfig = TextField.PartialConfig
 
-        public var backgroundConfig: Background.Config
+        public var backgroundConfig: Background.PartialConfig
         public var textInputConfig: TextInput.PartialConfig
 
-        public init(backgroundConfig: Background.Config, textInputConfig: TextInput.PartialConfig) {
+        public init(backgroundConfig: Background.PartialConfig, textInputConfig: TextInput.PartialConfig) {
             self.backgroundConfig = backgroundConfig
             self.textInputConfig = textInputConfig
         }
-
-        /*public init(partial partialConfig: PartialConfig?, default defaultConfig: Config) {
-            self.backgroundConfig = partialConfig?.backgroundConfig ?? defaultConfig.backgroundConfig
-            self.textInputConfig = TextInput.PartialConfig.merged(partials: [partialConfig?.textInputConfig, defaultConfig.textInputConfig].compactMap { $0 })
-        }*/
     }
 
     public struct PartialConfig: WidgetGUI.PartialConfig {
-        public var backgroundConfig: Background.Config?
-        public var textInputConfig: TextInput.PartialConfig?
+        public var backgroundConfig = Background.PartialConfig()
+        public var textInputConfig = TextInput.PartialConfig()
 
         public init() {}
-
-        public init(backgroundConfig: Background.Config? = nil, textInputConfig: TextInput.PartialConfig? = nil) {
-            self.backgroundConfig = backgroundConfig
-            self.textInputConfig = textInputConfig
-        }
     }
 
     public static let defaultConfig = Config(
-        backgroundConfig: Background.Config(fill: .Blue, shape: .Rectangle),
+        backgroundConfig: Background.PartialConfig {
+            $0.fill = .Blue
+            $0.shape = .Rectangle
+        },
         textInputConfig: TextInput.PartialConfig())
 
     public var localPartialConfig: PartialConfig?

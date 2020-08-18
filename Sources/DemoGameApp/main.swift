@@ -51,7 +51,7 @@ public class DemoGameApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGW
     }
 
     private func buildGuiRoot() -> Root {
-        Root(rootWidget: DefaultThemeProvider(mode: .Dark, primaryColor: .Blue) { [unowned self] in
+        Root(rootWidget: ThemeProvider(DefaultTheme(mode: .Dark, primaryColor: .Blue)) { [unowned self] in
             Column {
                 ComputedSize {
                     Background(fill: Color(40, 40, 80, 255), shape: .Rectangle) {

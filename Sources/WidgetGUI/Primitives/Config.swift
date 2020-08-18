@@ -46,7 +46,7 @@ public extension Config {
                             try! resultProperty.set(value: subMerged, on: &result)
 
                         } else {
-                            fatalError("Tried to merge incompatible types in PartialConfig and Config.")
+                            fatalError("Tried to merge incompatible types.")
                         }
                         
                     } else {
