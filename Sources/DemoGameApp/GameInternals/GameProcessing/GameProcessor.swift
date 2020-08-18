@@ -86,7 +86,8 @@ public class GameProcessor {
         return PlayerState(player: blob, foods: [], otherPlayers: [])
     }
 
-    public func updatePlayer(state playerState: PlayerState) {
+    /// Updates the given PlayerState with current values of GameState.
+    public func update(playerState: PlayerState) {
         playerState.player = state.playerBlobs[playerState.player.id]!
         let perspective = playerState.player.perspective
 
@@ -96,6 +97,14 @@ public class GameProcessor {
             for blob in chunk.blobs.values {
                 playerState.foods[blob.id] = blob
             }
+        }
+    }
+
+    public func process(playerAction: PlayerAction, id: UInt) {
+        switch playerAction {
+        case let .Motion(accelerationDirection, speedLimit):
+            state.playerBlobs[id]!.accelerationDirection = accelerationDirection
+            state.playerBlobs[id]!.speedLimit = speedLimit
         }
     }
 

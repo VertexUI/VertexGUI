@@ -11,9 +11,17 @@ public class LocalPlayerStateManager: PlayerStateManager {
         self.state = gameProcessor.newPlayer()
     }
 
+    /// Synchronous. Blocked by GameProcessor updates.
     public func retrieveUpdates() {
         synchronize { [unowned self] in
-            gameProcessor.updatePlayer(state: state)
+            gameProcessor.update(playerState: state)
+        }
+    }
+
+    /// TODO: should be asynchronous
+    public func perform(action: PlayerAction) {
+        synchronize { [unowned self] in
+            gameProcessor.process(playerAction: action, id: state.player.id)
         }
     }
 }

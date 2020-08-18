@@ -101,19 +101,7 @@ public class DemoGameApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGW
 
     private func handleGameMouseMove(_ event: GUIMouseEvent) {
         let localPosition = event.position - gameView.bounds.min
-        let center = gameView.bounds.center
-        let distance = localPosition - center
         
-        let accelerationDirection = distance.normalized() * DVec2(1, -1) // multiply to convert between coordinate systems
-        
-        let referenceLength = (gameView.bounds.size.width > gameView.bounds.size.height ?
-            gameView.bounds.size.width : gameView.bounds.size.height) / 4
-        let speedLimit = min(1, distance.length / referenceLength)
-
-        updateQueue.async { [unowned self] in
-            //gameState.playerBlobs[playerBlobId]!.accelerationDirection = accelerationDirection
-            //gameState.playerBlobs[playerBlobId]!.speedLimit = speedLimit
-        }
     }
 
     private func loopUpdate() {
