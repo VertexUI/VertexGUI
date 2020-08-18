@@ -27,6 +27,7 @@ public class GameView: Widget, GUIMouseEventConsumer {
 
             previousRenderTimestamp = currentRenderTimestamp
 
+            // TODO: maybe do this outside of here, maybe update all players befofore onFrame
             player.stateManager.retrieveUpdates()
 
             // TODO: retrieve delta time from RenderObject render function
@@ -36,7 +37,7 @@ public class GameView: Widget, GUIMouseEventConsumer {
 
     public func consume(_ event: GUIMouseEvent) {
         if let event = event as? GUIMouseMoveEvent {
-            print("GAME VIEW HAVE MOUSE MOVE", event)
+
             let localPosition = event.position - globalBounds.min
 
             let center = bounds.center
@@ -50,7 +51,7 @@ public class GameView: Widget, GUIMouseEventConsumer {
 
             let speedLimit = min(1, distance.length / referenceLength)
 
-            // TODO: maybe call on Player directly
+            // TODO: maybe call on Player directly --> maybe PlayerManager has player, player does not know manager but publishes events
             player.stateManager.perform(action: .Motion(accelerationDirection: accelerationDirection, speedLimit: speedLimit))
         }
     }

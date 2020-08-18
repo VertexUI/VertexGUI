@@ -234,9 +234,16 @@ public class GameRenderer {
         for blob in state.otherPlayers.values {
             updateRenderState(for: blob, deltaTime: deltaTime)
         }
-        
+
+        var removedIds = Array(foodBlobDrawables.keys)
         for blob in state.foods.values {
             updateRenderState(for: blob, deltaTime: deltaTime)
+            if let index = removedIds.firstIndex(of: blob.id) {
+                removedIds.remove(at: index)
+            }
+        }
+        for id in removedIds {
+            foodBlobDrawables[id] = nil
         }
     }
 

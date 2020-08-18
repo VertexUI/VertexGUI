@@ -1,3 +1,5 @@
+/// The part of the game state that a player observs.
+/// TODO: maybe rename to ObservedPlayerState or something like that.
 public class PlayerState {
     public var player: PlayerBlob
 
