@@ -8,10 +8,10 @@ public class DemoGameApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGW
     private let gameProcessor: GameProcessor
     private let gameState: GameState
 
-    private let player: Player
+    lazy private var player: Player = createPlayer()
 
-    private lazy var guiRoot: Root = buildGuiRoot()
-    private lazy var gameView: GameView = buildGameView()
+    lazy private var guiRoot: Root = buildGuiRoot()
+    lazy private var gameView: GameView = buildGameView()
 
     //private var playerBlobObservable: Observable<PlayerBlob>
     //private var perspectiveObservable: Observable<GamePerspective>
@@ -22,8 +22,6 @@ public class DemoGameApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGW
         gameState = GameState()
 
         gameProcessor = GameProcessor(state: gameState, ruleset: GameRuleset())
-
-        player = Player(stateManager: LocalPlayerStateManager(gameProcessor: gameProcessor))
 
         //playerBlobObservable = Observable<PlayerBlob>(gameState.playerBlobs[playerBlobId]!)
         //perspectiveObservable = Observable<GamePerspective>(gameState.playerBlobs[playerBlobId]!.perspective)
@@ -38,6 +36,17 @@ public class DemoGameApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGW
                 perspectiveObservable.value = gameState.playerBlobs[playerBlobId]!.perspective
             }*/
         }*/
+    }
+
+    private func createPlayer() -> Player {
+        Player(
+            stateManager: LocalPlayerStateManager(
+                gameProcessor: gameProcessor, 
+                synchronize: { [unowned self] block in
+                    updateQueue.sync {
+                        block()
+                    }
+                }))
     }
 
     private func buildGameView() -> GameView {

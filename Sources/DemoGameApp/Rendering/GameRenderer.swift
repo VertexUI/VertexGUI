@@ -234,14 +234,10 @@ public class GameRenderer {
         for blob in state.otherPlayers.values {
             updateRenderState(for: blob, deltaTime: deltaTime)
         }
-
-        /*for chunk in state.findChunks(intersecting: perspective.visibleArea) {
-            for blob in chunk.blobs.values {
-                if foodBlobDrawables[blob.id] == nil {
-                    foodBlobDrawables[blob.id] = FoodBlobDrawable(blobState: blob)
-                }
-            }
-        }*/
+        
+        for blob in state.foods.values {
+            updateRenderState(for: blob, deltaTime: deltaTime)
+        }
     }
 
     private func updateRenderState(for blob: PlayerBlob, deltaTime: Double) {
@@ -250,6 +246,12 @@ public class GameRenderer {
             drawable.update(deltaTime: deltaTime)
         } else {
             playerBlobDrawables[blob.id] = PlayerBlobDrawable(blobState: blob)
+        }
+    }
+
+    private func updateRenderState(for blob: FoodBlob, deltaTime: Double) {
+        if foodBlobDrawables[blob.id] == nil {
+            foodBlobDrawables[blob.id] = FoodBlobDrawable(blobState: blob)
         }
     }
 

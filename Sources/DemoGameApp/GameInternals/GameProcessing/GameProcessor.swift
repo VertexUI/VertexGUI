@@ -86,6 +86,19 @@ public class GameProcessor {
         return PlayerState(player: blob, foods: [], otherPlayers: [])
     }
 
+    public func updatePlayer(state playerState: PlayerState) {
+        playerState.player = state.playerBlobs[playerState.player.id]!
+        let perspective = playerState.player.perspective
+
+        playerState.foods = [:]
+
+        for chunk in state.findChunks(intersecting: perspective.visibleArea) {
+            for blob in chunk.blobs.values {
+                playerState.foods[blob.id] = blob
+            }
+        }
+    }
+
     public func createPlayerBlob() -> UInt {
         let position = DVec2.random(in: state.areaBounds)
         let blob = PlayerBlob(

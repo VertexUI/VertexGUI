@@ -20,9 +20,15 @@ public class GameView: Widget {
 
     override open func renderContent() -> RenderObject? {
         return RenderObject.Custom(id: id) { [unowned self] renderer in
+
             let currentRenderTimestamp = Date.timeIntervalSinceReferenceDate
+
             let deltaTime = currentRenderTimestamp - previousRenderTimestamp
+
             previousRenderTimestamp = currentRenderTimestamp
+
+            player.stateManager.retrieveUpdates()
+
             // TODO: retrieve delta time from RenderObject render function
             try gameRenderer.render(renderArea: globalBounds, window: context!.window, renderer: renderer, deltaTime: deltaTime)
         }
