@@ -1,3 +1,4 @@
+import Foundation
 import WidgetGUI
 import CustomGraphicsMath
 import VisualAppBase
@@ -118,7 +119,7 @@ open class Widget: Bounded, Parent, Child {
         //print("Deinitialized Widget:", id, self)
     }
 
-    public final func keyed(_ key: String) -> Self {
+    public final func with(key: String) -> Self {
         self.key = key
         return self
     }
@@ -158,6 +159,8 @@ open class Widget: Bounded, Parent, Child {
     
         self.parent = parent
 
+        resolveDependencies()
+
         addedToParent()
 
         build()
@@ -174,6 +177,42 @@ open class Widget: Bounded, Parent, Child {
             mountChild(children[i], with: childContext)
         }
         mounted = true
+    }
+
+    private func resolveDependencies() {
+        var injectables = [AnyInject]()
+        
+        let mirror = Mirror(reflecting: self)
+        
+        for child in mirror.children {
+            if child.value is [AnyObservable] {
+                // TODO: this type of value needs to be caught specifically for some reason or there will be a crash
+                print("HAVE ANY OBSERVABLE", child.value)
+                continue
+            }
+            if child.value is AnyInject {
+                injectables.append(child.value as! AnyInject)
+            }
+        }
+
+        if injectables.count > 0 {
+            
+            let providers = getParents(ofType: DependencyProvider.self)
+
+            for provider in providers {
+                
+                for injectable in injectables {
+
+                    if injectable.anyValue == nil {
+                        
+                        if let dependency = provider.getDependency(ofType: injectable.anyType) {
+
+                            injectable.anyValue = dependency.value
+                        }
+                    }
+                }
+            }
+        }
     }
 
     open func addedToParent() {

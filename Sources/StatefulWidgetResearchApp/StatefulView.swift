@@ -17,11 +17,11 @@ public class StatefulView: SingleChildWidget, StatefulWidget {
         Column(spacing: 32) {
             if state.viewStatePropertyTwo {
                 Text("without additional wrapping")
-                StatefulWidgetOne(passedPropertyOne: state.viewStatePropertyOne).keyed("test")
+                StatefulWidgetOne(passedPropertyOne: state.viewStatePropertyOne).with(key: "test")
             } else {
                 Row {
                     Text("with additional wrapping")
-                    StatefulWidgetOne(passedPropertyOne: state.viewStatePropertyOne).keyed("test")
+                    StatefulWidgetOne(passedPropertyOne: state.viewStatePropertyOne).with(key: "test")
                 }
             }
 

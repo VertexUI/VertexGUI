@@ -136,8 +136,10 @@ public final class Text: Widget, ConfigurableWidget {
                 preferredSize = context!.getTextBoundsSize(transformedText, fontConfig: config.fontConfig)
             }
         }
-
-        preferredSize.width += 1
+        
+        // fix glitches that create unnecessary line breaks, probably because floating point inprecisions
+        // might need to be larger
+        preferredSize.width += 4
 
         bounds.size = constraints!.constrain(preferredSize)
     }

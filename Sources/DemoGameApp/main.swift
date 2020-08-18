@@ -51,41 +51,43 @@ public class DemoGameApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGW
     }
 
     private func buildGuiRoot() -> Root {
-        Root(rootWidget: ThemeProvider(DefaultTheme(mode: .Dark, primaryColor: .Blue)) { [unowned self] in
-            Column {
-                ComputedSize {
-                    Background(fill: Color(40, 40, 80, 255), shape: .Rectangle) {
-                        Padding(all: 32) {
-                            Text("An awesome game.", fontSize: 24, fontWeight: .Bold, color: .White)
-                        }
-                    }
-                } calculate: {
-                    BoxConstraints(minSize: DSize2($0.maxSize.width, $0.minSize.height), maxSize: $0.maxSize)
-                }
-
-                Aligner {
-                    MouseArea(onMouseMove: { [unowned self] in handleGameMouseMove($0) }) {
-                        gameView
-                    }
-
-                    Alignable(horizontal: .End) {
-                        Column {
-                            Button {
-                                Text("Button without function")
-                            } onClick: { _ in
-                                print("CLICKED")
+        Root(rootWidget: DependencyProvider(provide: [
+            Dependency("The test value!")
+        ]) {
+            ThemeProvider(DefaultTheme(mode: .Dark, primaryColor: .Blue)) { [unowned self] in
+                Column {
+                    ComputedSize {
+                        Background(fill: Color(40, 40, 80, 255), shape: .Rectangle) {
+                            Padding(all: 32) {
+                                Text("An awesome game.", fontSize: 24, fontWeight: .Bold, color: .White)
                             }
+                        }
+                    } calculate: {
+                        BoxConstraints(minSize: DSize2($0.maxSize.width, $0.minSize.height), maxSize: $0.maxSize)
+                    }
 
-                            TextField()
-                                
-                            ComputedSize {
-                                Padding(all: 32) {
-                                    PlayerStatsView(blob: playerBlobObservable)
+                    Aligner {
+                        MouseArea(onMouseMove: { [unowned self] in handleGameMouseMove($0) }) {
+                            gameView
+                        }
+
+                        Alignable(horizontal: .End) {
+                            Column {
+                                Button {
+                                    Text("Button without function")
+                                } onClick: { _ in
+                                    print("CLICKED")
                                 }
-                            } calculate: {
-                                BoxConstraints(
-                                    minSize: DSize2(500, $0.minSize.height),
-                                    maxSize: DSize2(500, $0.maxSize.height))
+
+                                TextField()
+                                    
+                                ComputedSize {
+                                    GameControlView(blob: playerBlobObservable)
+                                } calculate: {
+                                    BoxConstraints(
+                                        minSize: DSize2(500, $0.minSize.height),
+                                        maxSize: DSize2(500, $0.maxSize.height))
+                                }
                             }
                         }
                     }

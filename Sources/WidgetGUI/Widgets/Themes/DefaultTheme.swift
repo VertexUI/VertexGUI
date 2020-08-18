@@ -35,7 +35,7 @@ public class DefaultTheme: Theme {
                         $0.shape = .RoundedRectangle(CornerRadii(all: 8))
                     }
                     $0.textConfig {
-                        $0.color = Color(255, 255, 0, 255)
+                        $0.color = Color(255, 255, 255, 255)
                     }
                 }
                     
