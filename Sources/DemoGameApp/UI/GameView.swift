@@ -5,15 +5,13 @@ import CustomGraphicsMath
 import Dispatch
 
 public class GameView: Widget {
-    public var perspective: Observable<GamePerspective>
+    private let player: Player
     private let gameRenderer: GameRenderer
     private var previousRenderTimestamp: Double = Date.timeIntervalSinceReferenceDate
-    private var synchronize: (_ block: () -> ()) -> ()
     
-    public init(state: GameState, perspective: Observable<GamePerspective>, synchronize: @escaping (_ block: () -> ()) -> ()) {
-        self.perspective = perspective
-        self.gameRenderer = GameRenderer(state: state)
-        self.synchronize = synchronize
+    public init(player: Player) {
+        self.player = player
+        self.gameRenderer = GameRenderer(state: player.state)
     }
 
     override open func performLayout() {
@@ -26,10 +24,7 @@ public class GameView: Widget {
             let deltaTime = currentRenderTimestamp - previousRenderTimestamp
             previousRenderTimestamp = currentRenderTimestamp
             // TODO: retrieve delta time from RenderObject render function
-            synchronize {
-                gameRenderer.updateRenderState(from: perspective.value, deltaTime: deltaTime)
-            }
-            try gameRenderer.render(from: perspective.value, renderArea: globalBounds, window: context!.window, renderer: renderer)
+            try gameRenderer.render(renderArea: globalBounds, window: context!.window, renderer: renderer, deltaTime: deltaTime)
         }
     }
 }

@@ -2,7 +2,7 @@ import Dispatch
 import Foundation
 import CustomGraphicsMath
 
-public class GameManager {
+public class GameProcessor {
     private var _nextBlobId: UInt = 0
     private var nextBlobId: UInt {
         get {
@@ -79,6 +79,11 @@ public class GameManager {
             state.playerBlobs[id] = blob
         }
         balanceFood(deltaTime: deltaTime)
+    }
+
+    public func newPlayer() -> PlayerState {
+        let blob = state.playerBlobs[createPlayerBlob()]!
+        return PlayerState(player: blob, foods: [], otherPlayers: [])
     }
 
     public func createPlayerBlob() -> UInt {

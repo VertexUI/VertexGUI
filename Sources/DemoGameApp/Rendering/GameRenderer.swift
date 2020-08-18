@@ -5,7 +5,7 @@ import GLGraphicsMath
 import GL
 
 public class GameRenderer {
-    private let state: GameState
+    private let state: PlayerState
     private let eventBuffer: GameEventBuffer
     private let eventBufferId: UInt
     private var foodBlobDrawables: [UInt: FoodBlobDrawable] = [:]
@@ -37,10 +37,11 @@ public class GameRenderer {
     private var playerVao = GLMap.UInt()
     private var playerVerticesVbo = GLMap.UInt()
 
-    public init(state: GameState) {
+    public init(state: PlayerState) {
         self.state = state
         eventBuffer = GameEventBuffer()
-        eventBufferId = state.register(buffer: eventBuffer)
+        eventBufferId = 0
+        //eventBufferId = state.register(buffer: eventBuffer)
 
         // GL setup for food        
         try! foodShaderProgram.compile()
@@ -82,38 +83,14 @@ public class GameRenderer {
     }
 
     deinit {
-        state.unregister(bufferId: eventBufferId)
+        //state.unregister(bufferId: eventBufferId)
     }
 
-    public func updateRenderState(from perspective: GamePerspective, deltaTime: Double) {
-        for event in eventBuffer {
-            if case let .Remove(id) = event {
-                foodBlobDrawables[id] = nil
-                playerBlobDrawables[id] = nil
-            }
-        }
-        eventBuffer.clear()
+    public func render(renderArea: DRect, window: Window, renderer: Renderer, deltaTime: Double) throws {      
+        updateRenderState(deltaTime: deltaTime)
 
-        for blob in state.playerBlobs.values {
-            if let drawable = playerBlobDrawables[blob.id] {
-                drawable.blobState = blob
-                drawable.update(deltaTime: deltaTime)
-            } else {
-                playerBlobDrawables[blob.id] = PlayerBlobDrawable(blobState: blob)
-            }
-        }
-
-        //print("UPDATE RENDER STATE", state.findChunks(intersecting: perspective.visibleArea).count)
-        for chunk in state.findChunks(intersecting: perspective.visibleArea) {
-            for blob in chunk.blobs.values {
-                if foodBlobDrawables[blob.id] == nil {
-                    foodBlobDrawables[blob.id] = FoodBlobDrawable(blobState: blob)
-                }
-            }
-        }
-    }
-
-    public func render(from perspective: GamePerspective, renderArea: DRect, window: Window, renderer: Renderer) throws {      
+        let perspective = state.player.perspective
+        
         let gameScreenFitScale: DVec2 
         if renderArea.size.height > renderArea.size.width {
             let targetRatio = perspective.visibleArea.size.width / perspective.visibleArea.size.height
@@ -241,6 +218,39 @@ public class GameRenderer {
         glBindBuffer(GLMap.ARRAY_BUFFER, playerVerticesVbo)
         glBufferData(GLMap.ARRAY_BUFFER, playerVertices.count * MemoryLayout<GLMap.Float>.size, playerVertices, GLMap.DYNAMIC_DRAW)
         glDrawArrays(GLMap.TRIANGLES, 0, GLMap.Size(Double(playerVertices.count) / 2))
+    }
+
+    private func updateRenderState(deltaTime: Double) {
+        /*for event in eventBuffer {
+            if case let .Remove(id) = event {
+                foodBlobDrawables[id] = nil
+                playerBlobDrawables[id] = nil
+            }
+        }
+        eventBuffer.clear()*/
+
+        updateRenderState(for: state.player, deltaTime: deltaTime)
+
+        for blob in state.otherPlayers.values {
+            updateRenderState(for: blob, deltaTime: deltaTime)
+        }
+
+        /*for chunk in state.findChunks(intersecting: perspective.visibleArea) {
+            for blob in chunk.blobs.values {
+                if foodBlobDrawables[blob.id] == nil {
+                    foodBlobDrawables[blob.id] = FoodBlobDrawable(blobState: blob)
+                }
+            }
+        }*/
+    }
+
+    private func updateRenderState(for blob: PlayerBlob, deltaTime: Double) {
+        if let drawable = playerBlobDrawables[blob.id] {
+            drawable.blobState = blob
+            drawable.update(deltaTime: deltaTime)
+        } else {
+            playerBlobDrawables[blob.id] = PlayerBlobDrawable(blobState: blob)
+        }
     }
 
     /*private func renderVertices(vertices: [DPoint2], from perspective: GamePerspective, with renderer: Renderer) throws {

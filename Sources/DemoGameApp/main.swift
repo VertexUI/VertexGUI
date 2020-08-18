@@ -5,49 +5,43 @@ import CustomGraphicsMath
 import Foundation
 
 public class DemoGameApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGWindow, SDL2OpenGL3NanoVGRenderer> {
-    private let gameManager: GameManager
+    private let gameProcessor: GameProcessor
     private let gameState: GameState
-    private var playerBlobId: UInt 
+
+    private let player: Player
 
     private lazy var guiRoot: Root = buildGuiRoot()
     private lazy var gameView: GameView = buildGameView()
 
-    private var playerBlobObservable: Observable<PlayerBlob>
-    private var perspectiveObservable: Observable<GamePerspective>
+    //private var playerBlobObservable: Observable<PlayerBlob>
+    //private var perspectiveObservable: Observable<GamePerspective>
 
     private let updateQueue = DispatchQueue(label: "swift-cross-platform-demo.game", qos: .background)
 
     public init() {
         gameState = GameState()
 
-        gameManager = GameManager(state: gameState, ruleset: GameRuleset())
+        gameProcessor = GameProcessor(state: gameState, ruleset: GameRuleset())
 
-        playerBlobId = gameManager.createPlayerBlob()
+        player = Player(stateManager: LocalPlayerStateManager(gameProcessor: gameProcessor))
 
-        playerBlobObservable = Observable<PlayerBlob>(gameState.playerBlobs[playerBlobId]!)
-        perspectiveObservable = Observable<GamePerspective>(gameState.playerBlobs[playerBlobId]!.perspective)
+        //playerBlobObservable = Observable<PlayerBlob>(gameState.playerBlobs[playerBlobId]!)
+        //perspectiveObservable = Observable<GamePerspective>(gameState.playerBlobs[playerBlobId]!.perspective)
         
         super.init(system: try! SDL2OpenGL3NanoVGSystem())
 
         let window = newWindow(guiRoot: guiRoot, background: Color(20, 20, 40, 255))
-        _ = system.onFrame { [unowned self] deltaTimeMilliseconds in
-            let deltaTime = Double(deltaTimeMilliseconds) / 1000
+        /*_ = system.onFrame { [unowned self] deltaTimeMilliseconds in
+            /*let deltaTime = Double(deltaTimeMilliseconds) / 1000
             updateQueue.sync {
                 playerBlobObservable.value = gameState.playerBlobs[playerBlobId]!
                 perspectiveObservable.value = gameState.playerBlobs[playerBlobId]!.perspective
-            }
-        }
+            }*/
+        }*/
     }
 
     private func buildGameView() -> GameView {
-        GameView(
-            state: gameState,
-            perspective: perspectiveObservable,
-            synchronize: { [unowned self] block in
-                updateQueue.sync {
-                    block()
-                }
-            })
+        GameView(player: player)
     }
 
     private func buildGuiRoot() -> Root {
@@ -81,13 +75,13 @@ public class DemoGameApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGW
 
                                 TextField()
                                     
-                                ComputedSize {
+                                /*ComputedSize {
                                     GameControlView(blob: playerBlobObservable)
                                 } calculate: {
                                     BoxConstraints(
                                         minSize: DSize2(500, $0.minSize.height),
                                         maxSize: DSize2(500, $0.maxSize.height))
-                                }
+                                }*/
                             }
                         }
                     }
@@ -108,8 +102,8 @@ public class DemoGameApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGW
         let speedLimit = min(1, distance.length / referenceLength)
 
         updateQueue.async { [unowned self] in
-            gameState.playerBlobs[playerBlobId]!.accelerationDirection = accelerationDirection
-            gameState.playerBlobs[playerBlobId]!.speedLimit = speedLimit
+            //gameState.playerBlobs[playerBlobId]!.accelerationDirection = accelerationDirection
+            //gameState.playerBlobs[playerBlobId]!.speedLimit = speedLimit
         }
     }
 
@@ -120,14 +114,14 @@ public class DemoGameApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGW
                 let currentFrameTimestamp = Date.timeIntervalSinceReferenceDate
                 let deltaTime = currentFrameTimestamp - lastFrameTimestamp
                 lastFrameTimestamp = currentFrameTimestamp
-                gameManager.update(deltaTime: deltaTime)
+                gameProcessor.update(deltaTime: deltaTime)
                 loopUpdate()
         }
     }
 
     /*private func updateDrawableState(deltaTime: Double) {
         let events = updateQueue.sync {
-            return gameManager.popEventQueue()
+            return gameProcessor.popEventQueue()
         }
         drawableManager.process(events: events, deltaTime: deltaTime)
         drawableGameState.perspective = playerBlob.perspective
