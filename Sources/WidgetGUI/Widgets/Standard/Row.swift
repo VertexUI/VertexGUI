@@ -2,7 +2,12 @@ import CustomGraphicsMath
 import VisualAppBase
 
 public class Row: Widget {
+    public enum Alignment {
+        case Start, Center, End
+    }
+
     private var spacing: Double
+    private var crossAxisAlignment: Alignment
     private var wrap: Bool
 
     /*public init(wrap: Bool = false, children: [Widget]) {
@@ -10,8 +15,9 @@ public class Row: Widget {
         super.init(children: children)
     }*/
 
-    public init(spacing: Double = 0, wrap: Bool = false, @WidgetBuilder children: () -> [Widget]) {
+    public init(spacing: Double = 0, crossAxisAlignment: Alignment = .Start, wrap: Bool = false, @WidgetBuilder children: () -> [Widget]) {
         self.spacing = spacing
+        self.crossAxisAlignment = crossAxisAlignment
         self.wrap = wrap
         super.init(children: children())
         //self.init(wrap: wrap, children: children())
@@ -52,6 +58,30 @@ public class Row: Widget {
 
             currentX += spacing
         }
+
         bounds.size = DSize2(max(constraints!.minWidth, maxWidth), max(constraints!.minHeight, currentY + currentRowHeight))
+
+        // TODO: need to implement this for multi line also!
+        if crossAxisAlignment != .Start {
+            
+            for child in children {
+
+                switch crossAxisAlignment {
+
+                case .Center:
+                    child.bounds.min.y = bounds.size.height / 2 - child.bounds.size.height / 2
+                    
+                case .End:
+                    child.bounds.min.y = bounds.size.height - child.bounds.size.height
+
+                default:
+                    break
+                }
+            }
+        }
+
+        for child in children {
+            child.completeLayout()
+        }
     }
 }

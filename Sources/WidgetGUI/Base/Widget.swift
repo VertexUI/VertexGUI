@@ -86,11 +86,7 @@ open class Widget: Bounded, Parent, Child {
             if oldValue != bounds {
                 if mounted && layouted && !destroyed {
                     onBoundsChanged.invokeHandlers(bounds)
-                //if let parent = self.parent {
-                    //try! parent.relayout()
-                //}
                     invalidateRenderState()
-                    //print("BOUNDS UPDATED", self)
                 }
             }
         }
@@ -226,14 +222,16 @@ open class Widget: Bounded, Parent, Child {
     }
 
     public final func mountChild(_ child: Widget, with context: ReplacementContext? = nil) {
+        child.mount(parent: self, with: context)
+
         _ = child.onRenderStateInvalidated { [unowned self] in
             invalidateRenderState($0)
         }
+
         // TODO: buffer updates over a certain timespan and then relayout
         _ = child.onBoundsChanged { [unowned self] _ in
             layout()
         }
-        child.mount(parent: self, with: context)
     }
 
     // TODO: this function might be better suited to parent
@@ -274,6 +272,9 @@ open class Widget: Bounded, Parent, Child {
             return
         }
         performLayout()
+    }
+
+    public final func completeLayout() {
         layouted = true
     }
 

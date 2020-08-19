@@ -15,9 +15,6 @@ public class DemoGameApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGW
     lazy private var guiRoot: Root = buildGuiRoot()
     lazy private var gameView: GameView = buildGameView()
 
-    //private var playerBlobObservable: Observable<PlayerBlob>
-    //private var perspectiveObservable: Observable<GamePerspective>
-
     private let updateQueue = DispatchQueue(label: "swift-cross-platform-demo.game", qos: .background)
 
     public init() {
@@ -25,19 +22,9 @@ public class DemoGameApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGW
 
         gameProcessor = GameProcessor(state: gameState, ruleset: gameRuleset.value)
 
-        //playerBlobObservable = Observable<PlayerBlob>(gameState.playerBlobs[playerBlobId]!)
-        //perspectiveObservable = Observable<GamePerspective>(gameState.playerBlobs[playerBlobId]!.perspective)
-        
         super.init(system: try! SDL2OpenGL3NanoVGSystem())
 
         let window = newWindow(guiRoot: guiRoot, background: Color(20, 20, 40, 255))
-        /*_ = system.onFrame { [unowned self] deltaTimeMilliseconds in
-            /*let deltaTime = Double(deltaTimeMilliseconds) / 1000
-            updateQueue.sync {
-                playerBlobObservable.value = gameState.playerBlobs[playerBlobId]!
-                perspectiveObservable.value = gameState.playerBlobs[playerBlobId]!.perspective
-            }*/
-        }*/
     }
 
     private func createPlayer() -> Player {

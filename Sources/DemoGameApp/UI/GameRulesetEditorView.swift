@@ -5,7 +5,7 @@ public class GameRulesetEditorView: SingleChildWidget {
 
     override open func buildChild() -> Widget {
         return Column {
-            Row {
+            Row(crossAxisAlignment: .Center) {
                 Text("foodBlobMass")
 
                 TextField("\(gameRuleset.value.foodBlobMass)")
