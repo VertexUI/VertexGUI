@@ -74,18 +74,19 @@ open class Widget: Bounded, Parent, Child {
     public var layoutable: Bool {
         mounted && constraints != nil && context != nil
     }
+    public var layouting = false
     public var layouted = false
     public internal(set) var destroyed = false
-
-    //private var unregisterFunctions = [() -> ()]()
 
     // TODO: might need to create something like layoutBounds and renderBounds (area that is invalidated on rerender request --> could be more than layoutBounds and affect outside widgets (e.g. a drop shadow that is not included in layoutBounds))
     open var bounds: DRect = DRect(min: DPoint2(0,0), size: DSize2(0,0)) {
         didSet {
-            // TODO: maybe let the parent list for onUpdateBounds on it's children instead of calling the parent
             if oldValue != bounds {
+
                 if mounted && layouted && !destroyed {
+
                     onBoundsChanged.invokeHandlers(bounds)
+                    
                     invalidateRenderState()
                 }
             }
@@ -112,22 +113,17 @@ open class Widget: Bounded, Parent, Child {
     }
 
     deinit {
-        //print("Deinitialized Widget:", id, self)
+        print("Deinitialized Widget:", id, self)
     }
 
     public final func with(key: String) -> Self {
         self.key = key
         return self
     }
-
-    /*/// Record unregister functions for handlers that were added to some handler list during the lifetime
-    /// of the widget. The unregister functions will be called during destroy().
-    public func autoClean(_ unregister: @escaping () -> ()) {
-        unregisterFunctions.append(unregister)
-    }*/
-
+ 
     public final func mount(parent: Parent, with context: ReplacementContext? = nil) {
         var oldSelf: Widget? = context?.previousWidget
+      
         if
             let context = context {
                 if let newKey = self.key {
@@ -230,7 +226,10 @@ open class Widget: Bounded, Parent, Child {
 
         // TODO: buffer updates over a certain timespan and then relayout
         _ = child.onBoundsChanged { [unowned self] _ in
-            layout()
+            // TODO: maybe need special relayout flag / function
+            if layouted && !layouting {
+                layout()
+            }
         }
     }
 
@@ -271,11 +270,19 @@ open class Widget: Bounded, Parent, Child {
             print("Warning: called layout() on Widget that is not layoutable:", self)
             return
         }
-        performLayout()
-    }
 
-    public final func completeLayout() {
+        if layouting {
+            print("Warning: called layout() on Widget while that Widget was still layouting", self)
+            return
+        }
+
+        layouting = true
+
+        performLayout()
+
         layouted = true
+        
+        layouting = false
     }
 
     // TODO: how to name this?

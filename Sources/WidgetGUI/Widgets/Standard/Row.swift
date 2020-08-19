@@ -20,7 +20,6 @@ public class Row: Widget {
         self.crossAxisAlignment = crossAxisAlignment
         self.wrap = wrap
         super.init(children: children())
-        //self.init(wrap: wrap, children: children())
     }
 
     override public func performLayout() {
@@ -28,6 +27,7 @@ public class Row: Widget {
         var currentY = 0.0
         var maxWidth = 0.0
         var currentRowHeight = 0.0 // height of the current line of children, if multiline, total height = currentY + currentRowHeight
+
         for child in children {
             // TODO: maybe set min size as well
 
@@ -78,10 +78,6 @@ public class Row: Widget {
                     break
                 }
             }
-        }
-
-        for child in children {
-            child.completeLayout()
         }
     }
 }

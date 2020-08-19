@@ -28,7 +28,7 @@ open class SingleChildWidget: Widget {
 
     override open func performLayout() {
         child.constraints = constraints
-        try child.layout()
+        child.layout()
         bounds.size = child.bounds.size
     }    
 
