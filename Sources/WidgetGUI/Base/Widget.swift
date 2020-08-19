@@ -83,10 +83,10 @@ open class Widget: Bounded, Parent, Child {
         didSet {
             if oldValue != bounds {
 
-                if mounted && layouted && !destroyed {
+                if mounted && layouted && !layouting && !destroyed {
 
                     onBoundsChanged.invokeHandlers(bounds)
-                    
+
                     invalidateRenderState()
                 }
             }
@@ -278,30 +278,20 @@ open class Widget: Bounded, Parent, Child {
 
         layouting = true
 
+        let previousBounds = bounds
+        let isFirstRound = !layouted
+
         performLayout()
 
         layouted = true
         
         layouting = false
-    }
 
-    // TODO: how to name this?
-    public final func destroy() {
-        for child in children {
-            child.destroy()
+        // if bounds changed and this is not the first layout round
+        if previousBounds != bounds && !isFirstRound {
+            onBoundsChanged.invokeHandlers(bounds)
+            invalidateRenderState()
         }
-        mounted = false
-        onParentChanged.removeAllHandlers()
-        onAnyParentChanged.removeAllHandlers()
-        onRenderStateInvalidated.removeAllHandlers()
-        parent = nil
-        destroySelf()
-        onDestroy.invokeHandlers(Void())
-        destroyed = true
-        //print("Destroyed Widget:", id, self)
-    }
-
-    open func destroySelf() {
     }
 
     public func requestFocus() {
@@ -320,14 +310,18 @@ open class Widget: Bounded, Parent, Child {
 
     public final func findParent(_ condition: (_ parent: Parent) throws -> Bool) rethrows -> Parent? {
         var parent: Parent? = self.parent
+
         while parent != nil {
+
             if try condition(parent!) {
                 return parent
             }
+
             if let currentParent = parent as? Widget {
                 parent = currentParent.parent
             }
         } 
+
         return nil
     }
 
@@ -338,31 +332,42 @@ open class Widget: Bounded, Parent, Child {
 
     /// - Returns: all parents of given type, sorted from nearest to farthest
     public final func getParents<T>(ofType type: T.Type) -> [T] {
+
         var selectedParents = [T]()
+
         var currentParent: Parent? = self.parent
+
         while currentParent != nil {
+
             if let parent = currentParent as? T {
                 selectedParents.append(parent)
             }
+            
             if let childParent = currentParent! as? Child {
                 currentParent = childParent.parent
+
             } else {
                 break
             }
         }
+
         return selectedParents
     }
 
     // TODO: might need possibility to return all of type + a method that only returns first + in what order depth first / breadth first
     public final func getChild<W: Widget>(ofType type: W.Type) -> W? {
         for child in children {
+
             if let child = child as? W {
+
                 return child
             }
         }
         
         for child in children {
+
             if let result = child.getChild(ofType: type) {
+
                 return result
             }
         }
@@ -386,25 +391,6 @@ open class Widget: Bounded, Parent, Child {
         return resultConfig
     }
 
-    /// This should trigger a rerender of the widget in the next frame.
-    public final func invalidateRenderState(_ widget: Widget? = nil) {
-        if destroyed {
-            print("Warning: Tried to call invalidateRenderState() on destroyed widget: \(self)")
-            return
-        }
-        if !mounted {
-            print("Warning: Called invalidateRenderState() on an unmounted Widget:", self)
-            return
-        }
-        let widget = widget ?? self
-        try! onRenderStateInvalidated.invokeHandlers(widget)
-    }
-
-    public final func invalidateRenderState(after block: () -> ()) {
-        block()
-        invalidateRenderState()
-    }
-
     /// Returns the result of renderContent() wrapped in an IdentifiedSubTreeRenderObject
     public final func render() -> IdentifiedSubTreeRenderObject {
         return IdentifiedSubTreeRenderObject(id) {
@@ -418,5 +404,45 @@ open class Widget: Bounded, Parent, Child {
             children.map { $0.render() }
         }
     }
+
+    /// This should trigger a rerender of the widget in the next frame.
+    public final func invalidateRenderState(_ widget: Widget? = nil) {
+        if destroyed {
+            print("Warning: Tried to call invalidateRenderState() on destroyed widget: \(self)")
+            return
+        }
+
+        if !mounted {
+            print("Warning: Called invalidateRenderState() on an unmounted Widget:", self)
+            return
+        }
+
+        let widget = widget ?? self
+
+        try! onRenderStateInvalidated.invokeHandlers(widget)
+    }
+
+    public final func invalidateRenderState(after block: () -> ()) {
+        block()
+        invalidateRenderState()
+    }
+
+    // TODO: how to name this?
+    public final func destroy() {
+        for child in children {
+            child.destroy()
+        }
+        mounted = false
+        onParentChanged.removeAllHandlers()
+        onAnyParentChanged.removeAllHandlers()
+        onRenderStateInvalidated.removeAllHandlers()
+        parent = nil
+        destroySelf()
+        onDestroy.invokeHandlers(Void())
+        destroyed = true
+        //print("Destroyed Widget:", id, self)
+    }
+
+    open func destroySelf() {}
 }
 

@@ -72,7 +72,7 @@ public final class Text: Widget, ConfigurableWidget {
     public var text: String {
         didSet {
             if oldValue != text {
-                performLayout()
+                layout()
                 invalidateRenderState()
             }
         }
