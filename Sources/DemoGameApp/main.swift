@@ -25,6 +25,12 @@ public class DemoGameApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGW
         super.init(system: try! SDL2OpenGL3NanoVGSystem())
 
         let window = newWindow(guiRoot: guiRoot, background: Color(20, 20, 40, 255))
+
+        _ = gameRuleset.onChanged { [unowned self] _ in
+            updateQueue.async {
+                gameProcessor.updateRuleset(gameRuleset.value)
+            }
+        }
     }
 
     private func createPlayer() -> Player {

@@ -7,7 +7,7 @@ public class Row: Widget {
     }
 
     private var spacing: Double
-    private var crossAxisAlignment: Alignment
+    private var verticalAlignment: Alignment
     private var wrap: Bool
 
     /*public init(wrap: Bool = false, children: [Widget]) {
@@ -15,9 +15,9 @@ public class Row: Widget {
         super.init(children: children)
     }*/
 
-    public init(spacing: Double = 0, crossAxisAlignment: Alignment = .Start, wrap: Bool = false, @WidgetBuilder children: () -> [Widget]) {
+    public init(spacing: Double = 0, verticalAlignment: Alignment = .Start, wrap: Bool = false, @WidgetBuilder children: () -> [Widget]) {
         self.spacing = spacing
-        self.crossAxisAlignment = crossAxisAlignment
+        self.verticalAlignment = verticalAlignment
         self.wrap = wrap
         super.init(children: children())
     }
@@ -62,11 +62,11 @@ public class Row: Widget {
         bounds.size = DSize2(max(constraints!.minWidth, maxWidth), max(constraints!.minHeight, currentY + currentRowHeight))
 
         // TODO: need to implement this for multi line also!
-        if crossAxisAlignment != .Start {
+        if verticalAlignment != .Start {
             
             for child in children {
 
-                switch crossAxisAlignment {
+                switch verticalAlignment {
 
                 case .Center:
                     child.bounds.min.y = bounds.size.height / 2 - child.bounds.size.height / 2

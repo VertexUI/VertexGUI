@@ -107,10 +107,6 @@ public class GameRenderer {
             GLMap.Int(window.size.height - renderArea.max.y),
             GLMap.Size(renderArea.size.width),
             GLMap.Size(renderArea.size.height))
-        /*try renderer.translate(screenArea.min)
-        try renderer.translate(DVec2(screenArea.size / 2))
-        try renderer.scale(DVec2(gameScreenFitScale, gameScreenFitScale))
-        try renderer.scale(DVec2(1, -1))*/
         
         var foodCount = 0
         // TODO: might need radius as instanced vertex attribute for each food
@@ -126,14 +122,12 @@ public class GameRenderer {
                 continue
             }
 
-            //try renderVertices(vertices: drawable.vertices, from: perspective, with: renderer)
             foodPositions.append(GLMap.Float(drawable.blobState.position.x))
             foodPositions.append(GLMap.Float(drawable.blobState.position.y))
             foodRadius = GLMap.Float(drawable.blobState.radius)
             foodCount += 1
         }
 
-        // TODO: display in correct width/height ratio
         foodShaderProgram.use()
         glUniform2f(
             foodShaderProgram.uniformPerspectiveMinLocation,
@@ -175,13 +169,6 @@ public class GameRenderer {
             if !paddedVisibleArea.contains(point: drawable.blobState.position) {
                 continue
             }
-
-            /*try renderVertices(vertices: drawable.vertices, from: perspective, with: renderer)
-            try renderer.beginPath()
-            try renderer.circle(center: drawable.blobState.position - perspective.center, radius: drawable.blobState.radius)
-            try renderer.strokeColor(.Black)
-            try renderer.strokeWidth(1)
-            try renderer.stroke()*/
 
             for i in 0..<drawable.vertices.count {
                 playerVertices.append(GLMap.Float(drawable.blobState.position.x))
@@ -261,25 +248,4 @@ public class GameRenderer {
             foodBlobDrawables[blob.id] = FoodBlobDrawable(blobState: blob)
         }
     }
-
-    /*private func renderVertices(vertices: [DPoint2], from perspective: GamePerspective, with renderer: Renderer) throws {
-        if vertices.count > 0 {
-
-            try renderer.beginPath()
-            try renderer.moveTo(vertices[0] - perspective.center + DVec2(400, 400))
-
-            for vertex in vertices[1...] {
-                try renderer.lineTo(vertex - perspective.center + DVec2(400, 400))
-            }
-            
-            try renderer.closePath()
-
-            try renderer.fillColor(.Green)
-            
-            //try renderer.strokeColor(.Green)
-            //try renderer.strokeWidth(2)
-            //try renderer.stroke()
-            try renderer.fill()
-        }
-    }*/
 }

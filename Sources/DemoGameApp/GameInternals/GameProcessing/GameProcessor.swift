@@ -19,6 +19,17 @@ public class GameProcessor {
         self.ruleset = ruleset
     }
 
+    public func updateRuleset(_ ruleset: GameRuleset) {
+        self.ruleset = ruleset
+
+        for chunk in state.chunks {
+            for id in chunk.blobs.keys {
+                chunk.blobs[id]!.mass = ruleset.foodBlobMass
+                chunk.blobs[id]!.radius = ruleset.calcRadius(chunk.blobs[id]!.mass)
+            }
+        }
+    }
+
     /// - Parameter deltaTime: Time since last call to update, in TimeUnits.
     public func update(deltaTime: Double) {
         for var (id, blob) in state.playerBlobs {
@@ -146,11 +157,11 @@ public class GameProcessor {
             foodCount += chunk.blobs.count
         }
 
-        let targetFoodCount = Int(state.areaBounds.area * ruleset.minFoodDensity)
+        let targetFoodCount = Int(state.areaBounds.area * ruleset.targettedFoodDensity)
 
         let foodShortage = targetFoodCount - foodCount
 
-        if foodShortage > 0 {
+        if foodShortage > 0, ruleset.foodGenerationRate > 0 {
             foodTimebuffer += deltaTime
 
             let generationCount = Int(foodTimebuffer * ruleset.foodGenerationRate)

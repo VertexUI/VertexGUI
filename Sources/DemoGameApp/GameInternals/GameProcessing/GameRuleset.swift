@@ -8,7 +8,7 @@ public struct GameRuleset {
     public var initialPlayerBlobMass: Double = 10
 
     /// Food per LengthUnit²
-    public var minFoodDensity: Double = 1 / 10
+    public var targettedFoodDensity: Double = 1 / 10
 
     /// Food per TimeUnit
     public var foodGenerationRate: Double = 100 / 1
