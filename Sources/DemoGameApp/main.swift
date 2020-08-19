@@ -8,6 +8,8 @@ public class DemoGameApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGW
     private let gameProcessor: GameProcessor
     private let gameState: GameState
 
+    private var gameRuleset = Observable(GameRuleset())
+
     lazy private var player: Player = createPlayer()
 
     lazy private var guiRoot: Root = buildGuiRoot()
@@ -21,7 +23,7 @@ public class DemoGameApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGW
     public init() {
         gameState = GameState()
 
-        gameProcessor = GameProcessor(state: gameState, ruleset: GameRuleset())
+        gameProcessor = GameProcessor(state: gameState, ruleset: gameRuleset.value)
 
         //playerBlobObservable = Observable<PlayerBlob>(gameState.playerBlobs[playerBlobId]!)
         //perspectiveObservable = Observable<GamePerspective>(gameState.playerBlobs[playerBlobId]!.perspective)
@@ -55,7 +57,7 @@ public class DemoGameApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGW
 
     private func buildGuiRoot() -> Root {
         Root(rootWidget: DependencyProvider(provide: [
-            Dependency("The test value!")
+            Dependency(gameRuleset)
         ]) {
             ThemeProvider(DefaultTheme(mode: .Dark, primaryColor: .Blue)) { [unowned self] in
                 Column {
@@ -69,12 +71,16 @@ public class DemoGameApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGW
                         BoxConstraints(minSize: DSize2($0.maxSize.width, $0.minSize.height), maxSize: $0.maxSize)
                     }
 
-                    Aligner {
-                        MouseArea(onMouseMove: { [unowned self] in handleGameMouseMove($0) }) {
-                            gameView
+                    Row {
+                        ComputedSize(width: .Percent(80)) {
+                            MouseArea(onMouseMove: { [unowned self] in handleGameMouseMove($0) }) {
+                                gameView
+                            }
                         }
 
-                        Alignable(horizontal: .End) {
+
+                        ComputedSize(width: .Percent(20), height: .Percent(100)) {
+                            // TODO: might need additions to BoxConstraints to make GameControlView fill rest of height
                             Column {
                                 Button {
                                     Text("Button without function")
@@ -84,13 +90,7 @@ public class DemoGameApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGW
 
                                 TextField()
                                     
-                                /*ComputedSize {
-                                    GameControlView(blob: playerBlobObservable)
-                                } calculate: {
-                                    BoxConstraints(
-                                        minSize: DSize2(500, $0.minSize.height),
-                                        maxSize: DSize2(500, $0.maxSize.height))
-                                }*/
+                                GameControlView()
                             }
                         }
                     }

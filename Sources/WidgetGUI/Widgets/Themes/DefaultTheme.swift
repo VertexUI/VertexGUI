@@ -26,7 +26,7 @@ public class DefaultTheme: Theme {
                 }
             },
             TextInput.PartialConfig {
-                $0.caretColor = primaryColor
+                $0.caretColor = primaryColor.lightened(50)
             },
             Button.PartialConfig {
                 $0.normalStyle {

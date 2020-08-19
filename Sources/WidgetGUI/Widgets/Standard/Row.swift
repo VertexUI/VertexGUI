@@ -34,7 +34,8 @@ public class Row: Widget {
                     currentY += currentRowHeight
                 }
             } else {
-                child.constraints = BoxConstraints(minSize: DSize2(0,0), maxSize: DSize2(constraints!.maxWidth - currentX, constraints!.maxHeight - currentY))
+                // TODO: should the width of the items be limited to the remaining width or to the full width?
+                child.constraints = BoxConstraints(minSize: DSize2(0,0), maxSize: DSize2(constraints!.maxWidth/* - currentX*/, constraints!.maxHeight - currentY))
                 child.layout()
             }
 
