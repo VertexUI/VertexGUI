@@ -9,37 +9,57 @@ public class Row: Widget {
             return Item(grow: 0, verticalAlignment: .Start, content: { widget })
         }
 
+        public static func buildExpression(_ widget: Widget) -> [Item] {
+            return [Item(grow: 0, verticalAlignment: .Start, content: { widget })]
+        }
+
         public static func buildExpression(_ item: Item) -> Item {
             return item
         }
 
-        public static func buildBlock(_ items: Item?...) -> [Item] {
-            return items.compactMap { $0 }
+        public static func buildExpression(_ item: Item) -> [Item] {
+            return [item]
         }
 
-        public static func buildBlock(_ items: [Item]) -> [Item] {
+        public static func buildExpression(_ items: [Item]) -> [Item] {
             return items
         }
-        /*
+
         public static func buildEither(first: Item) -> Item {
             return first
+        }
+
+        public static func buildEither(first items: [Item]) -> [Item] {
+            return items
         }
 
         public static func buildEither(second: Item) -> Item {
             return second
         }
 
+        public static func buildEither(second items: [Item]) -> [Item] {
+            return items
+        }
+
         public static func buildOptional(_ item: Item?) -> Item? {
             return item
         }
 
-        public static func buildOptional(_ widget: Widget?) -> Item? {
-            if let widget = widget {
-                return Item(content: { widget })
-            }
+        public static func buildBlock(_ item: Item) -> [Item] {
+            return [item]
+        }
 
-            return nil
-        }*/
+        public static func buildOptional(_ items: [Item]?) -> [Item] {
+            return items ?? []
+        }
+
+        public static func buildBlock(_ items: Item?...) -> [Item] {
+            return items.compactMap { $0 }
+        }
+
+        public static func buildBlock(_ items: [Item]...) -> [Item] {
+            return items.flatMap { $0 }
+        }
     }
 
     public struct Item {
@@ -141,7 +161,7 @@ public class Row: Widget {
             let item = items[i]
 
             if availableWidth > 0 && totalGrow > 0 {
-                
+
                 let relativeGrow: Double
 
                 if totalGrow == 0 {
