@@ -1,15 +1,19 @@
 public class Logger { 
-    public enum Level {
+    public enum Level: CaseIterable {
         case Debug, Message, Warning, Error
     }
 
     public static var activeLevels: [Level] = [
-        .Debug
+        .Debug, .Warning, .Error
     ]
 
-    public static func log(_ output: String, _ level: Level = .Debug) {
+    public static func log(_ level: Level = .Debug, _ output: String) {
         if activeLevels.contains(level) {
-            print(output)
+            print("\u{001B}[1;33m\(level):\u{001B}[0;0m", output, "\u{001B}[0;0m")
         }
+    }
+
+    public static func debug(_ output: String) {
+        log(.Debug, output)
     }
 }

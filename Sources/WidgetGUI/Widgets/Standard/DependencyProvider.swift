@@ -41,9 +41,7 @@ public class Inject<T>: AnyInject {
         }
     }
 
-    public init() {
-        print("COUDL INIT!", anyType)
-    }
+    public init() {}
 }
 
 public class DependencyProvider: SingleChildWidget {

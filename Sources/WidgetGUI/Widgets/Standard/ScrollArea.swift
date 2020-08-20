@@ -42,9 +42,9 @@ public class ScrollArea: SingleChildWidget {
     }
 
     override open func buildChild() -> Widget {
-        let mouseArea = MouseArea({
+        let mouseArea = MouseArea {
             inputChild
-        })
+        }
         // TODO: need to do like this to avoid strong reference? or is passing method reference enough
         _ = mouseArea.onMouseWheel({ [unowned self] in
             handleMouseWheel($0)

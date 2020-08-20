@@ -11,7 +11,7 @@ public class GameControlView: SingleChildWidget {
                 
                 TextConfigProvider(color: .White) {
 
-                    Column {
+                    Column(horizontalAlignment: .Stretch) {
 
                         /*TextConfigProvider(fontSize: 20, wrap: true) {
 
@@ -44,7 +44,9 @@ public class GameControlView: SingleChildWidget {
                             }
                         }*/
 
-                        GameRulesetEditorView()
+                        Expandable {
+                            GameRulesetEditorView()
+                        }
                     }
                 }
             }

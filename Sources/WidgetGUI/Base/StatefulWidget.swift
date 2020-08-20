@@ -1,6 +1,4 @@
-public protocol StatefulWidgetMarker {}
-
-public protocol AnyStatefulWidget: class {
+public protocol AnyStatefulWidget: Widget {
     var anyState: Any? { get set }
 }
 
@@ -25,39 +23,3 @@ public extension StatefulWidget {
         }
     }
 }
-
-
-/*
-public class AnyStatefulWidget: StatefulWidget {
-    public typealias State = Any
-
-    private var getState: () -> State?
-    private var setState: (_ newValue: State?) -> Void
-
-    public var state: State? {
-        get {
-            return getState()
-        }
-        set {
-            setState(newValue)
-        }
-    }
-
-    public init?(_ widget: Widget) {
-        if widget is StatefulWidgetMarker {
-            
-            getState = {
-                convert(widget as! Widget & StatefulWidgetMarker).state //(widget as! StatefulWidget).state
-            }
-            setState = {
-                widget.state = $0
-            }
-        } else {
-            return nil
-        }
-    }
-}
-
-func convert<T: Widget>(_ widget: T) -> some StatefulWidget where T: StatefulWidgetMarker {
-    return widget
-}*/

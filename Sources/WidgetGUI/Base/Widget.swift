@@ -113,7 +113,7 @@ open class Widget: Bounded, Parent, Child {
     }
 
     deinit {
-        Logger.log("Deinitialized Widget: \(id) \(self)", .Message)
+        Logger.log(.Message, "Deinitialized Widget: \(id) \(self)")
     }
 
     public final func with(key: String) -> Self {
@@ -267,12 +267,12 @@ open class Widget: Bounded, Parent, Child {
         
     public final func layout() {
         if !layoutable {
-            print("Warning: called layout() on Widget that is not layoutable:", self)
+            Logger.log(.Warning, "Called layout() on Widget that is not layoutable: \(self)")
             return
         }
 
         if layouting {
-            print("Warning: called layout() on Widget while that Widget was still layouting", self)
+            Logger.log(.Warning, "Called layout() on Widget while that Widget was still layouting: \(self)")
             return
         }
 
@@ -288,7 +288,13 @@ open class Widget: Bounded, Parent, Child {
         layouting = false
 
         // if bounds changed and this is not the first layout round
+        if self is Expandable {
+            Logger.log(.Debug, "BEFORE COMPARE \(previousBounds) \(bounds) \(isFirstRound)")
+        }
         if previousBounds != bounds && !isFirstRound {
+            if self is Expandable {
+                Logger.debug("YES BOUNDS CHANGED AND INVOKE HANDLERS")
+            }
             onBoundsChanged.invokeHandlers(bounds)
             invalidateRenderState()
         }
@@ -408,12 +414,12 @@ open class Widget: Bounded, Parent, Child {
     /// This should trigger a rerender of the widget in the next frame.
     public final func invalidateRenderState(_ widget: Widget? = nil) {
         if destroyed {
-            Logger.log("Tried to call invalidateRenderState() on destroyed widget: \(self)", .Warning)
+            Logger.log(.Warning, "Tried to call invalidateRenderState() on destroyed widget: \(self)")
             return
         }
 
         if !mounted {
-            Logger.log("Called invalidateRenderState() on an unmounted Widget: \(self)", .Warning)
+            Logger.log(.Warning, "Called invalidateRenderState() on an unmounted Widget: \(self)")
             return
         }
 

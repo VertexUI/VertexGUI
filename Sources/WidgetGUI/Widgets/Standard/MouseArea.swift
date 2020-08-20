@@ -18,14 +18,19 @@ public class MouseArea: SingleChildWidget, GUIMouseEventConsumer {
 
     private var inputChild: Widget
 
-    public init(
+    public init(@WidgetBuilder child childBuilder: () -> Widget) {
+        self.inputChild = childBuilder()
+    }
+
+    public convenience init(
+        @WidgetBuilder child childBuilder: () -> Widget,
         onClick onClickHandler: ThrowingEventHandlerManager<GUIMouseButtonClickEvent>.Handler? = nil,
         onMouseButtonDown onMouseButtonDownHandler: ThrowingEventHandlerManager<GUIMouseButtonDownEvent>.Handler? = nil,
         onMouseMove onMouseMoveHandler: ThrowingEventHandlerManager<GUIMouseMoveEvent>.Handler? = nil,
         onMouseEnter onMouseEnterHandler: ThrowingEventHandlerManager<GUIMouseEnterEvent>.Handler? = nil,
         onMouseLeave onMouseLeaveHandler: ThrowingEventHandlerManager<GUIMouseLeaveEvent>.Handler? = nil,
-        onMouseWheel onMouseWheelHandler: ThrowingEventHandlerManager<GUIMouseWheelEvent>.Handler? = nil,
-        @WidgetBuilder _ inputChild: () -> Widget) {
+        onMouseWheel onMouseWheelHandler: ThrowingEventHandlerManager<GUIMouseWheelEvent>.Handler? = nil) {
+            self.init(child: childBuilder)
             if let onClickHandler = onClickHandler {
                 _ = self.onClick(onClickHandler)
             }
@@ -44,8 +49,6 @@ public class MouseArea: SingleChildWidget, GUIMouseEventConsumer {
             if let onMouseWheelHandler = onMouseWheelHandler {
                 _ = self.onMouseWheel(onMouseWheelHandler)
             }
-            self.inputChild = inputChild()
-            super.init()
     }
 
     override open func buildChild() -> Widget {

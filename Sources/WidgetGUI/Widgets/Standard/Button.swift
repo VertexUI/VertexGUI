@@ -134,16 +134,7 @@ public final class Button: SingleChildWidget, StatefulWidget, ConfigurableWidget
     }
 
     override public func buildChild() -> Widget {
-        MouseArea(onClick: { [unowned self] in
-            onClick.invokeHandlers($0)
-        }, onMouseEnter: { [unowned self] _ in
-            state = .Hover
-            // TODO: might need to implement cursor via render object and check in RenderObjectTree renderer which renderobject below mouse
-            dropCursorRequest = context!.requestCursor(.Hand)
-        }, onMouseLeave: { [unowned self] _ in
-            state = .Normal
-            dropCursorRequest!()
-        }) {
+        MouseArea {
             Background {
                 Padding(all: 16) { [unowned self] in
                     TextConfigProvider(config: config.normalStyle.textConfig) {
@@ -151,6 +142,15 @@ public final class Button: SingleChildWidget, StatefulWidget, ConfigurableWidget
                     }
                 }
             }.with(config: config.normalStyle.backgroundConfig)
+        } onClick: { [unowned self] in
+            onClick.invokeHandlers($0)
+        } onMouseEnter: { [unowned self] _ in
+            state = .Hover
+            // TODO: might need to implement cursor via render object and check in RenderObjectTree renderer which renderobject below mouse
+            dropCursorRequest = context!.requestCursor(.Hand)
+        } onMouseLeave: { [unowned self] _ in
+            state = .Normal
+            dropCursorRequest!()
         }
     }
 

@@ -62,22 +62,20 @@ open class TwoDWorldPage: SingleChildWidget {
 
                                 ObservingBuilder([AnyObservable(highlightedRaycast), AnyObservable(raycasts)]) {
                                     
-                                    MouseArea(onMouseLeave: { _ in
-                                        highlightedRaycast.value = nil
-                                    }) {
+                                    MouseArea {
+
                                         Column(spacing: 20) {
                                             
                                             Text("Raycasts")
 
                                             raycasts.map { raycast in
                                             
-                                                MouseArea(onClick: { _ in
-                                                    self.selectedRaycast.value = raycast
-                                                }, onMouseEnter: { _ in
-                                                    highlightedRaycast.value = raycast
-                                                }) {
+                                                MouseArea {
+
                                                     Background(fill: .Red) {
+
                                                         Padding(all: 16) {
+
                                                             Row(spacing: 20, wrap: true) {
                                                                 
                                                                 if raycast == highlightedRaycast.value {
@@ -94,9 +92,16 @@ open class TwoDWorldPage: SingleChildWidget {
                                                             }
                                                         }
                                                     }
+                                                } onClick: { _ in
+                                                    self.selectedRaycast.value = raycast
+                                                } onMouseEnter: { _ in
+                                                    highlightedRaycast.value = raycast
                                                 }
                                             }
                                         }
+                                        // TODO: change this when forward scan is there
+                                    } onClick: { _ in } onMouseLeave: { _ in
+                                        highlightedRaycast.value = nil
                                     }
                                 }
                             }

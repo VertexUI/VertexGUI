@@ -14,10 +14,10 @@ public final class TextInput: Widget, StatefulWidget, ConfigurableWidget, GUIMou
             self.caretColor = caretColor
         }
 
-        /*public init(partial partialConfig: PartialConfig?, default defaultConfig: Config) {
+        public init(partial partialConfig: PartialConfig?, default defaultConfig: Config) {
             self.textConfig = Text.PartialConfig.merged(partials: [partialConfig?.textConfig, defaultConfig.textConfig].compactMap { $0 })
             self.caretColor = partialConfig?.caretColor ?? defaultConfig.caretColor
-        }*/
+        }
     }
 
     public struct PartialConfig: WidgetGUI.PartialConfig {
@@ -25,16 +25,14 @@ public final class TextInput: Widget, StatefulWidget, ConfigurableWidget, GUIMou
         public var caretColor: Color? = nil
 
         public init() {}
-
-        public init(textConfig: Text.PartialConfig? = Text.PartialConfig(), caretColor: Color? = nil) {
-            self.textConfig = textConfig
-            self.caretColor = caretColor
-        }
     }
 
     public static let defaultConfig = Config(
-        textConfig: Text.PartialConfig(fontConfig: PartialFontConfig(size: 24)),
-        caretColor: Color(80, 255, 240, 255))
+        textConfig: Text.PartialConfig {
+            $0.fontConfig = PartialFontConfig(size: 24, weight: .Regular, style: .Normal)
+            $0.wrap = false
+        },
+        caretColor: Color(80, 255, 240, 255)) 
     
     public struct State {
         public var caretBlinkStartTimestamp: Double = Date.timeIntervalSinceReferenceDate
@@ -64,7 +62,7 @@ public final class TextInput: Widget, StatefulWidget, ConfigurableWidget, GUIMou
 
     public convenience init(_ initialText: String = "", caretColor: Color) {
         self.init(initialText)
-        with(config: PartialConfig(caretColor: caretColor))
+        with(config: PartialConfig { $0.caretColor = caretColor })
     }
 
     override public func build() {

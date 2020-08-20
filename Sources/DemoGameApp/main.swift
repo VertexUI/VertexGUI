@@ -66,16 +66,17 @@ public class DemoGameApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGW
 
                     Row {
                         ComputedSize(width: .Percent(80)) {
-                            MouseArea(onMouseMove: { [unowned self] in handleGameMouseMove($0) }) {
+                            MouseArea {
                                 gameView
-                            }
+                                // TODO: change this when forward scan is there
+                            } onClick: { _ in } onMouseMove: { [unowned self] in handleGameMouseMove($0) }
                         }
 
-
-                        ComputedSize(width: .Percent(20), height: .Percent(100)) {
+                        // TODO: fix issue with constraints in Row and relayouting...
+                        ComputedSize(width: .Percent(20)) {
                             
                             Column(horizontalAlignment: .Stretch) {
-                                
+
                                 GameControlView()
                             }
                         }

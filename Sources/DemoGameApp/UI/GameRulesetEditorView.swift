@@ -3,31 +3,39 @@ import WidgetGUI
 public class GameRulesetEditorView: SingleChildWidget {
     @Inject private var gameRuleset: Observable<GameRuleset>
 
+    lazy private var bufferedRuleset = gameRuleset.value
+
     override open func buildChild() -> Widget {
         return Column(spacing: 64, horizontalAlignment: .Stretch) { [unowned self] in
 
             buildPropertyEdit(label: "food blob mass") {
-                TextField("\(gameRuleset.value.foodBlobMass)") {
+                TextField("\(bufferedRuleset.foodBlobMass)") {
                     if let value = Double($0) {
-                        gameRuleset.value.foodBlobMass = value
+                        bufferedRuleset.foodBlobMass = value
                     }
                 }
             }
 
             buildPropertyEdit(label: "targetted food density") {
-                TextField("\(gameRuleset.value.targettedFoodDensity)") {
+                TextField("\(bufferedRuleset.targettedFoodDensity)") {
                     if let value = Double($0) {
-                        gameRuleset.value.targettedFoodDensity = value
+                        bufferedRuleset.targettedFoodDensity = value
                     }
                 }
             }
 
             buildPropertyEdit(label: "food generation rate") {
-                TextField("\(gameRuleset.value.foodGenerationRate)") {
+                TextField("\(bufferedRuleset.foodGenerationRate)") {
                     if let value = Double($0), value.isFinite {
-                        gameRuleset.value.foodGenerationRate = value
+                        bufferedRuleset.foodGenerationRate = value
                     }
                 }
+            }
+
+            Button {
+                Text("Apply")
+            } onClick: { _ in
+                gameRuleset.value = bufferedRuleset
             }
         }
     }
@@ -35,7 +43,7 @@ public class GameRulesetEditorView: SingleChildWidget {
     private func buildPropertyEdit(label: String, @WidgetBuilder input: () -> Widget) -> Widget {
         return Row(spacing: 32) {
             Row.Item(grow: 1, verticalAlignment: .Center) {
-                Text(label)
+                Text(label, fontSize: 16)
             }
 
             input()
