@@ -4,7 +4,7 @@ public class GameRulesetEditorView: SingleChildWidget {
     @Inject private var gameRuleset: Observable<GameRuleset>
 
     override open func buildChild() -> Widget {
-        return Column(spacing: 64) { [unowned self] in
+        return Column(spacing: 64, horizontalAlignment: .Stretch) { [unowned self] in
 
             buildPropertyEdit(label: "food blob mass") {
                 TextField("\(gameRuleset.value.foodBlobMass)") {
@@ -34,9 +34,9 @@ public class GameRulesetEditorView: SingleChildWidget {
 
     private func buildPropertyEdit(label: String, @WidgetBuilder input: () -> Widget) -> Widget {
         return Row(spacing: 32) {
-            Row.Item(verticalAlignment: .Center, content: {
+            Row.Item(grow: 1, verticalAlignment: .Center) {
                 Text(label)
-            })
+            }
 
             input()
         }
