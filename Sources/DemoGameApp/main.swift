@@ -73,16 +73,9 @@ public class DemoGameApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGW
 
 
                         ComputedSize(width: .Percent(20), height: .Percent(100)) {
-                            // TODO: might need additions to BoxConstraints to make GameControlView fill rest of height
-                            Column {
-                                Button {
-                                    Text("Button without function")
-                                } onClick: { _ in
-                                    print("CLICKED")
-                                }
-
-                                TextField()
-                                    
+                            
+                            Column(horizontalAlignment: .Stretch) {
+                                
                                 GameControlView()
                             }
                         }

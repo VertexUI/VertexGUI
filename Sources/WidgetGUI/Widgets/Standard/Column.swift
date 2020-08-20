@@ -60,7 +60,7 @@ public class Column: Widget {
             currentY += spacing
         }
 
-        bounds.size = DSize2(currentX + currentColumnWidth, currentMaxHeight)
+        bounds.size = constraints!.constrain(DSize2(currentX + currentColumnWidth, currentMaxHeight))
 
         for child in children {
             switch horizontalAlignment {
