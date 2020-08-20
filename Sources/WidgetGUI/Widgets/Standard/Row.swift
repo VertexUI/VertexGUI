@@ -2,24 +2,84 @@ import CustomGraphicsMath
 import VisualAppBase
 
 public class Row: Widget {
+
+    @_functionBuilder
+    public struct ItemBuilder {
+        public static func buildExpression(_ widget: Widget) -> Item {
+            return Item(grow: 0, verticalAlignment: .Start, content: { widget })
+        }
+
+        public static func buildExpression(_ item: Item) -> Item {
+            return item
+        }
+
+        public static func buildBlock(_ items: Item?...) -> [Item] {
+            return items.compactMap { $0 }
+        }
+
+        public static func buildBlock(_ items: [Item]) -> [Item] {
+            return items
+        }
+        /*
+        public static func buildEither(first: Item) -> Item {
+            return first
+        }
+
+        public static func buildEither(second: Item) -> Item {
+            return second
+        }
+
+        public static func buildOptional(_ item: Item?) -> Item? {
+            return item
+        }
+
+        public static func buildOptional(_ widget: Widget?) -> Item? {
+            if let widget = widget {
+                return Item(content: { widget })
+            }
+
+            return nil
+        }*/
+    }
+
+    public struct Item {
+        var grow: Int
+        var verticalAlignment: Alignment
+        var contentBuilder: () -> Widget
+
+        public init(grow: Int = 0, verticalAlignment: Alignment = .Start, @WidgetBuilder content contentBuilder: @escaping () -> Widget) {
+            self.grow = grow
+            self.verticalAlignment = verticalAlignment
+            self.contentBuilder = contentBuilder
+        }
+    }
+
     public enum Alignment {
         case Start, Center, End
     }
 
-    private var spacing: Double
-    private var verticalAlignment: Alignment
-    private var wrap: Bool
+    private let items: [Item]
+
+    private let spacing: Double
+
+    private let wrap: Bool
 
     /*public init(wrap: Bool = false, children: [Widget]) {
         self.wrap = wrap
         super.init(children: children)
     }*/
 
-    public init(spacing: Double = 0, verticalAlignment: Alignment = .Start, wrap: Bool = false, @WidgetBuilder children: () -> [Widget]) {
+    public init(spacing: Double = 0, wrap: Bool = false, @ItemBuilder items itemBuilder: () -> [Item]) {
+        self.items = itemBuilder()
         self.spacing = spacing
-        self.verticalAlignment = verticalAlignment
         self.wrap = wrap
-        super.init(children: children())
+        super.init()
+    }
+
+    override public func build() {
+        children = items.map {
+            $0.contentBuilder()
+        }
     }
 
     override public func performLayout() {
@@ -28,7 +88,10 @@ public class Row: Widget {
         var maxWidth = 0.0
         var currentRowHeight = 0.0 // height of the current line of children, if multiline, total height = currentY + currentRowHeight
 
-        for child in children {
+        for i in 0..<children.count {
+            let child = children[i]
+            let item = items[i]
+            
             // TODO: maybe set min size as well
 
             if wrap {
@@ -62,21 +125,21 @@ public class Row: Widget {
         bounds.size = DSize2(max(constraints!.minWidth, maxWidth), max(constraints!.minHeight, currentY + currentRowHeight))
 
         // TODO: need to implement this for multi line also!
-        if verticalAlignment != .Start {
             
-            for child in children {
+        for i in 0..<children.count {
+            let child = children[i]
+            let item = items[i]
 
-                switch verticalAlignment {
+            switch item.verticalAlignment {
 
-                case .Center:
-                    child.bounds.min.y = bounds.size.height / 2 - child.bounds.size.height / 2
-                    
-                case .End:
-                    child.bounds.min.y = bounds.size.height - child.bounds.size.height
+            case .Center:
+                child.bounds.min.y = bounds.size.height / 2 - child.bounds.size.height / 2
+                
+            case .End:
+                child.bounds.min.y = bounds.size.height - child.bounds.size.height
 
-                default:
-                    break
-                }
+            default:
+                break
             }
         }
     }

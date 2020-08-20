@@ -1,3 +1,15 @@
+/*public struct Config {
+    public var id: Int
+}
+
+
+
+@functionBuilder
+struct Builder {
+    public func buildExpression(_ subThing: (inout Config) -> String) -> 
+}*/
+
+/*
 func testFunc(param0: String = "", param1: () -> (), param2: (() -> ())? = nil, param3: (() -> ())? = nil) {
     param1()
 }
@@ -10,7 +22,7 @@ testFunc {
 
 func testFunc2(params: String...) -> [String] {
     return params
-}
+}*/
 
 /*class TestClass {
     public init(_ getVals: () -> [String]) {

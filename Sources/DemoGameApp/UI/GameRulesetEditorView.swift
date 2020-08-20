@@ -25,7 +25,6 @@ public class GameRulesetEditorView: SingleChildWidget {
             buildPropertyEdit(label: "food generation rate") {
                 TextField("\(gameRuleset.value.foodGenerationRate)") {
                     if let value = Double($0), value.isFinite {
-                        print("UPDATE FOOD GENERATION RATE", value)
                         gameRuleset.value.foodGenerationRate = value
                     }
                 }
@@ -34,8 +33,10 @@ public class GameRulesetEditorView: SingleChildWidget {
     }
 
     private func buildPropertyEdit(label: String, @WidgetBuilder input: () -> Widget) -> Widget {
-        return Row(spacing: 32, verticalAlignment: .Center) {
-            Text(label)
+        return Row(spacing: 32) {
+            Row.Item(verticalAlignment: .Center, content: {
+                Text(label)
+            })
 
             input()
         }
