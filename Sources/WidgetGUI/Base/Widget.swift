@@ -113,7 +113,7 @@ open class Widget: Bounded, Parent, Child {
     }
 
     deinit {
-        print("Deinitialized Widget:", id, self)
+        Logger.log("Deinitialized Widget: \(id) \(self)", .Message)
     }
 
     public final func with(key: String) -> Self {
@@ -408,12 +408,12 @@ open class Widget: Bounded, Parent, Child {
     /// This should trigger a rerender of the widget in the next frame.
     public final func invalidateRenderState(_ widget: Widget? = nil) {
         if destroyed {
-            print("Warning: Tried to call invalidateRenderState() on destroyed widget: \(self)")
+            Logger.log("Tried to call invalidateRenderState() on destroyed widget: \(self)", .Warning)
             return
         }
 
         if !mounted {
-            print("Warning: Called invalidateRenderState() on an unmounted Widget:", self)
+            Logger.log("Called invalidateRenderState() on an unmounted Widget: \(self)", .Warning)
             return
         }
 
