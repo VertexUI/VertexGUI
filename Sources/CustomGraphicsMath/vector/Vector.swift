@@ -257,6 +257,10 @@ public extension Vector2 {
 
 
 public extension Vector2 where Element: BinaryFloatingPoint, Element.RawSignificand: FixedWidthInteger {
+    static var infinity: Self {
+        Self(Element.infinity, Element.infinity)
+    }
+    
     static func random(in bounds: Rect<Element>) -> Self {
         self.init(Element.random(in: bounds.min.x...bounds.max.x), Element.random(in: bounds.min.y...bounds.max.y))
     }
