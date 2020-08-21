@@ -52,6 +52,7 @@ let package = Package(
             resources: [.process("Resources")]),
         .target(name: "StatefulWidgetResearchApp", dependencies: ["WidgetGUI", "VisualAppBase", "VisualAppBaseImplSDL2OpenGL3NanoVG"]),
         .target(name: "PropertyBindingsResearchApp", dependencies: ["WidgetGUI", "VisualAppBase", "VisualAppBaseImplSDL2OpenGL3NanoVG"]),
+        .target(name: "FlexExperiments", dependencies: ["WidgetGUI", "VisualAppBase", "VisualAppBaseImplSDL2OpenGL3NanoVG"]),
         .testTarget(name: "VisualAppBaseTests", dependencies: ["VisualAppBase"])
     ]
 )
