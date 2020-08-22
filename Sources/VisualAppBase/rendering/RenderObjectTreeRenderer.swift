@@ -386,26 +386,32 @@ public class RenderObjectTreeRenderer {
         let timestamp = Date.timeIntervalSinceReferenceDate
 
         switch (currentRenderObject) {
+
         case let currentRenderObject as RenderObjectTree:
             for i in 0..<nextPaths.count {
                 try render(object: nextRenderObjects[i], at: nextPaths[i], in: range, with: backendRenderer)
             }
+
         case let currentRenderObject as RenderObject.IdentifiedSubTree:
             for i in 0..<nextPaths.count {
                 try render(object: nextRenderObjects[i], at: nextPaths[i], in: range, with: backendRenderer)
             }
+
         case let currentRenderObject as RenderObject.Container:
             for i in 0..<nextPaths.count {
                 try render(object: nextRenderObjects[i], at: nextPaths[i], in: range, with: backendRenderer)
             }
+
         case let currentRenderObject as RenderObject.Uncachable:
             for i in 0..<nextPaths.count {
                 try render(object: nextRenderObjects[i], at: nextPaths[i], in: range, with: backendRenderer)
             }
+            
         case let currentRenderObject as RenderObject.CacheSplit:
             for i in 0..<nextPaths.count {
                 try render(object: nextRenderObjects[i], at: nextPaths[i], in: range, with: backendRenderer)
             }
+
         case let currentRenderObject as RenderObject.RenderStyle:
             // TODO: implement tracking current render style as layers, whenever moving out of a child render style,
             // need to reapply the next parent
@@ -418,7 +424,7 @@ public class RenderObjectTreeRenderer {
                 case let .Color(value):
                     backendRenderer.fillColor(value)
                 case let .Image(value):
-                    print("Image fill not yet supported.")
+                    backendRenderer.fillImage(value)
                 }
 
                 performFill = true
@@ -441,17 +447,20 @@ public class RenderObjectTreeRenderer {
             backendRenderer.strokeWidth(0)
             backendRenderer.strokeColor(.Transparent)
             // TODO: after render, reset style to style that was present before
+
         case let currentRenderObject as RenderObject.Translation:
             backendRenderer.translate(currentRenderObject.translation)
             for i in 0..<nextPaths.count {
                 try render(object: nextRenderObjects[i], at: nextPaths[i], in: range, with: backendRenderer)
             }
             backendRenderer.translate(DVec2.zero)
+
         case let currentRenderObject as RenderObject.Custom:
             // TODO: this might be a dirty solution
             backendRenderer.endFrame()
             try currentRenderObject.render(backendRenderer)
             backendRenderer.beginFrame()
+
         case let currentRenderObject as RenderObject.Rectangle:
             backendRenderer.beginPath()
             if let cornerRadii = currentRenderObject.cornerRadii {
@@ -461,17 +470,20 @@ public class RenderObjectTreeRenderer {
             }
             backendRenderer.fill()
             backendRenderer.stroke()
+
         case let currentRenderObject as RenderObject.LineSegment:
             backendRenderer.beginPath()
             backendRenderer.lineSegment(from: currentRenderObject.start, to: currentRenderObject.end)
             backendRenderer.fill()
             backendRenderer.stroke()
+
         case let currentRenderObject as RenderObject.Text:
             if currentRenderObject.wrap {
                 backendRenderer.multilineText(currentRenderObject.text, fontConfig: currentRenderObject.fontConfig, color: currentRenderObject.color,  topLeft: currentRenderObject.topLeft, maxWidth: currentRenderObject.maxWidth ?? 0)
             } else {
                 backendRenderer.text(currentRenderObject.text, fontConfig: currentRenderObject.fontConfig, color: currentRenderObject.color, topLeft: currentRenderObject.topLeft)
             }
+
         default:
             print("Could not render RenderObject, implementation missing for:", currentRenderObject)
         }

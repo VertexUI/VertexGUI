@@ -1,8 +1,6 @@
-//
-
-//
-
 import Foundation
+import struct Swim.Image
+import enum Swim.RGBA
 import CustomGraphicsMath
 
 // TODO: maybe put this into another file
@@ -32,17 +30,18 @@ public protocol Renderer {
     func beginPath() 
     func moveTo(_ point: DPoint2) 
     func lineTo(_ point: DPoint2) 
-    func closePath() 
-    func fillColor(_ color: Color) 
-    func fillRule(_ rule: FillRule) 
+    func closePath()
+    // TODO: maybe merge fill into one function, given by enum Fill?
+    func fillColor(_ color: Color)
+    func fillImage(_ image: Image<RGBA, UInt8>) 
+    //func fillRule(_ rule: FillRule)
     func fill() 
     func strokeWidth(_ width: Double) 
     func strokeColor(_ color: Color) 
     func stroke() 
     func rectangle(_ rect: DRect) 
     func roundedRectangle(_ rect: DRect, cornerRadii: CornerRadii)
-    // TODO: update to remove style argument
-    func circle(center: DPoint2, radius: Double) 
+    func circle(center: DPoint2, radius: Double)
     func ellipse(center: DPoint2, radius: DVec2) 
     func text(_ text: String, fontConfig: FontConfig, color: Color, topLeft: DPoint2) 
     func lineSegment(from: DPoint2, to: DPoint2) 
@@ -53,14 +52,14 @@ public protocol Renderer {
     func clipArea(bounds: DRect) 
     func releaseClipArea() 
     func translate(_ translation: DVec2)  
-    func scale(_ amount: DVec2) 
+    func scale(_ amount: DVec2)
     func resetTransform()
 }
 
 public extension Renderer {
     func drawVirtualScreens(_ screens: [VirtualScreen], at positions: [DVec2]? = nil)  {}
 }
-
+/*
 public enum FillRule {
     case Solid, Hole 
-}
+}*/

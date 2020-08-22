@@ -33,7 +33,7 @@ let package = Package(
         .target(name: "CustomGraphicsMath"),
         .target(name: "GLGraphicsMath", dependencies: ["GL", "CustomGraphicsMath"]),
         .target(
-            name: "VisualAppBase", dependencies: ["CSDL2", "CustomGraphicsMath"]
+            name: "VisualAppBase", dependencies: ["CSDL2", "CustomGraphicsMath", "Swim"]
         ),
         .target(
                 // TODO: maybe rename to SwiftApplicationFramework or so...? or split to SwiftApplicationFramework and SwiftUIFramework
@@ -43,7 +43,7 @@ let package = Package(
         ),
         .target(
             name: "VisualAppBaseImplSDL2OpenGL3NanoVG",
-            dependencies: ["WidgetGUI", "CSDL2", "GL", .product(name: "CnanovgGL3", package: "Cnanovg"), "CustomGraphicsMath", "GLGraphicsMath", .product(name: "Path", package: "Path.swift")],
+            dependencies: ["WidgetGUI", "CSDL2", "GL", "Swim", .product(name: "CnanovgGL3", package: "Cnanovg"), "CustomGraphicsMath", "GLGraphicsMath", .product(name: "Path", package: "Path.swift")],
             resources: [.process("Resources")]),
         .target(name: "DemoApp", dependencies: ["WidgetGUI", "VisualAppBase", "VisualAppBaseImplSDL2OpenGL3NanoVG"]),
         .target(
@@ -52,7 +52,10 @@ let package = Package(
             resources: [.process("Resources")]),
         .target(name: "StatefulWidgetResearchApp", dependencies: ["WidgetGUI", "VisualAppBase", "VisualAppBaseImplSDL2OpenGL3NanoVG"]),
         .target(name: "PropertyBindingsResearchApp", dependencies: ["WidgetGUI", "VisualAppBase", "VisualAppBaseImplSDL2OpenGL3NanoVG"]),
-        .target(name: "FlexExperiments", dependencies: ["WidgetGUI", "VisualAppBase", "VisualAppBaseImplSDL2OpenGL3NanoVG"]),
+        .target(
+            name: "FlexExperiments",
+            dependencies: ["WidgetGUI", "VisualAppBase", "VisualAppBaseImplSDL2OpenGL3NanoVG", "Swim"],
+            resources: [.process("Resources")]),
         .testTarget(name: "VisualAppBaseTests", dependencies: ["VisualAppBase"])
     ]
 )

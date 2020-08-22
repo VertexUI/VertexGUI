@@ -63,7 +63,7 @@ public final class Background: SingleChildWidget, ConfigurableWidget {
 
     override public func renderContent() -> RenderObject? {
         return .Container { [unowned self] in
-            RenderObject.RenderStyle(fillColor: FixedRenderValue(config.fill)) {
+            RenderObject.RenderStyle(fillColor: config.fill) {
                 if case .Rectangle = config.shape {
                     RenderObject.Rectangle(globalBounds)
                 } else if case let .RoundedRectangle(cornerRadii) = config.shape {

@@ -6,6 +6,8 @@ import GLGraphicsMath
 import VisualAppBase
 import Path
 import Foundation
+import struct Swim.Image
+import enum Swim.RGBA
 
 // TODO: maybe put into another file
 /*public protocol SDL2OpenGL3NanoVGVirtualScreen: VirtualScreen {
@@ -46,6 +48,9 @@ open class SDL2OpenGL3NanoVGRenderer: Renderer {
         fragment: try! String(contentsOf: Bundle.module.url(forResource: "compositionFragment", withExtension: "glsl")!)
     )
     private var compositionVAO = GLMap.UInt()
+
+    /// Used to delete the previous image that was created in fillImage().
+    private var lastImageHandle: Int?
 
     /// This buffer is set when unbindVirtualScreen() is called.
     // TODO: maybe create RenderTarget --> LiveRenderTarget, CachedRenderTarget (or VirtualRenderTarget, replacement for VirtualScreen)
@@ -223,12 +228,27 @@ open class SDL2OpenGL3NanoVGRenderer: Renderer {
         nvgClosePath(window.nvg)
     }
 
-    open func fillRule(_ rule: FillRule) {
+    /*open func fillRule(_ rule: FillRule) {
         nvgPathWinding(window.nvg, rule == .Solid ? Int32(NVG_SOLID.rawValue) : Int32(NVG_HOLE.rawValue))
-    }
+    }*/
 
     open func fillColor(_ color: Color) {
         nvgFillColor(window.nvg, color.toNVG())
+    }
+
+    open func fillImage(_ image: Image<RGBA, UInt8>) {
+        if let handle = lastImageHandle {
+            nvgDeleteImage(window.nvg, Int32(handle))
+        }
+
+        var data = image.getData()
+        // TODO: optimize performace: might store image handle in RenderObject? or as a PathState in RenderObjectTreeRenderer?
+        let handle = withUnsafeMutablePointer(to: &data[0]) {
+            nvgCreateImageRGBA(window.nvg, Int32(image.width), Int32(image.height), 0, $0)
+        }
+        let paint = nvgImagePattern(window.nvg, 0, 0, Float(image.width), Float(image.height), 0, handle, 1)
+        nvgFillPaint(window.nvg, paint)
+        lastImageHandle = Int(handle)
     }
 
     open func fill() {

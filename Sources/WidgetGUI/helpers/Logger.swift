@@ -16,4 +16,8 @@ public class Logger {
     public static func debug(_ output: String) {
         log(.Debug, output)
     }
+    
+    public static func warn(_ output: String) {
+        log(.Warning, output)
+    }
 }

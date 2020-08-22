@@ -3,7 +3,7 @@ import CustomGraphicsMath
 
 public enum Fill: Hashable {
     case Color(_ value: CustomGraphicsMath.Color)
-    case Image(_ value: Image<RGB, UInt8>)
+    case Image(_ value: Image<RGBA, UInt8>)
 
     public func hash(into hasher: inout Hasher) {
         switch self {

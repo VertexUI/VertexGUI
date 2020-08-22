@@ -166,7 +166,7 @@ open class RenderStyleRenderObject: SubTreeRenderObject {
                 fill: Optional<FixedRenderValue<Fill>>.none,
                 strokeWidth: strokeWidth,
                 strokeColor: strokeColor,
-                children: children)     
+                children: children)
     }
 
     public convenience init<StrokeRenderValue: RenderValue>(
@@ -363,7 +363,3 @@ open class TextRenderObject: RenderObject {
         self.maxWidth = maxWidth
     }
 }
-/*public enum RenderObject {
-    case Custom(_ render: (_ renderer: Renderer) throws -> Void)
-    indirect case Container(_ children: [Self])
-}*/

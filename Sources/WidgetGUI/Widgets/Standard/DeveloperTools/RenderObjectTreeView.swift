@@ -107,7 +107,7 @@ public class RenderObjectTreeView: Widget {
 
         lines.reverse()
 
-        return RenderObject.RenderStyle(fillColor: FixedRenderValue(Color.White)) {
+        return RenderObject.RenderStyle(fillColor: .White) {
             RenderObject.RenderStyle(strokeWidth: 2, strokeColor: FixedRenderValue(.Black)) {
                 lines
             }

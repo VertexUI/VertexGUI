@@ -214,7 +214,7 @@ fileprivate class ImageItem: LayoutableItem {
     }
 
     override public func render() -> RenderObject {
-        return RenderObject.RenderStyle(fillColor: FixedRenderValue(color)) {
+        return RenderObject.RenderStyle(fillColor: color) {
             RenderObject.Rectangle(DRect(min: globalParentPosition! + bounds.min, size: bounds.size))
         }
     }

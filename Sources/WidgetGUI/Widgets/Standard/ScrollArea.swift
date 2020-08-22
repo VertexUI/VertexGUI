@@ -114,7 +114,7 @@ public class ScrollArea: SingleChildWidget {
             RenderObject.Translation(DVec2(currentX, currentY)) {
                 child.render()
             }
-            RenderObject.RenderStyle(fillColor: FixedRenderValue(.Black)) {
+            RenderObject.RenderStyle(fillColor: .Black) {
                 if scrollXEnabled {
                     scrollBarX
                 }

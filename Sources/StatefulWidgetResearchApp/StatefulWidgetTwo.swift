@@ -14,7 +14,7 @@ public class StatefulWidgetTwo: Widget, StatefulWidget {
     }
 
     override open func renderContent() -> RenderObject? {
-        RenderObject.RenderStyle(fillColor: FixedRenderValue(.Green)) {
+        RenderObject.RenderStyle(fillColor: .Green) {
             RenderObject.Rectangle(Rect(min: globalPosition, size: DSize2(state.statePropertyOne, 300)))
         }
     }
