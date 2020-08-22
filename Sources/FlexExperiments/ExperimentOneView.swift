@@ -9,39 +9,58 @@ public struct BoxConfig {
     public var aspectRatio: Double? // width / height = aspectRatio
 }
 
-public protocol FlexItem: class {
-    var grow: Int { get }
-    var bounds: DRect { get set }
+public class LayoutableItem {
+    var bounds = DRect(min: .zero, size: .zero)
 
-    var globalParentPosition: DVec2? { get set }
+    var globalParentPosition: DVec2?
 
-    func getBoxConfig() -> BoxConfig
+    func getBoxConfig() -> BoxConfig {
+        fatalError("getBoxConfig() not implemented")
+    }
 
     /// when calling this, bounds should already be set
     /// should be used to calculate positions of children and/or RenderObjects
-    func layout()
+    func layout() {}
 
-    func render() -> RenderObject
+    func render() -> RenderObject {
+        fatalError("render() not implemented")
+    }
 }
 
-public class FlexRow: FlexItem {
-    public var items: [FlexItem]
-    public var grow: Int
-    public var bounds: DRect = DRect(min: .zero, size: .zero)
-    public var globalParentPosition: DVec2? {
-        didSet {
-            for item in items {
-                item.globalParentPosition = globalParentPosition
-            }
-        }
-    }
+public class FlexItem: LayoutableItem {
+    var grow: Double
+    var wrappedItem: LayoutableItem
 
-    public init(items: [FlexItem], grow: Int) {
-        self.items = items
+    public init(grow: Double, wrapped wrappedItem: LayoutableItem) {
         self.grow = grow
+        self.wrappedItem = wrappedItem
     }
 
-    public func getBoxConfig() -> BoxConfig {
+    override public func getBoxConfig() -> BoxConfig {
+        wrappedItem.getBoxConfig()
+    }
+
+    /// when calling this, bounds should already be set
+    /// should be used to calculate positions of children and/or RenderObjects
+    override public func layout() {
+        wrappedItem.globalParentPosition = globalParentPosition! + bounds.min
+        wrappedItem.bounds = DRect(min: .zero, size: bounds.size)
+        wrappedItem.layout()
+    }
+
+    override public func render() -> RenderObject {
+        wrappedItem.render()
+    }
+}
+
+public class FlexRow: LayoutableItem {
+    public var items: [FlexItem]
+
+    public init(items: [FlexItem]) {
+        self.items = items
+    }
+
+    override public func getBoxConfig() -> BoxConfig {
         let preferredSizes = items.compactMap {
             $0.getBoxConfig().preferredSize
         }
@@ -53,18 +72,36 @@ public class FlexRow: FlexItem {
         return BoxConfig(preferredSize: totalPreferredSize, minSize: .zero, maxSize: .infinity, aspectRatio: nil)
     }
 
-    public func layout() {
+    override public func layout() {
         var currentX = 0.0
         
+        var totalGrow = items.reduce(0) { $0 + $1.grow }
+
+        var freeSpace = bounds.size.width - items.reduce(0) { $0 + $1.getBoxConfig().preferredSize.width }
+
         for item in items {
+            let growRatio = item.grow / totalGrow
+
             let boxConfig = item.getBoxConfig()
-            item.bounds.size = boxConfig.preferredSize
+
+            let resultWidth = boxConfig.preferredSize.width + growRatio * freeSpace
+            var resultHeight = boxConfig.preferredSize.height
+
+            if let aspectRatio = boxConfig.aspectRatio {
+                resultHeight = resultWidth / aspectRatio
+            }
+
+            item.bounds.size = DSize2(resultWidth, resultHeight)
             item.bounds.min = globalParentPosition! + DVec2(currentX, 0)
             currentX += item.bounds.size.width
+
+            item.globalParentPosition = globalParentPosition! + bounds.min
+
+            item.layout()
         }
     }
 
-    public func render() -> RenderObject {
+    override public func render() -> RenderObject {
         RenderObject.Container {
             for item in items {
                 item.render()
@@ -72,13 +109,16 @@ public class FlexRow: FlexItem {
         }
     }
 }
+/*
+public class ConstrainedFlexItem: FlexItem {
+    public var grow: Double
 
-public class TextFlexItem: FlexItem {
-    public var grow: Int
+    public 
+}*/
+
+public class TextItem: LayoutableItem {
     public var text: String
     public var widgetContext: WidgetContext
-    public var bounds: DRect = DRect(min: .zero, size: .zero)
-    public var globalParentPosition: DVec2?
 
     private let fontConfig = FontConfig(
         family: defaultFontFamily,
@@ -87,22 +127,21 @@ public class TextFlexItem: FlexItem {
         style: .Normal
     )
 
-    public init(_ text: String, grow: Int, widgetContext: WidgetContext) {
+    public init(_ text: String, widgetContext: WidgetContext) {
         self.text = text
-        self.grow = grow
         self.widgetContext = widgetContext
     }
 
-    public func getBoxConfig() -> BoxConfig {
+    override public func getBoxConfig() -> BoxConfig {
         let prefSize = widgetContext.getTextBoundsSize(text, fontConfig: fontConfig)
         return BoxConfig(preferredSize: prefSize, minSize: .zero, maxSize: .infinity, aspectRatio: nil)
     }
 
-    public func layout() {
+    override public func layout() {
 
     }
 
-    public func render() -> RenderObject {
+    override public func render() -> RenderObject {
         return RenderObject.Text(
             text,
             fontConfig: fontConfig,
@@ -111,39 +150,55 @@ public class TextFlexItem: FlexItem {
     }
 }
 
-public class ImageFlexItem: FlexItem {
+public class ImageItem: LayoutableItem {
     public var color: Color
-    public var grow: Int
     public var sourceSize: DSize2
-    public var bounds: DRect = DRect(min: .zero, size: .zero)
-    public var globalParentPosition: DVec2?
 
-    public init(color: Color, sourceSize: DSize2, grow: Int) {
+    public init(color: Color, sourceSize: DSize2) {
         self.color = color
         self.sourceSize = sourceSize
-        self.grow = grow
     }
     
-    public func getBoxConfig() -> BoxConfig {
-        return BoxConfig(preferredSize: sourceSize, minSize: .zero, maxSize: .infinity, aspectRatio: nil)
+    override public func getBoxConfig() -> BoxConfig {
+        return BoxConfig(
+            preferredSize: sourceSize, 
+            minSize: .zero, 
+            maxSize: .infinity, 
+            aspectRatio: sourceSize.width / sourceSize.height)
     }
 
-    public func layout() {
+    override public func layout() {
 
     }
 
-    public func render() -> RenderObject {
+    override public func render() -> RenderObject {
         return RenderObject.RenderStyle(fillColor: FixedRenderValue(color)) {
-            RenderObject.Rectangle(DRect(min: globalParentPosition! + bounds.min, size: sourceSize))
+            RenderObject.Rectangle(DRect(min: globalParentPosition! + bounds.min, size: bounds.size))
         }
     }
 }
 
 public class ExperimentOneView: Widget {
     lazy private var contentRoot = FlexRow(items: [
-        TextFlexItem("Test", grow: 1, widgetContext: context!),
-        ImageFlexItem(color: .Green, sourceSize: DSize2(100, 200), grow: 0)
-    ], grow: 0)
+        FlexItem(
+            grow: 1,
+            wrapped: TextItem("Test ASD ASD ASD ", widgetContext: context!)),
+        FlexItem(
+            grow: 0,
+            wrapped: ImageItem(color: .Green, sourceSize: DSize2(100, 200))),
+        FlexItem(
+            grow: 0,
+            wrapped: ImageItem(color: .Blue, sourceSize: DSize2(100, 200))),
+        FlexItem(
+            grow: 0,
+            wrapped: ImageItem(color: .Yellow, sourceSize: DSize2(100, 200))),
+        FlexItem(
+            grow: 1,
+            wrapped: ImageItem(color: .Red, sourceSize: DSize2(100, 200))),
+        FlexItem(
+            grow: 0,
+            wrapped: ImageItem(color: .Black, sourceSize: DSize2(100, 200))),
+    ])
 
     override public func performLayout() {
         self.bounds.size = constraints!.maxSize
