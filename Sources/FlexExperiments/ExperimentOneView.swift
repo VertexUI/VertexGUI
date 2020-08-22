@@ -2,7 +2,7 @@ import VisualAppBase
 import CustomGraphicsMath
 import WidgetGUI
 
-public struct BoxConfig {
+fileprivate struct BoxConfig {
     public var preferredSize: DSize2
     public var minSize: DSize2
     public var maxSize: DSize2
@@ -20,7 +20,7 @@ public struct BoxConfig {
     }
 }
 
-public class LayoutableItem {
+fileprivate class LayoutableItem {
     var bounds = DRect(min: .zero, size: .zero)
 
     var globalParentPosition: DVec2?
@@ -38,7 +38,7 @@ public class LayoutableItem {
     }
 }
 
-public class FlexItem: LayoutableItem {
+fileprivate class FlexItem: LayoutableItem {
     var grow: Double
     var wrappedItem: LayoutableItem
 
@@ -64,7 +64,7 @@ public class FlexItem: LayoutableItem {
     }
 }
 
-public class FlexRow: LayoutableItem {
+fileprivate class FlexRow: LayoutableItem {
     public var items: [FlexItem]
 
     public init(items: [FlexItem]) {
@@ -121,7 +121,7 @@ public class FlexRow: LayoutableItem {
     }
 }
 
-public class ConstrainedItem: LayoutableItem {
+fileprivate class ConstrainedItem: LayoutableItem {
     public var minSize: DSize2?
     public var maxSize: DSize2?
     public var preferredSize: DSize2?
@@ -160,7 +160,7 @@ public class ConstrainedItem: LayoutableItem {
     }
 }
 
-public class TextItem: LayoutableItem {
+fileprivate class TextItem: LayoutableItem {
     public var text: String
     public var widgetContext: WidgetContext
 
@@ -194,7 +194,7 @@ public class TextItem: LayoutableItem {
     }
 }
 
-public class ImageItem: LayoutableItem {
+fileprivate class ImageItem: LayoutableItem {
     public var color: Color
     public var sourceSize: DSize2
 
