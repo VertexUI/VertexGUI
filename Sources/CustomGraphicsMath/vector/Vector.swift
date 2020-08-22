@@ -112,6 +112,16 @@ public extension Vector {
     }
 }
 
+/// - Returns: The component-wise min of two given vectors.
+public func min<V: Vector>(_ vec1: V, _ vec2: V) -> V where V.Element: Comparable {
+    V.init((0..<vec1.count).map { vec1[$0] < vec2[$0] ? vec1[$0] : vec2[$0] })
+}
+
+/// - Returns: The component-wise max of two given vectors.
+public func max<V: Vector>(_ vec1: V, _ vec2: V) -> V where V.Element: Comparable {
+    V.init((0..<vec1.count).map { vec1[$0] > vec2[$0] ? vec1[$0] : vec2[$0] })
+}
+
  /*   init<Other: ConvertibleScalar>(_ elements: [Other]) where Self.Element: ConvertibleScalar, Self.Element.OOther.OtherScalar == Self. {
         self.init()
         self.elements = elements.map(Self.Element.init)

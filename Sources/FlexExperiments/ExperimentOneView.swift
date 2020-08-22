@@ -7,6 +7,17 @@ public struct BoxConfig {
     public var minSize: DSize2
     public var maxSize: DSize2
     public var aspectRatio: Double? // width / height = aspectRatio
+
+    public init(
+        preferredSize: DSize2, 
+        minSize: DSize2 = .zero, 
+        maxSize: DSize2 = .infinity, 
+        aspectRatio: Double? = nil) {
+            self.preferredSize = preferredSize
+            self.minSize = minSize
+            self.maxSize = maxSize
+            self.aspectRatio = aspectRatio
+    }
 }
 
 public class LayoutableItem {
@@ -69,7 +80,7 @@ public class FlexRow: LayoutableItem {
             $0 += $1
         }
         
-        return BoxConfig(preferredSize: totalPreferredSize, minSize: .zero, maxSize: .infinity, aspectRatio: nil)
+        return BoxConfig(preferredSize: totalPreferredSize)
     }
 
     override public func layout() {
@@ -80,7 +91,7 @@ public class FlexRow: LayoutableItem {
         var freeSpace = bounds.size.width - items.reduce(0) { $0 + $1.getBoxConfig().preferredSize.width }
 
         for item in items {
-            let growRatio = item.grow / totalGrow
+            let growRatio = totalGrow > 0 ? item.grow / totalGrow : 0
 
             let boxConfig = item.getBoxConfig()
 
@@ -109,12 +120,45 @@ public class FlexRow: LayoutableItem {
         }
     }
 }
-/*
-public class ConstrainedFlexItem: FlexItem {
-    public var grow: Double
 
-    public 
-}*/
+public class ConstrainedItem: LayoutableItem {
+    public var minSize: DSize2?
+    public var maxSize: DSize2?
+    public var preferredSize: DSize2?
+    public var wrappedItem: LayoutableItem
+
+    public init(preferredSize: DSize2? = nil, minSize: DSize2? = nil, maxSize: DSize2? = nil, wrapped wrappedItem: LayoutableItem) {
+        self.preferredSize = preferredSize
+        self.minSize = minSize
+        self.maxSize = maxSize
+        self.wrappedItem = wrappedItem
+    }
+
+    override public func getBoxConfig() -> BoxConfig {
+        let itemBoxConfig = wrappedItem.getBoxConfig()
+        
+        var resultPrefSize: DSize2
+        if let overwritingSize = self.preferredSize {
+            resultPrefSize = max(min(overwritingSize, itemBoxConfig.maxSize), itemBoxConfig.minSize)
+        } else {
+            resultPrefSize = itemBoxConfig.preferredSize
+        }
+        
+        return BoxConfig(
+            preferredSize: resultPrefSize
+        )
+    }
+
+    override public func layout() {
+        wrappedItem.bounds = DRect(min: .zero, size: bounds.size)
+        wrappedItem.globalParentPosition = globalParentPosition! + bounds.min
+        wrappedItem.layout()
+    }
+
+    override public func render() -> RenderObject {
+        wrappedItem.render()
+    }
+}
 
 public class TextItem: LayoutableItem {
     public var text: String
@@ -134,7 +178,7 @@ public class TextItem: LayoutableItem {
 
     override public func getBoxConfig() -> BoxConfig {
         let prefSize = widgetContext.getTextBoundsSize(text, fontConfig: fontConfig)
-        return BoxConfig(preferredSize: prefSize, minSize: .zero, maxSize: .infinity, aspectRatio: nil)
+        return BoxConfig(preferredSize: prefSize)
     }
 
     override public func layout() {
@@ -162,8 +206,6 @@ public class ImageItem: LayoutableItem {
     override public func getBoxConfig() -> BoxConfig {
         return BoxConfig(
             preferredSize: sourceSize, 
-            minSize: .zero, 
-            maxSize: .infinity, 
             aspectRatio: sourceSize.width / sourceSize.height)
     }
 
@@ -188,7 +230,9 @@ public class ExperimentOneView: Widget {
             wrapped: ImageItem(color: .Green, sourceSize: DSize2(100, 200))),
         FlexItem(
             grow: 0,
-            wrapped: ImageItem(color: .Blue, sourceSize: DSize2(100, 200))),
+            wrapped: ConstrainedItem(
+                preferredSize: DSize2(400, 400),
+                wrapped: ImageItem(color: .Blue, sourceSize: DSize2(100, 200)))),
         FlexItem(
             grow: 0,
             wrapped: ImageItem(color: .Yellow, sourceSize: DSize2(100, 200))),
@@ -206,7 +250,6 @@ public class ExperimentOneView: Widget {
         contentRoot.bounds = bounds
         contentRoot.globalParentPosition = DPoint2.zero
         contentRoot.layout()
-        print("ROOT BOX CONFIG IS", rootBoxConfig)
     }
 
     override public func renderContent() -> RenderObject? {
