@@ -107,41 +107,84 @@ open class ContainerRenderObject: SubTreeRenderObject {
 }
 
 open class RenderStyleRenderObject: SubTreeRenderObject {
-    public var fillColor: AnyRenderValue<Color>?
+    public var fill: AnyRenderValue<Fill>?
     public var strokeWidth: Double?
     public var strokeColor: AnyRenderValue<Color>?
 
     override open var hasTimedRenderValue: Bool {
-        return fillColor?.isTimed ?? false || strokeColor?.isTimed ?? false
+        return fill?.isTimed ?? false || strokeColor?.isTimed ?? false
     }
 
-    /*public init<C: RenderValue>(fillColor: C? = nil, strokeWidth: Double? = nil, strokeColor: C? = nil, _ children: [RenderObject]) where C.Value == Color {
-        //self.renderStyle = renderStyle
-        self.children = children
-    }*/ 
     override open var debugDescription: String {
         "RenderStyleRenderObject"
     }
 
     override open var individualHash: Int {
         var hasher = Hasher()
-        hasher.combine(fillColor)
+        hasher.combine(fill)
         hasher.combine(strokeWidth)
         hasher.combine(strokeColor)
         return hasher.finalize()
     }
 
-    public init<C: RenderValue>(fillColor: C? = nil, strokeWidth: Double? = nil, strokeColor: C? = nil, @RenderObjectBuilder children: () -> [RenderObject]) where C.Value == Color {
-        //self.renderStyle = renderStyle
-        if let fillColor = fillColor {
-            self.fillColor = AnyRenderValue<Color>(fillColor) 
-        }
-        self.strokeWidth = strokeWidth
-        if let strokeColor = strokeColor {
-            self.strokeColor = AnyRenderValue<Color>(strokeColor) 
-        }
-        super.init(children: children())
-        //self.init(fillColor: fillColor, strokeWidth: strokeWidth, strokeColor: strokeColor, children())
+    public init<FillRenderValue: RenderValue, StrokeRenderValue: RenderValue>(
+        fill: FillRenderValue?, 
+        strokeWidth: Double?, 
+        strokeColor: StrokeRenderValue?,
+        @RenderObjectBuilder children: () -> [RenderObject]) where 
+
+            FillRenderValue.Value == Fill, StrokeRenderValue.Value == Color  {
+
+                if let fill = fill {
+                    self.fill = AnyRenderValue<Fill>(fill) 
+                }
+
+                self.strokeWidth = strokeWidth
+
+                if let strokeColor = strokeColor {
+                    self.strokeColor = AnyRenderValue<Color>(strokeColor) 
+                }
+
+                super.init(children: children())
+    }
+
+    public convenience init<FillRenderValue: RenderValue>(
+        fill: FillRenderValue,
+        @RenderObjectBuilder children: () -> [RenderObject]) where FillRenderValue.Value == Fill {
+            self.init(
+                fill: fill,
+                strokeWidth: nil,
+                strokeColor: Optional<FixedRenderValue<Color>>.none,
+                children: children)
+    }
+
+    public convenience init<StrokeRenderValue: RenderValue>(
+        strokeWidth: Double?, 
+        strokeColor: StrokeRenderValue?, 
+        @RenderObjectBuilder children: () -> [RenderObject]) where StrokeRenderValue.Value == Color {
+            self.init(
+                fill: Optional<FixedRenderValue<Fill>>.none,
+                strokeWidth: strokeWidth,
+                strokeColor: strokeColor,
+                children: children)     
+    }
+
+    public convenience init<StrokeRenderValue: RenderValue>(
+        fillColor: Color, 
+        strokeWidth: Double? = nil, 
+        strokeColor: StrokeRenderValue? = nil, 
+        @RenderObjectBuilder children: () -> [RenderObject]) where StrokeRenderValue.Value == Color {
+            self.init(fill: FixedRenderValue(Fill.Color(fillColor)), strokeWidth: strokeWidth, strokeColor: strokeColor, children: children)     
+    }
+
+    public convenience init(
+        fillColor: Color,
+        @RenderObjectBuilder children: () -> [RenderObject]) {
+            self.init(
+                fill: FixedRenderValue(Fill.Color(fillColor)),
+                strokeWidth: nil,
+                strokeColor: Optional<FixedRenderValue<Color>>.none,
+                children: children)     
     }
 }
 

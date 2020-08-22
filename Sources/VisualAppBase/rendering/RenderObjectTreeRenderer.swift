@@ -411,8 +411,16 @@ public class RenderObjectTreeRenderer {
             // need to reapply the next parent
             var performFill = false
             var performStroke = false
-            if let fillColor = currentRenderObject.fillColor {
-                backendRenderer.fillColor(fillColor.getValue(at: timestamp))
+            if let fill = currentRenderObject.fill {
+                let anyFill = fill.getValue(at: timestamp)
+
+                switch anyFill {
+                case let .Color(value):
+                    backendRenderer.fillColor(value)
+                case let .Image(value):
+                    print("Image fill not yet supported.")
+                }
+
                 performFill = true
             } else {
                 backendRenderer.fillColor(.Transparent)
