@@ -25,4 +25,8 @@ public class ImageView: Widget, BoxWidget {
             RenderObject.Rectangle(globalBounds)
         }
     }
+
+    override public func performLayout() {
+        
+    }
 }

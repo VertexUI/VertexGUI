@@ -29,11 +29,6 @@ public class Row: Widget, BoxWidget {
 
     private let wrap: Bool
 
-    /*public init(wrap: Bool = false, children: [Widget]) {
-        self.wrap = wrap
-        super.init(children: children)
-    }*/
-
     public init(spacing: Double = 0, wrap: Bool = false, items: [Item]) {
         self.items = items
         self.spacing = spacing
@@ -49,6 +44,7 @@ public class Row: Widget, BoxWidget {
 
     public func getBoxConfig() -> BoxConfig {
         var preferredSize = DSize2.zero
+        preferredSize.width += max(0, (Double(items.count) - 1)) * spacing + 1
 
         for item in items {
             let content = item.content
@@ -63,105 +59,38 @@ public class Row: Widget, BoxWidget {
     }
 
     override public func performLayout() {
+        var currentLineHeight = 0.0
+        var currentY = 0.0
         var currentX = 0.0
         
         for item in items {
             let content = item.content
 
             if let content = content as? BoxWidget {
+                // + 1 at the end to account for floating point precision errors
+                if currentX + content.bounds.size.width >= bounds.size.width + 1 {
+                    currentX = 0
+                    currentY += currentLineHeight
+                    currentLineHeight = 0
+                }
+
                 let boxConfig = content.getBoxConfig()
+                
                 content.constraints = constraints
                 content.bounds.size = boxConfig.preferredSize
                 content.bounds.min.x = currentX
+                content.bounds.min.y = currentY
+
+                content.layout()
+
                 currentX += content.bounds.size.width
-            }
-        }
-        /*var currentX = 0.0
-        var currentY = 0.0
-        var maxWidth = 0.0
-        var currentRowHeight = 0.0 // height of the current line of children, if multiline, total height = currentY + currentRowHeight
 
-        var totalGrow = 0
-
-        for i in 0..<children.count {
-            let child = children[i]
-            let item = items[i]
-            
-            totalGrow += item.grow
-
-            // TODO: maybe set min size as well
-
-            if wrap {
-                child.constraints = BoxConstraints(minSize: .zero, maxSize: constraints!.maxSize)
-                child.layout()
-
-                if currentX + child.bounds.size.width > constraints!.maxWidth {
-                    currentX = 0
-                    currentY += currentRowHeight
-                }
-            } else {
-                // TODO: should the width of the items be limited to the remaining width or to the full width?
-                child.constraints = BoxConstraints(minSize: DSize2(0,0), maxSize: DSize2(constraints!.maxWidth/* - currentX*/, constraints!.maxHeight/* - currentY*/))
-                child.layout()
-            }
-
-            child.bounds.min = DPoint2(currentX, currentY)
-            currentX += child.bounds.size.width
-
-            if child.bounds.size.height > currentRowHeight {
-                currentRowHeight = child.bounds.size.height
-            }
-
-            if currentX > maxWidth {
-                maxWidth = currentX
-            }
-
-            currentX += spacing
-        }
-
-        bounds.size = DSize2(max(constraints!.minWidth, maxWidth), max(constraints!.minHeight, currentY + currentRowHeight))
-
-        let availableWidth = constraints!.minWidth - maxWidth
-
-        // TODO: need to implement this for multi line also!
-        // --> grow relative to the items in the same row, fill the row
-        // align vertically inside the row
-
-        currentX = 0
-
-        for i in 0..<children.count {
-            let child = children[i]
-            let item = items[i]
-
-            if availableWidth > 0 && totalGrow > 0 {
-
-                let relativeGrow: Double
-
-                if totalGrow == 0 {
-                    relativeGrow = 0
-                } else {
-                    relativeGrow = Double(item.grow) / Double(totalGrow)
+                if content.bounds.size.height > currentLineHeight {
+                    currentLineHeight = content.bounds.size.height
                 }
 
-                let targetWidth = child.bounds.size.width + availableWidth * relativeGrow
-                child.constraints = BoxConstraints(minSize: DSize2(targetWidth, child.bounds.size.height), maxSize: DSize2(targetWidth, child.bounds.size.height))
-                child.layout()
-
-                child.bounds.min.x = currentX
-                currentX += child.bounds.size.width + spacing
+                currentX += spacing
             }
-
-            switch item.verticalAlignment {
-
-            case .Center:
-                child.bounds.min.y = bounds.size.height / 2 - child.bounds.size.height / 2
-                
-            case .End:
-                child.bounds.min.y = bounds.size.height - child.bounds.size.height
-
-            default:
-                break
-            }
-        }*/
+        }
     }
 }

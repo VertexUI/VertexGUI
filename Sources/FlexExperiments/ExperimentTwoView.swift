@@ -4,9 +4,19 @@ import WidgetGUI
 
 public class ExperimentTwoView: SingleChildWidget {
     override public func buildChild() -> Widget {
-        return Row(items: [
+        return Row(spacing: 16, wrap: true, items: [
             Row.Item {
-                Text("Testsasdasdasdasdasdext")
+                Text("Text One that brings other things to overflow Text One that brings other things to overflow Text One that brings other things to overflow")
+            },
+            Row.Item {
+                Row(spacing: 80, items: [
+                    Row.Item { 
+                        Text("Row in Row Text 1")
+                    },
+                    Row.Item {
+                        Text("Row in Row Text 2")
+                    }
+                ])
             },
             Row.Item {
                 ImageView(

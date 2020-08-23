@@ -3,7 +3,7 @@ import CustomGraphicsMath
 import VisualAppBase
 import WidgetGUI
 
-public final class Text: Widget, BoxWidget {
+public final class Text: Widget, BoxWidget, CustomDebugStringConvertible {
     public var text: String {
         didSet {
             if oldValue != text {
@@ -21,6 +21,10 @@ public final class Text: Widget, BoxWidget {
         weight: .Regular,
         style: .Normal   
     )
+
+    public var debugDescription: String {
+        "Text \(text)"
+    }
 
     public init(_ text: String, wrap: Bool = false) {
         self.text = text
