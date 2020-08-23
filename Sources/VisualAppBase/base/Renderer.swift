@@ -33,7 +33,7 @@ public protocol Renderer {
     func closePath()
     // TODO: maybe merge fill into one function, given by enum Fill?
     func fillColor(_ color: Color)
-    func fillImage(_ image: Image<RGBA, UInt8>) 
+    func fillImage(_ image: Image<RGBA, UInt8>, position: DVec2) 
     //func fillRule(_ rule: FillRule)
     func fill() 
     func strokeWidth(_ width: Double) 

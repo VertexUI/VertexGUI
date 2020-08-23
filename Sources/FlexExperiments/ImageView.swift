@@ -3,21 +3,26 @@ import VisualAppBase
 import CustomGraphicsMath
 import Swim
 
-public class ImageView: Widget {
+public class ImageView: Widget, BoxWidget {
     public var image: Image<RGBA, UInt8>
     
     public init(image: Image<RGBA, UInt8>) {
        self.image = image
-       print("GOT IMAGE", image)
+    }
+
+    public func getBoxConfig() -> BoxConfig {
+        BoxConfig(preferredSize: DSize2(Double(image.width), Double(image.height)))
     }
 
     override public func renderContent() -> RenderObject? {
-        let targetSize = DSize2(400, 900)
+        if bounds.size.width <= 0 || bounds.size.height <= 0 {
+            return nil
+        }
 
-        let resizedImage = image.resize(width: Int(targetSize.width), height: Int(targetSize.height))
+        let resizedImage = image.resize(width: Int(bounds.size.width), height: Int(bounds.size.height))
 
-        return RenderObject.RenderStyle(fill: FixedRenderValue(.Image(resizedImage))) {
-            RenderObject.Rectangle(DRect(min: .zero, size: targetSize))
+        return RenderObject.RenderStyle(fill: FixedRenderValue(.Image(resizedImage, position: globalBounds.min))) {
+            RenderObject.Rectangle(globalBounds)
         }
     }
 }

@@ -423,8 +423,8 @@ public class RenderObjectTreeRenderer {
                 switch anyFill {
                 case let .Color(value):
                     backendRenderer.fillColor(value)
-                case let .Image(value):
-                    backendRenderer.fillImage(value)
+                case let .Image(value, position):
+                    backendRenderer.fillImage(value, position: position)
                 }
 
                 performFill = true

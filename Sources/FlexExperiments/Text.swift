@@ -3,7 +3,7 @@ import CustomGraphicsMath
 import VisualAppBase
 import WidgetGUI
 
-public final class Text: Widget {
+public final class Text: Widget, BoxWidget {
     public var text: String {
         didSet {
             if oldValue != text {
@@ -27,15 +27,21 @@ public final class Text: Widget {
         self.wrap = wrap
     }
 
-    override public func performLayout() {
+    public func getBoxConfig() -> BoxConfig {
+        let preferredSize: DSize2
         if wrap {
-            context!.getTextBoundsSize(text, fontConfig: fontConfig, maxWidth: bounds.size.width)
+            preferredSize = context!.getTextBoundsSize(text, fontConfig: fontConfig, maxWidth: bounds.size.width)
         } else {
-            context!.getTextBoundsSize(text, fontConfig: fontConfig)
+            preferredSize = context!.getTextBoundsSize(text, fontConfig: fontConfig)
         }
+        return BoxConfig(preferredSize: preferredSize)
+    }
+
+    override public func performLayout() {
+
     }
 
     override public func renderContent() -> RenderObject? {
-        return .Text(text, fontConfig: fontConfig, color: .Black, topLeft: globalPosition, wrap: wrap, maxWidth: bounds.size.width)
+        .Text(text, fontConfig: fontConfig, color: .Black, topLeft: globalPosition, wrap: wrap, maxWidth: bounds.size.width)
     }
 }

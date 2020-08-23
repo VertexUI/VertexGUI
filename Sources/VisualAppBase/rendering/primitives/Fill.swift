@@ -3,14 +3,15 @@ import CustomGraphicsMath
 
 public enum Fill: Hashable {
     case Color(_ value: CustomGraphicsMath.Color)
-    case Image(_ value: Image<RGBA, UInt8>)
+    case Image(_ value: Image<RGBA, UInt8>, position: DVec2)
 
     public func hash(into hasher: inout Hasher) {
         switch self {
         case let .Color(value):
             hasher.combine(value)
-        case let .Image(value):
+        case let .Image(value, position):
             hasher.combine(0) // TODO: provide real hashing
+            hasher.combine(position)
         }
     }
 }

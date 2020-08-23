@@ -236,7 +236,7 @@ open class SDL2OpenGL3NanoVGRenderer: Renderer {
         nvgFillColor(window.nvg, color.toNVG())
     }
 
-    open func fillImage(_ image: Image<RGBA, UInt8>) {
+    open func fillImage(_ image: Image<RGBA, UInt8>, position: DVec2) {
         if let handle = lastImageHandle {
             nvgDeleteImage(window.nvg, Int32(handle))
         }
@@ -246,7 +246,7 @@ open class SDL2OpenGL3NanoVGRenderer: Renderer {
         let handle = withUnsafeMutablePointer(to: &data[0]) {
             nvgCreateImageRGBA(window.nvg, Int32(image.width), Int32(image.height), 0, $0)
         }
-        let paint = nvgImagePattern(window.nvg, 0, 0, Float(image.width), Float(image.height), 0, handle, 1)
+        let paint = nvgImagePattern(window.nvg, Float(position.x), Float(position.y), Float(image.width), Float(image.height), 0, handle, 1)
         nvgFillPaint(window.nvg, paint)
         lastImageHandle = Int(handle)
     }

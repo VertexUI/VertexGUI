@@ -2,16 +2,20 @@ import CustomGraphicsMath
 import VisualAppBase
 import WidgetGUI
 
-public class Row: Widget {
+public class Row: Widget, BoxWidget {
     public struct Item {
         var grow: Int
         var verticalAlignment: Alignment
-        var contentBuilder: () -> Widget
+        var content: Widget
 
         public init(grow: Int = 0, verticalAlignment: Alignment = .Start, @WidgetBuilder content contentBuilder: @escaping () -> Widget) {
             self.grow = grow
             self.verticalAlignment = verticalAlignment
-            self.contentBuilder = contentBuilder
+            self.content = contentBuilder()
+        }
+
+        public func getBoxConfig() -> BoxConfig {
+            BoxConfig(preferredSize: .zero)
         }
     }
 
@@ -39,11 +43,39 @@ public class Row: Widget {
 
     override public func build() {
         children = items.map {
-            $0.contentBuilder()
+            $0.content
         }
     }
 
+    public func getBoxConfig() -> BoxConfig {
+        var preferredSize = DSize2.zero
+
+        for item in items {
+            let content = item.content
+
+            if let content = content as? BoxWidget {
+                let boxConfig = content.getBoxConfig()
+                preferredSize += boxConfig.preferredSize
+            }
+        }
+
+        return BoxConfig(preferredSize: preferredSize)
+    }
+
     override public func performLayout() {
+        var currentX = 0.0
+        
+        for item in items {
+            let content = item.content
+
+            if let content = content as? BoxWidget {
+                let boxConfig = content.getBoxConfig()
+                content.constraints = constraints
+                content.bounds.size = boxConfig.preferredSize
+                content.bounds.min.x = currentX
+                currentX += content.bounds.size.width
+            }
+        }
         /*var currentX = 0.0
         var currentY = 0.0
         var maxWidth = 0.0

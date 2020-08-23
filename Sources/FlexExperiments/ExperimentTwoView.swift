@@ -6,11 +6,21 @@ public class ExperimentTwoView: SingleChildWidget {
     override public func buildChild() -> Widget {
         return Row(items: [
             Row.Item {
-                Text("TestText")
+                Text("Testsasdasdasdasdasdext")
             },
             Row.Item {
-                ImageView(image: try! Image(contentsOf: Bundle.module.url(forResource: "owl", withExtension: "jpg")!))
+                ImageView(
+                    image: try! Image(
+                        contentsOf: Bundle.module.url(
+                            forResource: "owl", withExtension: "jpg")!))
             }
         ])
+    }
+
+    override public func performLayout() {
+        child.constraints = constraints
+        child.bounds.size = constraints!.maxSize
+        bounds.size = constraints!.maxSize
+        child.layout()
     }
 }
