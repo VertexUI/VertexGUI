@@ -23,6 +23,14 @@ public class ExperimentTwoView: SingleChildWidget {
                     image: try! Image(
                         contentsOf: Bundle.module.url(
                             forResource: "owl", withExtension: "jpg")!))
+            },
+            Row.Item {
+                InfoCard(
+                    image: try! Image(
+                        contentsOf: Bundle.module.url(
+                            forResource: "owl", withExtension: "jpg")!),
+                    text: "WOW This is some owl!"
+                )
             }
         ])
     }

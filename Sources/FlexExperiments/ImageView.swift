@@ -1,12 +1,11 @@
 import WidgetGUI
 import VisualAppBase
 import CustomGraphicsMath
-import Swim
 
 public class ImageView: Widget, BoxWidget {
-    public var image: Image<RGBA, UInt8>
+    public var image: Image
     
-    public init(image: Image<RGBA, UInt8>) {
+    public init(image: Image) {
        self.image = image
     }
 
