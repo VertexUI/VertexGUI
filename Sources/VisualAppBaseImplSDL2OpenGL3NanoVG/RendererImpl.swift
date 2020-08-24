@@ -49,16 +49,21 @@ open class SDL2OpenGL3NanoVGRenderer: Renderer {
     )
     private var compositionVAO = GLMap.UInt()
 
-    /// Used to delete the previous image that was created in fillImage().
-    private var lastImageHandle: Int?
 
-    /// This buffer is set when unbindVirtualScreen() is called.
-    // TODO: maybe create RenderTarget --> LiveRenderTarget, CachedRenderTarget (or VirtualRenderTarget, replacement for VirtualScreen)
+    /// Storing handles to images keyed by image hash value.
+    private var imageCache: [Int: Int32] = [:]
 
 
     public init(for window: SDL2OpenGL3NanoVGWindow) {
         self.window = window
         setup()
+    }
+
+    deinit {
+        // TODO: implement full deinit
+        for handle in imageCache.values {
+            nvgDeleteImage(window.nvg, handle)
+        }
     }
 
     public func setup() {
@@ -236,19 +241,25 @@ open class SDL2OpenGL3NanoVGRenderer: Renderer {
         nvgFillColor(window.nvg, color.toNVG())
     }
 
-    open func fillImage(_ image: Image<RGBA, UInt8>, position: DVec2) {
-        if let handle = lastImageHandle {
-            nvgDeleteImage(window.nvg, Int32(handle))
-        }
+    open func fillImage(_ image: Image<RGBA, UInt8>, hash: Int?, position: DVec2) {
+        let imageHandle: Int32
+        if let hash = hash, let cachedHandle = imageCache[hash] {
+            imageHandle = cachedHandle
+        } else {
+            var data = image.getData()
+            
+            imageHandle = withUnsafeMutablePointer(to: &data[0]) {
+                nvgCreateImageRGBA(window.nvg, Int32(image.width), Int32(image.height), 0, $0)
+            }
 
-        var data = image.getData()
-        // TODO: optimize performace: might store image handle in RenderObject? or as a PathState in RenderObjectTreeRenderer?
-        let handle = withUnsafeMutablePointer(to: &data[0]) {
-            nvgCreateImageRGBA(window.nvg, Int32(image.width), Int32(image.height), 0, $0)
+            if let hash = hash {
+                imageCache[hash] = imageHandle
+            }
         }
-        let paint = nvgImagePattern(window.nvg, Float(position.x), Float(position.y), Float(image.width), Float(image.height), 0, handle, 1)
+        
+        let paint = nvgImagePattern(window.nvg, Float(position.x), Float(position.y), Float(image.width), Float(image.height), 0, imageHandle, 1)
+       
         nvgFillPaint(window.nvg, paint)
-        lastImageHandle = Int(handle)
     }
 
     open func fill() {

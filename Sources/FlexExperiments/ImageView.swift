@@ -20,7 +20,7 @@ public class ImageView: Widget, BoxWidget {
 
         let resizedImage = image.resize(width: Int(bounds.size.width), height: Int(bounds.size.height))
 
-        return RenderObject.RenderStyle(fill: FixedRenderValue(.Image(resizedImage, position: globalBounds.min))) {
+        return RenderObject.RenderStyle(fill: FixedRenderValue(.Image(resizedImage, hash: resizedImage.hashValue, position: globalBounds.min))) {
             RenderObject.Rectangle(globalBounds)
         }
     }
