@@ -34,13 +34,13 @@ public final class Text: Widget, BoxWidget, CustomDebugStringConvertible {
     }
 
     public func getBoxConfig() -> BoxConfig {
-        let preferredSize: DSize2
-        if wrap {
-            preferredSize = context!.getTextBoundsSize(text, fontConfig: fontConfig, maxWidth: bounds.size.width)
-        } else {
-            preferredSize = context!.getTextBoundsSize(text, fontConfig: fontConfig)
+        var config = BoxConfig(preferredSize: context!.getTextBoundsSize(text, fontConfig: fontConfig))
+
+        if !wrap {
+            config.minSize = config.preferredSize
         }
-        return BoxConfig(preferredSize: preferredSize)
+
+        return config
     }
 
     override public func performLayout() {

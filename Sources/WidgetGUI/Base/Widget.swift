@@ -400,7 +400,9 @@ open class Widget: Bounded, Parent, Child {
     /// Returns the result of renderContent() wrapped in an IdentifiedSubTreeRenderObject
     public final func render() -> IdentifiedSubTreeRenderObject {
         return IdentifiedSubTreeRenderObject(id) {
-            renderContent()
+            if mounted && layouted && !layouting {
+                renderContent()
+            }
         }
     }
 

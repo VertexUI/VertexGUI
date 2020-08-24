@@ -73,14 +73,22 @@ public class Row: Widget, BoxWidget {
                 
                 content.constraints = constraints // legacy
 
+                content.bounds.size = boxConfig.preferredSize
+
                 // + 1 at the end to account for floating point precision errors
                 if currentX + boxConfig.preferredSize.width >= bounds.size.width + 1 {
-                    currentX = 0
-                    currentY += currentLineHeight
-                    currentLineHeight = 0
+                    let freeWidth = bounds.size.width - currentX
+                    
+                    if boxConfig.minSize.width <= freeWidth {
+                        content.bounds.size.width = freeWidth 
+                        // TODO: check for aspect ratio
+                    } else {
+                        currentX = 0
+                        currentY += currentLineHeight
+                        currentLineHeight = 0
+                    }
                 }
-
-                content.bounds.size = boxConfig.preferredSize
+                
                 content.bounds.min.x = currentX
                 content.bounds.min.y = currentY
 

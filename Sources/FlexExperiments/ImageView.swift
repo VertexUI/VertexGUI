@@ -3,7 +3,9 @@ import VisualAppBase
 import CustomGraphicsMath
 
 public class ImageView: Widget, BoxWidget {
-    public var image: Image
+    private var image: Image
+
+    private var resizedImage: Image?
     
     public init(image: Image) {
        self.image = image
@@ -18,9 +20,11 @@ public class ImageView: Widget, BoxWidget {
             return nil
         }
 
-        let resizedImage = image.resize(width: Int(bounds.size.width), height: Int(bounds.size.height))
+        if resizedImage == nil || resizedImage!.width != Int(bounds.size.width) || resizedImage!.height != Int(bounds.size.height) {
+            resizedImage = image.resize(width: Int(bounds.size.width), height: Int(bounds.size.height))
+        }
 
-        return RenderObject.RenderStyle(fill: FixedRenderValue(.Image(resizedImage, hash: resizedImage.hashValue, position: globalBounds.min))) {
+        return RenderObject.RenderStyle(fill: FixedRenderValue(.Image(resizedImage!, hash: resizedImage.hashValue, position: globalBounds.min))) {
             RenderObject.Rectangle(globalBounds)
         }
     }
