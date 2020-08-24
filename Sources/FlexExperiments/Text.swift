@@ -26,9 +26,11 @@ public final class Text: Widget, BoxWidget, CustomDebugStringConvertible {
         "Text \(text)"
     }
 
-    public init(_ text: String, wrap: Bool = false) {
+    public init(_ text: String, fontSize: Double = 24, fontWeight: FontWeight = .Regular, wrap: Bool = false) {
         self.text = text
         self.wrap = wrap
+        self.fontConfig.size = fontSize
+        self.fontConfig.weight = fontWeight
     }
 
     public func getBoxConfig() -> BoxConfig {

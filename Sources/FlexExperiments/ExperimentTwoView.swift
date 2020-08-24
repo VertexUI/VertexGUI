@@ -29,7 +29,8 @@ public class ExperimentTwoView: SingleChildWidget {
                     image: try! Image(
                         contentsOf: Bundle.module.url(
                             forResource: "owl", withExtension: "jpg")!),
-                    text: "WOW This is some owl!"
+                    title: "The owl!",
+                    description: "The owl is an animal that can fly because it has wings. It mainly flies during the night because it doesn't fly during the day."
                 )
             }
         ])

@@ -68,6 +68,8 @@ public class Column: Widget, BoxWidget {
     }
 
     override public func performLayout() {
+        print("COLUMN IS LAYOUTING", bounds)
+
         var currentColumnWidth = 0.0
         var currentY = 0.0
         var currentX = 0.0

@@ -256,9 +256,10 @@ open class SDL2OpenGL3NanoVGRenderer: Renderer {
                 imageCache[hash] = imageHandle
             }
         }
-        
+
+        // TODO: maybe cache this as well (if giving raw Fill to Renderer could probably do) 
         let paint = nvgImagePattern(window.nvg, Float(position.x), Float(position.y), Float(image.width), Float(image.height), 0, imageHandle, 1)
-       
+
         nvgFillPaint(window.nvg, paint)
     }
 
