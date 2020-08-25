@@ -51,7 +51,19 @@ public class ExperimentTwoView: SingleChildWidget {
             },
 
             Row.Item { [unowned self] in
-                Column(items: infoItems.map { infoItem in
+                Column(spacing: 1, items: [
+                    Column.Item(crossAlignment: .Stretch) {
+                        
+                        Background(color: .White) {
+
+                            Padding(top: 24, right: 32, bottom: 24, left: 32) {
+                            
+                                Text("HERE WILL BE A FILTER BAR")
+                            }
+                        }
+
+                    }
+                ] + infoItems.map { infoItem in
                     Column.Item {
                         InfoCard(infoItem: infoItem)
                     }

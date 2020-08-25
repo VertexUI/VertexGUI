@@ -5,12 +5,12 @@ import WidgetGUI
 public class Column: Widget, BoxWidget {
     public struct Item {
         var grow: Int
-        var verticalAlignment: Alignment
+        var crossAlignment: Alignment
         var content: Widget
 
-        public init(grow: Int = 0, verticalAlignment: Alignment = .Start, @WidgetBuilder content contentBuilder: @escaping () -> Widget) {
+        public init(grow: Int = 0, crossAlignment: Alignment = .Start, @WidgetBuilder content contentBuilder: @escaping () -> Widget) {
             self.grow = grow
-            self.verticalAlignment = verticalAlignment
+            self.crossAlignment = crossAlignment
             self.content = contentBuilder()
         }
     }
@@ -39,14 +39,18 @@ public class Column: Widget, BoxWidget {
     }
 
     public func getBoxConfig() -> BoxConfig {
+
         var config = BoxConfig(preferredSize: .zero, minSize: .zero, maxSize: .zero)
         config.preferredSize.height += max(0, (Double(items.count) - 1)) * spacing + 1
 
         for item in items {
+
             let content = item.content
 
             if let content = content as? BoxWidget {
+
                 let contentConfig = content.getBoxConfig()
+
                 if contentConfig.preferredSize.width > config.preferredSize.width {
                     config.preferredSize.width = contentConfig.preferredSize.width
                 }
@@ -81,6 +85,14 @@ public class Column: Widget, BoxWidget {
                 
                 content.constraints = constraints // legacy
 
+                content.bounds.size = boxConfig.preferredSize
+
+                let freeWidth = bounds.size.width - currentX
+
+                if item.crossAlignment == .Stretch && boxConfig.preferredSize.width < freeWidth {
+                    content.bounds.size.width = min(freeWidth, boxConfig.maxSize.width)
+                }
+
                 // + 1 at the end to account for floating point precision errors
                 if currentY + boxConfig.preferredSize.height >= bounds.size.height + 1 {
                     currentY = 0
@@ -88,7 +100,6 @@ public class Column: Widget, BoxWidget {
                     currentColumnWidth = 0
                 }
 
-                content.bounds.size = boxConfig.preferredSize
                 content.bounds.min.x = currentX
                 content.bounds.min.y = currentY
 
