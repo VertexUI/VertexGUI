@@ -193,9 +193,8 @@ open class Widget: Bounded, Parent, Child {
         let mirror = Mirror(reflecting: self)
         
         for child in mirror.children {
-            if child.value is [AnyObservable] {
-                // TODO: this type of value needs to be caught specifically for some reason or there will be a crash
-                print("HAVE ANY OBSERVABLE", child.value)
+            // TODO: this type of value needs to be caught specifically for some reason or there will be a crash
+            if child.value is [AnyObject] {
                 continue
             }
             if child.value is AnyInject {

@@ -1,7 +1,7 @@
 import Foundation
 import Path
 
-public struct InfoItem {
+public class InfoItem {
     public var title: String
     public var description: String
     public var images: [Image]

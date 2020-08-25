@@ -20,28 +20,35 @@ public class InfoCard: SingleChildWidget, BoxWidget {
         let imagesMaxSize = DSize2(.infinity, imagesMinHeight)
 
         return Background(color: .White) {
-            Padding(all: 32) {
-                Column(spacing: 32, items: [
-                    Column.Item { [unowned self] in 
-                        Text(infoItem.title, fontSize: 48, fontWeight: .Bold)
-                    },
 
-                    Column.Item { [unowned self] in 
-                        Text(infoItem.description)
-                    },
+            Column(items: [
+                
+                Column.Item {
 
-                    Column.Item { [unowned self] in 
+                    Padding(all: 32) {
+                        Column(spacing: 32, items: [
+                            Column.Item { [unowned self] in 
+                                Text(infoItem.title, fontSize: 48, fontWeight: .Bold)
+                            },
 
-                        ConstrainedSize(maxSize: imagesMaxSize) {
-
-                            Row(items: infoItem.images.map { image in 
-
-                                Row.Item { ImageView(image: image) }
-                            })
-                        }
+                            Column.Item { [unowned self] in 
+                                Text(infoItem.description)
+                            },
+                        ])
                     }
-                ])
-            }
+                },
+
+                Column.Item { [unowned self] in 
+
+                    ConstrainedSize(maxSize: imagesMaxSize) {
+
+                        Row(items: infoItem.images.map { image in 
+
+                            Row.Item { ImageView(image: image) }
+                        })
+                    }
+                }
+            ])
         }
     }
 

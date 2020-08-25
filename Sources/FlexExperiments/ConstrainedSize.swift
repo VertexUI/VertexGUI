@@ -39,8 +39,6 @@ public class ConstrainedSize: SingleChildWidget, BoxWidget {
             config.preferredSize.height = config.maxSize.height
         }
 
-        print("CONSTRAINED BOX CONFIG", config.preferredSize)
-
         return config
     }
 

@@ -6,18 +6,9 @@ import Path
 let itemsListString = try! String(contentsOf: Bundle.module.path(forResource: "data", ofType: "json")!)
 
 public class ExperimentTwoView: SingleChildWidget {
-    private var owlImages = [
-        try! Image(
-            contentsOf: Bundle.module.url(
-                forResource: "owl", withExtension: "jpg")!),
-        try! Image(
-            contentsOf: Bundle.module.url(
-                forResource: "owl-2", withExtension: "jpg")!),
-        try! Image(
-            contentsOf: Bundle.module.url(
-                forResource: "owl-3", withExtension: "jpg")!)
-    ]
     private var infoItems: [InfoItem] = []
+
+    private var activeInfoItem: InfoItem?
 
     public init() {
         let directoryNames = try! JSONSerialization.jsonObject(with: itemsListString.data(using: .utf8)!)
@@ -32,26 +23,33 @@ public class ExperimentTwoView: SingleChildWidget {
     }
 
     override public func buildChild() -> Widget {
-        return Row(spacing: 16, wrap: true, items: [
-            Row.Item {
-                Text("Text One that brings other things to overflow Text One that brings other things to overflow Text One that brings other things to overflow")
-            },
-            Row.Item {
-                Row(spacing: 80, items: [
-                    Row.Item { 
-                        Text("Row in Row Text 1")
-                    },
-                    Row.Item {
-                        Text("Row in Row Text 2")
+        return Row(spacing: 1, wrap: true, items: [
+
+            Row.Item(crossAlignment: .Stretch) { [unowned self] in
+
+                Background(color: .White) {
+
+                    Padding(top: 32, right: 48, bottom: 32, left: 32) {
+
+                        Column(spacing: 24, items: [
+                            Column.Item {
+                                Text("Items", fontSize: 28, fontWeight: .Bold)
+                            }
+                        ] + infoItems.map { infoItem in
+
+                            Column.Item {
+                                MouseArea {
+                                    Text(infoItem.title)
+                                } onClick: { _ in
+                                    print("clICKED INFO ITEM")
+                                }
+                            }
+
+                        })
                     }
-                ])
+                }
             },
-            Row.Item {
-                ImageView(
-                    image: try! Image(
-                        contentsOf: Bundle.module.url(
-                            forResource: "owl", withExtension: "jpg")!))
-            },
+
             Row.Item { [unowned self] in
                 Column(items: infoItems.map { infoItem in
                     Column.Item {

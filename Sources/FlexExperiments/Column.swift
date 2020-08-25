@@ -60,7 +60,7 @@ public class Column: Widget, BoxWidget {
                 if contentConfig.maxSize.width > config.maxSize.width {
                     config.maxSize.width = contentConfig.maxSize.width
                 }
-                config.maxSize.width += contentConfig.maxSize.width
+                config.maxSize.height += contentConfig.maxSize.height
             }
         }
 
@@ -68,7 +68,6 @@ public class Column: Widget, BoxWidget {
     }
 
     override public func performLayout() {
-        print("COLUMN IS LAYOUTING", bounds)
 
         var currentColumnWidth = 0.0
         var currentY = 0.0

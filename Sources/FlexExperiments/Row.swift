@@ -76,9 +76,12 @@ public class Row: Widget, BoxWidget {
                 content.bounds.size = boxConfig.preferredSize
 
                 let freeHeight = bounds.size.height - currentY
-
+                
                 if boxConfig.preferredSize.height > freeHeight {
                     content.bounds.size.height = freeHeight
+                } else if item.crossAlignment == .Stretch && boxConfig.preferredSize.height < freeHeight {
+                    content.bounds.size.height = min(freeHeight, boxConfig.maxSize.height)
+                    print("STRETCHHHHHHHHhhh", content, content.bounds.size.height, freeHeight, boxConfig.maxSize.height)
                 }
 
                 // + 1 at the end to account for floating point precision errors
