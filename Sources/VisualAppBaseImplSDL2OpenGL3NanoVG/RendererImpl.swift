@@ -233,10 +233,6 @@ open class SDL2OpenGL3NanoVGRenderer: Renderer {
         nvgClosePath(window.nvg)
     }
 
-    /*open func fillRule(_ rule: FillRule) {
-        nvgPathWinding(window.nvg, rule == .Solid ? Int32(NVG_SOLID.rawValue) : Int32(NVG_HOLE.rawValue))
-    }*/
-
     open func fillColor(_ color: Color) {
         nvgFillColor(window.nvg, color.toNVG())
     }

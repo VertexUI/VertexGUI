@@ -5,12 +5,12 @@ import WidgetGUI
 public class Row: Widget, BoxWidget {
     public struct Item {
         var grow: Int
-        var verticalAlignment: Alignment
+        var crossAlignment: Alignment
         var content: Widget
 
-        public init(grow: Int = 0, verticalAlignment: Alignment = .Start, @WidgetBuilder content contentBuilder: @escaping () -> Widget) {
+        public init(grow: Int = 0, crossAlignment: Alignment = .Start, @WidgetBuilder content contentBuilder: @escaping () -> Widget) {
             self.grow = grow
-            self.verticalAlignment = verticalAlignment
+            self.crossAlignment = crossAlignment
             self.content = contentBuilder()
         }
 
@@ -74,6 +74,12 @@ public class Row: Widget, BoxWidget {
                 content.constraints = constraints // legacy
 
                 content.bounds.size = boxConfig.preferredSize
+
+                let freeHeight = bounds.size.height - currentY
+
+                if boxConfig.preferredSize.height > freeHeight {
+                    content.bounds.size.height = freeHeight
+                }
 
                 // + 1 at the end to account for floating point precision errors
                 if currentX + boxConfig.preferredSize.width >= bounds.size.width + 1 {
