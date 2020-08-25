@@ -7,6 +7,7 @@ public class WidgetContext {
     private var _requestCursor: (_ cursor: Cursor) -> () -> Void
     public internal(set) var focus: Widget?
     private var unregisterOnFocusChanged: (() -> ())?
+    public internal(set) var debugLayout: Bool = false
 
     public init(
         window: Window,

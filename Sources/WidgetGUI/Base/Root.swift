@@ -5,13 +5,16 @@ import Dispatch
 open class Root: Parent {
     open var context: WidgetContext? {
         didSet {
+            if let context = context {
+                context.debugLayout = debugLayout
+            }
             rootWidget.context = context
         }
     }
     
     open var bounds: DRect = DRect(min: DPoint2(0,0), size: DSize2(0,0)) {
         didSet {
-            try! layout()
+            layout()
             updateRenderObjectTree()
         }
     }
@@ -28,6 +31,14 @@ open class Root: Parent {
     private var renderObjectTree: RenderObjectTree
     
     private var mouseEventManager = WidgetTreeMouseEventManager()
+
+    public var debugLayout = false {
+        didSet {
+            if let context = context {
+                context.debugLayout = debugLayout
+            }
+        }
+    }
 
     public var onDebuggingDataAvailable = ThrowingEventHandlerManager<RenderObjectTreeRenderer.DebuggingData>()
 

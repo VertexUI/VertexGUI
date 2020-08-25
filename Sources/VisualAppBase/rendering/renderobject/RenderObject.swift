@@ -106,6 +106,7 @@ open class ContainerRenderObject: SubTreeRenderObject {
     }
 }
 
+// TODO: maybe add something layer BlendMode
 open class RenderStyleRenderObject: SubTreeRenderObject {
     public var fill: AnyRenderValue<Fill>?
     public var strokeWidth: Double?

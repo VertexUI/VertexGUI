@@ -78,6 +78,22 @@ open class Widget: Bounded, Parent, Child {
     public var layouted = false
     public internal(set) var destroyed = false
 
+    /// Flag whether to show bounds and sizes for debugging purposes.
+    private var debugLayout: Bool {
+        if let context = context {
+            return context.debugLayout
+        }
+
+        return false
+    }
+    private let layoutDebuggingColor = Color.Red
+    private let layoutDebuggingTextFontConfig = FontConfig(
+        family: defaultFontFamily,
+        size: 16,
+        weight: .Regular,
+        style: .Normal
+    )
+
     // TODO: might need to create something like layoutBounds and renderBounds (area that is invalidated on rerender request --> could be more than layoutBounds and affect outside widgets (e.g. a drop shadow that is not included in layoutBounds))
     open var bounds: DRect = DRect(min: DPoint2(0,0), size: DSize2(0,0)) {
         didSet {
@@ -402,6 +418,10 @@ open class Widget: Bounded, Parent, Child {
         return IdentifiedSubTreeRenderObject(id) {
             if mounted && layouted && !layouting {
                 renderContent()
+
+                if debugLayout {
+                    renderLayoutDebuggingInformation()
+                }
             }
         }
     }
@@ -410,6 +430,20 @@ open class Widget: Bounded, Parent, Child {
     open func renderContent() -> RenderObject? {
         .Container {
             children.map { $0.render() }
+        }
+    }
+
+    private func renderLayoutDebuggingInformation() -> RenderObject {
+        RenderObject.Container {
+            RenderObject.RenderStyle(strokeWidth: 1, strokeColor: FixedRenderValue(layoutDebuggingColor)) {
+                RenderObject.Rectangle(globalBounds)
+            }
+
+            RenderObject.Text(
+                "\(bounds.size.width) x \(bounds.size.height)",
+                fontConfig: layoutDebuggingTextFontConfig,
+                color: layoutDebuggingColor,
+                topLeft: globalBounds.min)
         }
     }
 
