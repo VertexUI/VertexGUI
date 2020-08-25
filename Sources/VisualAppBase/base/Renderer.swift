@@ -11,6 +11,10 @@ public protocol VirtualScreen {
     func delete() 
 }
 
+public protocol LoadedFill {
+
+}
+
 /// Rendering is relative to topLeft of whatever area the renderer is rendering in.
 // TODO: maybe rename to CanvasRenderer/DirectRenderer/SimpleRenderer or something like that
 public protocol Renderer {
@@ -33,7 +37,9 @@ public protocol Renderer {
     func closePath()
     // TODO: maybe merge fill into one function, given by enum Fill?
     func fillColor(_ color: Color)
-    func fillImage(_ image: Image<RGBA, UInt8>, hash: Int?, position: DVec2)
+    func fillImage(_ image: Image<RGBA, UInt8>, position: DVec2) -> LoadedFill
+    /// Reapply a previously loaded fill
+    func applyFill(_ fill: LoadedFill)
     func fill() 
     func strokeWidth(_ width: Double) 
     func strokeColor(_ color: Color) 

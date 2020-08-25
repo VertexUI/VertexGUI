@@ -88,6 +88,8 @@ public class RenderObjectTreeRenderer {
     public var debuggingData: DebuggingData {
         DebuggingData(tree: tree, sequence: sequence)
     }
+
+    private var renderObjectMeta: [ObjectIdentifier: Any] = [:]
     
     public init(_ tree: RenderObjectTree) {
         self.tree = tree
@@ -99,6 +101,7 @@ public class RenderObjectTreeRenderer {
 
     public func processUpdate(_ update: RenderObjectTree.Update) {
         refresh()
+        // TODO: delete RenderObjectMeta here!
     }
 
     /*public func setRenderObjectTree(_ tree: RenderObjectTree) {
@@ -417,32 +420,64 @@ public class RenderObjectTreeRenderer {
             // need to reapply the next parent
             var performFill = false
             var performStroke = false
-            if let fill = currentRenderObject.fill {
-                let anyFill = fill.getValue(at: timestamp)
 
-                switch anyFill {
-                case let .Color(value):
-                    backendRenderer.fillColor(value)
-                case let .Image(value, hash, position):
-                    backendRenderer.fillImage(value, hash: hash, position: position)
+            if let fillRenderValue = currentRenderObject.fill {
+
+                let fill = fillRenderValue.getValue(at: timestamp)
+
+                if fillRenderValue.isTimed {
+
+                    switch fill {
+                    case let .Color(value):
+                        backendRenderer.fillColor(value)
+                    case let .Image(value, position):
+                        backendRenderer.fillImage(value, position: position)
+                    }
+
+                } else {
+                    
+                    switch fill {
+                    case let .Color(value):
+                        backendRenderer.fillColor(value)
+                    
+                    case let .Image(value, position):
+                        let id = ObjectIdentifier(currentRenderObject)
+                        
+                        if let cachedLoadedFill = renderObjectMeta[id] as? LoadedFill {
+                            backendRenderer.applyFill(cachedLoadedFill)
+                        } else {
+                            let loadedFill = backendRenderer.fillImage(value, position: position)
+                            renderObjectMeta[id] = loadedFill
+                        }
+                    }
                 }
 
                 performFill = true
+
             } else {
                 backendRenderer.fillColor(.Transparent)
             }
+
             if let strokeWidth = currentRenderObject.strokeWidth,
+
                 let strokeColor = currentRenderObject.strokeColor {
+
                 backendRenderer.strokeWidth(strokeWidth)
                 backendRenderer.strokeColor(strokeColor.getValue(at: timestamp))
+
                 performStroke = true
+
             } else {
+
                 backendRenderer.strokeWidth(0)
                 backendRenderer.strokeColor(.Transparent)
+
             }
+
             for i in 0..<nextPaths.count {
                 try render(object: nextRenderObjects[i], at: nextPaths[i], in: range, with: backendRenderer)
             }
+
             backendRenderer.fillColor(.Transparent)
             backendRenderer.strokeWidth(0)
             backendRenderer.strokeColor(.Transparent)

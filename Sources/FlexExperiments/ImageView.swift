@@ -6,6 +6,7 @@ public class ImageView: Widget, BoxWidget {
     private var image: Image
 
     private var resizedImage: Image?
+    //private var imageHash: Int?
     
     public init(image: Image) {
        self.image = image
@@ -22,9 +23,10 @@ public class ImageView: Widget, BoxWidget {
 
         if resizedImage == nil || resizedImage!.width != Int(bounds.size.width) || resizedImage!.height != Int(bounds.size.height) {
             resizedImage = image.resize(width: Int(bounds.size.width), height: Int(bounds.size.height))
+            //imageHash = resizedImage.hashValue
         }
 
-        return RenderObject.RenderStyle(fill: FixedRenderValue(.Image(resizedImage!, hash: resizedImage.hashValue, position: globalBounds.min))) {
+        return RenderObject.RenderStyle(fill: FixedRenderValue(.Image(resizedImage!/*, hash: imageHash!*/, position: globalBounds.min))) {
             RenderObject.Rectangle(globalBounds)
         }
     }

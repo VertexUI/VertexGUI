@@ -35,6 +35,21 @@ public struct SDL2OpenGL3NanoVGVirtualScreen: VirtualScreen {
 }
 
 open class SDL2OpenGL3NanoVGRenderer: Renderer {
+    public class SpecificLoadedFill: LoadedFill {
+        public var paint: NVGpaint
+        public var delete: () -> ()
+
+        public init(paint: NVGpaint, delete: @escaping () -> ()) {
+            self.paint = paint
+            self.delete = delete
+        }
+
+        deinit {
+            print("DEINITILAIZEING SPECIFIC LOADED FILL")
+            delete()
+        }
+    }
+
     // TODO: maybe this has to be put into System? or does NanoVG load it into the current gl state???
     //public typealias VirtualScreen = SDL2OpenGL3NanoVGVirtualScreen
     public internal(set) var virtualScreenStack = [VirtualScreen]()
@@ -49,11 +64,6 @@ open class SDL2OpenGL3NanoVGRenderer: Renderer {
     )
     private var compositionVAO = GLMap.UInt()
 
-
-    /// Storing handles to images keyed by image hash value.
-    private var imageCache: [Int: Int32] = [:]
-
-
     public init(for window: SDL2OpenGL3NanoVGWindow) {
         self.window = window
         setup()
@@ -61,9 +71,7 @@ open class SDL2OpenGL3NanoVGRenderer: Renderer {
 
     deinit {
         // TODO: implement full deinit
-        for handle in imageCache.values {
-            nvgDeleteImage(window.nvg, handle)
-        }
+
     }
 
     public func setup() {
@@ -237,26 +245,28 @@ open class SDL2OpenGL3NanoVGRenderer: Renderer {
         nvgFillColor(window.nvg, color.toNVG())
     }
 
-    open func fillImage(_ image: Image<RGBA, UInt8>, hash: Int?, position: DVec2) {
-        let imageHandle: Int32
-        if let hash = hash, let cachedHandle = imageCache[hash] {
-            imageHandle = cachedHandle
-        } else {
-            var data = image.getData()
-            
-            imageHandle = withUnsafeMutablePointer(to: &data[0]) {
-                nvgCreateImageRGBA(window.nvg, Int32(image.width), Int32(image.height), 0, $0)
-            }
+    open func fillImage(_ image: Image<RGBA, UInt8>, position: DVec2) -> LoadedFill {
+        var data = image.getData()
 
-            if let hash = hash {
-                imageCache[hash] = imageHandle
-            }
+        let imageHandle = withUnsafeMutablePointer(to: &data[0]) {
+            nvgCreateImageRGBA(window.nvg, Int32(image.width), Int32(image.height), 0, $0)
         }
 
-        // TODO: maybe cache this as well (if giving raw Fill to Renderer could probably do) 
         let paint = nvgImagePattern(window.nvg, Float(position.x), Float(position.y), Float(image.width), Float(image.height), 0, imageHandle, 1)
 
         nvgFillPaint(window.nvg, paint)
+
+        return SpecificLoadedFill(paint: paint) { [unowned self] in
+            nvgDeleteImage(window.nvg, imageHandle)
+        }
+    }
+
+    open func applyFill(_ fill: LoadedFill) {
+        guard let unwrappedFill = fill as? SpecificLoadedFill else {
+            fatalError("Tried to apply a LoadedFill of a type that is not supported by the renderer: \(fill).")
+        }
+
+        nvgFillPaint(window.nvg, unwrappedFill.paint)
     }
 
     open func fill() {
