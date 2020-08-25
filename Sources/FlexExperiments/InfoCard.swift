@@ -4,19 +4,15 @@ import VisualAppBase
 import CustomGraphicsMath
 
 public class InfoCard: SingleChildWidget, BoxWidget {
-    private let images: [Image]
-    private let title: String
-    private let description: String
+    private let infoItem: InfoItem
 
-    public init(images: [Image], title: String, description: String) {
-        self.images = images
-        self.title = title
-        self.description = description
+    public init(infoItem: InfoItem) {
+        self.infoItem = infoItem
     }
 
     override public func buildChild() -> Widget {
         var imagesMinHeight = Double.infinity
-        for image in images {
+        for image in infoItem.images {
             if Double(image.height) < imagesMinHeight {
                 imagesMinHeight = Double(image.height)
             }
@@ -27,18 +23,18 @@ public class InfoCard: SingleChildWidget, BoxWidget {
             Padding(all: 32) {
                 Column(spacing: 32, items: [
                     Column.Item { [unowned self] in 
-                        Text(title, fontSize: 48, fontWeight: .Bold)
+                        Text(infoItem.title, fontSize: 48, fontWeight: .Bold)
                     },
 
                     Column.Item { [unowned self] in 
-                        Text(description)
+                        Text(infoItem.description)
                     },
 
                     Column.Item { [unowned self] in 
 
                         ConstrainedSize(maxSize: imagesMaxSize) {
 
-                            Row(items: images.map { image in 
+                            Row(items: infoItem.images.map { image in 
 
                                 Row.Item { ImageView(image: image) }
                             })

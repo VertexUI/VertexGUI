@@ -55,7 +55,7 @@ let package = Package(
         .target(
             name: "FlexExperiments",
             dependencies: ["WidgetGUI", "VisualAppBase", "VisualAppBaseImplSDL2OpenGL3NanoVG", "Swim"],
-            resources: [.process("Resources")]),
+            resources: [.copy("Resources")]),
         .testTarget(name: "VisualAppBaseTests", dependencies: ["VisualAppBase"])
     ]
 )
