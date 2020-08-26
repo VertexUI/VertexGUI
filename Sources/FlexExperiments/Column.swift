@@ -51,7 +51,7 @@ public class Column: Widget {
             let content = item.content
 
 
-            let contentConfig = content.getBoxConfig()
+            let contentConfig = content.boxConfig
 
             if contentConfig.preferredSize.width > config.preferredSize.width {
                 config.preferredSize.width = contentConfig.preferredSize.width
@@ -83,7 +83,7 @@ public class Column: Widget {
         for item in items {
             let content = item.content
 
-            let boxConfig = content.getBoxConfig()
+            let boxConfig = content.boxConfig
             
             content.constraints = constraints // legacy
 

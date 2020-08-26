@@ -130,9 +130,9 @@ open class Widget: Bounded, Parent, Child {
         style: .Normal
     )
 
-    open internal(set) var onBoxConfigInvalidated = EventHandlerManager<BoxConfig>()
+    open internal(set) var onBoxConfigChanged = EventHandlerManager<BoxConfig>()
 
-    open internal(set) var boxConfig = BoxConfig(preferredSize: .zero)
+    lazy open internal(set) var boxConfig = getBoxConfig()
 
     // TODO: might need to create something like layoutBounds and renderBounds (area that is invalidated on rerender request --> could be more than layoutBounds and affect outside widgets (e.g. a drop shadow that is not included in layoutBounds))
     open var bounds: DRect = DRect(min: DPoint2(0,0), size: DSize2(0,0)) {
@@ -291,6 +291,23 @@ open class Widget: Bounded, Parent, Child {
                 layout()
             }
         }
+
+        _ = child.onBoxConfigChanged { [unowned self] _ in
+        
+            if layouted && !layouting {
+
+                let oldBoxConfig = boxConfig
+
+                invalidateBoxConfig()
+
+                let newBoxConfig = boxConfig
+
+                if oldBoxConfig == newBoxConfig {
+
+                    layout()
+                }
+            }
+        }
     }
 
     // TODO: this function might be better suited to parent
@@ -325,8 +342,9 @@ open class Widget: Bounded, Parent, Child {
         fatalError("getBoxConfig() not implemented.")
     }
 
+    // TODO: maybe call this updateBoxConfig / or queueBoxConfigUpdate??? --> on next tick?
     public func invalidateBoxConfig() {
- 
+        
         let currentBoxConfig = boxConfig
 
         let newBoxConfig = getBoxConfig()
@@ -335,7 +353,7 @@ open class Widget: Bounded, Parent, Child {
 
             boxConfig = newBoxConfig
 
-            onBoxConfigInvalidated.invokeHandlers(newBoxConfig)
+            onBoxConfigChanged.invokeHandlers(newBoxConfig)
         }
     }
 

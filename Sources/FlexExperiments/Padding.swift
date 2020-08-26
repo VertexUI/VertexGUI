@@ -2,7 +2,7 @@ import WidgetGUI
 import CustomGraphicsMath
 
 public class Padding: SingleChildWidget {
-    
+
     public var padding: Insets
 
     private var inputChild: Widget
@@ -28,8 +28,8 @@ public class Padding: SingleChildWidget {
 
     override public func getBoxConfig() -> BoxConfig {
 
-        var resultConfig = child.getBoxConfig()
-
+        var resultConfig = child.boxConfig
+        
         resultConfig.minSize.width += padding.left + padding.right
 
         resultConfig.minSize.height += padding.top + padding.bottom

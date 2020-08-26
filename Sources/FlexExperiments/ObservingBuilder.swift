@@ -18,7 +18,7 @@ public class ObservingBuilder: SingleChildWidget {
         for observable in observables {
 
             _ = onDestroy(observable.onChanged { [unowned self] _ in
-            
+
                 invalidateChild()
             })
         }

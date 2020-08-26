@@ -30,11 +30,4 @@ public class TodoListView: SingleChildWidget {
 
         Text(todo.description)
     }
-
-    override public func performLayout() {
-
-        print("LAYOUTING TODO LIST VIEW", bounds.size)
-        
-        super.performLayout()
-    }
 }

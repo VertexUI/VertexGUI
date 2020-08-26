@@ -26,7 +26,12 @@ open class SingleChildWidget: Widget {
         child = buildChild()
 
         replaceChildren(with: [child])
+
+        invalidateBoxConfig()
         
+        // TODO: make sure layout is not performed twice shortly after another
+        // it is probably already called by invalidateBoxConfig
+        // have a flag to show that layout is up to date already
         layout()
 
         invalidateRenderState()
@@ -41,7 +46,7 @@ open class SingleChildWidget: Widget {
 
     override public func getBoxConfig() -> BoxConfig {
 
-        return child.getBoxConfig()
+        return child.boxConfig
     }
 
     override open func performLayout() {

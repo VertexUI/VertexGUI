@@ -19,8 +19,7 @@ public class DependentSpace: Widget {
 
         _ = onDestroy(dependency.onBoundsChanged { [unowned self] _ in
             
-            // TODO: might instead call something like invalidateBoxConfig() or invalidateLayout()
-            onBoundsChanged.invokeHandlers(DRect(min: .zero, size: .zero)) // legacy hack, use better approach
+            invalidateBoxConfig()
         })
     }
 

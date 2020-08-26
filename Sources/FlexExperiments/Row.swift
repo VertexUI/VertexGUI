@@ -58,8 +58,7 @@ public class Row: Widget {
             
             let content = item.content
 
-
-            let contentConfig = content.getBoxConfig()
+            let contentConfig = content.boxConfig
 
             config.preferredSize += contentConfig.preferredSize
 
@@ -87,7 +86,7 @@ public class Row: Widget {
 
             let content = item.content
 
-            let boxConfig = content.getBoxConfig()
+            let boxConfig = content.boxConfig
             
             content.constraints = constraints // legacy
 
