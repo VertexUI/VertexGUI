@@ -3,7 +3,7 @@ import CustomGraphicsMath
 import VisualAppBase
 import WidgetGUI
 
-public final class Text: Widget, BoxWidget, CustomDebugStringConvertible {
+public final class Text: Widget, CustomDebugStringConvertible {
     public var text: String {
         didSet {
             if oldValue != text {
@@ -33,7 +33,7 @@ public final class Text: Widget, BoxWidget, CustomDebugStringConvertible {
         self.fontConfig.weight = fontWeight
     }
 
-    public func getBoxConfig() -> BoxConfig {
+    override public func getBoxConfig() -> BoxConfig {
         var config = BoxConfig(preferredSize: context!.getTextBoundsSize(text, fontConfig: fontConfig))
 
         if !wrap {

@@ -130,6 +130,9 @@ open class Widget: Bounded, Parent, Child {
         style: .Normal
     )
 
+    open internal(set) var onBoxConfigInvalidated = EventHandlerManager<BoxConfig>()
+
+    open internal(set) var boxConfig = BoxConfig(preferredSize: .zero)
 
     // TODO: might need to create something like layoutBounds and renderBounds (area that is invalidated on rerender request --> could be more than layoutBounds and affect outside widgets (e.g. a drop shadow that is not included in layoutBounds))
     open var bounds: DRect = DRect(min: DPoint2(0,0), size: DSize2(0,0)) {
@@ -315,6 +318,24 @@ open class Widget: Bounded, Parent, Child {
 
         for child in oldChildren {
             child.destroy()
+        }
+    }
+
+    open func getBoxConfig() -> BoxConfig {
+        fatalError("getBoxConfig() not implemented.")
+    }
+
+    public func invalidateBoxConfig() {
+ 
+        let currentBoxConfig = boxConfig
+
+        let newBoxConfig = getBoxConfig()
+
+        if currentBoxConfig != newBoxConfig {
+
+            boxConfig = newBoxConfig
+
+            onBoxConfigInvalidated.invokeHandlers(newBoxConfig)
         }
     }
 

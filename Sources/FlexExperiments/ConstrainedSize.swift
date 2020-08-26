@@ -23,7 +23,7 @@ public class ConstrainedSize: SingleChildWidget {
     }
 
     override public func getBoxConfig() -> BoxConfig {
-        let childConfig = (child as! BoxWidget).getBoxConfig()
+        let childConfig = child.getBoxConfig()
         
         var config = BoxConfig(
             preferredSize: preferredSize ?? childConfig.preferredSize,

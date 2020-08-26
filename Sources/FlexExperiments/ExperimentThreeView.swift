@@ -16,7 +16,7 @@ public class ExperimentThreeView: SingleChildWidget {
 
             Column(spacing: 32) {
 
-                Text("TODO Applikation", fontSize: 24, fontWeight: .Bold)
+                Text("TODO Application", fontSize: 24, fontWeight: .Bold)
 
                 Column.Item(grow: 1, crossAlignment: .Stretch) {
 
@@ -100,8 +100,6 @@ public class ExperimentThreeView: SingleChildWidget {
             }
 
         } onClick: { [unowned self] _ in
-
-            print("IT WAS CLICKED!")
 
             selectedList = list
             

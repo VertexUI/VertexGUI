@@ -2,7 +2,7 @@ import CustomGraphicsMath
 import VisualAppBase
 import WidgetGUI
 
-public class Row: Widget, BoxWidget {
+public class Row: Widget {
     private struct Line {
 
         public var startY: Double
@@ -48,7 +48,7 @@ public class Row: Widget, BoxWidget {
         }
     }
 
-    public func getBoxConfig() -> BoxConfig {
+    override public func getBoxConfig() -> BoxConfig {
 
         var config = BoxConfig(preferredSize: .zero, minSize: .zero, maxSize: .zero)
 
@@ -58,16 +58,14 @@ public class Row: Widget, BoxWidget {
             
             let content = item.content
 
-            if let content = content as? BoxWidget {
 
-                let contentConfig = content.getBoxConfig()
+            let contentConfig = content.getBoxConfig()
 
-                config.preferredSize += contentConfig.preferredSize
+            config.preferredSize += contentConfig.preferredSize
 
-                config.minSize += contentConfig.minSize
+            config.minSize += contentConfig.minSize
 
-                config.maxSize += contentConfig.maxSize
-            }
+            config.maxSize += contentConfig.maxSize
         }
 
         return config
@@ -89,67 +87,64 @@ public class Row: Widget, BoxWidget {
 
             let content = item.content
 
-            if let content = content as? BoxWidget {
+            let boxConfig = content.getBoxConfig()
+            
+            content.constraints = constraints // legacy
 
-                let boxConfig = content.getBoxConfig()
-                
-                content.constraints = constraints // legacy
+            content.bounds.size = boxConfig.preferredSize
 
-                content.bounds.size = boxConfig.preferredSize
+            let freeHeight = bounds.size.height - lines.last!.startY
+            
+            if boxConfig.preferredSize.height > freeHeight {
 
-                let freeHeight = bounds.size.height - lines.last!.startY
-                
-                if boxConfig.preferredSize.height > freeHeight {
+                content.bounds.size.height = freeHeight
 
-                    content.bounds.size.height = freeHeight
+            } else if item.crossAlignment == .Stretch && boxConfig.preferredSize.height < freeHeight {
 
-                } else if item.crossAlignment == .Stretch && boxConfig.preferredSize.height < freeHeight {
-
-                    content.bounds.size.height = min(freeHeight, boxConfig.maxSize.height)
-                }
-
-                let freeWidth = bounds.size.width - currentX
-
-                // + 1 at the end to account for floating point precision errors
-                if currentX + boxConfig.preferredSize.width >= bounds.size.width + 1 {
-                    
-                    // TODO: maybe only do this if shrink is set to some value > 0
-                    if boxConfig.minSize.width <= freeWidth {
-
-                        content.bounds.size.width = freeWidth
-
-                        // TODO: check for aspect ratio
-                    } else {
-
-                        currentX = 0
-
-                        lines.append(
-
-                            Line(
-
-                                startY: lines.last!.startY + lines.last!.height))
-                    }
-                }
-                
-                content.bounds.min.x = currentX
-
-                content.bounds.min.y = lines.last!.startY
-
-                lines[lines.count - 1].totalGrow += Double(item.grow)
-
-                lines[lines.count - 1].items.append(item)
-
-                lines[lines.count - 1].width += content.bounds.size.width
-
-                currentX += content.bounds.size.width
-
-                if content.bounds.size.height > lines.last!.height {
-
-                    lines[lines.count - 1].height = content.bounds.size.height
-                }
-
-                currentX += spacing
+                content.bounds.size.height = min(freeHeight, boxConfig.maxSize.height)
             }
+
+            let freeWidth = bounds.size.width - currentX
+
+            // + 1 at the end to account for floating point precision errors
+            if currentX + boxConfig.preferredSize.width >= bounds.size.width + 1 {
+                
+                // TODO: maybe only do this if shrink is set to some value > 0
+                if boxConfig.minSize.width <= freeWidth {
+
+                    content.bounds.size.width = freeWidth
+
+                    // TODO: check for aspect ratio
+                } else {
+
+                    currentX = 0
+
+                    lines.append(
+
+                        Line(
+
+                            startY: lines.last!.startY + lines.last!.height))
+                }
+            }
+            
+            content.bounds.min.x = currentX
+
+            content.bounds.min.y = lines.last!.startY
+
+            lines[lines.count - 1].totalGrow += Double(item.grow)
+
+            lines[lines.count - 1].items.append(item)
+
+            lines[lines.count - 1].width += content.bounds.size.width
+
+            currentX += content.bounds.size.width
+
+            if content.bounds.size.height > lines.last!.height {
+
+                lines[lines.count - 1].height = content.bounds.size.height
+            }
+
+            currentX += spacing
         }
 
         for line in lines {

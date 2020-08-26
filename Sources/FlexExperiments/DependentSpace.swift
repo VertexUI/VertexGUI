@@ -3,7 +3,7 @@ import CustomGraphicsMath
 import VisualAppBase
 
 // TODO: maybe can use CalculatedSize for that / maybe have a general DependentConfiguration Widget that updates Widgets on other Widget updates
-public class DependentSpace: Widget, BoxWidget {
+public class DependentSpace: Widget {
 
     private let dependency: Widget
 
@@ -24,7 +24,7 @@ public class DependentSpace: Widget, BoxWidget {
         })
     }
 
-    public func getBoxConfig() -> BoxConfig {
+    override public func getBoxConfig() -> BoxConfig {
 
         let size = calculate(dependency)
 

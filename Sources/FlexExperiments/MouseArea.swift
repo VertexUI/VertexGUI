@@ -88,7 +88,6 @@ public class MouseArea: SingleChildWidget, GUIMouseEventConsumer {
     }
 
     public func consume(_ event: GUIMouseEvent) throws {
-        print("MOUSE AREA CONSUMES!")
 
         switch event {
 

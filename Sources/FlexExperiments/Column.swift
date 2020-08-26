@@ -2,7 +2,7 @@ import CustomGraphicsMath
 import VisualAppBase
 import WidgetGUI
 
-public class Column: Widget, BoxWidget {
+public class Column: Widget {
     private struct Line {
 
         public var startX: Double
@@ -41,7 +41,7 @@ public class Column: Widget, BoxWidget {
         }
     }
 
-    public func getBoxConfig() -> BoxConfig {
+    override public func getBoxConfig() -> BoxConfig {
 
         var config = BoxConfig(preferredSize: .zero, minSize: .zero, maxSize: .zero)
         config.preferredSize.height += max(0, (Double(items.count) - 1)) * spacing + 1
@@ -50,25 +50,23 @@ public class Column: Widget, BoxWidget {
 
             let content = item.content
 
-            if let content = content as? BoxWidget {
 
-                let contentConfig = content.getBoxConfig()
+            let contentConfig = content.getBoxConfig()
 
-                if contentConfig.preferredSize.width > config.preferredSize.width {
-                    config.preferredSize.width = contentConfig.preferredSize.width
-                }
-                config.preferredSize.height += contentConfig.preferredSize.height
-
-                if contentConfig.minSize.width > config.minSize.width {
-                    config.minSize.width = contentConfig.minSize.width
-                }
-                config.minSize.height += contentConfig.minSize.height
-
-                if contentConfig.maxSize.width > config.maxSize.width {
-                    config.maxSize.width = contentConfig.maxSize.width
-                }
-                config.maxSize.height += contentConfig.maxSize.height
+            if contentConfig.preferredSize.width > config.preferredSize.width {
+                config.preferredSize.width = contentConfig.preferredSize.width
             }
+            config.preferredSize.height += contentConfig.preferredSize.height
+
+            if contentConfig.minSize.width > config.minSize.width {
+                config.minSize.width = contentConfig.minSize.width
+            }
+            config.minSize.height += contentConfig.minSize.height
+
+            if contentConfig.maxSize.width > config.maxSize.width {
+                config.maxSize.width = contentConfig.maxSize.width
+            }
+            config.maxSize.height += contentConfig.maxSize.height
         }
 
         return config
@@ -85,50 +83,47 @@ public class Column: Widget, BoxWidget {
         for item in items {
             let content = item.content
 
-            if let content = content as? BoxWidget {
+            let boxConfig = content.getBoxConfig()
+            
+            content.constraints = constraints // legacy
 
-                let boxConfig = content.getBoxConfig()
-                
-                content.constraints = constraints // legacy
+            content.bounds.size = boxConfig.preferredSize
 
-                content.bounds.size = boxConfig.preferredSize
+            let freeWidth = bounds.size.width - lines.last!.startX
 
-                let freeWidth = bounds.size.width - lines.last!.startX
+            if item.crossAlignment == .Stretch && boxConfig.preferredSize.width < freeWidth {
 
-                if item.crossAlignment == .Stretch && boxConfig.preferredSize.width < freeWidth {
-
-                    content.bounds.size.width = min(freeWidth, boxConfig.maxSize.width)
-                }
-
-                // + 1 at the end to account for floating point precision errors
-                if currentY + boxConfig.preferredSize.height >= bounds.size.height + 1 {
-
-                    currentY = 0
-
-                    lines.append(
-
-                        Line(startX: lines.last!.startX + lines.last!.width)
-                    )
-                }
-
-                content.bounds.min.x = lines.last!.startX
-
-                content.bounds.min.y = currentY
-
-                lines[lines.count - 1].totalGrow += item.grow
-
-                lines[lines.count - 1].items.append(item)
-
-                lines[lines.count - 1].height += content.bounds.size.height
-
-                currentY += content.bounds.size.height
-
-                if content.bounds.size.width > lines.last!.width {
-                    lines[lines.count - 1].width = content.bounds.size.width
-                }
-
-                currentY += spacing
+                content.bounds.size.width = min(freeWidth, boxConfig.maxSize.width)
             }
+
+            // + 1 at the end to account for floating point precision errors
+            if currentY + boxConfig.preferredSize.height >= bounds.size.height + 1 {
+
+                currentY = 0
+
+                lines.append(
+
+                    Line(startX: lines.last!.startX + lines.last!.width)
+                )
+            }
+
+            content.bounds.min.x = lines.last!.startX
+
+            content.bounds.min.y = currentY
+
+            lines[lines.count - 1].totalGrow += item.grow
+
+            lines[lines.count - 1].items.append(item)
+
+            lines[lines.count - 1].height += content.bounds.size.height
+
+            currentY += content.bounds.size.height
+
+            if content.bounds.size.width > lines.last!.width {
+                lines[lines.count - 1].width = content.bounds.size.width
+            }
+
+            currentY += spacing
         }
 
         for line in lines {
