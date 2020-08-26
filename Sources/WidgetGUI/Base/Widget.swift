@@ -78,21 +78,29 @@ open class Widget: Bounded, Parent, Child {
     public var layouted = false
     public internal(set) var destroyed = false
 
+
     /// Flag whether to show bounds and sizes for debugging purposes.
-    private var debugLayout: Bool {
-        if let context = context {
-            return context.debugLayout
+    private var _debugLayout: Bool?
+
+    public var debugLayout: Bool {
+        get {
+            _debugLayout ?? context?.debugLayout ?? false
         }
 
-        return false
+        set {
+            _debugLayout = newValue
+        }
     }
+
     private let layoutDebuggingColor = Color.Red
+
     private let layoutDebuggingTextFontConfig = FontConfig(
         family: defaultFontFamily,
         size: 16,
         weight: .Regular,
         style: .Normal
     )
+
 
     // TODO: might need to create something like layoutBounds and renderBounds (area that is invalidated on rerender request --> could be more than layoutBounds and affect outside widgets (e.g. a drop shadow that is not included in layoutBounds))
     open var bounds: DRect = DRect(min: DPoint2(0,0), size: DSize2(0,0)) {
@@ -134,6 +142,11 @@ open class Widget: Bounded, Parent, Child {
 
     public final func with(key: String) -> Self {
         self.key = key
+        return self
+    }
+
+    public final func with(block: (Self) -> ()) -> Self {
+        block(self)
         return self
     }
  

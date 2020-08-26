@@ -58,6 +58,10 @@ public class ExperimentThreeView: SingleChildWidget {
 
             print("IT WAS CLICKED!")
             selectedList = list
+            
+        }.with {
+
+            $0.debugLayout = true
         }
     }
 
