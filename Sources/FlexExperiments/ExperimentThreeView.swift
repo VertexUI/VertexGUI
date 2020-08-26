@@ -16,7 +16,7 @@ public class ExperimentThreeView: SingleChildWidget {
 
                 Text("TODO Applikation", fontSize: 24, fontWeight: .Bold)
 
-                Column.Item(crossAlignment: .Stretch) {
+                Column.Item(grow: 1, crossAlignment: .Stretch) {
 
                     Row {
                     

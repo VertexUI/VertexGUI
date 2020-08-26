@@ -4,10 +4,15 @@ import WidgetGUI
 
 public class Row: Widget, BoxWidget {
     private struct Line {
+
         public var startY: Double
+
         public var width: Double = 0
+
         public var height: Double = 0
+
         public var items: [Item] = []
+        
         public var totalGrow: Double = 0
     }
 
@@ -126,13 +131,15 @@ public class Row: Widget, BoxWidget {
                     }
                 }
                 
+                content.bounds.min.x = currentX
+
+                content.bounds.min.y = lines.last!.startY
+
                 lines[lines.count - 1].totalGrow += Double(item.grow)
 
                 lines[lines.count - 1].items.append(item)
 
-                content.bounds.min.x = currentX
-
-                content.bounds.min.y = lines.last!.startY
+                lines[lines.count - 1].width += content.bounds.size.width
 
                 currentX += content.bounds.size.width
 
@@ -164,7 +171,7 @@ public class Row: Widget, BoxWidget {
                     content.bounds.size.width += growWidth
                 }
 
-                currentX += content.bounds.size.width
+                currentX += content.bounds.size.width + spacing
 
                 content.layout()
             }
