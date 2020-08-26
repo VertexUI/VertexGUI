@@ -6,13 +6,15 @@ public class ExperimentThreeView: SingleChildWidget {
 
     private var todoLists = TodoList.mocks
 
+    private var searchWidget: Widget?
+
     @Observable private var selectedList: TodoList? = nil
 
     override public func buildChild() -> Widget {
 
         Background(color: Color(230, 230, 230, 255)) { [unowned self] in
 
-            Column {
+            Column(spacing: 32) {
 
                 Text("TODO Applikation", fontSize: 24, fontWeight: .Bold)
 
@@ -38,21 +40,51 @@ public class ExperimentThreeView: SingleChildWidget {
 
     private func buildMenu() -> Widget {
 
-        Padding(all: 32) {
+        Column { [unowned self] in
+            
+            Column.Item(crossAlignment: .Stretch) {
 
-            Column {
+                buildSearch()
+            }
 
-                Text("Lists", fontSize: 24, fontWeight: .Bold)
+            Padding(all: 32) {
 
                 Column {
-                    
-                    for list in todoLists {
 
-                        buildMenuListItem(for: list)
+                    Text("Lists", fontSize: 24, fontWeight: .Bold)
+
+                    Column {
+                        
+                        for list in todoLists {
+
+                            buildMenuListItem(for: list)
+                        }
                     }
                 }
             }
         }
+    }
+
+    private func buildSearch() -> Widget {
+
+        searchWidget = Background(color: Color(245, 245, 245, 255)) {
+
+            Padding(all: 32) {
+
+                Row {
+                    
+                    Background(color: Color(230, 230, 230, 255)) {
+
+                        Padding(all: 8) {
+                    
+                            Text("Here will be the search!")
+                        }
+                    }
+                }
+            }
+        }
+
+        return searchWidget!
     }
 
     private func buildMenuListItem(for list: TodoList) -> Widget {
@@ -83,15 +115,27 @@ public class ExperimentThreeView: SingleChildWidget {
 
         Background(color: .White) { [unowned self] in
 
-            ObservingBuilder($selectedList) {
+            Column {
+                
+                // TODO: maybe instead of using a variable, might use a child(where: ) function
+                DependentSpace(dependency: searchWidget!) {
 
-                if let selectedList = selectedList {
-                    
-                    return TodoListView(for: selectedList)
-                    
-                } else {
+                    $0.globalBounds.size
+                }
 
-                    return Text("ACTIVE")
+                Padding(all: 32) {
+
+                    ObservingBuilder($selectedList) {
+
+                        if let selectedList = selectedList {
+                            
+                            return TodoListView(for: selectedList)
+                            
+                        } else {
+
+                            return Text("ACTIVE")
+                        }
+                    }
                 }
             }
         }
@@ -105,6 +149,6 @@ public class ExperimentThreeView: SingleChildWidget {
 
         child.layout()
 
-        bounds.size = child.bounds.size
+        bounds.size = child.bounds.size // legacy, needed to receive mouse events correctly
     }
 }

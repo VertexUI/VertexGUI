@@ -4,27 +4,40 @@ import CustomGraphicsMath
 import VisualAppBase
 
 open class Widget: Bounded, Parent, Child {
+
     public struct ReplacementContext {
+
         public var previousWidget: Widget?
+
         public var keyedWidgets: [String: Widget]
     }
 
     open var id: UInt = UInt.random(in: 0..<UInt.max)
+
     open var key: String?
 
     open var _context: WidgetContext?
+
     open var context: WidgetContext? {
+
         // TODO: might cache _context
         get {
+
             if let context = _context {
+
                 return context
             }
+
             if let parent = parent as? Widget {
+
                 return parent.context
             }
+
             return nil
         }
+
         set {
+
             _context = newValue
         }
     }
@@ -34,27 +47,43 @@ open class Widget: Bounded, Parent, Child {
     public lazy var children: [Widget] = []
 
     public internal(set) var onParentChanged = EventHandlerManager<Parent?>()
+
     public internal(set) var onAnyParentChanged = EventHandlerManager<Parent?>()
+
     public internal(set) var onRenderStateInvalidated = EventHandlerManager<Widget>()
+
+    // TODO: when using the BoxConfig approach might instead have onBoundsInvalidated / BoxConfigInvalidated / LayoutInvalidated
+    // to bring the parent to take into account updated pref sizes, max sizes, min sizes etc.
     public internal(set) var onBoundsChanged = EventHandlerManager<DRect>()
+
     public internal(set) var onFocusChanged = EventHandlerManager<Bool>()
+
     public internal(set) var onDestroy = EventHandlerManager<Void>()
     
     private var unregisterAnyParentChangedHandler: EventHandlerManager<Parent?>.UnregisterCallback?
 
     weak open var parent: Parent? = nil {
+
         willSet {
+
             if unregisterAnyParentChangedHandler != nil {
+
                 unregisterAnyParentChangedHandler!()
             }
         }
 
         didSet {
+
             onParentChanged.invokeHandlers(parent)
+
             onAnyParentChanged.invokeHandlers(parent)
+
             if parent != nil {
+
                 if let childParent: Child = parent as? Child {
+
                     unregisterAnyParentChangedHandler = childParent.onAnyParentChanged({ [unowned self] in
+
                         onAnyParentChanged.invokeHandlers($0)
                     })
                 }
@@ -289,6 +318,7 @@ open class Widget: Bounded, Parent, Child {
         }
     }
 
+    // TODO: when using box config and setting bounds before hand can rename this to layoutSelf or layoutContent()
     open func performLayout() {
         fatalError("performLayout() not implemented.")
     }
