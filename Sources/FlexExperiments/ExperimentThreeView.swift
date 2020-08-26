@@ -10,17 +10,27 @@ public class ExperimentThreeView: SingleChildWidget {
 
     override public func buildChild() -> Widget {
 
-        Background(color: .White) { [unowned self] in
+        Background(color: Color(230, 230, 230, 255)) { [unowned self] in
 
             Column {
 
                 Text("TODO Applikation", fontSize: 24, fontWeight: .Bold)
 
-                Row {
-                    
-                    buildMenu()
+                Column.Item(crossAlignment: .Stretch) {
 
-                    buildActiveView()                    
+                    Row {
+                    
+                        buildMenu()
+
+                        Row.Item(grow: 1, crossAlignment: .Stretch) {
+
+                            buildActiveView()
+                        }
+
+                    }.with {
+
+                        $0.debugLayout = true
+                    }
                 }
             }
         }
@@ -28,15 +38,18 @@ public class ExperimentThreeView: SingleChildWidget {
 
     private func buildMenu() -> Widget {
 
-        Column {
-
-            Text("Lists", fontSize: 24, fontWeight: .Bold)
+        Padding(all: 32) {
 
             Column {
-                
-                for list in todoLists {
 
-                    buildMenuListItem(for: list)
+                Text("Lists", fontSize: 24, fontWeight: .Bold)
+
+                Column {
+                    
+                    for list in todoLists {
+
+                        buildMenuListItem(for: list)
+                    }
                 }
             }
         }
@@ -46,7 +59,7 @@ public class ExperimentThreeView: SingleChildWidget {
 
         MouseArea {
 
-            Background(color: Color(0, 0, 0, 30)) {
+            Background(color: .White) {
                 
                 Padding(all: 16) {
 
@@ -57,6 +70,7 @@ public class ExperimentThreeView: SingleChildWidget {
         } onClick: { [unowned self] _ in
 
             print("IT WAS CLICKED!")
+
             selectedList = list
             
         }.with {
@@ -67,16 +81,18 @@ public class ExperimentThreeView: SingleChildWidget {
 
     private func buildActiveView() -> Widget {
 
-        ObservingBuilder($selectedList) { [unowned self] in
+        Background(color: .White) { [unowned self] in
 
-            if let selectedList = selectedList {
-                
-                return Text("HAVE LIST")
-                
-            } else {
+            ObservingBuilder($selectedList) {
 
-                return Text("ACTIVE")
+                if let selectedList = selectedList {
+                    
+                    return TodoListView(for: selectedList)
+                    
+                } else {
 
+                    return Text("ACTIVE")
+                }
             }
         }
     }
@@ -88,5 +104,7 @@ public class ExperimentThreeView: SingleChildWidget {
         child.bounds.size = constraints!.maxSize
 
         child.layout()
+
+        bounds.size = child.bounds.size
     }
 }

@@ -1,11 +1,11 @@
 import WidgetGUI
 
 public struct FlexItem {
-    var grow: Int
+    var grow: Double
     var crossAlignment: FlexAlignment
     var content: Widget
 
-    public init(grow: Int = 0, crossAlignment: FlexAlignment = .Start, @WidgetBuilder content contentBuilder: @escaping () -> Widget) {
+    public init(grow: Double = 0, crossAlignment: FlexAlignment = .Start, @WidgetBuilder content contentBuilder: @escaping () -> Widget) {
         self.grow = grow
         self.crossAlignment = crossAlignment
         self.content = contentBuilder()

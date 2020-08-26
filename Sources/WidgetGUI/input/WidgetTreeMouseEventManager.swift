@@ -4,12 +4,19 @@ import Foundation
 /// There might be different approaches.
 // TODO: might merge this into Root
 public class WidgetTreeMouseEventManager {
+
     //private var previousMouseEventTarget: GUIMouseEventConsumer?
+
     //private var previousMouseButtonDownEventTarget: (Widget & GUIMouseEventConsumer)?
+
     private var previousMouseButtonDownEventButton: MouseButton?
+
     //private var previousMouseMoveEventTarget: (Widget & GUIMouseEventConsumer)?
+
     private var previousMouseEventTargets: [ObjectIdentifier: [(Widget & GUIMouseEventConsumer)]] = [
+
         ObjectIdentifier(GUIMouseButtonDownEvent.self): [],
+
         ObjectIdentifier(GUIMouseMoveEvent.self): [],
     ]
 
@@ -20,13 +27,19 @@ public class WidgetTreeMouseEventManager {
         // TODO: optimize by storing the target of previous event and checking it first
 
         var mouseEventTargets: [(Widget & GUIMouseEventConsumer)] = []
+
         var testMouseEventTargets: [Widget] = [rootWidget]
+
         while let testTarget = testMouseEventTargets.popLast() {
+
             // TODO: this might be a lot of calculation, can optimize by successively removing x, y while traversing the testTargets
             if testTarget.globalBounds.contains(point: rawMouseEvent.position) {
+
                 if let target = testTarget as? (Widget & GUIMouseEventConsumer) {
+
                     mouseEventTargets.append(target)
                 }
+
                 testMouseEventTargets.insert(contentsOf: testTarget.children, at: 0)
             }
         }
@@ -36,41 +49,69 @@ public class WidgetTreeMouseEventManager {
         mouseEventTargets.reverse()
 
         do {
+
             switch rawMouseEvent {
+
                 case let event as RawMouseButtonDownEvent:
+
                     previousMouseEventTargets[ObjectIdentifier(GUIMouseButtonDownEvent.self)] = []
+
                     previousMouseButtonDownEventButton = nil
+
                 default:
+
                     break
             }
 
             switch rawMouseEvent {
+
             case let rawMouseButtonDownEvent as RawMouseButtonDownEvent:
+
                 for mouseEventTarget in mouseEventTargets {
+
                     try mouseEventTarget.consume(
+                        
                         GUIMouseButtonDownEvent(
+
                             button: rawMouseButtonDownEvent.button,
+
                             position: rawMouseButtonDownEvent.position))
                 }
+
                 //previousMouseButtonDownEventTarget = mouseEventTarget
+
                 previousMouseEventTargets[ObjectIdentifier(GUIMouseButtonDownEvent.self)]! = mouseEventTargets
+
                 previousMouseButtonDownEventButton = rawMouseButtonDownEvent.button
 
             case let rawMouseButtonUpEvent as RawMouseButtonUpEvent:
+
                 for mouseEventTarget in mouseEventTargets {
+
                     try mouseEventTarget.consume(
+
                         GUIMouseButtonUpEvent(
+
                             button: rawMouseButtonUpEvent.button,
+
                             position: rawMouseButtonUpEvent.position))
                 
                     // after same button down and up on same element, generate click event
+
                     if let previousButton = previousMouseButtonDownEventButton,
+
                         rawMouseButtonUpEvent.button == previousButton {
+
                         for previousTarget in previousMouseEventTargets[ObjectIdentifier(GUIMouseButtonDownEvent.self)]! {
+
                             if !previousTarget.destroyed && previousTarget.id == mouseEventTarget.id {
+
                                 try mouseEventTarget.consume(
+
                                     GUIMouseButtonClickEvent(
+
                                         button: rawMouseButtonUpEvent.button,
+
                                         position: rawMouseButtonUpEvent.position))
                             }
                         }
@@ -78,24 +119,33 @@ public class WidgetTreeMouseEventManager {
                 }
 
             case let rawMouseEvent as RawMouseMoveEvent:
+
                 let previousTargets = previousMouseEventTargets[ObjectIdentifier(GUIMouseMoveEvent.self)]!
+
                 var stillPresentPreviousTargetIds = [UInt]()
 
                 for i in 0..<mouseEventTargets.count {
+
                     let currentTarget = mouseEventTargets[i]
+
                     try currentTarget.consume(GUIMouseMoveEvent(position: rawMouseEvent.position, previousPosition: rawMouseEvent.previousPosition))
 
                     // TODO: maybe this check can be optimized in speed
                     if previousTargets.contains(where: { !$0.destroyed && $0.id == currentTarget.id }) {
+
                         stillPresentPreviousTargetIds.append(currentTarget.id)
+
                     } else {
+
                         try currentTarget.consume(GUIMouseEnterEvent(position: rawMouseEvent.position, previousPosition: rawMouseEvent.previousPosition))
                     }
                 }
 
                 for previousTarget in previousTargets {
+
                     // TODO: maybe this check can be optimized in speed
                     if !previousTarget.destroyed && !stillPresentPreviousTargetIds.contains(previousTarget.id) {
+
                         try previousTarget.consume(GUIMouseLeaveEvent(position: rawMouseEvent.position, previousPosition: rawMouseEvent.previousPosition))
                     }
                 }
@@ -103,10 +153,14 @@ public class WidgetTreeMouseEventManager {
                 previousMouseEventTargets[ObjectIdentifier(GUIMouseMoveEvent.self)] = mouseEventTargets
 
             case let rawMouseEvent as RawMouseWheelEvent:
+
                 for mouseEventTarget in mouseEventTargets {
+
                     try mouseEventTarget.consume(GUIMouseWheelEvent(scrollAmount: rawMouseEvent.scrollAmount, position: rawMouseEvent.position))
                 }
+
             default:
+            
                 print("Unsupported event.")
             }
             /* else {
@@ -121,7 +175,9 @@ public class WidgetTreeMouseEventManager {
                 }
             }*/
         } catch {
+
             print("Error while processing mouse event", error)
+
             return false
         }
 

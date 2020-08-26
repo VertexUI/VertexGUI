@@ -5,7 +5,7 @@ public protocol Vector: Matrix {}
 public extension Vector {
     var description: String {
         get {
-            return "Vector \(rows) \(elements)"
+            return "Vector \(elements)"
         }
     }
 
