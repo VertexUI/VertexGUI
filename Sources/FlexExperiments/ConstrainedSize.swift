@@ -1,7 +1,7 @@
 import CustomGraphicsMath
 import WidgetGUI
 
-public class ConstrainedSize: SingleChildWidget, BoxWidget {
+public class ConstrainedSize: SingleChildWidget {
     private var minSize: DSize2?
     private var maxSize: DSize2?
     private var preferredSize: DSize2?
@@ -22,7 +22,7 @@ public class ConstrainedSize: SingleChildWidget, BoxWidget {
         childBuilder()
     }
 
-    public func getBoxConfig() -> BoxConfig {
+    override public func getBoxConfig() -> BoxConfig {
         let childConfig = (child as! BoxWidget).getBoxConfig()
         
         var config = BoxConfig(

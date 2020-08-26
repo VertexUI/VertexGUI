@@ -3,7 +3,7 @@ import WidgetGUI
 import VisualAppBase
 import CustomGraphicsMath
 
-public class InfoCard: SingleChildWidget, BoxWidget {
+public class InfoCard: SingleChildWidget {
     private let infoItem: InfoItem
 
     public init(infoItem: InfoItem) {
@@ -49,20 +49,6 @@ public class InfoCard: SingleChildWidget, BoxWidget {
                     }
                 }
             ])
-        }
-    }
-
-    public func getBoxConfig() -> BoxConfig {
-        return (child as! BoxWidget).getBoxConfig()
-    }
-
-    override public func performLayout() {
-        if let child = child as? BoxWidget {
-            child.constraints = constraints
-            let config = child.getBoxConfig()
-            child.bounds.size = config.preferredSize
-            print("INFO CARD IS LAYOUTING", child)
-            child.layout()
         }
     }
 }

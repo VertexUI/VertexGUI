@@ -2,7 +2,7 @@ import WidgetGUI
 import CustomGraphicsMath
 import VisualAppBase
 
-public class Background: SingleChildWidget, BoxWidget {
+public class Background: SingleChildWidget {
     private let color: Color
     private let childBuilder: () -> Widget
     
@@ -13,18 +13,6 @@ public class Background: SingleChildWidget, BoxWidget {
 
     override public func buildChild() -> Widget {
         childBuilder()
-    }
-
-    public func getBoxConfig() -> BoxConfig {
-        return (child as! BoxWidget).getBoxConfig()
-    }
-
-    override public func performLayout() {
-        child.constraints = constraints // legacy
-
-        child.bounds.size = bounds.size
-
-        child.layout()
     }
 
     override public func renderContent() -> RenderObject? {

@@ -13,7 +13,7 @@ open class StatefulWidgetsResearchApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2O
 
     public init() {
         guiRoot = WidgetGUI.Root(
-            rootWidget: ExperimentTwoView())
+            rootWidget: ExperimentThreeView())
         guiRoot.debugLayout = true
 
         super.init(system: try! System())

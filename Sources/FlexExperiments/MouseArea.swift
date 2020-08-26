@@ -1,7 +1,7 @@
 import VisualAppBase
 import WidgetGUI
 
-public class MouseArea: SingleChildWidget, GUIMouseEventConsumer, BoxWidget {
+public class MouseArea: SingleChildWidget, GUIMouseEventConsumer {
     public typealias GUIMouseEventHandlerTuple = (
         click: ThrowingEventHandlerManager<GUIMouseButtonClickEvent>.Handler?,
         buttonDown: ThrowingEventHandlerManager<GUIMouseButtonDownEvent>.Handler?,
@@ -56,19 +56,9 @@ public class MouseArea: SingleChildWidget, GUIMouseEventConsumer, BoxWidget {
         return inputChild
     }
 
-    public func getBoxConfig() -> BoxConfig {
-        (child as! BoxWidget).getBoxConfig()
-    }
-
-    override open func performLayout() {
-        child.constraints = constraints // legacy
-        
-        child.bounds.size = bounds.size
-
-        child.layout()
-    }
-
     public func consume(_ event: GUIMouseEvent) throws {
+        print("MOUSE AREA CONSUMES!")
+
         switch event {
         case let mouseButtonDownEvent as GUIMouseButtonDownEvent:
             try onMouseButtonDown.invokeHandlers(mouseButtonDownEvent)

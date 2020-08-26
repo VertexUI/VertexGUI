@@ -3,21 +3,7 @@ import VisualAppBase
 import WidgetGUI
 
 public class Column: Widget, BoxWidget {
-    public struct Item {
-        var grow: Int
-        var crossAlignment: Alignment
-        var content: Widget
-
-        public init(grow: Int = 0, crossAlignment: Alignment = .Start, @WidgetBuilder content contentBuilder: @escaping () -> Widget) {
-            self.grow = grow
-            self.crossAlignment = crossAlignment
-            self.content = contentBuilder()
-        }
-    }
-
-    public enum Alignment {
-        case Start, Center, End, Stretch
-    }
+    public typealias Item = FlexItem
 
     private let items: [Item]
 
@@ -30,6 +16,10 @@ public class Column: Widget, BoxWidget {
         self.spacing = spacing
         self.wrap = wrap
         super.init()
+    }
+
+    public convenience init(spacing: Double = 0, wrap: Bool = false, @FlexItemBuilder items buildItems: () -> [FlexItem]) {
+        self.init(spacing: spacing, wrap: wrap, items: buildItems())
     }
 
     override public func build() {
