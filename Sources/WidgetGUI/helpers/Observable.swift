@@ -1,8 +1,10 @@
 import VisualAppBase
 
 // TODO: maybe have Observable as base protocol with onChanged and then implement things like ObservableValue, ObservableArray on top of that
+@propertyWrapper
 public class Observable<Value> {
     private var _value: Value
+
     public var value: Value {
         get {
             return _value
@@ -14,10 +16,25 @@ public class Observable<Value> {
             onChanged.invokeHandlers(_value)
         }
     }
+
+    public var wrappedValue: Value {
+        get {
+            return value
+        }
+
+        set {
+            value = newValue
+        }
+    }
+
     public internal(set) var onChanged = EventHandlerManager<Value>()
     
     public init(_ initialValue: Value) {
         _value = initialValue
+    }
+
+    public init(wrappedValue: Value) {
+        _value = wrappedValue
     }
 }
 
