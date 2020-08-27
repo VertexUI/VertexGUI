@@ -13,7 +13,9 @@ public final class Text: Widget, CustomDebugStringConvertible {
         }
     }
 
-    public var wrap: Bool
+    private var wrap: Bool
+
+    private var color: Color
 
     private var fontConfig = FontConfig(
         family: defaultFontFamily,
@@ -26,9 +28,10 @@ public final class Text: Widget, CustomDebugStringConvertible {
         "Text \(text)"
     }
 
-    public init(_ text: String, fontSize: Double = 24, fontWeight: FontWeight = .Regular, wrap: Bool = false) {
+    public init(_ text: String, fontSize: Double = 24, fontWeight: FontWeight = .Regular, wrap: Bool = false, color: Color = .Black) {
         self.text = text
         self.wrap = wrap
+        self.color = color
         self.fontConfig.size = fontSize
         self.fontConfig.weight = fontWeight
     }
@@ -48,6 +51,6 @@ public final class Text: Widget, CustomDebugStringConvertible {
     }
 
     override public func renderContent() -> RenderObject? {
-        .Text(text, fontConfig: fontConfig, color: .Black, topLeft: globalPosition, wrap: wrap, maxWidth: bounds.size.width)
+        .Text(text, fontConfig: fontConfig, color: color, topLeft: globalPosition, wrap: wrap, maxWidth: bounds.size.width)
     }
 }

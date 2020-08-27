@@ -11,13 +11,16 @@ public class TodoListView: SingleChildWidget {
 
     override public func buildChild() -> Widget {
 
-        Column {
+        Column(spacing: 16) {
 
-            Text(list.name, fontSize: 24, fontWeight: .Bold)
+            Text(list.name, fontSize: 32, fontWeight: .Bold, color: list.color)
 
-            for todo in list.items {
+            Column {
 
-                build(todo: todo)
+                for todo in list.items {
+
+                    build(todo: todo)
+                }
             }
 
         }.with {
@@ -26,8 +29,26 @@ public class TodoListView: SingleChildWidget {
         }
     }
 
-    private func build(todo: TodoItem) -> Widget {
+    @FlexItemBuilder private func build(todo: TodoItem) -> [FlexItem] {
 
-        Text(todo.description)
+        Padding(all: 16) {
+            
+            Row(spacing: 48) {
+
+                TaskCompletionButton(color: list.color)
+                    
+                Text(todo.description)
+
+            }
+
+        }
+
+        Column.Item(crossAlignment: .Stretch) {
+
+            Padding(left: 40 + 48) {
+            
+                Divider(color: .Grey, axis: .Horizontal, width: 1)
+            }
+        }
     }
 }
