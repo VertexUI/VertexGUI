@@ -40,7 +40,7 @@ public class TodoListView: SingleChildWidget {
 
             Padding(all: 16) {
                 
-                Column {
+                Column(spacing: 24) {
 
                     Row(spacing: 48) {
 
@@ -48,22 +48,40 @@ public class TodoListView: SingleChildWidget {
                         
                         Row.Item(crossAlignment: .Center) {
 
-                            Text(todo.description)
+                            Text(todo.description, wrap: true).with {
+
+                                _ = $0.onBoxConfigChanged {
+                                    print("TEXT BOX CHANGED", todo.description, $0)
+                                }
+
+                                _ = $0.onBoundsChanged {
+                                    print("TEXT BOUNDS CHANGED", todo.description, $0)
+                                }
+                            }
                         }
                     }
 
                     if expandedItemIndices.contains(index) {
 
-                        Text("ExPANDdeD")
+                        Row {
+
+                            todo.images.map {
+
+                                ImageView(image: $0)
+                            }
+                        }
                     }
                 }
             }
 
         } onClick: { [unowned self] _ in
 
-            withChildInvalidation {
+            if todo.images.count > 0 {
 
-                expandedItemIndices.insert(index)
+                withChildInvalidation {
+
+                    expandedItemIndices.insert(index)
+                }
             }
         }
 

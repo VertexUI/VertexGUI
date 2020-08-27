@@ -96,6 +96,11 @@ public class Column: Widget {
                 content.bounds.size.width = min(freeWidth, boxConfig.maxSize.width)
             }
 
+            if content.bounds.size.width > freeWidth && boxConfig.minSize.width <= freeWidth {
+
+                content.bounds.size.width = freeWidth
+            }
+
             // + 1 at the end to account for floating point precision errors
             if currentY + boxConfig.preferredSize.height >= bounds.size.height + 1 {
 
