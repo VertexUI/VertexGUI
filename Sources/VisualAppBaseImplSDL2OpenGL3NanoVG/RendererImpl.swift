@@ -322,8 +322,8 @@ open class SDL2OpenGL3NanoVGRenderer: Renderer {
         nvgCircle(window.nvg, Float(center.x), Float(center.y), Float(radius))
     }
 
-    public func ellipse(center: DPoint2, radius: DVec2) {
-        fatalError("ellipse not implemented")
+    public func ellipse(_ bounds: DRect) {
+        nvgEllipse(window.nvg, Float(bounds.center.x), Float(bounds.center.y), Float(bounds.size.x / 2), Float(bounds.size.y / 2))
     }
 
     private func applyFontConfig(_ config: FontConfig) {

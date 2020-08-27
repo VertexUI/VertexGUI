@@ -47,7 +47,7 @@ public protocol Renderer {
     func rectangle(_ rect: DRect) 
     func roundedRectangle(_ rect: DRect, cornerRadii: CornerRadii)
     func circle(center: DPoint2, radius: Double)
-    func ellipse(center: DPoint2, radius: DVec2) 
+    func ellipse(_ bounds: DRect) 
     func text(_ text: String, fontConfig: FontConfig, color: Color, topLeft: DPoint2) 
     func lineSegment(from: DPoint2, to: DPoint2) 
     func getTextBoundsSize(_ text: String, fontConfig: FontConfig)  -> DSize2

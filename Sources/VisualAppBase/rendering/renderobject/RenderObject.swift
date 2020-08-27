@@ -11,6 +11,7 @@ open class RenderObject: CustomDebugStringConvertible, TreeNode {
     public typealias RenderStyle = VisualAppBase.RenderStyleRenderObject
     public typealias Translation = VisualAppBase.TranslationRenderObject
     public typealias Rectangle = VisualAppBase.RectangleRenderObject
+    public typealias Ellipse = VisualAppBase.EllipsisRenderObject
     public typealias LineSegment = VisualAppBase.LineSegmentRenderObject
     public typealias Custom = VisualAppBase.CustomRenderObject
     public typealias Text = VisualAppBase.TextRenderObject
@@ -253,27 +254,66 @@ open class CacheSplitRenderObject: SubTreeRenderObject {
     }
 }
 
+// TODO: maybe combine Rectangle, Circle, Ellipse into Shape?
+// and then provide some static initializers like ShapeRenderObject.Circle etc.?
 open class RectangleRenderObject: RenderObject {
+
     public var rect: DRect
+
     public var cornerRadii: CornerRadii?
 
     override open var hasTimedRenderValue: Bool {
+
         return false
     }
     
     override open var debugDescription: String {
+
         "RectangleRenderObject"
     }
     
     override open var individualHash: Int {
+
         var hasher = Hasher()
+
         hasher.combine(rect)
+        
         return hasher.finalize()
     }
     
     public init(_ rect: DRect, cornerRadii: CornerRadii? = nil) {
+        
         self.rect = rect
+
         self.cornerRadii = cornerRadii
+    }
+}
+
+open class EllipsisRenderObject: RenderObject {
+
+    public var bounds: DRect
+
+    override open var hasTimedRenderValue: Bool {
+
+        return false
+    }
+    
+    override open var debugDescription: String {
+
+        "EllipsisRenderObject"
+    }
+    
+    override open var individualHash: Int {
+
+        var hasher = Hasher()
+
+        hasher.combine(bounds)
+        
+        return hasher.finalize()
+    }
+
+    public init(_ bounds: DRect) {
+        self.bounds = bounds
     }
 }
 

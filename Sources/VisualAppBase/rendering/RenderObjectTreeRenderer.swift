@@ -418,8 +418,8 @@ public class RenderObjectTreeRenderer {
         case let currentRenderObject as RenderObject.RenderStyle:
             // TODO: implement tracking current render style as layers, whenever moving out of a child render style,
             // need to reapply the next parent
-            var performFill = false
-            var performStroke = false
+           // var performFill = false
+           // var performStroke = false
 
             if let fillRenderValue = currentRenderObject.fill {
 
@@ -452,7 +452,7 @@ public class RenderObjectTreeRenderer {
                     }
                 }
 
-                performFill = true
+               // performFill = true
 
             } else {
                 backendRenderer.fillColor(.Transparent)
@@ -465,7 +465,7 @@ public class RenderObjectTreeRenderer {
                 backendRenderer.strokeWidth(strokeWidth)
                 backendRenderer.strokeColor(strokeColor.getValue(at: timestamp))
 
-                performStroke = true
+               // performStroke = true
 
             } else {
 
@@ -504,6 +504,16 @@ public class RenderObjectTreeRenderer {
                 backendRenderer.rectangle(currentRenderObject.rect)
             }
             backendRenderer.fill()
+            backendRenderer.stroke()
+
+        case let currentRenderObject as RenderObject.Ellipse:
+
+            backendRenderer.beginPath()
+
+            backendRenderer.ellipse(currentRenderObject.bounds)
+
+            backendRenderer.fill()
+
             backendRenderer.stroke()
 
         case let currentRenderObject as RenderObject.LineSegment:
