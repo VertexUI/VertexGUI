@@ -28,12 +28,15 @@ public final class Text: Widget, CustomDebugStringConvertible {
         "Text \(text)"
     }
 
-    public init(_ text: String, fontSize: Double = 24, fontWeight: FontWeight = .Regular, wrap: Bool = false, color: Color = .Black) {
+    public init(_ text: String, fontSize: Double = 24, fontWeight: FontWeight = .Regular, fontFamily: FontFamily? = nil, wrap: Bool = false, color: Color = .Black) {
         self.text = text
         self.wrap = wrap
         self.color = color
         self.fontConfig.size = fontSize
         self.fontConfig.weight = fontWeight
+        if let fontFamily = fontFamily {
+            self.fontConfig.family = fontFamily
+        }
     }
 
     override public func getBoxConfig() -> BoxConfig {

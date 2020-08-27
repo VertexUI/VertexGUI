@@ -47,17 +47,26 @@ public class ExperimentThreeView: SingleChildWidget {
                 buildSearch()
             }
 
-            Padding(all: 32) {
+            Column.Item(crossAlignment: .Stretch) {
 
-                Column {
+                Padding(all: 32) {
 
-                    Text("Lists", fontSize: 24, fontWeight: .Bold)
+                    Column(spacing: 24) {
 
-                    Column {
-                        
-                        for list in todoLists {
+                        Text("Lists", fontSize: 24, fontWeight: .Bold)
 
-                            buildMenuListItem(for: list)
+                        Column.Item(crossAlignment: .Stretch) {
+
+                            Column {
+                                
+                                for list in todoLists {
+
+                                    Column.Item(crossAlignment: .Stretch) {
+
+                                        buildMenuListItem(for: list)
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -94,8 +103,13 @@ public class ExperimentThreeView: SingleChildWidget {
             Background(color: .White) {
                 
                 Padding(all: 16) {
-
-                    Text(list.name)
+                    
+                    Row {
+                        
+                        MaterialIcon(.accountCircle)
+                        
+                        Text(list.name)
+                    }
                 }
             }
 
