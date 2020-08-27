@@ -1,3 +1,4 @@
+import Foundation
 import CustomGraphicsMath
 
 public struct TodoList {
@@ -10,9 +11,11 @@ public struct TodoList {
     }
 
     public static let mocks = [
-        
+
         TodoList(name: "TestList 1", color: .Blue, items: [
-            TodoItem(description: "Sweep the floor."),
+            TodoItem(description: "Sweep the floor.", images: [
+                try! Image(contentsOf: Bundle.module.url(forResource: "owl-2", withExtension: "jpg", subdirectory: "owl")!)
+            ]),
             TodoItem(description: "Sweep the floor."),
             TodoItem(description: "Sweep the floor."),
             TodoItem(description: "Sweep the floor."),

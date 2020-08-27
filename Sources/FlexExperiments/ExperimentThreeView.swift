@@ -104,11 +104,20 @@ public class ExperimentThreeView: SingleChildWidget {
                 
                 Padding(all: 16) {
                     
-                    Row {
+                    Row(spacing: 24) {
                         
-                        MaterialIcon(.accountCircle)
+                        Background(color: list.color) {
+                            
+                            Padding(all: 8) {
+
+                                MaterialIcon(.formatListBulletedSquare, color: .White)
+                            }
+                        }
                         
-                        Text(list.name)
+                        Row.Item(crossAlignment: .Center) {
+
+                            Text(list.name)
+                        }
                     }
                 }
             }

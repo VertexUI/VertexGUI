@@ -54,6 +54,10 @@ open class Root: Parent {
         _ = rootWidget.onRenderStateInvalidated { [unowned self] in
             updateRenderObjectTree($0)
         }
+
+        _ = rootWidget.onBoxConfigChanged { [unowned self] _ in
+            rootWidget.layout()
+        }
     }
 
     open func layout() {

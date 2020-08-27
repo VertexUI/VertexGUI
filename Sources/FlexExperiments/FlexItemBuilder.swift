@@ -18,6 +18,11 @@ public struct FlexItemBuilder {
         items
     }
 
+    public static func buildOptional(_ items: [FlexItem]?) -> [FlexItem] {
+
+        return items ?? []
+    }
+
     public static func buildBlock(_ items: [FlexItem]...) -> [FlexItem] {
         items.flatMap { $0 }
     }

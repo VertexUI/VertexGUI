@@ -46,22 +46,6 @@ open class Widget: Bounded, Parent, Child {
 
     public lazy var children: [Widget] = []
 
-    public internal(set) var onParentChanged = EventHandlerManager<Parent?>()
-
-    public internal(set) var onAnyParentChanged = EventHandlerManager<Parent?>()
-
-    public internal(set) var onRenderStateInvalidated = EventHandlerManager<Widget>()
-
-    // TODO: when using the BoxConfig approach might instead have onBoundsInvalidated / BoxConfigInvalidated / LayoutInvalidated
-    // to bring the parent to take into account updated pref sizes, max sizes, min sizes etc.
-    public internal(set) var onBoundsChanged = EventHandlerManager<DRect>()
-
-    public internal(set) var onFocusChanged = EventHandlerManager<Bool>()
-
-    public internal(set) var onDestroy = EventHandlerManager<Void>()
-    
-    private var unregisterAnyParentChangedHandler: EventHandlerManager<Parent?>.UnregisterCallback?
-
     weak open var parent: Parent? = nil {
 
         willSet {
@@ -90,47 +74,6 @@ open class Widget: Bounded, Parent, Child {
             }
         }
     }
-
-    public var focusable = false
-    public internal(set) var focused = false {
-        didSet {
-            onFocusChanged.invokeHandlers(focused)
-        }
-    }
-
-    public var mounted = false
-    // TODO: maybe something better
-    public var layoutable: Bool {
-        mounted && constraints != nil && context != nil
-    }
-    public var layouting = false
-    public var layouted = false
-    public internal(set) var destroyed = false
-
-
-    /// Flag whether to show bounds and sizes for debugging purposes.
-    private var _debugLayout: Bool?
-
-    public var debugLayout: Bool {
-        get {
-            _debugLayout ?? context?.debugLayout ?? false
-        }
-
-        set {
-            _debugLayout = newValue
-        }
-    }
-
-    private let layoutDebuggingColor = Color.Red
-
-    private let layoutDebuggingTextFontConfig = FontConfig(
-        family: defaultFontFamily,
-        size: 16,
-        weight: .Regular,
-        style: .Normal
-    )
-
-    open internal(set) var onBoxConfigChanged = EventHandlerManager<BoxConfig>()
 
     lazy open internal(set) var boxConfig = getBoxConfig()
 
@@ -163,6 +106,81 @@ open class Widget: Bounded, Parent, Child {
             return bounds.min
         }
     }
+
+
+ 
+    public var focusable = false
+
+
+    
+    public internal(set) var focused = false {
+        didSet {
+            onFocusChanged.invokeHandlers(focused)
+        }
+    }
+
+    public var mounted = false
+
+    // TODO: maybe something better
+    public var layoutable: Bool {
+
+        mounted && constraints != nil && context != nil
+    }
+
+    public var layouting = false
+
+    public var layouted = false
+
+    // public var layoutInvalid = false TODO: maybe this is needed for something
+
+    public internal(set) var destroyed = false
+
+
+
+    /// Flag whether to show bounds and sizes for debugging purposes.
+    private var _debugLayout: Bool?
+
+    public var debugLayout: Bool {
+        get {
+            _debugLayout ?? context?.debugLayout ?? false
+        }
+
+        set {
+            _debugLayout = newValue
+        }
+    }
+
+    private let layoutDebuggingColor = Color.Red
+
+    private let layoutDebuggingTextFontConfig = FontConfig(
+        family: defaultFontFamily,
+        size: 16,
+        weight: .Regular,
+        style: .Normal
+    )
+
+
+
+    public internal(set) var onParentChanged = EventHandlerManager<Parent?>()
+
+    public internal(set) var onAnyParentChanged = EventHandlerManager<Parent?>()
+
+    public internal(set) var onRenderStateInvalidated = EventHandlerManager<Widget>()
+
+    // TODO: when using the BoxConfig approach might instead have onBoundsInvalidated / BoxConfigInvalidated / LayoutInvalidated
+    // to bring the parent to take into account updated pref sizes, max sizes, min sizes etc.
+    public internal(set) var onBoundsChanged = EventHandlerManager<DRect>()
+
+    open internal(set) var onBoxConfigChanged = EventHandlerManager<BoxConfig>()
+
+    public internal(set) var onFocusChanged = EventHandlerManager<Bool>()
+
+    public internal(set) var onDestroy = EventHandlerManager<Void>()
+    
+    private var unregisterAnyParentChangedHandler: EventHandlerManager<Parent?>.UnregisterCallback?
+
+
+
 
     public init(children: [Widget] = []) {
         self.children = children
@@ -302,6 +320,15 @@ open class Widget: Bounded, Parent, Child {
 
                 let newBoxConfig = boxConfig
 
+                // This prevents unnecessary calls to layout.
+                // Only if this Widgets box config isn't changed, trigger a relayout.
+                // For all children with changed box configs (also deeply nested ones)
+                // layout will not have been called because of this comparison.
+                // The first parent without a changed box config will trigger
+                // a relayout for the whole subtree.
+                // In case no Widget has no changed box config, the
+                // relayout will be triggered in Root for the whole UI.
+                // TODO: maybe there is a better solution
                 if oldBoxConfig == newBoxConfig {
 
                     layout()

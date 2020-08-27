@@ -1,12 +1,21 @@
 import WidgetGUI
 
 public class TodoListView: SingleChildWidget {
+
+    // TODO: maybe do something with WidgetRef, as a variable inside a widget which will
+    // always contain the current child widget that received the ref object in build
     
     private var list: TodoList
+
+    private var expandedItemIndices: Set<Int> = []
     
     public init(for list: TodoList) {
 
-        self.list = list 
+        self.list = list
+
+        super.init()
+
+        self.debugLayout = true
     }
 
     override public func buildChild() -> Widget {
@@ -17,26 +26,44 @@ public class TodoListView: SingleChildWidget {
 
             Column {
 
-                for todo in list.items {
+                for (index, todo) in list.items.enumerated() {
 
-                    build(todo: todo)
+                    build(todo: todo, index: index)
                 }
             }
         }
     }
 
-    @FlexItemBuilder private func build(todo: TodoItem) -> [FlexItem] {
+    @FlexItemBuilder private func build(todo: TodoItem, index: Int) -> [FlexItem] {
 
-        Padding(all: 16) {
-            
-            Row(spacing: 48) {
+        MouseArea {
 
-                TaskCompletionButton(color: list.color)
+            Padding(all: 16) {
                 
-                Row.Item(crossAlignment: .Center) {
+                Column {
 
-                    Text(todo.description)
+                    Row(spacing: 48) {
+
+                        TaskCompletionButton(color: list.color)
+                        
+                        Row.Item(crossAlignment: .Center) {
+
+                            Text(todo.description)
+                        }
+                    }
+
+                    if expandedItemIndices.contains(index) {
+
+                        Text("ExPANDdeD")
+                    }
                 }
+            }
+
+        } onClick: { [unowned self] _ in
+
+            withChildInvalidation {
+
+                expandedItemIndices.insert(index)
             }
         }
 
