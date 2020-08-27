@@ -3,6 +3,7 @@ import VisualAppBase
 import WidgetGUI
 
 public class Row: Widget {
+
     private struct Line {
 
         public var startY: Double
@@ -88,14 +89,11 @@ public class Row: Widget {
     }
 
     override public func performLayout() {
+
         var lines = [
 
             Line(startY: 0, width: 0, height: 0, items: [])
         ]
-
-        //var currentLineHeight = 0.0
-
-        //var currentY = 0.0
 
         var currentX = 0.0
         
@@ -180,6 +178,17 @@ public class Row: Widget {
                     let growWidth = freeWidth * (item.grow / line.totalGrow)
 
                     content.bounds.size.width += growWidth
+                }
+
+                switch item.crossAlignment {
+                    
+                case .Center:
+
+                    content.bounds.min.y = line.height / 2 - content.bounds.size.height / 2
+                
+                default:
+
+                    break
                 }
 
                 currentX += content.bounds.size.width + spacing

@@ -22,10 +22,6 @@ public class TodoListView: SingleChildWidget {
                     build(todo: todo)
                 }
             }
-
-        }.with {
-            
-            $0.debugLayout = true
         }
     }
 
@@ -36,11 +32,12 @@ public class TodoListView: SingleChildWidget {
             Row(spacing: 48) {
 
                 TaskCompletionButton(color: list.color)
-                    
-                Text(todo.description)
+                
+                Row.Item(crossAlignment: .Center) {
 
+                    Text(todo.description)
+                }
             }
-
         }
 
         Column.Item(crossAlignment: .Stretch) {
