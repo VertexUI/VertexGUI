@@ -48,23 +48,40 @@ public class Row: Widget {
         }
     }
 
+    // TODO: maybe have box config inside the Widget and then let the parent give the child constraints
+    // or maybe one dimension and then the child should decide how to set up the other direction
     override public func getBoxConfig() -> BoxConfig {
 
         var config = BoxConfig(preferredSize: .zero, minSize: .zero, maxSize: .zero)
 
-        config.preferredSize.width += max(0, (Double(items.count) - 1)) * spacing + 1
-
-        for item in items {
+        for (index, item) in items.enumerated() {
             
             let content = item.content
 
             let contentConfig = content.boxConfig
 
-            config.preferredSize += contentConfig.preferredSize
+            let spaceAfter = index < items.count - 1 ? spacing : 0.0
 
-            config.minSize += contentConfig.minSize
+            config.preferredSize.width += contentConfig.preferredSize.width + spaceAfter
 
-            config.maxSize += contentConfig.maxSize
+            if config.preferredSize.height < contentConfig.preferredSize.height {
+
+                config.preferredSize.height = contentConfig.preferredSize.height
+            }
+
+            config.minSize.width += contentConfig.minSize.width
+
+            if config.minSize.height < contentConfig.minSize.height {
+                
+                config.minSize.height = contentConfig.minSize.height
+            }
+
+            config.maxSize.width += contentConfig.maxSize.width
+
+            if config.maxSize.height < contentConfig.maxSize.height {
+
+                config.maxSize.height = contentConfig.maxSize.height
+            }
         }
 
         return config
