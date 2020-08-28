@@ -125,7 +125,7 @@ open class Widget: Bounded, Parent, Child {
     // TODO: maybe something better
     public var layoutable: Bool {
 
-        mounted && constraints != nil && context != nil
+        mounted/* && constraints != nil*/ && context != nil
     }
 
     public var layouting = false

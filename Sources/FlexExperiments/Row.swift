@@ -105,26 +105,22 @@ public class Row: Widget {
 
             let content = item.content
 
-            var layouted = false
-
             let boxConfig = content.boxConfig
-            
-            content.constraints = self.constraints // legacy
-
-            content.bounds.size = boxConfig.preferredSize
 
             let freeHeight = constraints.maxHeight - lines.last!.startY
-            
-            if boxConfig.preferredSize.height > freeHeight {
 
-                content.bounds.size.height = freeHeight
+            var contentConstraints = BoxConstraints(
+                minSize: .zero,
+                maxSize: DSize2(.infinity, freeHeight)
+            )
 
-            } else if item.crossAlignment == .Stretch && boxConfig.preferredSize.height < freeHeight {
+            if item.crossAlignment == .Stretch && boxConfig.preferredSize.height < freeHeight {
 
-                content.bounds.size.height = min(freeHeight, boxConfig.maxSize.height)
+                // TODO: is this check for maxHeight of box config necessary or will the widget itself be careful not to go bigger than it can?
+                contentConstraints.minSize.height = min(freeHeight, boxConfig.maxSize.height)
             }
 
-            let freeWidth = bounds.size.width - currentX
+            let freeWidth = constraints.maxWidth - currentX
 
             // + 1 at the end to account for floating point precision errors
             if currentX + boxConfig.preferredSize.width >= bounds.size.width + 1 {
@@ -132,20 +128,7 @@ public class Row: Widget {
                 // TODO: maybe only do this if shrink is set to some value > 0
                 if boxConfig.minSize.width <= freeWidth {
 
-                    content.bounds.size.width = freeWidth
-
-                    if let content = content as? Text {
-                        
-                        print("LAYOUT LONG TEXT WITH CONSTRAINTS", freeWidth)
-
-                        content.layout(constraints: BoxConstraints(minSize: .zero, maxSize: DSize2(freeWidth, .infinity)))
-
-                        print("AND THE LONG TEXT GOT", content.bounds.size)
-
-                        print("ROW VALUES ARE", constraints.maxSize, bounds.size)
-
-                        layouted = true
-                    }
+                    contentConstraints.maxSize.width = freeWidth
 
                 } else {
 
@@ -159,10 +142,19 @@ public class Row: Widget {
                 }
             }
 
-            if !layouted {
+            // following block for debugging
+            if let content = content as? Text {
+                
+                print("LAYOUT LONG TEXT WITH CONSTRAINTS", freeWidth)
 
-                content.layout(constraints: BoxConstraints(minSize: .zero, maxSize: content.bounds.size))
+
+
+                print("AND THE LONG TEXT GOT", content.bounds.size)
+
+                print("ROW VALUES ARE", constraints.maxSize, bounds.size)
             }
+
+            content.layout(constraints: BoxConstraints(minSize: .zero, maxSize: DSize2(freeWidth, .infinity)))
             
             content.bounds.min.x = currentX
 
@@ -216,17 +208,19 @@ public class Row: Widget {
                     break
                 }
 
+                currentX += content.bounds.size.width
+
                 if currentX > width {
 
                     width = currentX
                 }
 
-                currentX += content.bounds.size.width + spacing
+                currentX += spacing
 
                 //content.layout()
             }
         }
         
-        return DSize2(lines.last!.startY + lines.last!.height, width)
+        return DSize2(width, lines.last!.startY + lines.last!.height)
     }
 }

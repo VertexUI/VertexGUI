@@ -3,17 +3,25 @@ import CustomGraphicsMath
 
 public class ExperimentFourView: SingleChildWidget {
 
+    @Observable private var longText: String = "This is the first veeeeery looooong text"
+
     override public func buildChild() -> Widget {
         
-        Background(color: Color(200, 200, 255, 255)) {
+        /*Background(color: Color(200, 200, 255, 255)) {
 
-            Padding(all: 32) {
+            Padding(all: 32) {*/
+
+            ConstrainedSize(maxSize: DSize2(200, .infinity)) { [unowned self] in
 
                 Row {
 
-                    ConstrainedSize(maxSize: DSize2(400, .infinity)) {
+                        Text("WOW")
+                        
+                        ObservingBuilder($longText) {
 
-                        Row {
+                            Text(longText, wrap: true)
+                        }
+                        /*Row {
 
                             Background(color: Color(140, 140, 255, 255)) {
 
@@ -23,26 +31,40 @@ public class ExperimentFourView: SingleChildWidget {
                                 }
                             }
 
-                            Text("A VEEEEEEEEEEEEEEERY LONG TEXT")
-                        }
+                            Text("A VEEEEEEEEEEEEEEERY LONG TEXT").with {
+                                
+                                $0.debugLayout = false
+                            }
 
-                    }.with {
+                        }.with {
 
-                        $0.debugLayout = true
-                    }
+                            $0.debugLayout = true
+                        }*/
 
+                    /*}.with {
+
+                        $0.debugLayout = false
+                    }*/
+
+                }.with {
+
+                    $0.debugLayout = true
                 }
             }
-        }
+        //}
     }
 
     override public func performLayout(constraints: BoxConstraints) -> DSize2 {
 
-        child.constraints = self.constraints // legacy
+        //child.constraints = constraints // legacy
 
-        child.bounds.size = constraints.maxSize
+        //child.bounds.size = constraints.maxSize
+
+        print("CALL LAYOUT!")
 
         child.layout(constraints: constraints)
+
+        print("CHILD DID LAYOUT", child.bounds.size)
 
         return child.bounds.size
     }

@@ -42,11 +42,12 @@ public class ConstrainedSize: SingleChildWidget {
         return config
     }
 
-    override public func performLayout() {
-        child.constraints = constraints // legacy
+    override public func performLayout(constraints: BoxConstraints) -> DSize2 {
 
-        child.bounds.size = bounds.size
+        child.layout(constraints: BoxConstraints(
+            minSize: constraints.constrain(boxConfig.minSize),
+            maxSize: constraints.constrain(boxConfig.maxSize)))
 
-        child.layout()
+        return child.bounds.size
     }
 }

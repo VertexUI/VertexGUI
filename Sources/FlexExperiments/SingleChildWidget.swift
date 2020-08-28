@@ -49,14 +49,14 @@ open class SingleChildWidget: Widget {
         return child.boxConfig
     }
 
-    override open func performLayout() {
+    override open func performLayout(constraints: BoxConstraints) -> DSize2 {
 
-        child.constraints = constraints // legacy
+        child.layout(constraints: constraints)
 
-        child.bounds.size = bounds.size
+        print("CHILD DID LAYOUT", child.bounds.size, self, child, constraints)
 
-        child.layout()
-    }    
+        return child.bounds.size
+    }
 
     override open func renderContent() -> RenderObject? {
 
