@@ -55,16 +55,10 @@ public final class Text: Widget, CustomDebugStringConvertible {
     }
 
     override public func performLayout(constraints: BoxConstraints) -> DSize2 {
-        
-        print("TEXT IS PERFORMING LAYOUT", constraints, wrap, text)
-
-        if constraints.maxWidth > 400 {
-            print("TEXT IS BIGGER THATN $==")
-        }
 
         let textBoundsSize = context!.getTextBoundsSize(text, fontConfig: fontConfig, maxWidth: wrap ? constraints.maxWidth : nil)
 
-        print("TEXT DID LAYOUT", textBoundsSize)
+        print("CALLING LAYOUT ON TEXT", constraints)
 
         return textBoundsSize
     }

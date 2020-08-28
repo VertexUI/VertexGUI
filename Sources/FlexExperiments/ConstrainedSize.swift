@@ -1,6 +1,7 @@
 import CustomGraphicsMath
 import WidgetGUI
 
+// TODO: maybe simply provide these as modifiers on each Widget?
 public class ConstrainedSize: SingleChildWidget {
     private var minSize: DSize2?
     private var maxSize: DSize2?

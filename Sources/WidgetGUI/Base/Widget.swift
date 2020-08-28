@@ -79,6 +79,7 @@ open class Widget: Bounded, Parent, Child {
     lazy open internal(set) var boxConfig = getBoxConfig()
 
     // TODO: might need to create something like layoutBounds and renderBounds (area that is invalidated on rerender request --> could be more than layoutBounds and affect outside widgets (e.g. a drop shadow that is not included in layoutBounds))
+    // TODO: make size unsettable from outside when new layout approach completed
     open var bounds: DRect = DRect(min: DPoint2(0,0), size: DSize2(0,0)) {
         didSet {
             if oldValue != bounds {
@@ -132,7 +133,7 @@ open class Widget: Bounded, Parent, Child {
 
     public var layouted = false
 
-    private var previousConstraints: BoxConstraints?
+    public private(set) var previousConstraints: BoxConstraints?
 
     // public var layoutInvalid = false TODO: maybe this is needed for something
 
@@ -309,7 +310,7 @@ open class Widget: Bounded, Parent, Child {
         _ = child.onBoundsChanged { [unowned self] _ in
             // TODO: maybe need special relayout flag / function
             if layouted && !layouting {
-                layout()
+                //layout()
             }
         }
 
@@ -334,7 +335,7 @@ open class Widget: Bounded, Parent, Child {
                 // TODO: maybe there is a better solution
                 if oldBoxConfig == newBoxConfig {
 
-                    layout()
+                    layout(constraints: previousConstraints!)
                 }
             }
         }
@@ -398,8 +399,6 @@ open class Widget: Bounded, Parent, Child {
             return
         }*/
         
-        self.previousConstraints = constraints
-
         if !layoutable {
             
             Logger.log(.Warning, "Called layout() on Widget that is not layoutable: \(self)")
@@ -434,22 +433,30 @@ open class Widget: Bounded, Parent, Child {
 
             invalidateRenderState()
         }
+
+        self.previousConstraints = constraints
     }
 
     // TODO: probably a legacy call --> remove
+    @available(*, deprecated, message: "Use layout(constraints:).")
     open func layout() {
 
-        layout(constraints: BoxConstraints(size: bounds.size))
+        layout(constraints: self.constraints!)
+
+        Logger.warn("Calling legacy layout() function.")
     }
 
     // TODO: when using box config and setting bounds before hand can rename this to layoutSelf or layoutContent()
     // TODO: this is the legacy version --> remove
+    @available(*, deprecated, message: "Use performLayout(constraints:)")
     open func performLayout() {
         
         fatalError("performLayout() not implemented.")
     }
     
     open func performLayout(constraints: BoxConstraints) -> DSize2 {
+
+        Logger.warn("Calling default implementation of performLayout(constraints:) that calls legacy performLayout() on: \(self).")
 
         performLayout()
 

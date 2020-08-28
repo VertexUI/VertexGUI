@@ -37,7 +37,7 @@ public class ObservingBuilder: SingleChildWidget {
     override public func performLayout(constraints: BoxConstraints) -> DSize2 {
         let size = super.performLayout(constraints: constraints)
 
-        print("Observer did perform layout", size, constraints, boxConfig)
+        //print("Observer did perform layout", size, constraints, boxConfig)
 
         return size
     }

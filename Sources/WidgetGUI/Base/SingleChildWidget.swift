@@ -35,7 +35,7 @@ open class SingleChildWidget: Widget {
         child.constraints = constraints
         child.layout()
         bounds.size = child.bounds.size
-    }    
+    }
 
     override open func renderContent() -> RenderObject? {
         return child.render()

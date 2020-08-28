@@ -10,46 +10,74 @@ public class ExperimentFourView: SingleChildWidget {
         /*Background(color: Color(200, 200, 255, 255)) {
 
             Padding(all: 32) {*/
+            
+            MouseArea { [unowned self] in
 
-            ConstrainedSize(maxSize: DSize2(200, .infinity)) { [unowned self] in
+                ConstrainedSize(maxSize: DSize2(200, .infinity)) {
 
-                Row {
+                    Row(wrap: true) {
 
-                        Text("WOW")
-                        
-                        ObservingBuilder($longText) {
+                            Text("WOW This text is long but doesn't wrap")
+                            
+                            ObservingBuilder($longText) {
+                                
+                                ConstrainedSize(minSize: DSize2(100, 0)) {
 
-                            Text(longText, wrap: true)
-                        }
-                        /*Row {
+                                    Text(longText, wrap: true).with {
 
-                            Background(color: Color(140, 140, 255, 255)) {
+                                        $0.debugLayout = true
 
-                                Padding(all: 64) {
+                                    }
+                                }
+                            }.with { observer in
 
-                                    Text("WORKS")
+                                _ = observer.onBoxConfigChanged {
+
+                                    print("OBSERVER BOX CONFIG CHANGED", $0, observer.previousConstraints)
                                 }
                             }
 
-                            Text("A VEEEEEEEEEEEEEEERY LONG TEXT").with {
-                                
-                                $0.debugLayout = false
-                            }
+                            Text("This is the text after")
+                            /*Row {
 
-                        }.with {
+                                Background(color: Color(140, 140, 255, 255)) {
 
-                            $0.debugLayout = true
+                                    Padding(all: 64) {
+
+                                        Text("WORKS")
+                                    }
+                                }
+
+                                Text("A VEEEEEEEEEEEEEEERY LONG TEXT").with {
+                                    
+                                    $0.debugLayout = false
+                                }
+
+                            }.with {
+
+                                $0.debugLayout = true
+                            }*/
+
+                        /*}.with {
+
+                            $0.debugLayout = false
                         }*/
 
-                    /*}.with {
+                    }.with {
 
                         $0.debugLayout = false
-                    }*/
 
-                }.with {
-
-                    $0.debugLayout = true
+                        _ = $0.onBoxConfigChanged {
+                            print("ROW BOX CONFIG CHANGEd", $0)
+                        }
+                    }
                 }
+
+            } onClick: { [unowned self] _ in
+
+                longText = "This is the second veeeeeeeeeeeeeeeeeeeeery looooooooooooooong text that is even longer"
+
+                invalidateRenderState()
             }
         //}
     }
@@ -60,11 +88,11 @@ public class ExperimentFourView: SingleChildWidget {
 
         //child.bounds.size = constraints.maxSize
 
-        print("CALL LAYOUT!")
+        print("CALL LAYOUT!", constraints)
 
         child.layout(constraints: constraints)
 
-        print("CHILD DID LAYOUT", child.bounds.size)
+        //print("CHILD DID LAYOUT", child.bounds.size, constraints)
 
         return child.bounds.size
     }
