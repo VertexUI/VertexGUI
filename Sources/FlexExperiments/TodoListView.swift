@@ -50,15 +50,13 @@ public class TodoListView: SingleChildWidget {
 
                             Text(todo.description, wrap: true).with {
 
-                                _ = $0.onBoxConfigChanged {
-                                    print("TEXT BOX CHANGED", todo.description, $0)
-                                }
-
-                                _ = $0.onBoundsChanged {
-                                    print("TEXT BOUNDS CHANGED", todo.description, $0)
-                                }
+                                $0.debugLayout = true
                             }
                         }
+                        
+                    }.with {
+
+                        $0.debugLayout = true
                     }
 
                     if expandedItemIndices.contains(index) {

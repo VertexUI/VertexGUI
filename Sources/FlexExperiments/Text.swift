@@ -4,10 +4,15 @@ import VisualAppBase
 import WidgetGUI
 
 public final class Text: Widget, CustomDebugStringConvertible {
+
     public var text: String {
+
         didSet {
+
             if oldValue != text {
+
                 layout()
+
                 invalidateRenderState()
             }
         }
@@ -49,8 +54,19 @@ public final class Text: Widget, CustomDebugStringConvertible {
         return config
     }
 
-    override public func performLayout() {
+    override public func performLayout(constraints: BoxConstraints) -> DSize2 {
+        
+        print("TEXT IS PERFORMING LAYOUT", constraints, wrap, text)
 
+        if constraints.maxWidth > 400 {
+            print("TEXT IS BIGGER THATN $==")
+        }
+
+        let textBoundsSize = context!.getTextBoundsSize(text, fontConfig: fontConfig, maxWidth: wrap ? constraints.maxWidth : nil)
+
+        print("TEXT DID LAYOUT", textBoundsSize)
+
+        return textBoundsSize
     }
 
     override public func renderContent() -> RenderObject? {

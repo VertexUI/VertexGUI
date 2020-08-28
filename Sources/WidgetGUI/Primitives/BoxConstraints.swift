@@ -1,7 +1,7 @@
 import CustomGraphicsMath
 import Foundation
 
-public struct BoxConstraints {
+public struct BoxConstraints: Equatable {
     public var minSize: DSize2
     public var maxSize: DSize2
 

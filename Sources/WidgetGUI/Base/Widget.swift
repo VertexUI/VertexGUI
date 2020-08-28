@@ -42,6 +42,7 @@ open class Widget: Bounded, Parent, Child {
         }
     }
 
+    @available(*, deprecated, message: "Constraints is now passed as a parameter to layout(constraints:)")
     open var constraints: BoxConstraints? = nil
 
     public lazy var children: [Widget] = []
@@ -130,6 +131,8 @@ open class Widget: Bounded, Parent, Child {
     public var layouting = false
 
     public var layouted = false
+
+    private var previousConstraints: BoxConstraints?
 
     // public var layoutInvalid = false TODO: maybe this is needed for something
 
@@ -384,44 +387,73 @@ open class Widget: Bounded, Parent, Child {
         }
     }
 
-    // TODO: when using box config and setting bounds before hand can rename this to layoutSelf or layoutContent()
-    open func performLayout() {
-        fatalError("performLayout() not implemented.")
-    }
+    open func layout(constraints: BoxConstraints) {
+
+        /*if let previousConstraints = previousConstraints, constraints == previousConstraints {/* ||
         
-    public final func layout() {
+            (constraints.minSize == bounds.size && constraints.maxSize == bounds.size) {*/
+
+            print("Update layout", previousConstraints, constraints, bounds.size, self)
+
+            return
+        }*/
+        
+        self.previousConstraints = constraints
+
         if !layoutable {
+            
             Logger.log(.Warning, "Called layout() on Widget that is not layoutable: \(self)")
+
             return
         }
 
         if layouting {
+            
             Logger.log(.Warning, "Called layout() on Widget while that Widget was still layouting: \(self)")
+
             return
         }
 
         layouting = true
 
         let previousBounds = bounds
+
         let isFirstRound = !layouted
+
+        let contentBounds = performLayout(constraints: constraints)
+
+        bounds.size = constraints.constrain(contentBounds)
+
+        layouting = false
+
+        layouted = true
+
+        if previousBounds.size != bounds.size && !isFirstRound {
+            
+            onBoundsChanged.invokeHandlers(bounds)
+
+            invalidateRenderState()
+        }
+    }
+
+    // TODO: probably a legacy call --> remove
+    open func layout() {
+
+        layout(constraints: BoxConstraints(size: bounds.size))
+    }
+
+    // TODO: when using box config and setting bounds before hand can rename this to layoutSelf or layoutContent()
+    // TODO: this is the legacy version --> remove
+    open func performLayout() {
+        
+        fatalError("performLayout() not implemented.")
+    }
+    
+    open func performLayout(constraints: BoxConstraints) -> DSize2 {
 
         performLayout()
 
-        layouted = true
-        
-        layouting = false
-
-        // if bounds changed and this is not the first layout round
-        if self is Expandable {
-            Logger.log(.Debug, "BEFORE COMPARE \(previousBounds) \(bounds) \(isFirstRound)")
-        }
-        if previousBounds != bounds && !isFirstRound {
-            if self is Expandable {
-                Logger.debug("YES BOUNDS CHANGED AND INVOKE HANDLERS")
-            }
-            onBoundsChanged.invokeHandlers(bounds)
-            invalidateRenderState()
-        }
+        return bounds.size
     }
 
     public func requestFocus() {

@@ -162,14 +162,20 @@ public class ExperimentThreeView: SingleChildWidget {
         }
     }
 
-    override public func performLayout() {
+    override public func performLayout(constraints: BoxConstraints) -> DSize2 {
 
-        child.constraints = constraints // legacy
+        child.constraints = self.constraints // legacy
 
-        child.bounds.size = constraints!.maxSize
+        child.bounds.size = constraints.maxSize
 
-        child.layout()
+        child.layout(constraints: constraints)
 
-        bounds.size = child.bounds.size // legacy, needed to receive mouse events correctly
+        return child.bounds.size
+    }
+
+    // TODO: remove this when the new layout approach is applied everywhere (Root should call layout(constraints: constraints))
+    override public func layout() {
+
+        layout(constraints: self.constraints!)
     }
 }

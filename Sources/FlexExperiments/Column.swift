@@ -36,7 +36,9 @@ public class Column: Widget {
     }
 
     override public func build() {
+        
         children = items.map {
+
             $0.content
         }
     }
@@ -49,7 +51,6 @@ public class Column: Widget {
         for item in items {
 
             let content = item.content
-
 
             let contentConfig = content.boxConfig
 
@@ -72,24 +73,29 @@ public class Column: Widget {
         return config
     }
 
-    override public func performLayout() {
+    override public func performLayout(constraints: BoxConstraints) -> DSize2 {
+
         var lines = [
 
             Line(startX: 0)
         ]
 
         var currentY = 0.0
+
+        var height = 0.0
         
         for item in items {
             let content = item.content
 
+            var layouted = false
+
             let boxConfig = content.boxConfig
             
-            content.constraints = constraints // legacy
+            content.constraints = self.constraints // legacy
 
             content.bounds.size = boxConfig.preferredSize
 
-            let freeWidth = bounds.size.width - lines.last!.startX
+            let freeWidth = constraints.maxWidth - lines.last!.startX
 
             if item.crossAlignment == .Stretch && boxConfig.preferredSize.width < freeWidth {
 
@@ -99,6 +105,28 @@ public class Column: Widget {
             if content.bounds.size.width > freeWidth && boxConfig.minSize.width <= freeWidth {
 
                 content.bounds.size.width = freeWidth
+                
+                // TODO: this is only temporary for testing approach
+                if let content = content as? Text {
+
+                    content.layout(constraints: BoxConstraints(minSize: .zero, maxSize: DSize2(freeWidth, .infinity)))
+                    print("GROWING HEIGHT!!")
+
+                    layouted = true
+                    
+                } else if let content = content as? Row {
+
+                    print("Row gets layout with max width", freeWidth)
+
+                    content.layout(constraints: BoxConstraints(minSize: .zero, maxSize: DSize2(freeWidth, .infinity)))
+
+                    layouted = true
+                }
+            }
+
+            if !layouted {
+
+                content.layout(constraints: BoxConstraints(minSize: .zero, maxSize: content.bounds.size))
             }
 
             // + 1 at the end to account for floating point precision errors
@@ -133,7 +161,7 @@ public class Column: Widget {
 
         for line in lines {
 
-            let freeHeight = bounds.size.height - line.height
+            let freeHeight = constraints.maxHeight - line.height
 
             var currentY = 0.0
 
@@ -148,12 +176,19 @@ public class Column: Widget {
                     let growHeight = freeHeight * (item.grow / line.totalGrow)
 
                     content.bounds.size.height += growHeight
+
+                    content.layout()
+                    // TODO: update layout
+                }
+
+                if currentY + content.bounds.size.height > height {
+                    height = currentY + content.bounds.size.height
                 }
 
                 currentY += content.bounds.size.height + spacing
-
-                content.layout()
             }
         }
+
+        return DSize2(lines.last!.startX + lines.last!.width, height)
     }
 }

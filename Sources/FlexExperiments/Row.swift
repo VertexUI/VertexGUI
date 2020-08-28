@@ -25,6 +25,8 @@ public class Row: Widget {
 
     private let wrap: Bool
 
+    private var lines: [Line] = []
+
     public init(spacing: Double = 0, wrap: Bool = false, items: [Item]) {
 
         self.items = items
@@ -88,12 +90,14 @@ public class Row: Widget {
         return config
     }
 
-    override public func performLayout() {
+    override public func performLayout(constraints: BoxConstraints) -> DSize2 {
 
-        var lines = [
+        lines = [
 
             Line(startY: 0, width: 0, height: 0, items: [])
         ]
+
+        var width = 0.0
 
         var currentX = 0.0
         
@@ -101,13 +105,15 @@ public class Row: Widget {
 
             let content = item.content
 
+            var layouted = false
+
             let boxConfig = content.boxConfig
             
-            content.constraints = constraints // legacy
+            content.constraints = self.constraints // legacy
 
             content.bounds.size = boxConfig.preferredSize
 
-            let freeHeight = bounds.size.height - lines.last!.startY
+            let freeHeight = constraints.maxHeight - lines.last!.startY
             
             if boxConfig.preferredSize.height > freeHeight {
 
@@ -128,7 +134,19 @@ public class Row: Widget {
 
                     content.bounds.size.width = freeWidth
 
-                    // TODO: check for aspect ratio
+                    if let content = content as? Text {
+                        
+                        print("LAYOUT LONG TEXT WITH CONSTRAINTS", freeWidth)
+
+                        content.layout(constraints: BoxConstraints(minSize: .zero, maxSize: DSize2(freeWidth, .infinity)))
+
+                        print("AND THE LONG TEXT GOT", content.bounds.size)
+
+                        print("ROW VALUES ARE", constraints.maxSize, bounds.size)
+
+                        layouted = true
+                    }
+
                 } else {
 
                     currentX = 0
@@ -139,6 +157,11 @@ public class Row: Widget {
 
                             startY: lines.last!.startY + lines.last!.height))
                 }
+            }
+
+            if !layouted {
+
+                content.layout(constraints: BoxConstraints(minSize: .zero, maxSize: content.bounds.size))
             }
             
             content.bounds.min.x = currentX
@@ -178,6 +201,8 @@ public class Row: Widget {
                     let growWidth = freeWidth * (item.grow / line.totalGrow)
 
                     content.bounds.size.width += growWidth
+
+                    content.layout(constraints: BoxConstraints(minSize: .zero, maxSize: content.bounds.size))
                 }
 
                 switch item.crossAlignment {
@@ -191,10 +216,17 @@ public class Row: Widget {
                     break
                 }
 
+                if currentX > width {
+
+                    width = currentX
+                }
+
                 currentX += content.bounds.size.width + spacing
 
-                content.layout()
+                //content.layout()
             }
         }
+        
+        return DSize2(lines.last!.startY + lines.last!.height, width)
     }
 }
