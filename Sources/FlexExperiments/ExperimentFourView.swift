@@ -1,5 +1,6 @@
 import WidgetGUI
 import CustomGraphicsMath
+import ColorizeSwift
 
 public class ExperimentFourView: SingleChildWidget {
 
@@ -33,7 +34,7 @@ public class ExperimentFourView: SingleChildWidget {
 
                                 _ = observer.onBoxConfigChanged {
 
-                                    print("OBSERVER BOX CONFIG CHANGED", $0, observer.previousConstraints)
+                                    print("OBSERVER BOX CONFIG CHANGED".yellow(), $0, observer.previousConstraints)
                                 }
                             }
 
@@ -65,7 +66,8 @@ public class ExperimentFourView: SingleChildWidget {
 
                     }.with {
 
-                        $0.debugLayout = false
+                        $0.debugLayout = true
+                        $0.layoutDebuggingColor = .Blue
 
                         _ = $0.onBoxConfigChanged {
                             print("ROW BOX CONFIG CHANGEd", $0)
@@ -73,11 +75,19 @@ public class ExperimentFourView: SingleChildWidget {
                     }
                 }
 
-            } onClick: { [unowned self] _ in
+            } onClick: { [unowned self] in
 
-                longText = "This is the second veeeeeeeeeeeeeeeeeeeeery looooooooooooooong text that is even longer"
+                switch $0.button {
 
-                invalidateRenderState()
+                case .Left:
+                    longText = "This is the second veeeeeeeeeeeeeeeeeeeeery looooooooooooooong text that is even longer"
+
+                case .Right:
+                    invalidateRenderState()
+                }
+            }.with {
+
+                $0.debugLayout = true
             }
         //}
     }
@@ -87,8 +97,6 @@ public class ExperimentFourView: SingleChildWidget {
         //child.constraints = constraints // legacy
 
         //child.bounds.size = constraints.maxSize
-
-        print("CALL LAYOUT!", constraints)
 
         child.layout(constraints: constraints)
 

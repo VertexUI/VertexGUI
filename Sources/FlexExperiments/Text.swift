@@ -30,7 +30,7 @@ public final class Text: Widget, CustomDebugStringConvertible {
     )
 
     public var debugDescription: String {
-        "Text \(text)"
+        "TextWidget: \"\(text)\""
     }
 
     public init(_ text: String, fontSize: Double = 24, fontWeight: FontWeight = .Regular, fontFamily: FontFamily? = nil, wrap: Bool = false, color: Color = .Black) {
@@ -58,7 +58,7 @@ public final class Text: Widget, CustomDebugStringConvertible {
 
         let textBoundsSize = context!.getTextBoundsSize(text, fontConfig: fontConfig, maxWidth: wrap ? constraints.maxWidth : nil)
 
-        print("CALLING LAYOUT ON TEXT", constraints)
+        //print("CALLING LAYOUT ON TEXT", constraints)
 
         return textBoundsSize
     }

@@ -2,6 +2,7 @@ import Foundation
 import WidgetGUI
 import CustomGraphicsMath
 import VisualAppBase
+import ColorizeSwift
 
 open class Widget: Bounded, Parent, Child {
 
@@ -111,7 +112,7 @@ open class Widget: Bounded, Parent, Child {
 
 
  
-    public var focusable = false
+    public internal(set) var focusable = false
 
 
     
@@ -121,7 +122,7 @@ open class Widget: Bounded, Parent, Child {
         }
     }
 
-    public var mounted = false
+    public private(set) var mounted = false
 
     // TODO: maybe something better
     public var layoutable: Bool {
@@ -129,13 +130,14 @@ open class Widget: Bounded, Parent, Child {
         mounted/* && constraints != nil*/ && context != nil
     }
 
-    public var layouting = false
+    public private(set) var layouting = false
 
-    public var layouted = false
+    public private(set) var layouted = false
 
     public private(set) var previousConstraints: BoxConstraints?
 
-    // public var layoutInvalid = false TODO: maybe this is needed for something
+    // TODO: maybe rename to boundsInvalid???
+    public private(set) var layoutInvalid = true
 
     public internal(set) var destroyed = false
 
@@ -154,7 +156,7 @@ open class Widget: Bounded, Parent, Child {
         }
     }
 
-    private let layoutDebuggingColor = Color.Red
+    public var layoutDebuggingColor = Color.Red
 
     private let layoutDebuggingTextFontConfig = FontConfig(
         family: defaultFontFamily,
@@ -300,43 +302,66 @@ open class Widget: Bounded, Parent, Child {
     }
 
     public final func mountChild(_ child: Widget, with context: ReplacementContext? = nil) {
+
         child.mount(parent: self, with: context)
 
         _ = child.onRenderStateInvalidated { [unowned self] in
+        
             invalidateRenderState($0)
         }
 
         // TODO: buffer updates over a certain timespan and then relayout
-        _ = child.onBoundsChanged { [unowned self] _ in
+        _ = child.onBoundsChanged { [unowned self, unowned child] _ in
             // TODO: maybe need special relayout flag / function
+
+            print("Bounds of child \(child) of parent \(self) changed.".bold().blue())
+
             if layouted && !layouting {
-                //layout()
+
+                print("Performing layout on parent parent.")
+
+                layoutInvalid = true
+                
+                layout(constraints: previousConstraints!)
             }
         }
 
-        _ = child.onBoxConfigChanged { [unowned self] _ in
-        
-            if layouted && !layouting {
+        _ = child.onBoxConfigChanged { [unowned self, unowned child] _ in
+            
+            handleChildBoxConfigChanged(child: child)
+        }
+    }
 
-                let oldBoxConfig = boxConfig
+    private func handleChildBoxConfigChanged(child: Widget) {
 
-                invalidateBoxConfig()
+        print("Box config of child: \(child) of parent \(self) changed.".bold().blue())
 
-                let newBoxConfig = boxConfig
+        if layouted && !layouting {
 
-                // This prevents unnecessary calls to layout.
-                // Only if this Widgets box config isn't changed, trigger a relayout.
-                // For all children with changed box configs (also deeply nested ones)
-                // layout will not have been called because of this comparison.
-                // The first parent without a changed box config will trigger
-                // a relayout for the whole subtree.
-                // In case no Widget has no changed box config, the
-                // relayout will be triggered in Root for the whole UI.
-                // TODO: maybe there is a better solution
-                if oldBoxConfig == newBoxConfig {
+            print("Invalidating own box config.")
 
-                    layout(constraints: previousConstraints!)
-                }
+            let oldBoxConfig = boxConfig
+
+            invalidateBoxConfig()
+
+            let newBoxConfig = boxConfig
+
+            // This prevents unnecessary calls to layout.
+            // Only if this Widgets box config isn't changed, trigger a relayout.
+            // For all children with changed box configs (also deeply nested ones)
+            // layout will not have been called because of this comparison.
+            // The first parent without a changed box config will trigger
+            // a relayout for the whole subtree.
+            // In case no Widget has no changed box config, the
+            // relayout will be triggered in Root for the whole UI.
+            // TODO: maybe there is a better solution
+            if oldBoxConfig == newBoxConfig {
+
+                print("Own box config is changed. Perform layout with previous constraints: \(previousConstraints)".yellow())
+
+                layoutInvalid = true
+
+                layout(constraints: previousConstraints!)
             }
         }
     }
@@ -384,20 +409,24 @@ open class Widget: Bounded, Parent, Child {
 
             boxConfig = newBoxConfig
 
+            layoutInvalid = true
+
             onBoxConfigChanged.invokeHandlers(newBoxConfig)
         }
     }
 
     open func layout(constraints: BoxConstraints) {
 
-        /*if let previousConstraints = previousConstraints, constraints == previousConstraints {/* ||
+        print("Attempting layout".yellow(), "on Widget: \(self).")
+
+        if !layoutInvalid, let previousConstraints = previousConstraints, constraints == previousConstraints {/* ||
         
             (constraints.minSize == bounds.size && constraints.maxSize == bounds.size) {*/
 
-            print("Update layout", previousConstraints, constraints, bounds.size, self)
+            print("Constraints equal pervious constraints and layout is not invalid.", "Not performing layout.".yellow())
 
             return
-        }*/
+        }
         
         if !layoutable {
             
@@ -413,22 +442,36 @@ open class Widget: Bounded, Parent, Child {
             return
         }
 
+        print("Layouting Widget: \(self)".bold().blue())
+        print("Constraints: \(constraints)")
+        print("Current size: \(bounds.size)")
+
         layouting = true
 
         let previousBounds = bounds
 
         let isFirstRound = !layouted
 
-        let contentBounds = performLayout(constraints: constraints)
+        let contentSize = performLayout(constraints: constraints)
 
-        bounds.size = constraints.constrain(contentBounds)
+        print("Layout of Widget: \(self) produced result.".bold().green())
+
+        print("Size of content: \(contentSize)")
+
+        print("New self size: \(constraints.constrain(contentSize))")
+
+        bounds.size = constraints.constrain(contentSize)
 
         layouting = false
 
         layouted = true
 
+        layoutInvalid = false
+
         if previousBounds.size != bounds.size && !isFirstRound {
-            
+
+            print("Size changed and is not first round.".yellow())
+
             onBoundsChanged.invokeHandlers(bounds)
 
             invalidateRenderState()

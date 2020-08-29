@@ -1,11 +1,15 @@
 import CustomGraphicsMath
 import Foundation
 
-public struct BoxConstraints: Equatable {
+public struct BoxConstraints: Equatable, CustomDebugStringConvertible {
 
     public var minSize: DSize2
 
     public var maxSize: DSize2
+
+    public var debugDescription: String {
+        "BoxConstraints { min: \(minWidth) x \(minHeight) | max: \(maxWidth) x \(maxHeight) }"
+    }
 
     // TODO: maybe add overflow property to indicate whether overflowing is allowed instead of using infinity in maxSize?
     public init(minSize: DSize2, maxSize: DSize2) {

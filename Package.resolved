@@ -11,6 +11,15 @@
         }
       },
       {
+        "package": "ColorizeSwift",
+        "repositoryURL": "https://github.com/mtynior/ColorizeSwift",
+        "state": {
+          "branch": "master",
+          "revision": "2a354639173d021f4648cf1912b2b00a3a7cd83c",
+          "version": null
+        }
+      },
+      {
         "package": "CRuntime",
         "repositoryURL": "https://github.com/wickwirew/CRuntime.git",
         "state": {
@@ -51,7 +60,7 @@
         "repositoryURL": "https://github.com/t-ae/swim.git",
         "state": {
           "branch": "master",
-          "revision": "cb9ee369107e9c9bad15c868463dcc1c479a9feb",
+          "revision": "e8e3dc5f6a6f58af40a5c341cb7fbf0d7324dc74",
           "version": null
         }
       }
