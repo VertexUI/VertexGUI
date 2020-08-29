@@ -193,7 +193,7 @@ open class Widget: Bounded, Parent, Child {
     }
 
     deinit {
-        Logger.log(.Message, "Deinitialized Widget: \(id) \(self)")
+        Logger.log("Deinitialized Widget: \(id) \(self)", level: .Message, context: .Default)
     }
 
     public final func with(key: String) -> Self {
@@ -314,11 +314,11 @@ open class Widget: Bounded, Parent, Child {
         _ = child.onBoundsChanged { [unowned self, unowned child] _ in
             // TODO: maybe need special relayout flag / function
 
-            print("Bounds of child \(child) of parent \(self) changed.".bold().blue())
+            Logger.log("Bounds of child \(child) of parent \(self) changed.".with(fg: .Blue, style: .Bold), level: .Message, context: .WidgetLayouting)
 
             if layouted && !layouting {
 
-                print("Performing layout on parent parent.")
+                Logger.log("Performing layout on parent parent.", level: .Message, context: .WidgetLayouting)
 
                 layoutInvalid = true
                 
@@ -334,11 +334,11 @@ open class Widget: Bounded, Parent, Child {
 
     private func handleChildBoxConfigChanged(child: Widget) {
 
-        print("Box config of child: \(child) of parent \(self) changed.".bold().blue())
+        Logger.log("Box config of child: \(child) of parent \(self) changed.".with(fg: .Blue, style: .Bold), level: .Message, context: .WidgetLayouting)
 
         if layouted && !layouting {
 
-            print("Invalidating own box config.")
+            Logger.log("Invalidating own box config.", level: .Message, context: .WidgetLayouting)
 
             let oldBoxConfig = boxConfig
 
@@ -357,7 +357,7 @@ open class Widget: Bounded, Parent, Child {
             // TODO: maybe there is a better solution
             if oldBoxConfig == newBoxConfig {
 
-                print("Own box config is changed. Perform layout with previous constraints: \(previousConstraints)".yellow())
+                Logger.log("Own box config is changed. Perform layout with previous constraints: \(previousConstraints)".with(fg: .Yellow), level: .Message, context: .WidgetLayouting)
 
                 layoutInvalid = true
 
@@ -417,34 +417,34 @@ open class Widget: Bounded, Parent, Child {
 
     open func layout(constraints: BoxConstraints) {
 
-        print("Attempting layout".yellow(), "on Widget: \(self).")
+        Logger.log("Attempting layout".with(fg: .Yellow), "on Widget: \(self).", level: .Message, context: .WidgetLayouting)
 
         if !layoutInvalid, let previousConstraints = previousConstraints, constraints == previousConstraints {/* ||
         
             (constraints.minSize == bounds.size && constraints.maxSize == bounds.size) {*/
 
-            print("Constraints equal pervious constraints and layout is not invalid.", "Not performing layout.".yellow())
+            Logger.log("Constraints equal pervious constraints and layout is not invalid.", "Not performing layout.".with(fg: .Yellow), level: .Message, context: .WidgetLayouting)
 
             return
         }
         
         if !layoutable {
             
-            Logger.log(.Warning, "Called layout() on Widget that is not layoutable: \(self)")
+            Logger.warn("Called layout() on Widget that is not layoutable: \(self)", context: .WidgetLayouting)
 
             return
         }
 
         if layouting {
             
-            Logger.log(.Warning, "Called layout() on Widget while that Widget was still layouting: \(self)")
+            Logger.warn("Called layout() on Widget while that Widget was still layouting: \(self)", context: .WidgetLayouting)
 
             return
         }
 
-        print("Layouting Widget: \(self)".bold().blue())
-        print("Constraints: \(constraints)")
-        print("Current size: \(bounds.size)")
+        Logger.log("Layouting Widget: \(self)".with(fg: .Blue, style: .Bold), level: .Message, context: .WidgetLayouting)
+        Logger.log("Constraints: \(constraints)", level: .Message, context: .WidgetLayouting)
+        Logger.log("Current size: \(bounds.size)", level: .Message, context: .WidgetLayouting)
 
         layouting = true
 
@@ -454,11 +454,11 @@ open class Widget: Bounded, Parent, Child {
 
         let contentSize = performLayout(constraints: constraints)
 
-        print("Layout of Widget: \(self) produced result.".bold().green())
+        Logger.log("Layout of Widget: \(self) produced result.".with(fg: .Green, style: .Bold), level: .Message, context: .WidgetLayouting)
 
-        print("Size of content: \(contentSize)")
+        Logger.log("Size of content: \(contentSize)", level: .Message, context: .WidgetLayouting)
 
-        print("New self size: \(constraints.constrain(contentSize))")
+        Logger.log("New self size: \(constraints.constrain(contentSize))", level: .Message, context: .WidgetLayouting)
 
         bounds.size = constraints.constrain(contentSize)
 
@@ -470,7 +470,7 @@ open class Widget: Bounded, Parent, Child {
 
         if previousBounds.size != bounds.size && !isFirstRound {
 
-            print("Size changed and is not first round.".yellow())
+            Logger.log("Size changed and is not first round.".with(fg: .Yellow), level: .Message, context: .WidgetLayouting)
 
             onBoundsChanged.invokeHandlers(bounds)
 
@@ -640,12 +640,12 @@ open class Widget: Bounded, Parent, Child {
     /// This should trigger a rerender of the widget in the next frame.
     public final func invalidateRenderState(_ widget: Widget? = nil) {
         if destroyed {
-            Logger.log(.Warning, "Tried to call invalidateRenderState() on destroyed widget: \(self)")
+            Logger.warn("Tried to call invalidateRenderState() on destroyed widget: \(self)", context: .WidgetRendering)
             return
         }
 
         if !mounted {
-            Logger.log(.Warning, "Called invalidateRenderState() on an unmounted Widget: \(self)")
+            Logger.warn("Called invalidateRenderState() on an unmounted Widget: \(self)", context: .WidgetRendering)
             return
         }
 
@@ -672,7 +672,7 @@ open class Widget: Bounded, Parent, Child {
         destroySelf()
         onDestroy.invokeHandlers(Void())
         destroyed = true
-        //print("Destroyed Widget:", id, self)
+        //Logger.log("Destroyed Widget:", id, self, level: .Message, context: .WidgetLayouting)
     }
 
     open func destroySelf() {}

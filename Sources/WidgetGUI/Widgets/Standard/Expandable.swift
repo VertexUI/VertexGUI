@@ -25,9 +25,6 @@ public class Expandable: SingleChildWidget, StatefulWidget {
     public init(@WidgetBuilder child childBuilder: @escaping () -> Widget) {
         self.childBuilder = childBuilder
         super.init()
-        _ = onBoundsChanged {
-            Logger.log(.Debug, "BOUNDS CHANGED FOR EXPANDABLE \($0)")
-        }
     }
 
     override public func buildChild() -> Widget {
@@ -42,10 +39,5 @@ public class Expandable: SingleChildWidget, StatefulWidget {
                 childBuilder()
             }
         }
-    }
-
-    override public func performLayout() {
-        Logger.debug("Expandable is layouting! \(expanded) \(constraints)")
-        super.performLayout()
     }
 }
