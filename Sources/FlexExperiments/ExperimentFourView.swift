@@ -60,7 +60,7 @@ public class ExperimentFourView: SingleChildWidget {
                                             
                                         }.with {
 
-                                            $0.debugLayout = true
+                                            $0.debugLayout = false
 
                                             $0.layoutDebuggingColor = .Yellow
                                         }
@@ -78,37 +78,40 @@ public class ExperimentFourView: SingleChildWidget {
 
                             Row.Item(grow: 1) {
 
-                            ConstrainedSize(preferredSize: DSize2(200, 400), minSize: DSize2(200, 400)) {
+                                ConstrainedSize(preferredSize: DSize2(200, 400), minSize: DSize2(200, 400)) {
 
-                                ImageView(
+                                    ImageView(
 
-                                    image: try! Image(
-                                        
-                                        contentsOf: Bundle.module.url(
+                                        image: try! Image(
+                                            
+                                            contentsOf: Bundle.module.url(
 
-                                            forResource: "owl", withExtension: "jpg", subdirectory: "owl")!)).with {
+                                                forResource: "owl", withExtension: "jpg", subdirectory: "owl")!)).with {
 
-                                                $0.debugLayout = true
-                                            }
-                            }
+                                                    $0.debugLayout = true
+                                                }
+                                }
                             }
 
                             Row.Item(grow: 1) {
 
-                            ConstrainedSize(preferredSize: DSize2(200, 600), minSize: DSize2(200, 600)) {
+                                ConstrainedSize(preferredSize: DSize2(200, 600), minSize: DSize2(200, 600)) {
 
-                                ImageView(
+                                    ImageView(
 
-                                    image: try! Image(
-                                        
-                                        contentsOf: Bundle.module.url(
+                                        image: try! Image(
+                                            
+                                            contentsOf: Bundle.module.url(
 
-                                            forResource: "owl", withExtension: "jpg", subdirectory: "owl")!)).with {
+                                                forResource: "owl", withExtension: "jpg", subdirectory: "owl")!)).with {
 
-                                                $0.debugLayout = true
-                                            }
+                                                    $0.debugLayout = true
+                                                }
+                                }
                             }
-                            }
+                        }.with {
+
+                            $0.debugLayout = true
                         }
 
                     }.with {

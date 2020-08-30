@@ -187,7 +187,7 @@ public class Row: Widget {
 
             var currentX = 0.0
 
-            let freeWidth = bounds.size.width - line.width
+            let freeWidth = constraints.maxWidth - line.width
 
             if index > 0 {
 
@@ -204,7 +204,7 @@ public class Row: Widget {
 
                     let growWidth = freeWidth * (item.grow / line.totalGrow)
 
-                    print("Growing Item", content, "growWidth", content.bounds.size)
+                    print("Growing Item", content, "growWidth", growWidth, "Current size", content.bounds.size)
 
                     content.layout(constraints: BoxConstraints(
 
@@ -253,6 +253,6 @@ public class Row: Widget {
         
         print("PREVIOUS SIZE WAS", bounds.size)
 
-        return DSize2(width, lines.last!.startY + lines.last!.height)
+        return constraints.constrain(DSize2(width, lines.last!.startY + lines.last!.height))
     }
 }
