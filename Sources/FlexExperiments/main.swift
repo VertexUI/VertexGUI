@@ -6,12 +6,14 @@ import CustomGraphicsMath
 import Path
 import GL
 import CSDL2
+import ColorizeSwift
 
 // TODO: create a subclass of App, DesktopApp which supports windows/screens which can support different resolutions --> renderContexts --> different text boundsSize
 open class StatefulWidgetsResearchApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGWindow, SDL2OpenGL3NanoVGRenderer> {
     open var guiRoot: WidgetGUI.Root
 
     public init() {
+
         guiRoot = WidgetGUI.Root(
             rootWidget: ExperimentFourView().with { $0.debugLayout = false })
         //guiRoot.debugLayout = true

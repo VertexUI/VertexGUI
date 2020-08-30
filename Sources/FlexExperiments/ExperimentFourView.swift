@@ -9,72 +9,84 @@ public class ExperimentFourView: SingleChildWidget {
 
     override public func buildChild() -> Widget {
         
-        /*Background(color: Color(200, 200, 255, 255)) {
+        Background(color: Color(200, 200, 255, 255)) { [unowned self] in
+                
+            MouseArea {
 
-            Padding(all: 32) {*/
-            
-            MouseArea { [unowned self] in
+                Padding(all: 32) {
 
-                ConstrainedSize(maxSize: DSize2(300, .infinity)) {
+                    ConstrainedSize(maxSize: DSize2(300, .infinity)) {
 
-                    Row(wrap: true) {
+                        Row(wrap: true) {
 
-                        Text("WOW This text is long but doesn't wrap")
-                        
-                        ObservingBuilder($longText) {
+                            Text("WOW This text is long but doesn't wrap")
                             
-                            ConstrainedSize(minSize: DSize2(100, 0)) {
+                            ObservingBuilder($longText) {
+                                
+                                ConstrainedSize(minSize: DSize2(100, 0)) {
 
-                                Text(longText, wrap: true)
-                            }
-                        }
-
-                        Text("This is the text after")
-
-                        /*Row.Item(grow: 1) {
-
-                            Row {
-
-                                Background(color: Color(140, 140, 255, 255)) {
-
-                                    Padding(all: 64) {
-
-                                        Text("WORKS")
-                                    }.with {
-
-                                        $0.debugLayout = true
-                                    }
+                                    Text(longText, wrap: true)
                                 }
-
-                                Text("A VEEEEEEEEEEEEEEERY LONG TEXT")
-
-                            }.with {
-
-                                $0.debugLayout = true
                             }
-                        }
 
-                        ImageView(
+                            Text("This is the text after")
 
-                            image: try! Image(
-                                
-                                contentsOf: Bundle.module.url(
+                            Row.Item(grow: 1) {
 
-                                    forResource: "owl", withExtension: "jpg", subdirectory: "owl")!)).with {
+                                Row {
+                                    
+                                    Row.Item(grow: 1) {
 
-                                        $0.debugLayout = true
+                                        Background(color: Color(140, 140, 255, 255)) {
+
+                                            Padding(all: 64) {
+
+                                                Text("WORKS")
+                                            }
+                                            
+                                        }.with {
+
+                                            $0.debugLayout = true
+
+                                            $0.layoutDebuggingColor = .Yellow
+                                        }
                                     }
 
-                        ImageView(
+                                    Text("A VEEEEEEEEEEEEEEERY LONG TEXT")
 
-                            image: try! Image(
-                                
-                                contentsOf: Bundle.module.url(
+                                }.with {
+
+                                    $0.debugLayout = true
+
+                                    $0.layoutDebuggingColor = .LightBlue
+                                }
+                            }
+
+                            ImageView(
+
+                                image: try! Image(
                                     
-                                    forResource: "owl-4", withExtension: "jpg", subdirectory: "owl")!)).with {
+                                    contentsOf: Bundle.module.url(
 
-                                        $0.debugLayout = true
-                                    }*/
+                                        forResource: "owl", withExtension: "jpg", subdirectory: "owl")!)).with {
+
+                                            $0.debugLayout = true
+                                        }
+
+                            Row.Item(grow: 1) {
+                                
+                                ImageView(
+
+                                    image: try! Image(
+                                        
+                                        contentsOf: Bundle.module.url(
+                                            
+                                            forResource: "owl-4", withExtension: "jpg", subdirectory: "owl")!)).with {
+
+                                                $0.debugLayout = true
+                                            }
+                            }
+                        }
                     }
                 }
 
@@ -88,11 +100,8 @@ public class ExperimentFourView: SingleChildWidget {
                 case .Right:
                     invalidateRenderState()
                 }
-            }.with {
-
-                $0.debugLayout = true
             }
-        //}
+        }
     }
 
     override public func performLayout(constraints: BoxConstraints) -> DSize2 {

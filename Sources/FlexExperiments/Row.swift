@@ -138,6 +138,7 @@ public class Row: Widget {
 
                     lines.append(Line(startY: lines.last!.startY + lines.last!.height))
                 }
+
             }
 
             print("ROW LAYS OUT CONTENT", content, contentConstraints)
@@ -178,11 +179,18 @@ public class Row: Widget {
             }
         }
 
-        for line in lines {
+        for index in 0..<lines.count {
+
+            var line = lines[index]
 
             var currentX = 0.0
 
             let freeWidth = bounds.size.width - line.width
+
+            if index > 0 {
+
+                line.startY = lines[index - 1].startY + lines[index - 1].height
+            }
 
             for item in line.items {
             
@@ -194,9 +202,11 @@ public class Row: Widget {
 
                     let growWidth = freeWidth * (item.grow / line.totalGrow)
 
-                    content.bounds.size.width += growWidth
+                    content.layout(constraints: BoxConstraints(
 
-                    content.layout(constraints: BoxConstraints(minSize: .zero, maxSize: content.bounds.size))
+                        minSize: DSize2(content.bounds.size.width + growWidth, 0),
+                        
+                        maxSize: DSize2(content.bounds.size.width + growWidth, .infinity)))
                 }
 
                 switch item.crossAlignment {
@@ -212,15 +222,25 @@ public class Row: Widget {
 
                 currentX += content.bounds.size.width
 
+                if content.bounds.size.height > line.height {
+
+                    line.height = content.bounds.size.height
+                }
+
+                if currentX > line.width {
+
+                    line.width = currentX
+                }
+
                 if currentX > width {
 
                     width = currentX
                 }
 
                 currentX += spacing
-
-                //content.layout()
             }
+
+            lines[index] = line
         }
 
         print("after layout, row got size", DSize2(width, lines.last!.startY + lines.last!.height))
