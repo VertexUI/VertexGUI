@@ -9,12 +9,10 @@ public class ConstrainedSize: SingleChildWidget {
     private var maxSize: DSize2?
     
     private var preferredSize: DSize2?
-    
-    private var aspectRatio: Double?
 
     private var childBuilder: () -> Widget
 
-    public init(preferredSize: DSize2? = nil, minSize: DSize2? = nil, maxSize: DSize2? = nil, aspectRatio: Double? = nil, @WidgetBuilder child childBuilder: @escaping () -> Widget) {
+    public init(preferredSize: DSize2? = nil, minSize: DSize2? = nil, maxSize: DSize2? = nil, @WidgetBuilder child childBuilder: @escaping () -> Widget) {
 
         self.preferredSize = preferredSize
         
@@ -22,9 +20,12 @@ public class ConstrainedSize: SingleChildWidget {
 
         self.maxSize = maxSize
 
-        self.aspectRatio = aspectRatio
-
         self.childBuilder = childBuilder
+    }
+
+    public convenience init(size: DSize2, @WidgetBuilder child childBuilder: @escaping () -> Widget) {
+
+        self.init(preferredSize: size, minSize: size, maxSize: size, child: childBuilder)
     }
 
     override public func buildChild() -> Widget {
@@ -42,9 +43,7 @@ public class ConstrainedSize: SingleChildWidget {
 
             minSize: minSize ?? childConfig.minSize,
 
-            maxSize: maxSize ?? childConfig.maxSize,
-
-            aspectRatio: aspectRatio ?? childConfig.aspectRatio
+            maxSize: maxSize ?? childConfig.maxSize
         )
 
         if config.maxSize.width < config.preferredSize.width {
@@ -64,7 +63,11 @@ public class ConstrainedSize: SingleChildWidget {
 
         if let explicitPreferredSize = preferredSize {
 
-            child.layout(constraints: BoxConstraints(size: constraints.constrain(explicitPreferredSize)))
+            child.layout(constraints: BoxConstraints(
+                
+                minSize: constraints.constrain(boxConfig.minSize),
+
+                maxSize: constraints.constrain(explicitPreferredSize)))
 
         } else {
 

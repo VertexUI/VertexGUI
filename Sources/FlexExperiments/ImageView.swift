@@ -75,7 +75,7 @@ public class ImageView: Widget {
 
         } else if resizedImage != nil {
 
-            return RenderObject.RenderStyle(fill: FixedRenderValue(.Image(resizedImage!/*, hash: imageHash!*/, position: globalBounds.min))) {
+            return RenderObject.RenderStyle(fill: FixedRenderValue(.Image(resizedImage!, position: globalBounds.min))) {
 
                 RenderObject.Rectangle(globalBounds)
             }

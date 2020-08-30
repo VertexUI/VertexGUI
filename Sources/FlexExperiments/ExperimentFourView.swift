@@ -5,7 +5,7 @@ import ColorizeSwift
 
 public class ExperimentFourView: SingleChildWidget {
 
-    @Observable private var longText: String = "This is the first veeeeery looooong text"
+    @Observable private var longText: String = "This is the first veeeeeeeeeeeeeeeeeeeeeeeeeeery looooong text"
 
     override public func buildChild() -> Widget {
         
@@ -15,11 +15,11 @@ public class ExperimentFourView: SingleChildWidget {
 
                 Padding(all: 32) {
 
-                    ConstrainedSize(maxSize: DSize2(300, .infinity)) {
+                    ConstrainedSize(maxSize: DSize2(500, .infinity)) {
 
                         Row(wrap: true) {
 
-                            Text("WOW This text is long but doesn't wrap")
+                            Text("WOW This text is looooooooooooong but doesn't wrap")
                             
                             ObservingBuilder($longText) {
                                 
@@ -76,8 +76,10 @@ public class ExperimentFourView: SingleChildWidget {
                                 }
                             }
 
-                            ConstrainedSize(preferredSize: DSize2(200, 400)) {
-                                
+                            Row.Item(grow: 1) {
+
+                            ConstrainedSize(preferredSize: DSize2(200, 400), minSize: DSize2(200, 400)) {
+
                                 ImageView(
 
                                     image: try! Image(
@@ -89,7 +91,29 @@ public class ExperimentFourView: SingleChildWidget {
                                                 $0.debugLayout = true
                                             }
                             }
+                            }
+
+                            Row.Item(grow: 1) {
+
+                            ConstrainedSize(preferredSize: DSize2(200, 600), minSize: DSize2(200, 600)) {
+
+                                ImageView(
+
+                                    image: try! Image(
+                                        
+                                        contentsOf: Bundle.module.url(
+
+                                            forResource: "owl", withExtension: "jpg", subdirectory: "owl")!)).with {
+
+                                                $0.debugLayout = true
+                                            }
+                            }
+                            }
                         }
+
+                    }.with {
+
+                        $0.debugLayout = true
                     }
                 }
 
@@ -98,7 +122,7 @@ public class ExperimentFourView: SingleChildWidget {
                 switch $0.button {
 
                 case .Left:
-                    longText = "This is the second veeeeeeeeeeeeeeeeeeeeery looooooooooooooong text that is even longer"
+                    longText = "This is the second veeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeery looooooooooooooong text that is even longer"
 
                 case .Right:
                     invalidateRenderState()

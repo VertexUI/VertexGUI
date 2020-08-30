@@ -114,7 +114,7 @@ public class Row: Widget {
             let freeHeight = constraints.maxHeight - lines.last!.startY
 
             var contentConstraints = BoxConstraints(
-                
+
                 minSize: .zero,
                 
                 maxSize: DSize2(freeWidth, freeHeight)
@@ -169,7 +169,7 @@ public class Row: Widget {
             }
 
             // < 1 to account for floating point precision errors
-            if (currentX - constraints.maxWidth) < 1 {
+            if abs(currentX - constraints.maxWidth) < 1 {
 
                 currentX = 0
 
@@ -204,11 +204,15 @@ public class Row: Widget {
 
                     let growWidth = freeWidth * (item.grow / line.totalGrow)
 
+                    print("Growing Item", content, "growWidth", content.bounds.size)
+
                     content.layout(constraints: BoxConstraints(
 
                         minSize: DSize2(content.bounds.size.width + growWidth, 0),
                         
                         maxSize: DSize2(content.bounds.size.width + growWidth, .infinity)))
+                    
+                    print("AFTER GROW", content.bounds.size)                        
                 }
 
                 switch item.crossAlignment {
