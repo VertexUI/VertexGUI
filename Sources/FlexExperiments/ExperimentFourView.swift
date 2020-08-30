@@ -29,6 +29,20 @@ public class ExperimentFourView: SingleChildWidget {
                                 }
                             }
 
+                            /*Row.Item(grow: 1) {
+                                
+                                ImageView(
+
+                                    image: try! Image(
+                                        
+                                        contentsOf: Bundle.module.url(
+                                            
+                                            forResource: "owl-4", withExtension: "jpg", subdirectory: "owl")!)).with {
+
+                                                $0.debugLayout = true
+                                            }
+                            }*/
+
                             Text("This is the text after")
 
                             Row.Item(grow: 1) {
@@ -62,26 +76,15 @@ public class ExperimentFourView: SingleChildWidget {
                                 }
                             }
 
-                            ImageView(
-
-                                image: try! Image(
-                                    
-                                    contentsOf: Bundle.module.url(
-
-                                        forResource: "owl", withExtension: "jpg", subdirectory: "owl")!)).with {
-
-                                            $0.debugLayout = true
-                                        }
-
-                            Row.Item(grow: 1) {
+                            ConstrainedSize(preferredSize: DSize2(200, 400)) {
                                 
                                 ImageView(
 
                                     image: try! Image(
                                         
                                         contentsOf: Bundle.module.url(
-                                            
-                                            forResource: "owl-4", withExtension: "jpg", subdirectory: "owl")!)).with {
+
+                                            forResource: "owl", withExtension: "jpg", subdirectory: "owl")!)).with {
 
                                                 $0.debugLayout = true
                                             }

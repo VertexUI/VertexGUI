@@ -18,7 +18,7 @@ public class Logger {
 
         if activeContexts.contains(context) && activeLevels.contains(level) {
             
-            renderer.log(["\(context) \(level): "] + outputs)
+            renderer.log(["\(context) \(level): ".with(style: .Bold)] + outputs)
         }
     }
 
@@ -29,7 +29,7 @@ public class Logger {
     
     public static func warn(_ output: String, context: Context = .Default) {
 
-        log(LogText(stringInterpolation: output), level: .Warning, context: context)
+        log(LogText(stringInterpolation: output).with(fg: .Yellow, bg: .Black), level: .Warning, context: context)
     }
 
     public enum Level: CaseIterable {
@@ -78,7 +78,7 @@ public struct LogText: ExpressibleByStringInterpolation {
         self.value = value.description
     }*/
 
-    public func with(bg: BackgroundColor? = nil, fg: ForegroundColor? = nil, style: FontStyle? = nil) -> Self {
+    public func with(fg: ForegroundColor? = nil, bg: BackgroundColor? = nil, style: FontStyle? = nil) -> Self {
 
         var result = LogText(stringLiteral: value)
 
@@ -107,7 +107,7 @@ public struct LogText: ExpressibleByStringInterpolation {
 
     public enum BackgroundColor {
 
-        case Blue, White, Yellow
+        case Blue, White, Yellow, Black
     }
 
     public enum FontStyle {
@@ -118,9 +118,9 @@ public struct LogText: ExpressibleByStringInterpolation {
 
 extension String {
 
-    public func with(bg: LogText.BackgroundColor? = nil, fg: LogText.ForegroundColor? = nil, style: LogText.FontStyle? = nil) -> LogText {
+    public func with(fg: LogText.ForegroundColor? = nil, bg: LogText.BackgroundColor? = nil, style: LogText.FontStyle? = nil) -> LogText {
 
-        LogText(stringLiteral: self).with(bg: bg, fg: fg, style: style)
+        LogText(stringLiteral: self).with(fg: fg, bg: bg, style: style)
     }
 }
 
@@ -158,6 +158,32 @@ public struct ConsoleLogRenderer: LogRenderer {
                 default:
 
                     fatalError("Unsupported LogText foreground color in ConsoleLogRenderer: \(foregroundColor).")
+                }
+            }
+
+            if let backgroundColor = text.backgroundColor {
+
+                switch backgroundColor {
+
+                case .Blue:
+
+                    partialString = partialString.onBlue()
+
+                case .White:
+
+                    partialString = partialString.onWhite()
+
+                case .Yellow:
+
+                    partialString = partialString.onYellow()
+
+                case .Black:
+
+                    partialString = partialString.onBlack()
+
+                default:
+
+                    fatalError("Unsupported LogText background color in ConsoleLogRenderer: \(backgroundColor)")
                 }
             }
 

@@ -452,15 +452,30 @@ open class Widget: Bounded, Parent, Child {
 
         let isFirstRound = !layouted
 
-        let contentSize = performLayout(constraints: constraints)
+        let newSize = performLayout(constraints: constraints)
 
         Logger.log("Layout of Widget: \(self) produced result.".with(fg: .Green, style: .Bold), level: .Message, context: .WidgetLayouting)
 
-        Logger.log("Size of content: \(contentSize)", level: .Message, context: .WidgetLayouting)
+        Logger.log("New self size: \(newSize)", level: .Message, context: .WidgetLayouting)
 
-        Logger.log("New self size: \(constraints.constrain(contentSize))", level: .Message, context: .WidgetLayouting)
+        let constrainedSize = constraints.constrain(newSize)
 
-        bounds.size = constraints.constrain(contentSize)
+        if newSize != constrainedSize {
+
+            Logger.warn("New size does not respect constraints. Size: \(newSize), Constraints: \(constraints)", context: .WidgetLayouting)
+        }
+
+        let boxConfigConstrainedSize = BoxConstraints(
+            minSize: boxConfig.minSize,
+            maxSize: boxConfig.maxSize)
+                .constrain(newSize)
+        
+        if newSize != boxConfigConstrainedSize {
+
+            Logger.warn("New size does not respect own box config. Size: \(newSize), BoxConfig: \(boxConfig)")
+        }
+
+        bounds.size = newSize
 
         layouting = false
 

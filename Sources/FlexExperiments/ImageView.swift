@@ -39,7 +39,7 @@ public class ImageView: Widget {
             width = boxConfig.preferredSize.width * scale
         }
 
-        return DSize2(width, height)
+        return constraints.constrain(DSize2(width, height))
     }
 
     override public func renderContent() -> RenderObject? {

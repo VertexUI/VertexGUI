@@ -114,7 +114,9 @@ public class Row: Widget {
             let freeHeight = constraints.maxHeight - lines.last!.startY
 
             var contentConstraints = BoxConstraints(
+                
                 minSize: .zero,
+                
                 maxSize: DSize2(freeWidth, freeHeight)
             )
 
