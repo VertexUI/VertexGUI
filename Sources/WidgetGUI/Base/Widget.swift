@@ -137,7 +137,7 @@ open class Widget: Bounded, Parent, Child {
     public private(set) var previousConstraints: BoxConstraints?
 
     // TODO: maybe rename to boundsInvalid???
-    public private(set) var layoutInvalid = true
+    public internal(set) var layoutInvalid = true
 
     public internal(set) var destroyed = false
 

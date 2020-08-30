@@ -31,21 +31,27 @@ public class ExperimentFourView: SingleChildWidget {
 
                         Text("This is the text after")
 
-                        Row {
+                        /*Row.Item(grow: 1) {
 
-                            Background(color: Color(140, 140, 255, 255)) {
+                            Row {
 
-                                Padding(all: 64) {
+                                Background(color: Color(140, 140, 255, 255)) {
 
-                                    Text("WORKS")
-                                }.with {
+                                    Padding(all: 64) {
 
-                                    $0.debugLayout = true
+                                        Text("WORKS")
+                                    }.with {
+
+                                        $0.debugLayout = true
+                                    }
                                 }
+
+                                Text("A VEEEEEEEEEEEEEEERY LONG TEXT")
+
+                            }.with {
+
+                                $0.debugLayout = true
                             }
-
-                            Text("A VEEEEEEEEEEEEEEERY LONG TEXT")
-
                         }
 
                         ImageView(
@@ -68,7 +74,7 @@ public class ExperimentFourView: SingleChildWidget {
                                     forResource: "owl-4", withExtension: "jpg", subdirectory: "owl")!)).with {
 
                                         $0.debugLayout = true
-                                    }
+                                    }*/
                     }
                 }
 
