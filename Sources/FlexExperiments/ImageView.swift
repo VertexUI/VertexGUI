@@ -22,6 +22,26 @@ public class ImageView: Widget {
         BoxConfig(preferredSize: DSize2(Double(image.width), Double(image.height)))
     }
 
+    override public func performLayout(constraints: BoxConstraints) -> DSize2 {
+        
+        var width = max(constraints.minWidth, min(constraints.maxWidth, boxConfig.preferredSize.width))
+
+        var scale = width / boxConfig.preferredSize.width
+
+        var height = boxConfig.preferredSize.height * scale
+
+        if height < constraints.minHeight || height > constraints.maxHeight {
+
+            height = max(constraints.minHeight, min(constraints.maxWidth, boxConfig.preferredSize.height))
+
+            scale = height / boxConfig.preferredSize.height
+
+            width = boxConfig.preferredSize.width * scale
+        }
+
+        return DSize2(width, height)
+    }
+
     override public func renderContent() -> RenderObject? {
 
         if bounds.size.width <= 0 || bounds.size.height <= 0 {
@@ -66,7 +86,5 @@ public class ImageView: Widget {
         }
     }
 
-    override public func performLayout() {
-        
-    }
+
 }

@@ -136,11 +136,7 @@ public class Row: Widget {
 
                     contentConstraints.maxHeight = constraints.maxHeight - lines.last!.startY - lines.last!.height
 
-                    lines.append(
-
-                        Line(
-
-                            startY: lines.last!.startY + lines.last!.height))
+                    lines.append(Line(startY: lines.last!.startY + lines.last!.height))
                 }
             }
 
@@ -150,6 +146,8 @@ public class Row: Widget {
 
             print("content got size:", content.bounds.size)
             
+            print("Current X is", currentX)
+
             content.bounds.min.x = currentX
 
             content.bounds.min.y = lines.last!.startY
@@ -167,7 +165,17 @@ public class Row: Widget {
                 lines[lines.count - 1].height = content.bounds.size.height
             }
 
-            currentX += spacing
+            // < 1 to account for floating point precision errors
+            if (currentX - constraints.maxWidth) < 1 {
+
+                currentX = 0
+
+                lines.append(Line(startY: lines.last!.startY + lines.last!.height))
+
+            } else {
+                
+                currentX += spacing
+            }
         }
 
         for line in lines {

@@ -1,3 +1,4 @@
+import Foundation
 import WidgetGUI
 import CustomGraphicsMath
 import ColorizeSwift
@@ -14,64 +15,60 @@ public class ExperimentFourView: SingleChildWidget {
             
             MouseArea { [unowned self] in
 
-                ConstrainedSize(maxSize: DSize2(200, .infinity)) {
+                ConstrainedSize(maxSize: DSize2(300, .infinity)) {
 
                     Row(wrap: true) {
 
-                            Text("WOW This text is long but doesn't wrap")
+                        Text("WOW This text is long but doesn't wrap")
+                        
+                        ObservingBuilder($longText) {
                             
-                            ObservingBuilder($longText) {
-                                
-                                ConstrainedSize(minSize: DSize2(100, 0)) {
+                            ConstrainedSize(minSize: DSize2(100, 0)) {
 
-                                    Text(longText, wrap: true).with {
+                                Text(longText, wrap: true)
+                            }
+                        }
 
-                                        $0.debugLayout = true
+                        Text("This is the text after")
 
-                                    }
-                                }
-                            }.with { observer in
+                        Row {
 
-                                _ = observer.onBoxConfigChanged {
+                            Background(color: Color(140, 140, 255, 255)) {
 
-                                    print("OBSERVER BOX CONFIG CHANGED".yellow(), $0, observer.previousConstraints)
+                                Padding(all: 64) {
+
+                                    Text("WORKS")
+                                }.with {
+
+                                    $0.debugLayout = true
                                 }
                             }
 
-                            Text("This is the text after")
-                            /*Row {
+                            Text("A VEEEEEEEEEEEEEEERY LONG TEXT")
 
-                                Background(color: Color(140, 140, 255, 255)) {
-
-                                    Padding(all: 64) {
-
-                                        Text("WORKS")
-                                    }
-                                }
-
-                                Text("A VEEEEEEEEEEEEEEERY LONG TEXT").with {
-                                    
-                                    $0.debugLayout = false
-                                }
-
-                            }.with {
-
-                                $0.debugLayout = true
-                            }*/
-
-                        /*}.with {
-
-                            $0.debugLayout = false
-                        }*/
-
-                    }.with {
-
-                        $0.debugLayout = true
-                        $0.layoutDebuggingColor = .Blue
-
-                        _ = $0.onBoxConfigChanged {
-                            print("ROW BOX CONFIG CHANGEd", $0)
                         }
+
+                        ImageView(
+
+                            image: try! Image(
+                                
+                                contentsOf: Bundle.module.url(
+
+                                    forResource: "owl", withExtension: "jpg", subdirectory: "owl")!)).with {
+
+                                        $0.debugLayout = true
+                                    }
+
+                        ImageView(
+
+                            image: try! Image(
+                                
+                                contentsOf: Bundle.module.url(
+                                    
+                                    forResource: "owl-4", withExtension: "jpg", subdirectory: "owl")!)).with {
+
+                                        $0.debugLayout = true
+                                    }
                     }
                 }
 

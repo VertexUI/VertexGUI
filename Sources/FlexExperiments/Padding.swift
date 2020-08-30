@@ -45,17 +45,18 @@ public class Padding: SingleChildWidget {
         return resultConfig
     }
 
-    override open func performLayout() {      
+    override open func performLayout(constraints: BoxConstraints) -> DSize2 {      
 
-        child.constraints = constraints // legacy
-        
         let paddingSize = DSize2(padding.left + padding.right, padding.top + padding.bottom)
         
-        child.bounds.size = bounds.size - paddingSize
+        child.layout(constraints: BoxConstraints(
+            minSize: max(DSize2.zero, constraints.minSize - paddingSize),
+            maxSize: max(DSize2.zero, constraints.maxSize - paddingSize)
+        ))
 
         child.bounds.min = DVec2(padding.left, padding.top)
 
-        child.layout()
+        return child.bounds.size + paddingSize
     }
 }
 
