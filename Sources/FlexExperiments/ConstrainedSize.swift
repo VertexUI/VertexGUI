@@ -8,24 +8,15 @@ public class ConstrainedSize: SingleChildWidget {
 
     private var maxSize: DSize2?
     
-    private var preferredSize: DSize2?
-
     private var childBuilder: () -> Widget
 
-    public init(preferredSize: DSize2? = nil, minSize: DSize2? = nil, maxSize: DSize2? = nil, @WidgetBuilder child childBuilder: @escaping () -> Widget) {
+    public init(minSize: DSize2? = nil, maxSize: DSize2? = nil, @WidgetBuilder child childBuilder: @escaping () -> Widget) {
 
-        self.preferredSize = preferredSize
-        
         self.minSize = minSize
 
         self.maxSize = maxSize
 
         self.childBuilder = childBuilder
-    }
-
-    public convenience init(size: DSize2, @WidgetBuilder child childBuilder: @escaping () -> Widget) {
-
-        self.init(preferredSize: size, minSize: size, maxSize: size, child: childBuilder)
     }
 
     override public func buildChild() -> Widget {
@@ -39,44 +30,25 @@ public class ConstrainedSize: SingleChildWidget {
         
         var config = BoxConfig(
 
-            preferredSize: preferredSize ?? childConfig.preferredSize,
+            preferredSize: childConfig.preferredSize,
 
             minSize: minSize ?? childConfig.minSize,
 
             maxSize: maxSize ?? childConfig.maxSize
         )
 
-        if config.maxSize.width < config.preferredSize.width {
-
-            config.preferredSize.width = config.maxSize.width
-        }
-
-        if config.maxSize.height < config.preferredSize.height {
-
-            config.preferredSize.height = config.maxSize.height
-        }
+        config.preferredSize = BoxConstraints(minSize: config.minSize, maxSize: config.maxSize).constrain(childConfig.preferredSize)
 
         return config
     }
 
     override public func performLayout(constraints: BoxConstraints) -> DSize2 {
 
-        if let explicitPreferredSize = preferredSize {
+        child.layout(constraints: BoxConstraints(
 
-            child.layout(constraints: BoxConstraints(
-                
-                minSize: constraints.constrain(boxConfig.minSize),
-
-                maxSize: constraints.constrain(explicitPreferredSize)))
-
-        } else {
-
-            child.layout(constraints: BoxConstraints(
-
-                minSize: constraints.constrain(boxConfig.minSize),
-                
-                maxSize: constraints.constrain(boxConfig.maxSize)))
-        }
+            minSize: constraints.constrain(minSize ?? constraints.minSize),
+            
+            maxSize: constraints.constrain(maxSize ?? constraints.maxSize)))
 
         return child.bounds.size
     }

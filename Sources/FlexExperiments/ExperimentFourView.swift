@@ -27,6 +27,9 @@ public class ExperimentFourView: SingleChildWidget {
 
                                     Text(longText, wrap: true)
                                 }
+                            }.with {
+
+                                $0.debugLayout = true
                             }
 
                             /*Row.Item(grow: 1) {
@@ -43,9 +46,24 @@ public class ExperimentFourView: SingleChildWidget {
                                             }
                             }*/
 
-                            Text("This is the text after")
+                            Row.Item(width: .Percent(50)) {
 
-                            Row.Item(grow: 1) {
+                                Text("This is the text after a bit long", wrap: true).with {
+
+                                    $0.debugLayout = true
+                                }
+
+                            }
+
+                            Row.Item(width: .Percent(50)) {
+
+                                Text("This is other text after a bit long too", wrap: true).with {
+
+                                    $0.debugLayout = true
+                                }
+
+                            }
+                            /*Row.Item(grow: 1) {
 
                                 Row {
                                     
@@ -108,7 +126,7 @@ public class ExperimentFourView: SingleChildWidget {
                                                     $0.debugLayout = true
                                                 }
                                 }
-                            }
+                            }*/
                         }.with {
 
                             $0.debugLayout = true

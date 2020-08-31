@@ -443,7 +443,9 @@ open class Widget: Bounded, Parent, Child {
         }
 
         Logger.log("Layouting Widget: \(self)".with(fg: .Blue, style: .Bold), level: .Message, context: .WidgetLayouting)
+
         Logger.log("Constraints: \(constraints)", level: .Message, context: .WidgetLayouting)
+        
         Logger.log("Current size: \(bounds.size)", level: .Message, context: .WidgetLayouting)
 
         layouting = true
@@ -466,8 +468,11 @@ open class Widget: Bounded, Parent, Child {
         }
 
         let boxConfigConstrainedSize = BoxConstraints(
+
             minSize: boxConfig.minSize,
+
             maxSize: boxConfig.maxSize)
+
                 .constrain(newSize)
         
         if newSize != boxConfigConstrainedSize {
