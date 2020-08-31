@@ -140,7 +140,7 @@ public class Row: Widget {
                     
                 case let .Percent(value):
 
-                    explicitWidthValue = constraints.maxWidth * value
+                    explicitWidthValue = constraints.maxWidth * value / 100
                 }
 
                 contentConstraints.maxSize.width = explicitWidthValue!
@@ -148,6 +148,8 @@ public class Row: Widget {
                 if explicitWidthValue!.isFinite {
 
                     preferredWidth = explicitWidthValue!
+
+                    contentConstraints.minSize.width = explicitWidthValue!
                 }
             }
 

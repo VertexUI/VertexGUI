@@ -21,15 +21,18 @@ public class ExperimentFourView: SingleChildWidget {
 
                             Text("WOW This text is looooooooooooong but doesn't wrap")
                             
-                            ObservingBuilder($longText) {
-                                
-                                ConstrainedSize(minSize: DSize2(100, 0)) {
+                            Row.Item(grow: 1, width: .Percent(50)) {
 
-                                    Text(longText, wrap: true)
+                                ObservingBuilder($longText) {
+                                    
+                                    ConstrainedSize(minSize: DSize2(100, 0)) {
+
+                                        Text(longText, wrap: true)
+                                    }
+                                }.with {
+
+                                    $0.debugLayout = true
                                 }
-                            }.with {
-
-                                $0.debugLayout = true
                             }
 
                             /*Row.Item(grow: 1) {
@@ -48,7 +51,7 @@ public class ExperimentFourView: SingleChildWidget {
 
                             Row.Item(width: .Percent(50)) {
 
-                                Text("This is the text after a bit long", wrap: true).with {
+                                Text("This is the text", wrap: true).with {
 
                                     $0.debugLayout = true
                                 }
@@ -57,7 +60,7 @@ public class ExperimentFourView: SingleChildWidget {
 
                             Row.Item(width: .Percent(50)) {
 
-                                Text("This is other text after a bit long too", wrap: true).with {
+                                Text("This is other text", wrap: true).with {
 
                                     $0.debugLayout = true
                                 }

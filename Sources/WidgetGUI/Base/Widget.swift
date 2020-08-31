@@ -480,7 +480,7 @@ open class Widget: Bounded, Parent, Child {
             Logger.warn("New size does not respect own box config. Size: \(newSize), BoxConfig: \(boxConfig)")
         }
 
-        bounds.size = newSize
+        bounds.size = constrainedSize
 
         layouting = false
 

@@ -45,6 +45,7 @@ public final class Text: Widget, CustomDebugStringConvertible {
     }
 
     override public func getBoxConfig() -> BoxConfig {
+        
         var config = BoxConfig(preferredSize: context!.getTextBoundsSize(text, fontConfig: fontConfig))
 
         if !wrap {
