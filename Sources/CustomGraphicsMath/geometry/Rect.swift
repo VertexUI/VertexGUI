@@ -93,6 +93,20 @@ public struct Rect<E: BinaryFloatingPoint>: Equatable, Hashable {
         }           
         return false
     }
+
+    public mutating func translate(_ amount: AnyVector2<E>) {
+
+        self.min += amount
+    }
+
+    public func translated(_ amount: AnyVector2<E>) -> Self {
+
+        var result = self
+
+        result.translate(amount)
+
+        return result
+    }
 }
 
 /// An axis aligned Rect in 2 coordinate space.

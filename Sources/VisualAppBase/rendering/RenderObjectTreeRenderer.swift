@@ -488,7 +488,7 @@ public class RenderObjectTreeRenderer {
             for i in 0..<nextPaths.count {
                 try render(object: nextRenderObjects[i], at: nextPaths[i], in: range, with: backendRenderer)
             }
-            backendRenderer.translate(DVec2.zero)
+            backendRenderer.translate(-currentRenderObject.translation)
 
         case let currentRenderObject as RenderObject.Custom:
             // TODO: this might be a dirty solution
