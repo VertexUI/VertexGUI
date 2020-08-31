@@ -3,6 +3,7 @@ import VisualAppBase
 import CustomGraphicsMath
 import Foundation
 import Dispatch
+import ColorizeSwift
 
 public class ImageView: Widget {
 
@@ -11,10 +12,35 @@ public class ImageView: Widget {
     private var resizedImage: Image?
 
     private var resizingImage = false
+
+    private let onImageResized = EventHandlerManager<Void>()
     
     public init(image: Image) {
 
-       self.image = image
+        self.image = image
+
+        super.init()
+
+        _ = onDestroy(onBoundsChanged { [unowned self] _ in
+
+            print("IMAGE BOUNDS CHANGED!".onWhite(), bounds.size)
+
+            if resizingImage {
+
+                onImageResized.once {
+
+                    resizedImage = nil
+
+                    invalidateRenderState()
+                }
+
+            } else {
+            
+                resizedImage = nil
+
+                invalidateRenderState()
+            }
+       })
     }
 
     override public func getBoxConfig() -> BoxConfig {
@@ -49,27 +75,11 @@ public class ImageView: Widget {
             return nil
         }
 
+        print("Rendering Image".bold().onWhite(), bounds.size, boxConfig, previousConstraints)
+
         if !resizingImage && (resizedImage == nil || resizedImage!.width != Int(bounds.size.width) || resizedImage!.height != Int(bounds.size.height)) {
             
-            resizingImage = true
-            
-            DispatchQueue.global(qos: .userInteractive).async { [unowned self] in
-
-                let startTimestamp = Date.timeIntervalSinceReferenceDate
-
-                let resizedImage = image.resize(width: Int(bounds.size.width), height: Int(bounds.size.height))
-                
-                let endTimestamp = Date.timeIntervalSinceReferenceDate
-
-                DispatchQueue.main.async {
-
-                    self.resizedImage = resizedImage
-                    
-                    resizingImage = false
-
-                    invalidateRenderState()
-                }
-            }
+            resizeImage()
 
             return nil
 
@@ -86,5 +96,24 @@ public class ImageView: Widget {
         }
     }
 
+    private func resizeImage() {
 
+        resizingImage = true
+        
+        DispatchQueue.global(qos: .userInteractive).async { [unowned self] in
+
+            let resizedImage = image.resize(width: Int(bounds.size.width), height: Int(bounds.size.height))
+
+            DispatchQueue.main.async {
+
+                self.resizedImage = resizedImage
+                
+                resizingImage = false
+
+                onImageResized.invokeHandlers(Void())
+
+                invalidateRenderState()
+            }
+        }
+    }
 }

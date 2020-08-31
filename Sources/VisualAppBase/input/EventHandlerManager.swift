@@ -21,6 +21,22 @@ public class EventHandlerManager<Data> {
         }
     }
 
+    public func once(_ handler: @escaping Handler) {
+        var unregisterCallback: UnregisterCallback? = nil
+
+        let wrapperHandler = { (data: Data) in
+
+            handler(data)
+
+            if let unregister = unregisterCallback {
+
+                unregister()
+            }
+        }
+
+        unregisterCallback = addHandler(wrapperHandler)
+    }
+
     public func invokeHandlers(_ data: Data) {
         // TODO: call handlers in same order as they were added
         for handler in handlers.values {
