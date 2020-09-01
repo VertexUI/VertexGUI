@@ -86,15 +86,30 @@ public class WidgetTreeMouseEventManager {
 
             case let rawMouseButtonUpEvent as RawMouseButtonUpEvent:
 
+                for previousTarget in previousMouseEventTargets[ObjectIdentifier(GUIMouseButtonDownEvent.self)]! {
+
+                    try previousTarget.consume(
+
+                        GUIMouseButtonUpEvent(
+                            
+                            button: rawMouseButtonUpEvent.button,
+                            
+                            position: rawMouseButtonUpEvent.position
+                        )
+                    )
+                }
+
                 for mouseEventTarget in mouseEventTargets {
 
-                    try mouseEventTarget.consume(
+                    /*try mouseEventTarget.consume(
 
                         GUIMouseButtonUpEvent(
 
                             button: rawMouseButtonUpEvent.button,
 
-                            position: rawMouseButtonUpEvent.position))
+                            position: rawMouseButtonUpEvent.position))*/
+
+                    
                 
                     // after same button down and up on same element, generate click event
 

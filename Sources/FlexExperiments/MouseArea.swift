@@ -18,6 +18,8 @@ public class MouseArea: SingleChildWidget, GUIMouseEventConsumer {
 
     public var onMouseButtonDown = EventHandlerManager<GUIMouseButtonDownEvent>()
     
+    public var onMouseButtonUp = EventHandlerManager<GUIMouseButtonUpEvent>()
+    
     public var onMouseMove = EventHandlerManager<GUIMouseMoveEvent>()
 
     public var onMouseEnter = EventHandlerManager<GUIMouseEnterEvent>()
@@ -41,6 +43,8 @@ public class MouseArea: SingleChildWidget, GUIMouseEventConsumer {
 
         onMouseButtonDown onMouseButtonDownHandler: EventHandlerManager<GUIMouseButtonDownEvent>.Handler? = nil,
 
+        onMouseButtonUp onMouseButtonUpHandler: EventHandlerManager<GUIMouseButtonUpEvent>.Handler? = nil,
+
         onMouseMove onMouseMoveHandler: EventHandlerManager<GUIMouseMoveEvent>.Handler? = nil,
 
         onMouseEnter onMouseEnterHandler: EventHandlerManager<GUIMouseEnterEvent>.Handler? = nil,
@@ -59,6 +63,11 @@ public class MouseArea: SingleChildWidget, GUIMouseEventConsumer {
             if let onMouseButtonDownHandler = onMouseButtonDownHandler {
                 
                 _ = self.onMouseButtonDown(onMouseButtonDownHandler)
+            }
+
+            if let onMouseButtonUpHandler = onMouseButtonUpHandler {
+                
+                _ = self.onMouseButtonUp(onMouseButtonUpHandler)
             }
 
             if let onMouseMoveHandler = onMouseMoveHandler {
@@ -95,6 +104,10 @@ public class MouseArea: SingleChildWidget, GUIMouseEventConsumer {
 
             try onMouseButtonDown.invokeHandlers(mouseButtonDownEvent)
 
+        case let mouseButtonUpEvent as GUIMouseButtonUpEvent:
+
+            try onMouseButtonUp.invokeHandlers(mouseButtonUpEvent)
+
         case let mouseButtonClickEvent as GUIMouseButtonClickEvent:
 
             try onClick.invokeHandlers(mouseButtonClickEvent)
@@ -123,6 +136,8 @@ public class MouseArea: SingleChildWidget, GUIMouseEventConsumer {
     override open func destroySelf() {
 
         onMouseButtonDown.removeAllHandlers()
+        
+        onMouseButtonUp.removeAllHandlers()
 
         onMouseEnter.removeAllHandlers()
 
