@@ -117,7 +117,7 @@ public class Flex: Widget {
             Line(crossAxisStart: 0)
         ]
 
-        var mainAxisSize = 0.0
+        var mainAxisSize = constraints.minSize[mainAxisVectorIndex]
 
         var mainAxisPosition = 0.0
         
@@ -231,7 +231,16 @@ public class Flex: Widget {
             }
         }
 
+        
 
+        // TODO: maybe split up the min size over all lines when there is more than one line
+        if lines.count == 1 {
+            
+            if lines[0].size[crossAxisVectorIndex] < constraints.minSize[crossAxisVectorIndex] {
+                
+                lines[0].size[crossAxisVectorIndex] = constraints.minSize[crossAxisVectorIndex]
+            }
+        }
 
         // second pass through all lines
         for index in 0..<lines.count {
