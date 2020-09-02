@@ -153,13 +153,15 @@ public class Row: Widget {
                 }
             }
 
+            currentX += item.margins.left
+
             // + 1 at the end to account for floating point precision errors
             if currentX + preferredWidth >= constraints.maxWidth + 1 {
                 
                 // TODO: maybe only do this if shrink is set to some value > 0
                 if contentBoxConfig.minSize.width > freeWidth {
 
-                    currentX = 0
+                    currentX = item.margins.left
 
                     if explicitWidthValue == nil {
 
@@ -170,7 +172,6 @@ public class Row: Widget {
 
                     lines.append(Line(startY: lines.last!.startY + lines.last!.height))
                 }
-
             }
 
             print("ROW LAYS OUT CONTENT", content, contentConstraints)
@@ -183,7 +184,7 @@ public class Row: Widget {
 
             content.bounds.min.x = currentX
 
-            content.bounds.min.y = lines.last!.startY
+            content.bounds.min.y = lines.last!.startY + item.margins.top
 
             lines[lines.count - 1].totalGrow += Double(item.grow)
 
@@ -191,11 +192,13 @@ public class Row: Widget {
 
             lines[lines.count - 1].width += content.bounds.size.width
 
-            currentX += content.bounds.size.width
+            currentX += content.bounds.size.width + item.margins.right
 
-            if content.bounds.size.height > lines.last!.height {
+            let marginItemHeight = content.bounds.size.height + item.margins.top + item.margins.bottom
 
-                lines[lines.count - 1].height = content.bounds.size.height
+            if marginItemHeight > lines.last!.height {
+
+                lines[lines.count - 1].height = marginItemHeight
             }
 
             if currentX > width {
@@ -301,6 +304,8 @@ public class Row: Widget {
 
                 var relayout = false
 
+                currentX += item.margins.left
+
                 content.bounds.min.x = currentX
 
                 if item.grow > 0 {
@@ -329,14 +334,16 @@ public class Row: Widget {
                     
                 case .Center:
 
-                    content.bounds.min.y = line.height / 2 - content.bounds.size.height / 2
+                    let marginItemHeight = content.bounds.size.height + item.margins.top + item.margins.bottom
+
+                    content.bounds.min.y = line.startY + line.height / 2 - marginItemHeight / 2
                 
                 default:
 
                     break
                 }
 
-                currentX += content.bounds.size.width
+                currentX += content.bounds.size.width + item.margins.right
 
                 if content.bounds.size.height > line.height {
 

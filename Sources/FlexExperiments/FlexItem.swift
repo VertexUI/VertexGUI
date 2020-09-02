@@ -19,6 +19,8 @@ public struct FlexItem {
 
     var height: FlexValue?
 
+    var margins: Margins
+
     public init(
 
         grow: Double = 0,
@@ -29,6 +31,8 @@ public struct FlexItem {
 
         height: FlexValue? = nil,
 
+        margins: Margins = Margins(all: 0),
+
         @WidgetBuilder content contentBuilder: @escaping () -> Widget) {
 
             self.grow = grow
@@ -38,6 +42,8 @@ public struct FlexItem {
             self.width = width
 
             self.height = height
+
+            self.margins = margins
 
             self.content = contentBuilder()
     }

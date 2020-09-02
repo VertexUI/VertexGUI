@@ -13,18 +13,21 @@ public class ExperimentFourView: SingleChildWidget {
                 
             MouseArea {
 
-                ConstrainedSize(maxSize: DSize2(583, 800)) {
+                ConstrainedSize(maxSize: DSize2(584, 800)) {
 
                 ScrollArea {
 
                 Padding(all: 32) {
 
-                  //  ConstrainedSize(maxSize: DSize2(.infinity, .infinity)) {
+                    ConstrainedSize(maxSize: DSize2(500, .infinity)) {
 
                         Row(spacing: 40, wrap: true) {
-
-                            Text("WOW This text is looooooooooooong but doesn't wrap")
                             
+                            Row.Item(margins: Margins(top: 50, right: 10, bottom: 100, left: 5)) {
+
+                                Text("WOW This text is looooooooooooong but doesn't wrap")
+                            }
+
                             Row.Item(grow: 1, width: .Percent(100)) {
 
                                 ObservingBuilder($longText) {
@@ -47,12 +50,12 @@ public class ExperimentFourView: SingleChildWidget {
                                             forResource: "owl-4", withExtension: "jpg", subdirectory: "owl")!))
                             }
 
-                            Row.Item(width: .Percent(50)) {
+                            Row.Item(width: .Percent(50), margins: Margins(top: 20, bottom: 60)) {
 
                                 Text("This is the text", wrap: true)
                             }
 
-                            Row.Item(width: .Percent(50)) {
+                            Row.Item(crossAlignment: .Center, width: .Percent(50), margins: Margins(top: 10, bottom: 10)) {
 
                                 Text("This is other text", wrap: true)
                             }
@@ -130,7 +133,7 @@ public class ExperimentFourView: SingleChildWidget {
                             }*/
                         }
 
-                  //  }
+                    }
                 }.with {
 
                     $0.debugLayout = true
