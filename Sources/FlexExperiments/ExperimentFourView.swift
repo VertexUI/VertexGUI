@@ -9,6 +9,7 @@ public class ExperimentFourView: SingleChildWidget {
 
     override public func buildChild() -> Widget {
         
+        Row {
         Background(color: Color(200, 200, 255, 255)) { [unowned self] in
 
             MouseArea {
@@ -23,6 +24,24 @@ public class ExperimentFourView: SingleChildWidget {
 
                         Row(spacing: 0, wrap: true) {
 
+                            Background(color: .Green) {
+
+                                Space(DSize2(40, 40))
+                            }
+
+                            Background(color: .Red) {
+
+                                Space(DSize2(40, 40))
+                            }
+
+                            Row.Item(crossAlignment: .Stretch) {
+                                
+                                Background(color: .Blue) {
+
+                                    Space(DSize2(40, 40))
+                                }
+                            }
+
                             Column {
                                 
                                 Column.Item(margins: Margins(top: 20, right: 100, bottom: 60)) {
@@ -33,6 +52,24 @@ public class ExperimentFourView: SingleChildWidget {
                                 Text("Second Text in Column")
 
                                 Text("Third Text in Column")
+
+                                Background(color: .Green) {
+
+                                    Space(DSize2(40, 40))
+                                }
+
+                                Background(color: .Red) {
+
+                                    Space(DSize2(40, 40))
+                                }
+
+                                Row.Item(crossAlignment: .Stretch) {
+                                    
+                                    Background(color: .Blue) {
+
+                                        Space(DSize2(40, 40))
+                                    }
+                                }
 
                             }.with {
                                 
@@ -63,7 +100,10 @@ public class ExperimentFourView: SingleChildWidget {
                                         
                                         contentsOf: Bundle.module.url(
                                             
-                                            forResource: "owl-4", withExtension: "jpg", subdirectory: "owl")!))
+                                            forResource: "owl-4", withExtension: "jpg", subdirectory: "owl")!)).with {
+
+                                                $0.debugLayout = true
+                                            }
                             }
 
                             Row.Item(width: .Percent(50), margins: Margins(top: 20, bottom: 60)) {
@@ -168,6 +208,7 @@ public class ExperimentFourView: SingleChildWidget {
                     invalidateRenderState()
                 }
             }
+        }
         }
     }
 

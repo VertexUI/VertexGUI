@@ -459,7 +459,13 @@ open class Widget: Bounded, Parent, Child {
 
         let isFirstRound = !layouted
 
+        let startTimestamp = Date.timeIntervalSinceReferenceDate
+
         let newSize = performLayout(constraints: constraints)
+
+        let layoutDuration = Date.timeIntervalSinceReferenceDate - startTimestamp
+
+        Logger.log("Layout of Widget: \(self) took time:", (layoutDuration.description + " s").with(style: .Bold), level: .Message, context: .WidgetLayouting)
 
         Logger.log("Layout of Widget: \(self) produced result.".with(fg: .Green, style: .Bold), level: .Message, context: .WidgetLayouting)
 

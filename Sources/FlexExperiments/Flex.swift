@@ -416,6 +416,11 @@ extension Flex {
         case Row, Column
     }
 
+    public enum Alignment {
+     
+        case Start, Center, End, Stretch
+    }
+
     private struct Line {
 
         public var crossAxisStart: Double
@@ -438,7 +443,7 @@ extension Flex {
 
         var grow: Double
 
-        var crossAlignment: FlexAlignment
+        var crossAlignment: Alignment
 
         var content: Widget
 
@@ -452,7 +457,7 @@ extension Flex {
 
             grow: Double = 0,
 
-            crossAlignment: FlexAlignment = .Start,
+            crossAlignment: Alignment = .Start,
 
             width: FlexValue? = nil,
 

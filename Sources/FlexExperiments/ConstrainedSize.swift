@@ -50,6 +50,6 @@ public class ConstrainedSize: SingleChildWidget {
             
             maxSize: constraints.constrain(maxSize ?? constraints.maxSize)))
 
-        return child.bounds.size
+        return constraints.constrain(child.bounds.size)
     }
 }

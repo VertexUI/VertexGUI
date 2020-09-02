@@ -12,7 +12,7 @@ public class ExperimentThreeView: SingleChildWidget {
 
     override public func buildChild() -> Widget {
 
-        Background(color: Color(230, 230, 230, 255)) { [unowned self] in
+        Background(color: Color(240, 240, 240, 255)) { [unowned self] in
 
             Column(spacing: 32) {
 
@@ -22,11 +22,17 @@ public class ExperimentThreeView: SingleChildWidget {
 
                     Row {
                     
-                        buildMenu()
+                        buildMenu().with {
+
+                            $0.debugLayout = true
+                        }
 
                         Row.Item(grow: 1, crossAlignment: .Stretch) {
 
-                            buildActiveView()
+                            buildActiveView().with {
+
+                                $0.debugLayout = true
+                            }
                         }
 
                     }.with {
@@ -126,9 +132,6 @@ public class ExperimentThreeView: SingleChildWidget {
 
             selectedList = list
             
-        }.with {
-
-            $0.debugLayout = true
         }
     }
 
@@ -160,22 +163,5 @@ public class ExperimentThreeView: SingleChildWidget {
                 }
             }
         }
-    }
-
-    override public func performLayout(constraints: BoxConstraints) -> DSize2 {
-
-        child.constraints = self.constraints // legacy
-
-        child.bounds.size = constraints.maxSize
-
-        child.layout(constraints: constraints)
-
-        return child.bounds.size
-    }
-
-    // TODO: remove this when the new layout approach is applied everywhere (Root should call layout(constraints: constraints))
-    override public func layout() {
-
-        layout(constraints: self.constraints!)
     }
 }
