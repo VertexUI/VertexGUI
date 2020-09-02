@@ -19,9 +19,9 @@ public class ExperimentFourView: SingleChildWidget {
 
                 Padding(all: 32) {
 
-                    ConstrainedSize(maxSize: DSize2(500, .infinity)) {
+                  //  ConstrainedSize(maxSize: DSize2(.infinity, .infinity)) {
 
-                        Row(wrap: true) {
+                        Row(spacing: 40, wrap: true) {
 
                             Text("WOW This text is looooooooooooong but doesn't wrap")
                             
@@ -50,13 +50,19 @@ public class ExperimentFourView: SingleChildWidget {
                             Row.Item(width: .Percent(50)) {
 
                                 Text("This is the text", wrap: true)
-
                             }
 
                             Row.Item(width: .Percent(50)) {
 
                                 Text("This is other text", wrap: true)
+                            }
 
+                            Row.Item(grow: 1) {
+
+                                Background(color: .Yellow) {
+
+                                    Text("Some Text on a background")
+                                }
                             }
                             /*Row.Item(grow: 1) {
 
@@ -124,7 +130,7 @@ public class ExperimentFourView: SingleChildWidget {
                             }*/
                         }
 
-                    }
+                  //  }
                 }.with {
 
                     $0.debugLayout = true

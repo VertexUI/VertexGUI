@@ -157,8 +157,6 @@ public class ScrollArea: SingleChildWidget, GUIMouseEventConsumer {
 
         if scrollYEnabled {
             
-            print("CHECK SCROLL X ENABLED", maxOwnSize.width, scrollBarWidths.y, childSize.width)
-
             scrollXEnabled = maxOwnSize.width - scrollBarWidths.y < childSize.width
 
         } else {

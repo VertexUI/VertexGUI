@@ -419,6 +419,11 @@ open class Widget: Bounded, Parent, Child {
 
         Logger.log("Attempting layout".with(fg: .Yellow), "on Widget: \(self).", level: .Message, context: .WidgetLayouting)
 
+        if constraints.minWidth.isInfinite || constraints.minHeight.isInfinite {
+
+            fatalError("Widget received constraints that contain infinite value in min size: \(self)")
+        }
+
         if !layoutInvalid, let previousConstraints = previousConstraints, constraints == previousConstraints {/* ||
         
             (constraints.minSize == bounds.size && constraints.maxSize == bounds.size) {*/

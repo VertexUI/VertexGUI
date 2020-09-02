@@ -198,6 +198,11 @@ public class Row: Widget {
                 lines[lines.count - 1].height = content.bounds.size.height
             }
 
+            if currentX > width {
+
+                width = currentX
+            }
+
             // < 1 to account for floating point precision errors
             if abs(currentX - constraints.maxWidth) < 1 {
 
@@ -220,7 +225,16 @@ public class Row: Widget {
 
             var currentX = 0.0
 
-            let freeWidth = constraints.maxWidth - line.width
+            let freeWidth: Double
+
+            if constraints.maxWidth.isFinite {
+
+                freeWidth = constraints.maxWidth - line.width
+
+            } else {
+
+                freeWidth = width - line.width
+            }
 
             if index > 0 {
 
