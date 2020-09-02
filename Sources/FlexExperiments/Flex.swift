@@ -387,7 +387,16 @@ public class Flex: Widget {
         
         print("PREVIOUS SIZE WAS", bounds.size)
 
-        return constraints.constrain(DSize2(mainAxisSize, lines.last!.crossAxisStart + lines.last!.size[crossAxisVectorIndex]))
+        switch orientation {
+
+            case .Row:
+            
+                return constraints.constrain(DSize2(mainAxisSize, lines.last!.crossAxisStart + lines.last!.size[crossAxisVectorIndex]))
+
+            case .Column:
+
+                return constraints.constrain(DSize2(lines.last!.crossAxisStart + lines.last!.size[crossAxisVectorIndex], mainAxisSize))
+        }
     }
 }
 

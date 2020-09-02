@@ -10,7 +10,7 @@ public class ExperimentFourView: SingleChildWidget {
     override public func buildChild() -> Widget {
         
         Background(color: Color(200, 200, 255, 255)) { [unowned self] in
-                
+
             MouseArea {
 
                 ConstrainedSize(maxSize: DSize2(584, 800)) {
