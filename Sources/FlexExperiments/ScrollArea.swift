@@ -47,7 +47,7 @@ public class ScrollArea: SingleChildWidget, GUIMouseEventConsumer {
 
     private var maxOffsets: DVec2 {
         
-        DVec2(child.bounds.size - bounds.size) + DVec2(scrollBarWidths.x, scrollBarWidths.y)
+        DVec2(child.bounds.size - bounds.size) + DVec2(scrollYEnabled ? scrollBarWidths.y : 0, scrollXEnabled ? scrollBarWidths.x : 0)
     }
 
     private var offsets: DVec2 {
@@ -113,12 +113,12 @@ public class ScrollArea: SingleChildWidget, GUIMouseEventConsumer {
 
         if scrollXEnabled {
 
-            requestedOwnSize.height += scrollBarWidths.y
+            requestedOwnSize.height += scrollBarWidths.x
         }
 
         if scrollYEnabled {
 
-            requestedOwnSize.width += scrollBarWidths.x
+            requestedOwnSize.width += scrollBarWidths.y
         }
 
         let constrainedSize = constraints.constrain(requestedOwnSize)
@@ -126,11 +126,6 @@ public class ScrollArea: SingleChildWidget, GUIMouseEventConsumer {
         scrollBarLengths.y = constrainedSize.height / (child.bounds.size.height / constrainedSize.height)
         
         scrollBarLengths.x = constrainedSize.width / (child.bounds.size.width / constrainedSize.width)
-
-        if scrollYEnabled {
-
-            scrollBarLengths.x -= scrollBarWidths.y
-        }
 
         if scrollYEnabled {
 
