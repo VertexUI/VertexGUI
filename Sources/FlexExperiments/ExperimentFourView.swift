@@ -13,7 +13,7 @@ public class ExperimentFourView: SingleChildWidget {
                 
             MouseArea {
 
-                ConstrainedSize(maxSize: DSize2(300, 300)) {
+                ConstrainedSize(maxSize: DSize2(583, 800)) {
 
                 ScrollArea {
 
@@ -33,9 +33,6 @@ public class ExperimentFourView: SingleChildWidget {
 
                                         Text(longText, wrap: true)
                                     }
-                                }.with {
-
-                                    $0.debugLayout = true
                                 }
                             }
 
@@ -47,27 +44,18 @@ public class ExperimentFourView: SingleChildWidget {
                                         
                                         contentsOf: Bundle.module.url(
                                             
-                                            forResource: "owl-4", withExtension: "jpg", subdirectory: "owl")!)).with {
-
-                                                $0.debugLayout = true
-                                            }
+                                            forResource: "owl-4", withExtension: "jpg", subdirectory: "owl")!))
                             }
 
                             Row.Item(width: .Percent(50)) {
 
-                                Text("This is the text", wrap: true).with {
-
-                                    $0.debugLayout = true
-                                }
+                                Text("This is the text", wrap: true)
 
                             }
 
                             Row.Item(width: .Percent(50)) {
 
-                                Text("This is other text", wrap: true).with {
-
-                                    $0.debugLayout = true
-                                }
+                                Text("This is other text", wrap: true)
 
                             }
                             /*Row.Item(grow: 1) {
@@ -134,15 +122,12 @@ public class ExperimentFourView: SingleChildWidget {
                                                 }
                                 }
                             }*/
-                        }.with {
-
-                            $0.debugLayout = true
                         }
 
-                    }.with {
-
-                        $0.debugLayout = true
                     }
+                }.with {
+
+                    $0.debugLayout = true
                 }
                 }
                 }

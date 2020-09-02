@@ -223,8 +223,11 @@ open class ClipRenderObject: SubTreeRenderObject {
     override open var debugDescription: String { "ClipRenderObject" }
 
     override open var individualHash: Int {
+        
         var hasher = Hasher()
+
         hasher.combine(clipBounds)
+
         return hasher.finalize()
     }
 

@@ -2,9 +2,10 @@ import WidgetGUI
 import CustomGraphicsMath
 import VisualAppBase
 
-public class ScrollArea: SingleChildWidget {
+public class ScrollArea: SingleChildWidget, GUIMouseEventConsumer {
 
     private let childBuilder: () -> Widget
+
 
     private var scrollXEnabled = true
 
@@ -14,33 +15,71 @@ public class ScrollArea: SingleChildWidget {
 
     private var scrollYActive = false
 
+
     private var mouseTrackingStartPosition = DVec2.zero
+
 
     /// Offset before current mouse track.
     private var previousOffset: DVec2 = .zero
 
-    private var offset: DVec2 = .zero
+    private var previousScrollProgress: DVec2 = .zero
 
-    private var scrollBarSizes: DSize2 = .zero
+    private var scrollProgress: DVec2 = .zero {
+
+        didSet {
+
+            if scrollProgress.x < 0 {
+
+                scrollProgress.x = 0
+            } else if scrollProgress.x > 1 {
+
+                scrollProgress.x = 1
+            }
+
+            if scrollProgress.y < 0 {
+
+                scrollProgress.y = 0
+            } else if scrollProgress.y > 1 {
+                scrollProgress.y = 1
+            }
+        }
+    }
+
+    private var maxOffsets: DVec2 {
+        
+        DVec2(child.bounds.size - bounds.size) + DVec2(scrollBarWidths.x, scrollBarWidths.y)
+    }
+
+    private var offsets: DVec2 {
+        
+        maxOffsets * scrollProgress
+    }
+
+
+    private var scrollBarLengths: DSize2 = .zero
+
+    private var scrollBarWidths = DSize2(20, 20)
+
+    private var maxScrollBarTranslations: DVec2 {
+
+        DVec2(bounds.size - scrollBarLengths) - DVec2(scrollYEnabled ? scrollBarWidths.y : 0, 0)
+    }
 
     private var scrollBarTranslations: DVec2 {
- 
-        let scrollBarMoveSpace = DVec2(bounds.size) - DVec2(scrollBarSizes)
-
-        let relativeScrollOffset = -offset / DVec2(child.bounds.size - bounds.size)
-
-        return scrollBarMoveSpace * relativeScrollOffset
+        
+        maxScrollBarTranslations * scrollProgress
     }
 
     private var xScrollBarBounds: DRect {
 
-        DRect(min: DVec2(scrollBarTranslations.x, bounds.size.height - 20), size: DSize2(scrollBarSizes.width, 20))
+        DRect(min: DVec2(scrollBarTranslations.x, bounds.size.height - scrollBarWidths.x), size: DSize2(scrollBarLengths.x, scrollBarWidths.x))
     }
 
     private var yScrollBarBounds: DRect {
 
-        DRect(min: DVec2(bounds.size.width - 20, scrollBarTranslations.y), size: DSize2(20, scrollBarSizes.height))
+        DRect(min: DVec2(bounds.size.width - scrollBarWidths.y, scrollBarTranslations.y), size: DSize2(scrollBarWidths.y, scrollBarLengths.y))
     }
+
 
     public init(@WidgetBuilder child childBuilder: @escaping () -> Widget) {
         
@@ -49,65 +88,12 @@ public class ScrollArea: SingleChildWidget {
 
     override public func buildChild() -> Widget {
 
-        MouseArea {
+        childBuilder()
+    }
 
-            childBuilder()
+    override public func getBoxConfig() -> BoxConfig {
 
-            // TODO: remove empty on click when forward searching closure params comes            
-        } onClick: { _ in
-        
-        } onMouseButtonDown: { [unowned self] in
-
-            if $0.button == .Left {
-
-                let localPosition = $0.position - globalPosition
-
-                scrollXActive = xScrollBarBounds.contains(point: localPosition)
-
-                scrollYActive = yScrollBarBounds.contains(point: localPosition)
-
-                mouseTrackingStartPosition = $0.position
-            }
-
-        } onMouseButtonUp: { [unowned self] _ in
-
-            scrollXActive = false
-
-            scrollYActive = false
-
-            previousOffset = offset
-
-            print("MOUSE BUTTON UP!!!!!!!!!!")
-
-        } onMouseMove: { [unowned self] in
-
-            let totalMove = mouseTrackingStartPosition - $0.position
-
-            let offsetBeforeUpdate = offset
-
-            offset = previousOffset
-
-            if scrollXActive {
-
-                offset.x += totalMove.x
-            }
-
-            if scrollYActive {
-
-                offset.y += totalMove.y
-            }
-
-            if offsetBeforeUpdate != offset {
-
-                invalidateRenderState()
-            }
-
-        } onMouseWheel: { [unowned self] in
-
-            offset += $0.scrollAmount * 10
-
-            invalidateRenderState()
-        }
+        BoxConfig(preferredSize: child.boxConfig.preferredSize + DSize2(scrollBarWidths.y, scrollBarWidths.x))
     }
 
     override public func performLayout(constraints: BoxConstraints) -> DSize2 {
@@ -121,17 +107,69 @@ public class ScrollArea: SingleChildWidget {
 
         child.layout(constraints: childConstraints)
         
-        let constrainedSize = constraints.constrain(child.bounds.size)
+        updateEnabledDimensions(maxOwnSize: constraints.maxSize, childSize: child.bounds.size)
 
-        scrollYEnabled = constrainedSize.height < child.bounds.size.height
-        
-        scrollXEnabled = constrainedSize.width < child.bounds.size.width
+        var requestedOwnSize = child.bounds.size
 
-        scrollBarSizes.height = constrainedSize.height / (child.bounds.size.height / constrainedSize.height)
+        if scrollXEnabled {
+
+            requestedOwnSize.height += scrollBarWidths.y
+        }
+
+        if scrollYEnabled {
+
+            requestedOwnSize.width += scrollBarWidths.x
+        }
+
+        let constrainedSize = constraints.constrain(requestedOwnSize)
+
+        scrollBarLengths.y = constrainedSize.height / (child.bounds.size.height / constrainedSize.height)
         
-        scrollBarSizes.width = constrainedSize.width / (child.bounds.size.width / constrainedSize.width)
+        scrollBarLengths.x = constrainedSize.width / (child.bounds.size.width / constrainedSize.width)
+
+        if scrollYEnabled {
+
+            scrollBarLengths.x -= scrollBarWidths.y
+        }
+
+        if scrollYEnabled {
+
+            scrollBarLengths.x -= scrollBarWidths.y
+        }
 
         return constrainedSize
+    }
+
+    private func updateEnabledDimensions(maxOwnSize: DSize2, childSize: DSize2) {
+
+        let previousXEnabled = scrollXEnabled
+
+        let previousYEnabled = scrollYEnabled
+
+        if scrollXEnabled {
+        
+            scrollYEnabled = maxOwnSize.height - scrollBarWidths.x < childSize.height
+        
+        } else {
+
+            scrollYEnabled = maxOwnSize.height < childSize.height
+        }
+
+        if scrollYEnabled {
+            
+            print("CHECK SCROLL X ENABLED", maxOwnSize.width, scrollBarWidths.y, childSize.width)
+
+            scrollXEnabled = maxOwnSize.width - scrollBarWidths.y < childSize.width
+
+        } else {
+
+            scrollXEnabled = maxOwnSize.width < childSize.width
+        }
+
+        if previousXEnabled != scrollXEnabled || previousYEnabled != scrollYEnabled {
+
+            updateEnabledDimensions(maxOwnSize: maxOwnSize, childSize: childSize)
+        }
     }
 
     override public func renderContent() -> RenderObject? {
@@ -140,7 +178,7 @@ public class ScrollArea: SingleChildWidget {
 
             RenderObject.Clip(globalBounds) {
 
-                RenderObject.Translation(offset) {
+                RenderObject.Translation(-offsets) {
 
                     child.render()
                 }
@@ -158,6 +196,75 @@ public class ScrollArea: SingleChildWidget {
                     RenderObject.Rectangle(yScrollBarBounds.translated(globalPosition))
                 }
             }
+        }
+    }
+
+    public func consume(_ event: GUIMouseEvent) {
+
+        switch event {
+        
+        case let event as GUIMouseButtonDownEvent:
+
+            if event.button == .Left {
+
+                let localPosition = event.position - globalPosition
+
+                scrollXActive = xScrollBarBounds.contains(point: localPosition)
+
+                scrollYActive = yScrollBarBounds.contains(point: localPosition)
+
+                mouseTrackingStartPosition = event.position
+            }
+
+        case let event as GUIMouseButtonUpEvent:
+
+            scrollXActive = false
+
+            scrollYActive = false
+
+            previousScrollProgress = scrollProgress
+
+        case let event as GUIMouseMoveEvent:
+            
+            let totalMove = event.position - mouseTrackingStartPosition
+            
+            let scrollProgressBeforeUpdate = scrollProgress
+
+            scrollProgress = previousScrollProgress
+
+            if scrollXActive {
+
+                scrollProgress.x += totalMove.x / maxScrollBarTranslations.x
+            }
+
+            if scrollYActive {
+
+                scrollProgress.y += totalMove.y / maxScrollBarTranslations.y
+            }
+
+            if scrollProgressBeforeUpdate != scrollProgress {
+
+                invalidateRenderState()
+            }
+
+        case let event as GUIMouseWheelEvent:
+
+            if scrollYEnabled {
+
+                scrollProgress.y -= event.scrollAmount.y / 10
+
+            } else if scrollXEnabled {
+
+                scrollProgress.x -= event.scrollAmount.x / 10
+            }
+
+            previousScrollProgress = scrollProgress
+
+            invalidateRenderState()
+
+        default:
+
+            break
         }
     }
 }
