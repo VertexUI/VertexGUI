@@ -138,12 +138,6 @@ public class Flex: Widget {
                 maxSize: DSize2(freeMainAxisSpace, freeCrossAxisSpace)
             )
             
-            if item.crossAlignment == .Stretch && contentBoxConfig.preferredSize[crossAxisVectorIndex] < freeCrossAxisSpace {
-
-                // TODO: is this check for maxHeight of box config necessary or will the widget itself be careful not to go bigger than it can?
-                contentConstraints.minSize[crossAxisVectorIndex] = min(freeCrossAxisSpace, contentBoxConfig.maxSize[crossAxisVectorIndex])
-            }
-
             var preferredMainAxisSize = contentBoxConfig.preferredSize[mainAxisVectorIndex]
 
             var explicitMainAxisSizeValue: Double? = nil
@@ -316,8 +310,8 @@ public class Flex: Widget {
                 let content = item.content
 
                 var newConstraints = BoxConstraints(
-                    minSize: .zero,
-                    maxSize: .infinity
+                    minSize: content.bounds.size,
+                    maxSize: content.bounds.size
                 )
 
                 var relayout = false
@@ -330,20 +324,13 @@ public class Flex: Widget {
 
                     let mainAxisGrowSpace = freeMainAxisSpace * (item.grow / line.totalGrow)
 
-                    newConstraints = BoxConstraints(
-
-                        minSize: DSize2(content.bounds.size[mainAxisVectorIndex] + mainAxisGrowSpace, 0),
-                        
-                        maxSize: DSize2(content.bounds.size[mainAxisVectorIndex] + mainAxisGrowSpace, .infinity))
+                    newConstraints.minSize[mainAxisVectorIndex] = content.bounds.size[mainAxisVectorIndex] + mainAxisGrowSpace
+                    
+                    newConstraints.maxSize[mainAxisVectorIndex] = content.bounds.size[mainAxisVectorIndex] + mainAxisGrowSpace
 
                     relayout = true
                 }
-
-                if relayout {
-
-                    content.layout(constraints: newConstraints)
-                }
-
+  
                 switch item.crossAlignment {
                     
                 case .Center:
@@ -351,10 +338,23 @@ public class Flex: Widget {
                     let marginedCrossAxisItemSize = content.bounds.size[crossAxisVectorIndex] + item.getCrossAxisStartMargin(orientation) + item.getCrossAxisEndMargin(orientation)
 
                     content.bounds.min[crossAxisVectorIndex] = line.crossAxisStart + line.size[crossAxisVectorIndex] / 2 - marginedCrossAxisItemSize / 2
-                
+
+                case .Stretch:
+
+                    newConstraints.minSize[crossAxisVectorIndex] = line.size[crossAxisVectorIndex]
+                    
+                    newConstraints.maxSize[crossAxisVectorIndex] = line.size[crossAxisVectorIndex]
+
+                    relayout = true
+
                 default:
 
                     break
+                }
+
+                if relayout {
+
+                    content.layout(constraints: newConstraints)
                 }
 
                 mainAxisPosition += content.bounds.size[mainAxisVectorIndex] + item.getMainAxisEndMargin(orientation)
