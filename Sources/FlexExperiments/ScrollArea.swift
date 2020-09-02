@@ -138,9 +138,12 @@ public class ScrollArea: SingleChildWidget {
 
         return RenderObject.Container {
 
-            RenderObject.Translation(offset) {
+            RenderObject.Clip(globalBounds) {
 
-                child.render()
+                RenderObject.Translation(offset) {
+
+                    child.render()
+                }
             }
 
             RenderObject.RenderStyle(fillColor: .Blue) {

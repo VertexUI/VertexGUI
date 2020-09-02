@@ -490,6 +490,18 @@ public class RenderObjectTreeRenderer {
             }
             backendRenderer.translate(-currentRenderObject.translation)
 
+        case let renderObject as RenderObject.Clip:
+
+            // TODO: right now, clip areas can't be nested --> implement clip area bounds stack
+
+            backendRenderer.clipArea(bounds: renderObject.clipBounds)
+
+            for i in 0..<nextPaths.count {
+                try render(object: nextRenderObjects[i], at: nextPaths[i], in: range, with: backendRenderer)
+            }
+
+            backendRenderer.releaseClipArea()
+
         case let currentRenderObject as RenderObject.Custom:
             // TODO: this might be a dirty solution
             backendRenderer.endFrame()

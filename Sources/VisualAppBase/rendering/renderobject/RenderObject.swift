@@ -10,6 +10,7 @@ open class RenderObject: CustomDebugStringConvertible, TreeNode {
     public typealias CacheSplit = VisualAppBase.CacheSplitRenderObject
     public typealias RenderStyle = VisualAppBase.RenderStyleRenderObject
     public typealias Translation = VisualAppBase.TranslationRenderObject
+    public typealias Clip = VisualAppBase.ClipRenderObject
     public typealias Rectangle = VisualAppBase.RectangleRenderObject
     public typealias Ellipse = VisualAppBase.EllipsisRenderObject
     public typealias LineSegment = VisualAppBase.LineSegmentRenderObject
@@ -213,6 +214,28 @@ open class TranslationRenderObject: SubTreeRenderObject {
     }
 }
 
+open class ClipRenderObject: SubTreeRenderObject {
+
+    public let clipBounds: DRect
+
+    override open var hasTimedRenderValue: Bool { false }
+
+    override open var debugDescription: String { "ClipRenderObject" }
+
+    override open var individualHash: Int {
+        var hasher = Hasher()
+        hasher.combine(clipBounds)
+        return hasher.finalize()
+    }
+
+    public init(_ clipBounds: DRect, @RenderObjectBuilder children: () -> [RenderObject]) {
+        
+        self.clipBounds = clipBounds
+
+        super.init(children: children())
+    }
+}
+
 open class UncachableRenderObject: SubTreeRenderObject {
     override open var hasTimedRenderValue: Bool {
         return false
@@ -225,9 +248,12 @@ open class UncachableRenderObject: SubTreeRenderObject {
     override open var individualHash: Int { 0 }
 
     public init(_ children: [RenderObject]) {
+
         super.init(children: children)
     }
+
     public convenience init(@RenderObjectBuilder _ children: () -> [RenderObject]) {
+
         self.init(children())
     }
 }
