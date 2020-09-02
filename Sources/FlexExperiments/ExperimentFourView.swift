@@ -21,9 +21,25 @@ public class ExperimentFourView: SingleChildWidget {
 
                     ConstrainedSize(maxSize: DSize2(500, .infinity)) {
 
-                        Row(spacing: 40, wrap: true) {
+                        Row(spacing: 0, wrap: true) {
+
+                            Column {
+                                
+                                Column.Item(margins: Margins(top: 20, right: 100, bottom: 60)) {
+                                    
+                                    Text("First Text in Column")
+                                }
+
+                                Text("Second Text in Column")
+
+                                Text("Third Text in Column")
+
+                            }.with {
+                                
+                                $0.debugLayout = true
+                            }
                             
-                            Row.Item(margins: Margins(top: 50, right: 10, bottom: 100, left: 5)) {
+                            Row.Item(margins: Margins(top: 0, right: 10, bottom: 100, left: 5)) {
 
                                 Text("WOW This text is looooooooooooong but doesn't wrap")
                             }

@@ -102,31 +102,31 @@ public class MouseArea: SingleChildWidget, GUIMouseEventConsumer {
 
         case let mouseButtonDownEvent as GUIMouseButtonDownEvent:
 
-            try onMouseButtonDown.invokeHandlers(mouseButtonDownEvent)
+            onMouseButtonDown.invokeHandlers(mouseButtonDownEvent)
 
         case let mouseButtonUpEvent as GUIMouseButtonUpEvent:
 
-            try onMouseButtonUp.invokeHandlers(mouseButtonUpEvent)
+            onMouseButtonUp.invokeHandlers(mouseButtonUpEvent)
 
         case let mouseButtonClickEvent as GUIMouseButtonClickEvent:
 
-            try onClick.invokeHandlers(mouseButtonClickEvent)
+            onClick.invokeHandlers(mouseButtonClickEvent)
 
         case let mouseMoveEvent as GUIMouseMoveEvent:
 
-            try onMouseMove.invokeHandlers(mouseMoveEvent)
+            onMouseMove.invokeHandlers(mouseMoveEvent)
 
         case let mouseEnterEvent as GUIMouseEnterEvent:
 
-            try onMouseEnter.invokeHandlers(mouseEnterEvent)
+            onMouseEnter.invokeHandlers(mouseEnterEvent)
 
         case let mouseLeaveEvent as GUIMouseLeaveEvent:
 
-            try onMouseLeave.invokeHandlers(mouseLeaveEvent)
+            onMouseLeave.invokeHandlers(mouseLeaveEvent)
 
         case let mouseWheelEvent as GUIMouseWheelEvent:
 
-            try onMouseWheel.invokeHandlers(mouseWheelEvent)
+            onMouseWheel.invokeHandlers(mouseWheelEvent)
 
         default:
             print("Unsupported event", event)

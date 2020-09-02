@@ -34,7 +34,7 @@ public class TodoListView: SingleChildWidget {
         }
     }
 
-    @FlexItemBuilder private func build(todo: TodoItem, index: Int) -> [FlexItem] {
+    @Flex.ItemBuilder private func build(todo: TodoItem, index: Int) -> [Flex.Item] {
 
         MouseArea {
 
