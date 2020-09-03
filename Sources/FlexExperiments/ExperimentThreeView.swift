@@ -21,23 +21,17 @@ public class ExperimentThreeView: SingleChildWidget {
                 Column.Item(grow: 1, crossAlignment: .Stretch) {
 
                     Row {
-                    
-                        buildMenu().with {
-
-                            $0.debugLayout = true
+                        
+                        Row.Item(crossAlignment: .Stretch) {
+                       
+                            buildMenu()
                         }
 
                         Row.Item(grow: 1, crossAlignment: .Stretch) {
 
-                            buildActiveView().with {
-
-                                $0.debugLayout = true
-                            }
+                            buildActiveView()
                         }
 
-                    }.with {
-
-                        $0.debugLayout = true
                     }
                 }
             }
@@ -53,7 +47,7 @@ public class ExperimentThreeView: SingleChildWidget {
                 buildSearch()
             }
 
-            Column.Item(crossAlignment: .Stretch) {
+            Column.Item(grow: 1, crossAlignment: .Stretch) {
 
                 Padding(all: 32) {
 
@@ -75,6 +69,7 @@ public class ExperimentThreeView: SingleChildWidget {
                             }
                         }
                     }
+
                 }
             }
         }

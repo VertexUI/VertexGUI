@@ -135,8 +135,19 @@ public class Flex: Widget {
 
                 minSize: .zero,
                 
-                maxSize: DSize2(freeMainAxisSpace, freeCrossAxisSpace)
+                maxSize: .infinity
             )
+
+            switch orientation {
+
+            case .Row:
+
+                contentConstraints.maxSize = DSize2(freeMainAxisSpace, freeCrossAxisSpace)
+            
+            case .Column:
+
+                contentConstraints.maxSize = DSize2(freeCrossAxisSpace, freeMainAxisSpace)
+            }
             
             var preferredMainAxisSize = contentBoxConfig.preferredSize[mainAxisVectorIndex]
 
@@ -218,8 +229,7 @@ public class Flex: Widget {
                 mainAxisSize = mainAxisPosition
             }
 
-            // < 1 to account for floating point precision errors
-            if abs(mainAxisPosition - constraints.maxSize[mainAxisVectorIndex]) < 1 {
+            if constraints.maxSize[mainAxisVectorIndex] < mainAxisPosition {
 
                 mainAxisPosition = 0
 
