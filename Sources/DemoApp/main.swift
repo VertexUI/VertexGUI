@@ -6,21 +6,17 @@ import CustomGraphicsMath
 import Path
 import GL
 import CSDL2
+import ColorizeSwift
 
 // TODO: create a subclass of App, DesktopApp which supports windows/screens which can support different resolutions --> renderContexts --> different text boundsSize
-open class TwoDGraphicalApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGWindow, SDL2OpenGL3NanoVGRenderer> {
+open class StatefulWidgetsResearchApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGWindow, SDL2OpenGL3NanoVGRenderer> {
     open var guiRoot: WidgetGUI.Root
 
-    private var cacheFramebuffer = GLMap.UInt()
-    private var cacheTexture = GLMap.UInt()
-    private var cacheDepthStencil = GLMap.UInt()
-    private var screenVAO = GLMap.UInt()
-    private var virtualScreen: VirtualScreen?
-
     public init() {
-        let page = TwoDWorldPage()
+
         guiRoot = WidgetGUI.Root(
-            rootWidget: page)
+            rootWidget: ExperimentThreeView().with { $0.debugLayout = false })
+        //guiRoot.debugLayout = true
 
         super.init(system: try! System())
 
@@ -32,7 +28,7 @@ open class TwoDGraphicalApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3Nano
     }
 }
 
-let app = TwoDGraphicalApp()
+let app = StatefulWidgetsResearchApp()
 
 do {
     try app.start()
