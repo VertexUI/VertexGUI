@@ -670,6 +670,8 @@ open class Widget: Bounded, Parent, Child {
 
         onRenderStateInvalidated.removeAllHandlers()
 
+        onAnyRenderStateInvalidated.removeAllHandlers()
+
         parent = nil
 
         destroySelf()

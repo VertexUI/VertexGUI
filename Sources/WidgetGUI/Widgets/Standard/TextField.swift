@@ -1,35 +1,48 @@
 import VisualAppBase
 import CustomGraphicsMath
 
-public final class TextField: Widget, ConfigurableWidget {
+public final class TextField: SingleChildWidget, ConfigurableWidget {
+
     public struct Config: WidgetGUI.Config {
+
         public typealias PartialConfig = TextField.PartialConfig
 
         public var backgroundConfig: Background.PartialConfig
+        
         public var textInputConfig: TextInput.PartialConfig
 
         public init(backgroundConfig: Background.PartialConfig, textInputConfig: TextInput.PartialConfig) {
+            
             self.backgroundConfig = backgroundConfig
+
             self.textInputConfig = textInputConfig
         }
     }
 
     public struct PartialConfig: WidgetGUI.PartialConfig {
+
         public var backgroundConfig = Background.PartialConfig()
+
         public var textInputConfig = TextInput.PartialConfig()
 
         public init() {}
     }
 
     public static let defaultConfig = Config(
+
         backgroundConfig: Background.PartialConfig {
+
             $0.fill = .Blue
+
             $0.shape = .Rectangle
         },
+
         textInputConfig: TextInput.PartialConfig())
 
     public var localPartialConfig: PartialConfig?
+
     public var localConfig: Config?
+    
     lazy public var config: Config = combineConfigs()
 
     lazy private var textInput = TextInput()
@@ -37,35 +50,33 @@ public final class TextField: Widget, ConfigurableWidget {
     public internal(set) var onTextChanged = EventHandlerManager<String>()
     
     public init(_ initialText: String = "", onTextChanged textChangedHandler: ((String) -> ())? = nil) {
+
         super.init()
+
         textInput.text = initialText
+
         if let handler = textChangedHandler {
+
             _ = onDestroy(onTextChanged(handler))
         }
     }
 
-    override public func build() {
+    override public func buildChild() -> Widget {
+
         _ = onDestroy(textInput.onTextChanged { [unowned self] in
+
             onTextChanged.invokeHandlers($0)
         })
         
         textInput.with(config: config.textInputConfig)
 
-        children = [
-            Background {
-                Padding(all: 16) {
-                    textInput
-                }
-            }.with(config: config.backgroundConfig)
-        ]
-    }
+        return Background {
 
-    override public func performLayout(constraints: BoxConstraints) -> DSize2 {
+            Padding(all: 16) {
 
-        let child = children[0]
-        
-        child.layout(constraints: constraints)
- 
-        return constraints.constrain(child.bounds.size)
+                textInput
+            }
+
+        }.with(config: config.backgroundConfig)
     }
 }

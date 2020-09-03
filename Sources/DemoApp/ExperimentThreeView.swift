@@ -87,7 +87,7 @@ public class ExperimentThreeView: SingleChildWidget {
 
                         Padding(all: 8) {
                     
-                            Text("Here will be the search!")
+                            TextField("TEST TEXT")
                         }
                     }
                 }
