@@ -75,7 +75,7 @@ public class DemoGameApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGW
                         // TODO: fix issue with constraints in Row and relayouting...
                         ComputedSize(width: .Percent(20)) {
                             
-                            Column(horizontalAlignment: .Stretch) {
+                            Column {
 
                                 GameControlView()
                             }

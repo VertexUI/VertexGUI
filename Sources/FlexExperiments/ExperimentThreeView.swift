@@ -12,7 +12,7 @@ public class ExperimentThreeView: SingleChildWidget {
 
     override public func buildChild() -> Widget {
 
-        Background(color: Color(240, 240, 240, 255)) { [unowned self] in
+        Background(fill: Color(240, 240, 240, 255)) { [unowned self] in
 
             Column(spacing: 32) {
 
@@ -77,13 +77,13 @@ public class ExperimentThreeView: SingleChildWidget {
 
     private func buildSearch() -> Widget {
 
-        searchWidget = Background(color: Color(245, 245, 245, 255)) {
+        searchWidget = Background(fill: Color(245, 245, 245, 255)) {
 
             Padding(all: 32) {
 
                 Row {
                     
-                    Background(color: Color(230, 230, 230, 255)) {
+                    Background(fill: Color(230, 230, 230, 255)) {
 
                         Padding(all: 8) {
                     
@@ -101,13 +101,13 @@ public class ExperimentThreeView: SingleChildWidget {
 
         MouseArea {
 
-            Background(color: .White) {
+            Background(fill: .White) {
                 
                 Padding(all: 16) {
                     
                     Row(spacing: 24) {
                         
-                        Background(color: list.color) {
+                        Background(fill: list.color) {
                             
                             Padding(all: 8) {
 
@@ -132,7 +132,7 @@ public class ExperimentThreeView: SingleChildWidget {
 
     private func buildActiveView() -> Widget {
 
-        Background(color: .White) { [unowned self] in
+        Background(fill: .White) { [unowned self] in
 
             Column {
                 

@@ -15,7 +15,7 @@ public class RaycastDetailView: SingleChildWidget {
             Text("From \(self.vectorText(raycast.start))")
             Text("To \(self.vectorText(raycast.end))")
 
-            raycast.results.compactMap {
+            /*raycast.results.compactMap {
                 switch $0 {
                 case .Hit(let tileIndex, let edge):
                     return Text("Hit: \(edge.rawValue)")
@@ -23,7 +23,7 @@ public class RaycastDetailView: SingleChildWidget {
                     break
                 }
                 return nil
-            }
+            }*/
         }
     }
 

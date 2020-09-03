@@ -6,8 +6,6 @@ import GLGraphicsMath
 import VisualAppBase
 import Path
 import Foundation
-import struct Swim.Image
-import enum Swim.RGBA
 
 // TODO: maybe put into another file
 /*public protocol SDL2OpenGL3NanoVGVirtualScreen: VirtualScreen {
@@ -245,7 +243,7 @@ open class SDL2OpenGL3NanoVGRenderer: Renderer {
         nvgFillColor(window.nvg, color.toNVG())
     }
 
-    open func fillImage(_ image: Image<RGBA, UInt8>, position: DVec2) -> LoadedFill {
+    open func fillImage(_ image: Image, position: DVec2) -> LoadedFill {
         var data = image.getData()
 
         let imageHandle = withUnsafeMutablePointer(to: &data[0]) {

@@ -108,6 +108,7 @@ public class Flex: Widget {
         return config
     }
 
+    // TODO: might create an extra, simpler function that is faster for non-wrapping Flex layouts
     override public func performLayout(constraints: BoxConstraints) -> DSize2 {
 
         lines = [
@@ -580,6 +581,15 @@ extension Flex {
         public static func buildExpression(_ items: [Flex.Item]) -> [Flex.Item] {
             items
         }
+
+        /*public static func buildExpression(_ widget: Widget?) -> [Flex.Item] {
+            if let widget = widget {
+
+                return [Flex.Item { widget }]
+            }
+
+            return []
+        }*/
 
         public static func buildOptional(_ items: [Flex.Item]?) -> [Flex.Item] {
 

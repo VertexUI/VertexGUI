@@ -1,6 +1,4 @@
 import Foundation
-import struct Swim.Image
-import enum Swim.RGBA
 import CustomGraphicsMath
 
 // TODO: maybe put this into another file
@@ -37,7 +35,7 @@ public protocol Renderer {
     func closePath()
     // TODO: maybe merge fill into one function, given by enum Fill?
     func fillColor(_ color: Color)
-    func fillImage(_ image: Image<RGBA, UInt8>, position: DVec2) -> LoadedFill
+    func fillImage(_ image: Image, position: DVec2) -> LoadedFill
     /// Reapply a previously loaded fill
     func applyFill(_ fill: LoadedFill)
     func fill() 

@@ -8,12 +8,12 @@ let package = Package(
         .executable(
             name: "DemoApp",
             targets: ["DemoApp"]),
-        .executable(
+        /*.executable(
             name: "StatefulWidgetResearchApp",
             targets: ["StatefulWidgetResearchApp"]),
         .executable(
             name: "PropertyBindingsResearchApp",
-            targets: ["PropertyBindingsResearchApp"])
+            targets: ["PropertyBindingsResearchApp"])*/
     ],
     dependencies: [
         .package(url: "https://github.com/mxcl/Path.swift.git", .branch("master")),
@@ -51,8 +51,8 @@ let package = Package(
             name: "DemoGameApp",
             dependencies: ["WidgetGUI", "VisualAppBase", "VisualAppBaseImplSDL2OpenGL3NanoVG"],
             resources: [.process("Resources")]),
-        .target(name: "StatefulWidgetResearchApp", dependencies: ["WidgetGUI", "VisualAppBase", "VisualAppBaseImplSDL2OpenGL3NanoVG"]),
-        .target(name: "PropertyBindingsResearchApp", dependencies: ["WidgetGUI", "VisualAppBase", "VisualAppBaseImplSDL2OpenGL3NanoVG"]),
+        //.target(name: "StatefulWidgetResearchApp", dependencies: ["WidgetGUI", "VisualAppBase", "VisualAppBaseImplSDL2OpenGL3NanoVG"]),
+        //.target(name: "PropertyBindingsResearchApp", dependencies: ["WidgetGUI", "VisualAppBase", "VisualAppBaseImplSDL2OpenGL3NanoVG"]),
         .target(
             name: "FlexExperiments",
             dependencies: ["WidgetGUI", "VisualAppBase", "ColorizeSwift", "VisualAppBaseImplSDL2OpenGL3NanoVG", "Swim"],

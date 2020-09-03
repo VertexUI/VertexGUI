@@ -6,7 +6,7 @@ public class GameRulesetEditorView: SingleChildWidget {
     lazy private var bufferedRuleset = gameRuleset.value
 
     override open func buildChild() -> Widget {
-        return Column(spacing: 64, horizontalAlignment: .Stretch) { [unowned self] in
+        return Column(spacing: 64) { [unowned self] in
 
             buildPropertyEdit(label: "food blob mass") {
                 TextField("\(bufferedRuleset.foodBlobMass)") {
@@ -41,8 +41,11 @@ public class GameRulesetEditorView: SingleChildWidget {
     }
 
     private func buildPropertyEdit(label: String, @WidgetBuilder input: () -> Widget) -> Widget {
+
         return Row(spacing: 32) {
-            Row.Item(grow: 1, verticalAlignment: .Center) {
+
+            Row.Item(grow: 1, crossAlignment: .Center) {
+
                 Text(label, fontSize: 16)
             }
 

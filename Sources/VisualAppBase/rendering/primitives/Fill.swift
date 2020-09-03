@@ -1,10 +1,9 @@
-import Swim
 import CustomGraphicsMath
 
 // TODO: might change this into structs to avoid needing to calculate the hash for image in the caller
 public enum Fill: Hashable {
     case Color(_ value: CustomGraphicsMath.Color)
-    case Image(_ value: Image<RGBA, UInt8>, position: DVec2)
+    case Image(_ value: Image, position: DVec2)
 
     public func hash(into hasher: inout Hasher) {
         switch self {

@@ -11,7 +11,7 @@ public class GameControlView: SingleChildWidget {
                 
                 TextConfigProvider(color: .White) {
 
-                    Column(horizontalAlignment: .Stretch) {
+                    Column {
 
                         /*TextConfigProvider(fontSize: 20, wrap: true) {
 

@@ -1,9 +1,9 @@
-/*
 import Foundation
 import CustomGraphicsMath
 import VisualAppBase
+import WidgetGUI
 
-open class Divider<S: System<W, R>, W: Window, R: Renderer>: Widget<S, W, R> {
+open class Divider: Widget {
     public var color: Color
     public var axis: Axis
     public var width: Double
@@ -15,18 +15,23 @@ open class Divider<S: System<W, R>, W: Window, R: Renderer>: Widget<S, W, R> {
         super.init()
     }
 
-    override open func performLayout() {
+    override public func getBoxConfig() -> BoxConfig {
+        // TODO: implement something like percentage width / height --> fill parent + calculations probably
         switch axis {
         case .Horizontal:
-            bounds.size = DSize2(constraints!.maxWidth, width)
+            return BoxConfig(preferredSize: DSize2(100, width))
         case .Vertical:
-            bounds.size = DSize2(width, constraints!.maxHeight)
+            return BoxConfig(preferredSize: DSize2(width, 100))
         }
     }
 
-    override open func render(renderer: R) throws {
-        //print("RENDERME")
-        try renderer.rectangle(globalBounds, style: RenderStyle(fillColor: color))
+    override open func performLayout() {
+        
+    }
+
+    override open func renderContent() -> RenderObject? {
+        RenderObject.RenderStyle(fillColor: color) {
+            RenderObject.Rectangle(globalBounds)
+        }
     }
 }
-*/

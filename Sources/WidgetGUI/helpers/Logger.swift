@@ -65,11 +65,6 @@ public struct LogText: ExpressibleByStringInterpolation {
 
     public private(set) var fontStyle: FontStyle?
 
-    /*public init(stringLiteral value: StaticString) {
-
-        self.value = value.description
-    }*/
-
     public init(stringInterpolation value: String) {
 
         self.value = value
@@ -79,16 +74,6 @@ public struct LogText: ExpressibleByStringInterpolation {
 
         self.value = value
     }
-/*
-    public init(unicodeScalarLiteral value: StaticString) {
-
-        self.value = value.description
-    }
-
-    public init(extendedGraphemeClusterLiteral value: StaticString) {
-        
-        self.value = value.description
-    }*/
 
     public func with(fg: ForegroundColor? = nil, bg: BackgroundColor? = nil, style: FontStyle? = nil) -> Self {
 

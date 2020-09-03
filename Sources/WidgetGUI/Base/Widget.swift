@@ -402,7 +402,7 @@ open class Widget: Bounded, Parent, Child {
     }
 
     open func getBoxConfig() -> BoxConfig {
-        fatalError("getBoxConfig() not implemented.")
+        fatalError("getBoxConfig() not implemented for Widget \(self).")
     }
 
     // TODO: maybe call this updateBoxConfig / or queueBoxConfigUpdate??? --> on next tick?

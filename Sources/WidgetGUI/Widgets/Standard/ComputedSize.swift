@@ -1,6 +1,7 @@
 import VisualAppBase
 import CustomGraphicsMath
 
+@available(*, deprecated, message: "Use ConstrainedSize instead.")
 public class ComputedSize: SingleChildWidget {
     public enum DimensionUnitValue {
         case Pixels(_ value: Double)

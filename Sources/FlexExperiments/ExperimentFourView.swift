@@ -2,6 +2,7 @@ import Foundation
 import WidgetGUI
 import CustomGraphicsMath
 import ColorizeSwift
+import VisualAppBase
 
 public class ExperimentFourView: SingleChildWidget {
 
@@ -10,7 +11,7 @@ public class ExperimentFourView: SingleChildWidget {
     override public func buildChild() -> Widget {
         
         Row {
-        Background(color: Color(200, 200, 255, 255)) { [unowned self] in
+        Background(fill: Color(200, 200, 255, 255)) { [unowned self] in
 
             MouseArea {
 
@@ -24,19 +25,19 @@ public class ExperimentFourView: SingleChildWidget {
 
                         Row(spacing: 0, wrap: true) {
 
-                            Background(color: .Green) {
+                            Background(fill: .Green) {
 
                                 Space(DSize2(40, 40))
                             }
 
-                            Background(color: .Red) {
+                            Background(fill: .Red) {
 
                                 Space(DSize2(40, 40))
                             }
 
                             Row.Item(crossAlignment: .Stretch) {
                                 
-                                Background(color: .Blue) {
+                                Background(fill: .Blue) {
 
                                     Space(DSize2(40, 40))
                                 }
@@ -53,19 +54,19 @@ public class ExperimentFourView: SingleChildWidget {
 
                                 Text("Third Text in Column")
 
-                                Background(color: .Green) {
+                                Background(fill: .Green) {
 
                                     Space(DSize2(40, 40))
                                 }
 
-                                Background(color: .Red) {
+                                Background(fill: .Red) {
 
                                     Space(DSize2(40, 40))
                                 }
 
                                 Row.Item(crossAlignment: .Stretch) {
                                     
-                                    Background(color: .Blue) {
+                                    Background(fill: .Blue) {
 
                                         Space(DSize2(40, 40))
                                     }
@@ -118,7 +119,7 @@ public class ExperimentFourView: SingleChildWidget {
 
                             Row.Item(grow: 1) {
 
-                                Background(color: .Yellow) {
+                                Background(fill: .Yellow) {
 
                                     Text("Some Text on a background")
                                 }
@@ -129,7 +130,7 @@ public class ExperimentFourView: SingleChildWidget {
                                     
                                     Row.Item(grow: 1) {
 
-                                        Background(color: Color(140, 140, 255, 255)) {
+                                        Background(fill: Color(140, 140, 255, 255)) {
 
                                             Padding(all: 64) {
 

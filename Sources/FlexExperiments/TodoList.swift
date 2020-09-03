@@ -1,5 +1,6 @@
 import Foundation
 import CustomGraphicsMath
+import VisualAppBase
 
 public struct TodoList {
     public var name: String
