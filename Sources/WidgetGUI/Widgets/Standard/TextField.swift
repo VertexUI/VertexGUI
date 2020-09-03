@@ -32,7 +32,7 @@ public final class TextField: SingleChildWidget, ConfigurableWidget {
 
         backgroundConfig: Background.PartialConfig {
 
-            $0.fill = .Blue
+            $0.fill = .White
 
             $0.shape = .Rectangle
         },
@@ -70,13 +70,26 @@ public final class TextField: SingleChildWidget, ConfigurableWidget {
         
         textInput.with(config: config.textInputConfig)
 
-        return Background {
+        return Border(bottom: 3, color: .Blue) { [unowned self] in
 
-            Padding(all: 16) {
+            Background {
 
-                textInput
-            }
+                Padding(all: 16) {
 
-        }.with(config: config.backgroundConfig)
+                    textInput
+
+                }
+
+            }.with(config: config.backgroundConfig)
+        }
+    }
+
+    override public func renderContent() -> RenderObject? {
+        
+        // TODO: handling clipping like this will allow the text to enter the border of the TextField, maybe add a Clip Widget in buildChild
+        RenderObject.Clip(globalBounds) {
+
+            child.render()
+        }
     }
 }

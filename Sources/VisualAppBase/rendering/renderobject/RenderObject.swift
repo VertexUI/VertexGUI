@@ -131,9 +131,9 @@ open class RenderStyleRenderObject: SubTreeRenderObject {
     }
 
     public init<FillRenderValue: RenderValue, StrokeRenderValue: RenderValue>(
-        fill: FillRenderValue?, 
-        strokeWidth: Double?, 
-        strokeColor: StrokeRenderValue?,
+        fill: FillRenderValue? = nil, 
+        strokeWidth: Double? = nil, 
+        strokeColor: StrokeRenderValue? = nil,
         @RenderObjectBuilder children: () -> [RenderObject]) where 
 
             FillRenderValue.Value == Fill, StrokeRenderValue.Value == Color  {

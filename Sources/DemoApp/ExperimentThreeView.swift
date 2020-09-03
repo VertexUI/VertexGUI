@@ -82,13 +82,10 @@ public class ExperimentThreeView: SingleChildWidget {
             Padding(all: 32) {
 
                 Row {
-                    
-                    Background(fill: Color(230, 230, 230, 255)) {
 
-                        Padding(all: 8) {
-                    
-                            TextField("TEST TEXT")
-                        }
+                    Padding(all: 8) {
+                
+                        TextField("TEST TEXT")
                     }
                 }
             }
