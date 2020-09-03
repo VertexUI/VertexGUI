@@ -1,5 +1,4 @@
 import CustomGraphicsMath
-import WidgetGUI
 
 // TODO: maybe simply provide these as modifiers on each Widget?
 public class ConstrainedSize: SingleChildWidget {

@@ -70,12 +70,15 @@ public final class TextInput: Widget, StatefulWidget, ConfigurableWidget, GUIMou
         children = [textWidget]
     }
 
-    override public func performLayout() {
-        textWidget.constraints = BoxConstraints(
-            minSize: constraints!.constrain(DSize2(50, constraints!.minHeight)),
-            maxSize: constraints!.maxSize)
-        textWidget.layout()
-        bounds.size = textWidget.bounds.size
+    override public func performLayout(constraints: BoxConstraints) -> DSize2 {
+
+        textWidget.layout(constraints: BoxConstraints(
+
+            minSize: constraints.constrain(DSize2(50, constraints.minHeight)),
+
+            maxSize: constraints.maxSize))
+
+        return constraints.constrain(textWidget.bounds.size)
     }
 
     private func syncText() {

@@ -212,23 +212,4 @@ public class ExperimentFourView: SingleChildWidget {
         }
         }
     }
-
-    override public func performLayout(constraints: BoxConstraints) -> DSize2 {
-
-        //child.constraints = constraints // legacy
-
-        //child.bounds.size = constraints.maxSize
-
-        child.layout(constraints: constraints)
-
-        //print("CHILD DID LAYOUT", child.bounds.size, constraints)
-
-        return child.bounds.size
-    }
-
-    // TODO: remove this when the new layout approach is applied everywhere (Root should call layout(constraints: constraints))
-    override public func layout() {
-
-        layout(constraints: self.constraints!)
-    }
 }

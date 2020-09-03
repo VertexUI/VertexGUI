@@ -1,5 +1,4 @@
 import Foundation
-import WidgetGUI
 import CustomGraphicsMath
 import VisualAppBase
 import ColorizeSwift
@@ -518,30 +517,9 @@ open class Widget: Bounded, Parent, Child {
         self.previousConstraints = constraints
     }
 
-    // TODO: probably a legacy call --> remove
-    @available(*, deprecated, message: "Use layout(constraints:).")
-    open func layout() {
-
-        layout(constraints: self.constraints!)
-
-        Logger.warn("Calling legacy layout() function.")
-    }
-
-    // TODO: when using box config and setting bounds before hand can rename this to layoutSelf or layoutContent()
-    // TODO: this is the legacy version --> remove
-    @available(*, deprecated, message: "Use performLayout(constraints:)")
-    open func performLayout() {
-        
-        fatalError("performLayout() not implemented.")
-    }
-    
     open func performLayout(constraints: BoxConstraints) -> DSize2 {
 
-        Logger.warn("Calling default implementation of performLayout(constraints:) that calls legacy performLayout() on: \(self).")
-
-        performLayout()
-
-        return bounds.size
+        fatalError("performLayout(constraints:) not implemented.")
     }
 
     public func requestFocus() {

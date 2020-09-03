@@ -1,3 +1,5 @@
+import CustomGraphicsMath
+
 public class Alignable: Widget {
     public enum Alignment {
         case Start, Center, End
@@ -37,9 +39,10 @@ public class Alignable: Widget {
             super.init(children: [ childBuilder() ])
     }
 
-    override public func performLayout() {
-        child.constraints = constraints
-        child.layout()
-        bounds.size = child.bounds.size
+    override public func performLayout(constraints: BoxConstraints) -> DSize2 {
+
+        child.layout(constraints: constraints)
+        
+        return constraints.constrain(child.bounds.size)
     }
 }

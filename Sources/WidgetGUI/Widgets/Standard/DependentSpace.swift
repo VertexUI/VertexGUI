@@ -1,4 +1,3 @@
-import WidgetGUI
 import CustomGraphicsMath
 import VisualAppBase
 
@@ -30,8 +29,9 @@ public class DependentSpace: Widget {
         return BoxConfig(preferredSize: size, minSize: size, maxSize: size)
     }
 
-    override public func performLayout() {
+    override public func performLayout(constraints: BoxConstraints) -> DSize2 {
 
+        constraints.constrain(calculate(dependency))
     }
 
     override public func renderContent() -> RenderObject? {

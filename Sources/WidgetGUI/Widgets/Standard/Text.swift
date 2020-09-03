@@ -89,7 +89,7 @@ public final class Text: Widget, ConfigurableWidget {
 
             if oldValue != text {
 
-                layout()
+                layout(constraints: previousConstraints!)
 
                 invalidateRenderState()
             }

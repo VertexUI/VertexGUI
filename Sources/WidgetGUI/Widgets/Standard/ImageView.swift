@@ -1,4 +1,3 @@
-import WidgetGUI
 import VisualAppBase
 import CustomGraphicsMath
 import Foundation

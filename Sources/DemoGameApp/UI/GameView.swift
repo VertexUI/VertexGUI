@@ -14,8 +14,9 @@ public class GameView: Widget, GUIMouseEventConsumer {
         self.gameRenderer = GameRenderer(state: player.state)
     }
 
-    override open func performLayout() {
-        bounds.size = constraints!.maxSize
+    override open func performLayout(constraints: BoxConstraints) -> DSize2 {
+        
+        return constraints.constrain(DSize2(800, 800))
     }
 
     override open func renderContent() -> RenderObject? {

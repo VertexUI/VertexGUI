@@ -56,12 +56,14 @@ public class ComputedSize: SingleChildWidget {
     }
 
     override open func buildChild() -> Widget {
+
         childBuilder()
     }
 
-    override open func performLayout() {
-        child.constraints = calculate(constraints!)
-        child.layout()
-        bounds.size = child.bounds.size
+    override open func performLayout(constraints: BoxConstraints) -> DSize2 {
+
+        child.layout(constraints: calculate(constraints))
+        
+        return constraints.constrain(child.bounds.size)
     }
 }

@@ -31,8 +31,9 @@ open class TwoDWorldView: Widget, GUIMouseEventConsumer, StatefulWidget {
             super.init()
     }
 
-    override open func performLayout() {
-        bounds.size = constraints!.maxSize
+    override open func performLayout(constraints: BoxConstraints) -> DSize2 {
+        
+        constraints.constrain(DSize2(800, 800))
     }
 
     private func worldToLocal(position: DVec2) -> DVec2 {

@@ -60,35 +60,54 @@ public class RenderObjectTreeView: Widget {
         }
     }
 
-    override open func performLayout() {
+    override open func performLayout(constraints: BoxConstraints) -> DSize2 {
+
         var spacing: Double = 30
+        
         var nextX: Double = 0
+
         var nextY: Double = 0
+
         var maxX: Double = 0
+
         var currentLineHeight: Double = 0
+
         for i in 0..<groupedChildren.count {
+
             for j in 0..<groupedChildren[i].groups.count {
+
                 for k in 0..<groupedChildren[i].groups[j].children.count {
+
                     var child = groupedChildren[i].groups[j].children[k]
-                    child.constraints = constraints
-                    try child.layout()
+
+                    try child.layout(constraints: constraints)
+
                     child.bounds.min = DPoint2(nextX, nextY)
+
                     nextX += child.bounds.size.width + spacing
+
                     if child.bounds.size.height > currentLineHeight {
+
                         currentLineHeight = child.bounds.size.height
                     }
                 }
+
                 if nextX - spacing > maxX {
+
                     maxX = nextX - spacing
                 }
+
                 nextX += spacing * 4
             }
+
             nextX = 0
+
             nextY += currentLineHeight + spacing
+
             currentLineHeight = 0
         }
 
-        bounds.size = DSize2(maxX, nextY + currentLineHeight)
+        return constraints.constrain(DSize2(maxX, nextY + currentLineHeight))
     }
 
     override open func renderContent() -> RenderObject? {

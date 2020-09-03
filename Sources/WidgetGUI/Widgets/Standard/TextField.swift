@@ -60,10 +60,12 @@ public final class TextField: Widget, ConfigurableWidget {
         ]
     }
 
-    override public func performLayout() {
+    override public func performLayout(constraints: BoxConstraints) -> DSize2 {
+
         let child = children[0]
-        child.constraints = constraints
-        child.layout()
-        bounds.size = child.bounds.size
+        
+        child.layout(constraints: constraints)
+ 
+        return constraints.constrain(child.bounds.size)
     }
 }

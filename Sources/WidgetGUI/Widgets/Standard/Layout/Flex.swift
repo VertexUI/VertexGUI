@@ -1,6 +1,5 @@
 import CustomGraphicsMath
 import VisualAppBase
-import WidgetGUI
 
 public class Flex: Widget {
 
