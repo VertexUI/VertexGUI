@@ -110,8 +110,6 @@ public class Flex: Widget {
 
     override public func performLayout(constraints: BoxConstraints) -> DSize2 {
 
-        print("LAYOUT ROW!", constraints)
-
         lines = [
 
             Line(crossAxisStart: 0)
@@ -179,7 +177,7 @@ public class Flex: Widget {
             mainAxisPosition += item.getMainAxisStartMargin(orientation)
 
             // + 1 at the end to account for floating point precision errors
-            if mainAxisPosition + preferredMainAxisSize >= constraints.maxSize[mainAxisVectorIndex] + 1 {
+            if wrap && mainAxisPosition + preferredMainAxisSize >= constraints.maxSize[mainAxisVectorIndex] + 1 {
                 
                 // TODO: maybe only do this if shrink is set to some value > 0
                 if contentBoxConfig.minSize[mainAxisVectorIndex] > freeMainAxisSpace {
@@ -197,13 +195,7 @@ public class Flex: Widget {
                 }
             }
 
-            print("ROW LAYS OUT CONTENT", content, contentConstraints)
-
             content.layout(constraints: contentConstraints)
-
-            print("content got size:", content.bounds.size)
-            
-            print("Current X is", mainAxisPosition)
 
             content.bounds.min[mainAxisVectorIndex] = mainAxisPosition
 
@@ -229,7 +221,7 @@ public class Flex: Widget {
                 mainAxisSize = mainAxisPosition
             }
 
-            if constraints.maxSize[mainAxisVectorIndex] < mainAxisPosition {
+            if wrap && constraints.maxSize[mainAxisVectorIndex] < mainAxisPosition {
 
                 mainAxisPosition = 0
 
@@ -401,10 +393,6 @@ public class Flex: Widget {
         }
 
 
-
-        print("after layout, row got size", DSize2(mainAxisSize, lines.last!.crossAxisStart + lines.last!.size[crossAxisVectorIndex]))
-        
-        print("PREVIOUS SIZE WAS", bounds.size)
 
         switch orientation {
 

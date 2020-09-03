@@ -2,6 +2,8 @@ import ColorizeSwift
 
 public class Logger {
 
+    public static var enabled = false
+
     public static var activeLevels: Set<Level> = [
 
         .Message, .Debug, .Warning, .Error
@@ -14,7 +16,12 @@ public class Logger {
 
     public static var renderer: LogRenderer = ConsoleLogRenderer()
 
-    public static func log(_ outputs: LogText..., level: Level, context: Context) {
+    public static func log(_ outputs: [LogText], level: Level, context: Context) {
+
+        if !enabled {
+            
+            return
+        }
 
         if activeContexts.contains(context) && activeLevels.contains(level) {
             
@@ -22,14 +29,19 @@ public class Logger {
         }
     }
 
-    public static func debug(_ output: String, context: Context = .Default) {
+    public static func log(_ outputs: LogText..., level: Level, context: Context) {
 
-        log(LogText(stringInterpolation: output), level: .Debug, context: context)
+        log(outputs, level: level, context: context)
+    }
+
+    public static func debug(_ outputs: LogText..., context: Context = .Default) {
+
+        log(outputs, level: .Debug, context: context)
     }
     
-    public static func warn(_ output: String, context: Context = .Default) {
+    public static func warn(_ outputs: LogText..., context: Context = .Default) {
 
-        log(LogText(stringInterpolation: output).with(fg: .Yellow, bg: .Black), level: .Warning, context: context)
+        log(outputs, level: .Warning, context: context)
     }
 
     public enum Level: CaseIterable {
@@ -107,7 +119,7 @@ public struct LogText: ExpressibleByStringInterpolation {
 
     public enum BackgroundColor {
 
-        case Blue, White, Yellow, Black
+        case Blue, White, Yellow, Black, Red
     }
 
     public enum FontStyle {
@@ -155,6 +167,10 @@ public struct ConsoleLogRenderer: LogRenderer {
 
                     partialString = partialString.blue()
 
+                case .White:
+
+                    partialString = partialString.white()
+
                 default:
 
                     fatalError("Unsupported LogText foreground color in ConsoleLogRenderer: \(foregroundColor).")
@@ -176,6 +192,10 @@ public struct ConsoleLogRenderer: LogRenderer {
                 case .Yellow:
 
                     partialString = partialString.onYellow()
+
+                case .Red:
+
+                    partialString = partialString.onRed()
 
                 case .Black:
 

@@ -40,6 +40,8 @@ open class Root: Parent {
     private var renderObjectTreeRenderer: RenderObjectTreeRenderer
     
     private var renderObjectTree: RenderObjectTree
+
+    private var rerenderWidgets: [Widget] = []
     
     private var mouseEventManager = WidgetTreeMouseEventManager()
 
@@ -66,14 +68,19 @@ open class Root: Parent {
         
         rootWidget.mount(parent: self)
 
-        _ = rootWidget.onRenderStateInvalidated { [unowned self] in
+        /*_ = rootWidget.onRenderStateInvalidated { [unowned self] in
 
             updateRenderObjectTree($0)
-        }
+        }*/
 
         _ = rootWidget.onBoxConfigChanged { [unowned self] _ in
 
             layout()
+        }
+
+        _ = rootWidget.onAnyRenderStateInvalidated { [unowned self] in
+
+            rerenderWidgets.append($0)
         }
     }
 
@@ -131,6 +138,13 @@ open class Root: Parent {
     // TODO: maybe this little piece of rendering logic belongs into the App as well? / Maybe return a render object tree as well???? 
     // TODO: --> A Game scene could also be a render object with custom logic which is redrawn on every frame by render strategy.
     open func render(with renderer: Renderer) throws {
+        
+        for widget in rerenderWidgets {
+            
+            widget.updateRenderState()
+        }
+
+        rerenderWidgets = []
 
         try renderObjectTreeRenderer.render(with: renderer, in: bounds)
     }

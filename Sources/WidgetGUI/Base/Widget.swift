@@ -82,7 +82,9 @@ open class Widget: Bounded, Parent, Child {
     // TODO: might need to create something like layoutBounds and renderBounds (area that is invalidated on rerender request --> could be more than layoutBounds and affect outside widgets (e.g. a drop shadow that is not included in layoutBounds))
     // TODO: make size unsettable from outside when new layout approach completed
     open var bounds: DRect = DRect(min: DPoint2(0,0), size: DSize2(0,0)) {
+        
         didSet {
+            
             if oldValue != bounds {
 
                 if mounted && layouted && !layouting && !destroyed {
@@ -143,6 +145,9 @@ open class Widget: Bounded, Parent, Child {
 
 
 
+    private var renderState = RenderState()
+
+
     /// Flag whether to show bounds and sizes for debugging purposes.
     private var _debugLayout: Bool?
 
@@ -172,6 +177,8 @@ open class Widget: Bounded, Parent, Child {
     public internal(set) var onAnyParentChanged = EventHandlerManager<Parent?>()
 
     public internal(set) var onRenderStateInvalidated = EventHandlerManager<Widget>()
+
+    public internal(set) var onAnyRenderStateInvalidated = EventHandlerManager<Widget>()
 
     // TODO: when using the BoxConfig approach might instead have onBoundsInvalidated / BoxConfigInvalidated / LayoutInvalidated
     // to bring the parent to take into account updated pref sizes, max sizes, min sizes etc.
@@ -305,11 +312,6 @@ open class Widget: Bounded, Parent, Child {
 
         child.mount(parent: self, with: context)
 
-        _ = child.onRenderStateInvalidated { [unowned self] in
-        
-            invalidateRenderState($0)
-        }
-
         // TODO: buffer updates over a certain timespan and then relayout
         _ = child.onBoundsChanged { [unowned self, unowned child] _ in
             // TODO: maybe need special relayout flag / function
@@ -329,6 +331,11 @@ open class Widget: Bounded, Parent, Child {
         _ = child.onBoxConfigChanged { [unowned self, unowned child] _ in
             
             handleChildBoxConfigChanged(child: child)
+        }
+
+        _ = child.onAnyRenderStateInvalidated { [unowned self] in
+
+            onAnyRenderStateInvalidated.invokeHandlers($0)
         }
     }
 
@@ -551,159 +558,149 @@ open class Widget: Bounded, Parent, Child {
         }
     }
 
-    public final func findParent(_ condition: (_ parent: Parent) throws -> Bool) rethrows -> Parent? {
-        var parent: Parent? = self.parent
-
-        while parent != nil {
-
-            if try condition(parent!) {
-                return parent
-            }
-
-            if let currentParent = parent as? Widget {
-                parent = currentParent.parent
-            }
-        } 
-
-        return nil
-    }
-
-    public final func getParent<T>(ofType type: T.Type) -> T? {
-        let parents = getParents(ofType: type)
-        return parents.count > 0 ? parents[0] : nil
-    }
-
-    /// - Returns: all parents of given type, sorted from nearest to farthest
-    public final func getParents<T>(ofType type: T.Type) -> [T] {
-
-        var selectedParents = [T]()
-
-        var currentParent: Parent? = self.parent
-
-        while currentParent != nil {
-
-            if let parent = currentParent as? T {
-                selectedParents.append(parent)
-            }
-            
-            if let childParent = currentParent! as? Child {
-                currentParent = childParent.parent
-
-            } else {
-                break
-            }
-        }
-
-        return selectedParents
-    }
-
-    // TODO: might need possibility to return all of type + a method that only returns first + in what order depth first / breadth first
-    public final func getChild<W: Widget>(ofType type: W.Type) -> W? {
-        for child in children {
-
-            if let child = child as? W {
-
-                return child
-            }
-        }
-        
-        for child in children {
-
-            if let result = child.getChild(ofType: type) {
-
-                return result
-            }
-        }
-
-        return nil
-    }
-
-    public final func getConfig<Config: PartialConfig>(ofType type: Config.Type) -> Config? {
-        let configProviders = getParents(ofType: ConfigProvider.self)
-        
-        let configs = configProviders.compactMap {
-            $0.retrieveConfig(ofType: type)
-        }
-
-        if configs.count == 0 {
-            return nil
-        }
-
-        let resultConfig = type.merged(partials: configs)
-        
-        return resultConfig
-    }
-
     /// Returns the result of renderContent() wrapped in an IdentifiedSubTreeRenderObject
-    public final func render() -> IdentifiedSubTreeRenderObject {
-        return IdentifiedSubTreeRenderObject(id) {
-            if mounted && layouted && !layouting {
-                renderContent()
+    public final func render() -> RenderObject.IdentifiedSubTree {
 
-                if debugLayout {
-                    renderLayoutDebuggingInformation()
-                }
-            }
+        if renderState.invalid {
+
+            Logger.log("Render state of Widget: \(self) invalid. Rerendering.".with(fg: .Yellow), level: .Message, context: .WidgetRendering)
+
+            updateRenderState()
+
+        } else {
+
+            Logger.log("Render state of Widget: \(self) valid. Using cached state.".with(fg: .Yellow), level: .Message, context: .WidgetRendering)
         }
+
+        return renderState.content!
+    }
+
+    public final func updateRenderState() {
+
+        if !renderState.invalid {
+
+            Logger.warn("Called updateRenderState on Widget where renderState is not invalid.".with(fg: .White, bg: .Red), context: .WidgetRendering)
+
+            return
+        }
+
+        let subTree = renderState.content ?? IdentifiedSubTreeRenderObject(id, [])
+
+        if mounted && layouted && !layouting {
+
+            subTree.children = []
+
+            if let content = renderContent() {
+
+                subTree.children.append(content)
+            }
+
+            if debugLayout {
+
+                subTree.children.append(renderLayoutDebuggingInformation())
+            }
+
+        } else {
+            
+            Logger.warn("Called updateRenderState on Widget that cannot be rendered in it's current state.".with(fg: .White, bg: .Red), context: .WidgetRendering)
+        }
+
+        renderState.content = subTree
+
+        renderState.invalid = false
     }
 
     /// Invoked by render(), if Widget has children, should use child.render() to render them.
     open func renderContent() -> RenderObject? {
+        
         .Container {
+
             children.map { $0.render() }
         }
     }
 
     private func renderLayoutDebuggingInformation() -> RenderObject {
+
         RenderObject.Container {
+
             RenderObject.RenderStyle(strokeWidth: 1, strokeColor: FixedRenderValue(layoutDebuggingColor)) {
+
                 RenderObject.Rectangle(globalBounds)
             }
 
             RenderObject.Text(
+
                 "\(bounds.size.width) x \(bounds.size.height)",
+
                 fontConfig: layoutDebuggingTextFontConfig,
+
                 color: layoutDebuggingColor,
+
                 topLeft: globalBounds.min)
         }
     }
 
     /// This should trigger a rerender of the widget in the next frame.
-    public final func invalidateRenderState(_ widget: Widget? = nil) {
+    public final func invalidateRenderState() {
+
         if destroyed {
+
             Logger.warn("Tried to call invalidateRenderState() on destroyed widget: \(self)", context: .WidgetRendering)
+           
             return
         }
 
         if !mounted {
+            
             Logger.warn("Called invalidateRenderState() on an unmounted Widget: \(self)", context: .WidgetRendering)
+
             return
         }
 
-        let widget = widget ?? self
+        renderState.invalid = true
 
-        try! onRenderStateInvalidated.invokeHandlers(widget)
+        for child in children {
+
+            child.invalidateRenderState()
+        }
+
+        onRenderStateInvalidated.invokeHandlers(self)
+
+        onAnyRenderStateInvalidated.invokeHandlers(self)
     }
 
     public final func invalidateRenderState(after block: () -> ()) {
+
         block()
+
         invalidateRenderState()
     }
 
     // TODO: how to name this?
     public final func destroy() {
+
         for child in children {
+
             child.destroy()
         }
+
         mounted = false
+
         onParentChanged.removeAllHandlers()
+
         onAnyParentChanged.removeAllHandlers()
+
         onRenderStateInvalidated.removeAllHandlers()
+
         parent = nil
+
         destroySelf()
+
         onDestroy.invokeHandlers(Void())
+
         destroyed = true
-        //Logger.log("Destroyed Widget:", id, self, level: .Message, context: .WidgetLayouting)
+
+        Logger.log("Destroyed Widget: \(self), \(id)", level: .Message, context: .Default)
     }
 
     open func destroySelf() {}
