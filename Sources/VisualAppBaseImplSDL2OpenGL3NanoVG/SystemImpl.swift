@@ -161,7 +161,7 @@ open class SDL2OpenGL3NanoVGSystem: System {
                 // increment ticker
                 let currentTime = SDL_GetTicks()
                 let deltaTime = currentTime - self.lastFrameTime
-                self.currentFps = Int(1000 / deltaTime)
+                self.currentFps = deltaTime > 0 ? Int(1000 / deltaTime) : 0
                 self.fpsBufferIndex += 1
                 self.fpsBufferIndex = self.fpsBufferIndex % SDL2OpenGL3NanoVGSystem.fpsBufferCount
                 self.fpsBuffer[self.fpsBufferIndex] = self.currentFps

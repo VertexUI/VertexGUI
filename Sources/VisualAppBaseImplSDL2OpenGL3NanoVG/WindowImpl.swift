@@ -117,4 +117,9 @@ open class SDL2OpenGL3NanoVGWindow: Window {
         SDL_DestroyWindow(sdlWindow)
         onClose.invokeHandlers(Void())
     }
+
+    open func makeCurrent() {
+
+        SDL_GL_MakeCurrent(sdlWindow, glContext)
+    }
 }

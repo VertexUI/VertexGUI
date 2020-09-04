@@ -367,6 +367,8 @@ public struct AnyVector3<E: Numeric & Hashable>: Vector3 {
     }
 }
 
+public typealias DVec3 = AnyVector3<Double>
+
 public protocol Vector4: Vector3 {
     var w: Element { get set }
 }
