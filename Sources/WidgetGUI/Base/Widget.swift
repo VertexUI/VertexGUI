@@ -185,7 +185,8 @@ open class Widget: Bounded, Parent, Child {
 
     open internal(set) var onBoxConfigChanged = EventHandlerManager<BoxConfig>()
 
-    public internal(set) var onFocusChanged = EventHandlerManager<Bool>()
+    // TODO: this could lead to a strong reference cycle
+    lazy public internal(set) var onFocusChanged = WidgetEventHandlerManager<Bool>(self)
 
     public internal(set) var onDestroy = EventHandlerManager<Void>()
     
@@ -335,6 +336,11 @@ open class Widget: Bounded, Parent, Child {
         _ = child.onAnyRenderStateInvalidated { [unowned self] in
 
             onAnyRenderStateInvalidated.invokeHandlers($0)
+        }
+
+        _ = child.onFocusChanged { [unowned self] in
+
+            focused = $0
         }
     }
 

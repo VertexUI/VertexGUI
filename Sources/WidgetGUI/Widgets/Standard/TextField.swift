@@ -32,7 +32,7 @@ public final class TextField: SingleChildWidget, ConfigurableWidget {
 
         backgroundConfig: Background.PartialConfig {
 
-            $0.fill = .White
+            $0.fill = Color(230, 230, 230, 255)
 
             $0.shape = .Rectangle
         },
@@ -76,7 +76,7 @@ public final class TextField: SingleChildWidget, ConfigurableWidget {
 
                 Clip {
 
-                    Padding(all: 16) {
+                    Padding(top: 8, right: 16, bottom: 8, left: 16) {
 
                         textInput
                     }

@@ -15,7 +15,7 @@ public class TodoAppView: SingleChildWidget {
 
     @Observable private var selectedList: TodoList? = nil
 
-    @Observable private var mode: Mode = .Search
+    @Observable private var mode: Mode = .SelectedList
 
     @Observable private var searchQuery: String = ""
 
@@ -84,7 +84,6 @@ public class TodoAppView: SingleChildWidget {
                             }
                         }
                     }
-
                 }
             }
         }
@@ -92,19 +91,51 @@ public class TodoAppView: SingleChildWidget {
 
     private func buildSearch() -> Widget {
 
-        searchWidget = Background(fill: Color(245, 245, 245, 255)) { [unowned self] in
+        searchWidget = Background(fill: .White) { [unowned self] in
 
             Padding(all: 32) {
 
-                Row {
+                ConstrainedSize(minSize: DSize2(300, 0), maxSize: DSize2(300, .infinity)) {
 
                     Padding(all: 8) {
+    
+                        Row(spacing: 24) {
                         
-                        ConstrainedSize(minSize: DSize2(300, 0), maxSize: DSize2(300, .infinity)) {
-                            
-                            TextField {
+                            Row.Item(grow: 1) {
 
-                                searchQuery = $0
+                                TextField {
+
+                                    searchQuery = $0
+
+                                }.onFocusChanged.chain {
+                                    
+                                    if $0 {
+                                        
+                                        mode = .Search
+                                    }
+                                }
+                            }
+
+                            Row.Item(crossAlignment: .Center) {
+
+                                ObservingBuilder($mode) {
+
+                                    if mode == .Search {
+
+                                        return MouseArea {
+                                        
+                                            Text("WOW")
+
+                                        } onClick: { _ in
+
+                                            mode = .SelectedList                                            
+                                        }
+
+                                    } else {
+
+                                        return Space(.zero)
+                                    }
+                                }
                             }
                         }
                     }
@@ -144,7 +175,8 @@ public class TodoAppView: SingleChildWidget {
         } onClick: { [unowned self] _ in
 
             selectedList = list
-            
+
+            mode = .SelectedList            
         }
     }
 
@@ -160,29 +192,35 @@ public class TodoAppView: SingleChildWidget {
                     $0.globalBounds.size
                 }
 
-                Padding(all: 32) {
+                Column.Item(grow: 1, crossAlignment: .Stretch) {
 
-                    ObservingBuilder($mode) {
+                    Padding(all: 32) {
 
-                        switch mode {
+                        ObservingBuilder($mode) {
 
-                        case .SelectedList:
+                            switch mode {
 
-                            ObservingBuilder($selectedList) {
+                            case .SelectedList:
 
-                                if let selectedList = selectedList {
-                                    
-                                    return TodoListView(selectedList)
-                                    
-                                } else {
+                                ObservingBuilder($selectedList) {
 
-                                    return Text("ACTIVE")
+                                    if let selectedList = selectedList {
+                                        
+                                        return TodoListView(selectedList)
+                                        
+                                    } else {
+
+                                        return Center {
+
+                                            Text("No list selected.", fontSize: 24, fontWeight: .Bold, color: .Grey)
+                                        }
+                                    }
                                 }
-                            }
-                        
-                        case .Search:
+                            
+                            case .Search:
 
-                            SearchResultsView(query: $searchQuery)
+                                SearchResultsView(query: $searchQuery)
+                            }
                         }
                     }
                 }

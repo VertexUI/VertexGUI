@@ -1,4 +1,4 @@
-public class EventHandlerManager<Data> {
+public class WidgetEventHandlerManager<Data> {
     
     public typealias Handler = (Data) -> Void
 
@@ -8,24 +8,37 @@ public class EventHandlerManager<Data> {
 
     private var nextHandlerId = 0
 
-    public init() {
+    private let widget: Widget
+
+    lazy public private(set) var chain = Chainer<Data>(widget, self)
+
+    public init(_ widget: Widget) {
+
+        self.widget = widget
     }
 
     public func callAsFunction(_ handler: @escaping Handler) -> UnregisterCallback {
+
         addHandler(handler)
     }
 
     // TODO: implement function to add to start of handler list
     public func addHandler(_ handler: @escaping Handler) -> UnregisterCallback {
+
         let currentHandlerId = nextHandlerId
+
         handlers[currentHandlerId] = handler
+
         nextHandlerId += 1
+
         return {
+
             self.handlers.removeValue(forKey: currentHandlerId)
         }
     }
 
     public func once(_ handler: @escaping Handler) {
+
         var unregisterCallback: UnregisterCallback? = nil
 
         let wrapperHandler = { (data: Data) in
@@ -40,49 +53,45 @@ public class EventHandlerManager<Data> {
 
         unregisterCallback = addHandler(wrapperHandler)
     }
-
+    
     public func invokeHandlers(_ data: Data) {
+
         // TODO: call handlers in same order as they were added
+
         for handler in handlers.values {
-            try handler(data)
+
+            handler(data)
         }
     }
 
     public func removeAllHandlers() {
+
         handlers.removeAll()
     }
 }
 
-//@available(*, deprecated, message: "Just use EventHandlerManager (probably)!")
-public class ThrowingEventHandlerManager<Data> {
-    public typealias Handler = (Data) throws -> Void
-    public typealias UnregisterCallback = () -> Void
-    public var handlers = [Int: Handler]()
-    private var nextHandlerId = 0
+extension WidgetEventHandlerManager {
 
-    public init() {
-    }
+    public struct Chainer<Data> {
 
-    public func callAsFunction(_ handler: @escaping Handler) -> UnregisterCallback {
-        addHandler(handler)
-    }
+        unowned private let chainValue: Widget
 
-    public func addHandler(_ handler: @escaping Handler) -> UnregisterCallback {
-        let currentHandlerId = nextHandlerId
-        handlers[currentHandlerId] = handler
-        nextHandlerId += 1
-        return {
-            self.handlers.removeValue(forKey: currentHandlerId)
+        unowned private let manager: WidgetEventHandlerManager<Data>
+
+        public init(_ chainValue: Widget, _ manager: WidgetEventHandlerManager<Data>) {
+
+            self.chainValue = chainValue
+
+            self.manager = manager
         }
-    }
 
-    public func invokeHandlers(_ data: Data) throws {
-        for handler in handlers.values {
-            try handler(data)
+        public func callAsFunction(_ handler: @escaping WidgetEventHandlerManager<Data>.Handler) -> Widget {
+
+            let unregisterCallback = manager.addHandler(handler)
+
+            _ = chainValue.onDestroy(unregisterCallback)
+
+            return chainValue
         }
-    }
-
-    public func removeAllHandlers() {
-        handlers.removeAll()
     }
 }

@@ -1,23 +1,32 @@
 import CustomGraphicsMath
 
 public class Center: SingleChildWidget {
-    private var inputChildBuilder: () -> Widget
+
+    private var childBuilder: () -> Widget
     
-    public init(@WidgetBuilder child inputChildBuilder: @escaping () -> Widget) {
-        self.inputChildBuilder = inputChildBuilder
-        super.init()
+    public init(@WidgetBuilder child childBuilder: @escaping () -> Widget) {
+
+        self.childBuilder = childBuilder
     }
 
     override open func buildChild() -> Widget {
-        inputChildBuilder()
+
+        childBuilder()
+    }
+
+    override public func getBoxConfig() -> BoxConfig {
+
+        BoxConfig(preferredSize: child.boxConfig.preferredSize, minSize: .zero, maxSize: .infinity)
     }
 
     override open func performLayout(constraints: BoxConstraints) -> DSize2 {
         
         child.layout(constraints: BoxConstraints(minSize: DSize2.zero, maxSize: constraints.maxSize))
-        
-        child.bounds.min = DVec2(bounds.size - child.bounds.size) / 2
 
-        return constraints.constrain(child.bounds.size)
+        let ownSize = constraints.constrain(child.bounds.size)
+
+        child.bounds.min = DVec2(ownSize - child.bounds.size) / 2
+
+        return ownSize
     }
 }
