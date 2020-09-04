@@ -124,7 +124,10 @@ public class TodoAppView: SingleChildWidget {
 
                                         return MouseArea {
                                         
-                                            Text("WOW")
+                                            Button {
+
+                                                Text("cancel")
+                                            }
 
                                         } onClick: { _ in
 
