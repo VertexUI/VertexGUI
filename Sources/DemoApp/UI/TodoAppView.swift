@@ -2,13 +2,22 @@ import WidgetGUI
 import CustomGraphicsMath
 import VisualAppBase
 
-public class ExperimentThreeView: SingleChildWidget {
+public class TodoAppView: SingleChildWidget {
+
+    public enum Mode {
+
+        case SelectedList, Search
+    }
 
     private var todoLists = TodoList.mocks
 
     private var searchWidget: Widget?
 
     @Observable private var selectedList: TodoList? = nil
+
+    @Observable private var mode: Mode = .Search
+
+    @Observable private var searchQuery: String = ""
 
     override public func buildChild() -> Widget {
 
@@ -31,7 +40,6 @@ public class ExperimentThreeView: SingleChildWidget {
 
                             buildActiveView()
                         }
-
                     }
                 }
             }
@@ -77,15 +85,21 @@ public class ExperimentThreeView: SingleChildWidget {
 
     private func buildSearch() -> Widget {
 
-        searchWidget = Background(fill: Color(245, 245, 245, 255)) {
+        searchWidget = Background(fill: Color(245, 245, 245, 255)) { [unowned self] in
 
             Padding(all: 32) {
 
                 Row {
 
                     Padding(all: 8) {
-                
-                        TextField("TEST TEXT")
+                        
+                        ConstrainedSize(minSize: DSize2(300, 0), maxSize: DSize2(300, .infinity)) {
+                            
+                            TextField {
+
+                                searchQuery = $0
+                            }
+                        }
                     }
                 }
             }
@@ -141,15 +155,27 @@ public class ExperimentThreeView: SingleChildWidget {
 
                 Padding(all: 32) {
 
-                    ObservingBuilder($selectedList) {
+                    ObservingBuilder($mode) {
 
-                        if let selectedList = selectedList {
-                            
-                            return TodoListView(for: selectedList)
-                            
-                        } else {
+                        switch mode {
 
-                            return Text("ACTIVE")
+                        case .SelectedList:
+
+                            ObservingBuilder($selectedList) {
+
+                                if let selectedList = selectedList {
+                                    
+                                    return TodoListView(for: selectedList)
+                                    
+                                } else {
+
+                                    return Text("ACTIVE")
+                                }
+                            }
+                        
+                        case .Search:
+
+                            SearchResultsView(query: $searchQuery)
                         }
                     }
                 }

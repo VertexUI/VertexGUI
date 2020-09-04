@@ -34,11 +34,11 @@ public class Observable<Value> {
         }
     }
 
-    public var projectedValue: AnyObservable {
+    public var projectedValue: Observable {
 
         get {
             
-            return AnyObservable(self)
+            return self
         }
     }
 
@@ -55,7 +55,7 @@ public class Observable<Value> {
     }
 }
 
-public class ObservableArray<Value>: Collection {
+public class ObservableArray<Value>: Observable<[Value]>, Collection {
 
     public typealias Index = Int
 
@@ -63,45 +63,45 @@ public class ObservableArray<Value>: Collection {
 
     public typealias Iterator = IndexingIterator<[Value]>
 
-    private var values: [Value]
+    //private var value: [Value]
 
-    public internal(set) var onChanged = EventHandlerManager<[Value]>()
+    //public internal(set) var onChanged = EventHandlerManager<[Value]>()
 
-    public init(_ initialValues: [Value] = []) {
+    override public init(_ initialValue: [Value] = []) {
 
-        self.values = initialValues
+        super.init(initialValue)
     }
 
     private func invokeOnChangedHandlers() {
 
-        onChanged.invokeHandlers(values)
+        onChanged.invokeHandlers(value)
     }
 
     public var startIndex: Index {
 
-        values.startIndex
+        value.startIndex
     }
 
     public var endIndex: Index {
 
-        values.endIndex
+        value.endIndex
     }
 
     public func makeIterator() -> Iterator {
 
-        values.makeIterator()
+        value.makeIterator()
     }
 
     public subscript(position: Index) -> Element {
 
         get {
 
-            values[position]
+            value[position]
         }
 
         set {
             
-            values[position] = newValue
+            value[position] = newValue
 
             invokeOnChangedHandlers()
         }
@@ -109,36 +109,36 @@ public class ObservableArray<Value>: Collection {
 
     public var isEmpty: Bool {
 
-        values.isEmpty
+        value.isEmpty
     }
 
     public var count: Int {
 
-        values.count
+        value.count
     }
 
     public func index(after i: Index) -> Index {
 
-        values.index(after: i)
+        value.index(after: i)
     }
 
     public func append(_ newValue: Value) {
 
-        values.append(newValue)
+        value.append(newValue)
 
         invokeOnChangedHandlers()
     }
 
     public func append<S>(contentsOf newValues: S) where S: Sequence, Value == S.Element {
 
-        values.append(contentsOf: newValues)
+        value.append(contentsOf: newValues)
 
         invokeOnChangedHandlers()
     }
 
     public func removeAll(where shouldBeRemoved: (Element) throws -> Bool) rethrows {
 
-        try values.removeAll(where: shouldBeRemoved)
+        try value.removeAll(where: shouldBeRemoved)
 
         invokeOnChangedHandlers()
     }
@@ -151,14 +151,6 @@ public class AnyObservable {
     private var removeOnChangedHandler: (() -> ())?
     
     public init<Value>(_ observable: Observable<Value>) {
-
-        removeOnChangedHandler = observable.onChanged { [unowned self] value in
-
-            onChanged.invokeHandlers(value)
-        }
-    }
-
-    public init<Value>(_ observable: ObservableArray<Value>) {
 
         removeOnChangedHandler = observable.onChanged { [unowned self] value in
 
