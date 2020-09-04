@@ -74,10 +74,12 @@ public final class TextField: SingleChildWidget, ConfigurableWidget {
 
             Background {
 
-                Padding(all: 16) {
+                Clip {
 
-                    textInput
+                    Padding(all: 16) {
 
+                        textInput
+                    }
                 }
 
             }.with(config: config.backgroundConfig)

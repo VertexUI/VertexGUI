@@ -45,7 +45,7 @@ public final class TextInput: SingleChildWidget, StatefulWidget, ConfigurableWid
             $0.wrap = false
         },
 
-        caretColor: Color(80, 255, 240, 255)) 
+        caretColor: Color(80, 80, 255, 255)) 
     
     public struct State {
 
@@ -63,6 +63,13 @@ public final class TextInput: SingleChildWidget, StatefulWidget, ConfigurableWid
     public internal(set) var text: String
 
     private var caretPosition: Int = 0
+
+    private var translation: DVec2 = .zero
+
+    private var caretSize: DSize2 {
+     
+        DSize2(textWidget.config.fontConfig.size * 0.1, globalBounds.size.height)
+    }
 
     public internal(set) var onTextChanged = EventHandlerManager<String>()
 
@@ -110,6 +117,20 @@ public final class TextInput: SingleChildWidget, StatefulWidget, ConfigurableWid
         textWidget.text = text
 
         onTextChanged.invokeHandlers(text)
+    }
+
+    private func updateTranslation() {
+
+        let preCaretSpace = textWidget.getSubBounds(to: caretPosition)
+
+        if preCaretSpace.width + translation.x > bounds.width {
+
+            translation.x = bounds.width - preCaretSpace.width - caretSize.width
+
+        } else if preCaretSpace.width + translation.x < 0 {
+
+            translation.x -= preCaretSpace.width + translation.x
+        }
     }
 
     public func consume(_ event: GUIMouseEvent) {
@@ -179,6 +200,8 @@ public final class TextInput: SingleChildWidget, StatefulWidget, ConfigurableWid
                         caretPosition -= 1
 
                         syncText()
+
+                        updateTranslation()
                     }
                 }
 
@@ -192,6 +215,28 @@ public final class TextInput: SingleChildWidget, StatefulWidget, ConfigurableWid
 
                         syncText()
                     }
+                }
+
+            case .ArrowLeft:
+
+                if caretPosition > 0 {
+
+                    caretPosition -= 1
+
+                    updateTranslation()
+
+                    invalidateRenderState()
+                }
+
+            case .ArrowRight:
+
+                if caretPosition < text.count {
+
+                    caretPosition += 1
+
+                    updateTranslation()
+
+                    invalidateRenderState()
                 }
 
             default:
@@ -208,23 +253,23 @@ public final class TextInput: SingleChildWidget, StatefulWidget, ConfigurableWid
             invalidateRenderState {
                 
                 text.insert(contentsOf: event.text, at: text.index(text.startIndex, offsetBy: caretPosition))
-                
+
                 caretPosition += event.text.count
 
                 syncText()
+
+                updateTranslation()
             }
         }
     }
 
     override public func renderContent() -> RenderObject? {
-
+        
         let preCaretBounds = textWidget.getSubBounds(to: caretPosition)
-
-        let caretSize = DSize2(textWidget.config.fontConfig.size * 0.1, globalBounds.size.height)
        
         let caretBounds = DRect(min: globalBounds.min + DVec2(preCaretBounds.max.x, 0), size: caretSize)
 
-        return RenderObject.Container { [unowned self] in
+        return RenderObject.Translation(translation) { [unowned self] in
           
             if focused {
                 

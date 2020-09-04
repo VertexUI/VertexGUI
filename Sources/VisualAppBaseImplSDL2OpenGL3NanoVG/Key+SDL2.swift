@@ -17,10 +17,10 @@ public extension Key {
         case SDL_Keycode(SDLK_DOWN): self = .ArrowDown
         case SDL_Keycode(SDLK_LEFT): self = .ArrowLeft
 
-        case SDL_Keycode(SDLK_a): self = .LA
-        case SDL_Keycode(SDLK_s): self = .LS
-        case SDL_Keycode(SDLK_d): self = .LD
-        case SDL_Keycode(SDLK_w): self = .LW
+        case SDL_Keycode(SDLK_a): self = .A
+        case SDL_Keycode(SDLK_s): self = .S
+        case SDL_Keycode(SDLK_d): self = .D
+        case SDL_Keycode(SDLK_w): self = .W
 
         case SDL_Keycode(SDLK_F1): self = .F1
         case SDL_Keycode(SDLK_F2): self = .F2
