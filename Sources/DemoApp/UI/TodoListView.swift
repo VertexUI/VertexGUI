@@ -9,13 +9,9 @@ public class TodoListView: SingleChildWidget {
 
     private var expandedItemIndices: Set<Int> = []
     
-    public init(for list: TodoList) {
+    public init(_ list: TodoList) {
 
         self.list = list
-
-        super.init()
-
-        self.debugLayout = true
     }
 
     override public func buildChild() -> Widget {
@@ -48,15 +44,9 @@ public class TodoListView: SingleChildWidget {
                         
                         Row.Item(crossAlignment: .Center) {
 
-                            Text(todo.description, wrap: true).with {
-
-                                $0.debugLayout = true
-                            }
+                            Text(todo.description, wrap: true)
                         }
                         
-                    }.with {
-
-                        $0.debugLayout = true
                     }
 
                     if expandedItemIndices.contains(index) {

@@ -21,24 +21,31 @@ public class TodoAppView: SingleChildWidget {
 
     override public func buildChild() -> Widget {
 
-        Background(fill: Color(240, 240, 240, 255)) { [unowned self] in
+        DependencyProvider(provide: [
 
-            Column(spacing: 32) {
+            Dependency(todoLists)
 
-                Text("TODO Application", fontSize: 24, fontWeight: .Bold)
+        ]) {
 
-                Column.Item(grow: 1, crossAlignment: .Stretch) {
+            Background(fill: Color(240, 240, 240, 255)) { [unowned self] in
 
-                    Row {
+                Column(spacing: 32) {
+
+                    Text("TODO Application", fontSize: 24, fontWeight: .Bold)
+
+                    Column.Item(grow: 1, crossAlignment: .Stretch) {
+
+                        Row {
+                            
+                            Row.Item(crossAlignment: .Stretch) {
                         
-                        Row.Item(crossAlignment: .Stretch) {
-                       
-                            buildMenu()
-                        }
+                                buildMenu()
+                            }
 
-                        Row.Item(grow: 1, crossAlignment: .Stretch) {
+                            Row.Item(grow: 1, crossAlignment: .Stretch) {
 
-                            buildActiveView()
+                                buildActiveView()
+                            }
                         }
                     }
                 }
@@ -165,7 +172,7 @@ public class TodoAppView: SingleChildWidget {
 
                                 if let selectedList = selectedList {
                                     
-                                    return TodoListView(for: selectedList)
+                                    return TodoListView(selectedList)
                                     
                                 } else {
 

@@ -3,20 +3,29 @@ import CustomGraphicsMath
 import VisualAppBase
 
 public struct TodoList {
+
     public var name: String
+
     public var color: Color
+
     public var items: [TodoItem]
 
     public var id: String {
+
         name
+    }
+
+    public func filtered(by query: String) -> TodoList {
+
+        let filteredItems = items.filter { $0.description.contains(query) }
+
+        return TodoList(name: name, color: color, items: filteredItems)
     }
 
     public static let mocks = [
 
         TodoList(name: "TestList 1", color: .Blue, items: [
-            TodoItem(description: "Sweep the floor.", images: [
-                try! Image(contentsOf: Bundle.module.url(forResource: "owl-2", withExtension: "jpg", subdirectory: "owl")!)
-            ]),
+            TodoItem(description: "Sweep the floor."),
             TodoItem(description: "Sweep the floor. Sweep the floor. Sweep the floor. Sweep the floor. Sweep the floor. Sweep the floor. Sweep the floor. Sweep the floor. Sweep the floor. Sweep the floor. Sweep the floor. Sweep the floor. Sweep the floor. Sweep the floor. Sweep the floor. Sweep the floor."),
             TodoItem(description: "Sweep the floor."),
             TodoItem(description: "Sweep the floor."),
