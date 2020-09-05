@@ -80,7 +80,8 @@ let package = Package(
 
         .target(
             name: "3DGameApp",
-            dependencies: ["WidgetGUI", "VisualAppBase", "GL", "VisualAppBaseImplSDL2OpenGL3NanoVG", "Swim", "CustomGraphicsMath", "GLGraphicsMath"]
+            dependencies: ["WidgetGUI", "VisualAppBase", "GL", "VisualAppBaseImplSDL2OpenGL3NanoVG", "Swim", "CustomGraphicsMath", "GLGraphicsMath"],
+            resources: [.process("Rendering/OpenGL/Resources")]
         ),
        
         .testTarget(name: "VisualAppBaseTests", dependencies: ["VisualAppBase"])

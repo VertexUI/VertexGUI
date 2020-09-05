@@ -21,6 +21,8 @@ public class ThreeDGameApp: VisualApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVG
 
         window = try! Window(background: .Grey, size: DSize2(800, 800))
 
+        renderer.setup()
+
         _ = system.onFrame(frame)
     }
 
