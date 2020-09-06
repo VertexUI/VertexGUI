@@ -37,7 +37,9 @@ public class ThreeDGameApp: VisualApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVG
 
         glClearColor(0.2, 0.3, 0.2, 1.0)
 
-        glClear(GLMap.COLOR_BUFFER_BIT)
+        glClear(GLMap.COLOR_BUFFER_BIT | GLMap.DEPTH_BUFFER_BIT)
+
+        glViewport(0, 0, GLMap.Size(window.drawableSize.width), GLMap.Size(window.drawableSize.height))
 
         renderer.render()
 

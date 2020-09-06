@@ -18,11 +18,11 @@ public class GLSceneRenderer {
 
         GLVoxelRenderer.render(voxels: [
 
-            Voxel(position: DVec3(0.5, 0.1, 1.0)),
+            Voxel(position: DVec3(0, 0, 0)),
 
-            Voxel(position: DVec3(0.5, -0.2, 1.0)),
+            //Voxel(position: DVec3(1, 1, 1)),
 
-            Voxel(position: DVec3(-0.5, -0.2, 1.0))
+           // Voxel(position: DVec3(-1, 0, 0))
         ])
     }
 }
