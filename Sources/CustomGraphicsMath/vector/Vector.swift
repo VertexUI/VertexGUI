@@ -423,6 +423,12 @@ public struct AnyVector4<E: Numeric & Hashable>: Vector {
         self.elements = elements
     }
 
+    public init(_ vec3: AnyVector3<E>, _ element: Element) {
+        self.rows = 4
+        self.cols = 1
+        self.elements = vec3.elements + [element]
+    }
+
     public static func * <M: Matrix4> (lhs: M, rhs: Self) -> Self where M.Element == Self.Element {
         let result = try! lhs.matmul(rhs)
         return Self(result.elements)

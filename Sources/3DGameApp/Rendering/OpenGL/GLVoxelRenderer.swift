@@ -47,6 +47,17 @@ public struct GLVoxelRenderer {
         3, 5, 6
     ]
 
+    private static let worldTransformation = AnyMatrix4<GLMap.Float>([
+        
+        1, 0, 0, 0,
+
+        0, 1, 0, 0,
+
+        0, 0, 1, 0,
+
+        0, 0, 0, 1
+    ])
+
     public static func setup() {
 
         do {
@@ -84,7 +95,11 @@ public struct GLVoxelRenderer {
 
         let vertices = voxels.flatMap { voxel in
 
-            baseVertices.flatMap { ($0 + voxel.position).elements.map(Float.init) }
+            baseVertices.flatMap { vertex -> [Float] in
+
+                let vertex4 = AnyVector4<Float>((vertex + voxel.position).elements.map(Float.init) + [1])
+
+                return (worldTransformation * vertex4).elements[..<3].map { Float($0) } }
         }
 
         glBufferData(GLMap.ARRAY_BUFFER, voxels.count * MemoryLayout<Float>.size * baseVertices.count * 3, vertices, GLMap.DYNAMIC_DRAW)
