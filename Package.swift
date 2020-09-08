@@ -4,9 +4,15 @@ import PackageDescription
 
 let package = Package(
 
-    name: "SwiftGUIDemoApp",
+    name: "GraphicalSwift",
 
     products: [
+
+        .library(
+
+            name: "GraphicalSwift",
+            targets: ["VisualAppBase", "VisualAppBaseImplSDL2OpenGL3NanoVG", "WidgetGUI", "CustomGraphicsMath"]
+        ),
 
         .executable(
             name: "DemoApp",
@@ -78,12 +84,6 @@ let package = Package(
             dependencies: ["WidgetGUI", "VisualAppBase", "ColorizeSwift", "VisualAppBaseImplSDL2OpenGL3NanoVG", "Swim"],
             resources: [.copy("Resources")]),
 
-        .target(
-            name: "3DGameApp",
-            dependencies: ["WidgetGUI", "VisualAppBase", "GL", "VisualAppBaseImplSDL2OpenGL3NanoVG", "Swim", "CustomGraphicsMath", "GLGraphicsMath"],
-            resources: [.process("Rendering/OpenGL/Resources")]
-        ),
-       
         .testTarget(name: "VisualAppBaseTests", dependencies: ["VisualAppBase"])
     ]
 )
