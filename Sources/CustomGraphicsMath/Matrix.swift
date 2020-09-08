@@ -252,7 +252,7 @@ public extension Matrix4 {
         return Self(elements)
     }
 
-func matmul(_ other: Self) throws -> Self {
+    func matmul(_ other: Self) throws -> Self {
         if (self.cols != other.rows) {
             throw MatrixMultiplicationError()
         }

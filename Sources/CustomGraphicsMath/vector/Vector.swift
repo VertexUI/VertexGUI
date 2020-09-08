@@ -23,8 +23,11 @@ public extension Vector {
     }
 
     init(_ elements: [Element]) {
+
         self.init()
+        
         self.elements = elements
+        
         self.rows = elements.count
     }
 
@@ -129,6 +132,7 @@ public func max<V: Vector>(_ vec1: V, _ vec2: V) -> V where V.Element: Comparabl
 public extension Vector where Element: BinaryInteger {
     // TODO: maybe put those two into matrix
     init<Other: Vector>(_ other: Other) where Other.Element: BinaryInteger {
+
         self.init(other.map({ Element.init($0) }))
     }
 
@@ -252,8 +256,15 @@ public extension Vector2 {
     }
  
     init(_ elements: [Element]) {
+
         self.init()
+        
         self.elements = elements
+
+        if self.elements.count < count {
+
+            self.elements.append(contentsOf: Array(repeating: Element.zero, count: count - self.elements.count))
+        }
     }
 
     init(_ x: Element, _ y: Element) {
@@ -292,15 +303,15 @@ public typealias DVec2 = AnyVector2<Double>
 public typealias FVec2 = AnyVector2<Float>
 public typealias IVec2 = AnyVector2<Int>
 
-public protocol Vector3: Vector {
+public protocol Vector3: Vector2 {
 
 }
 
 public extension Vector3 {
-    public init(_ elements: [Element]) {
+    /*public init(_ elements: [Element]) {
         self.init()
         self.elements = elements
-    }
+    }*/
 
     public init(_ x: Element, _ y: Element, _ z: Element) {
         self.init()
@@ -355,15 +366,23 @@ public extension Vector3 where Element: FloatingPointGenericMath {
 }
 
 public struct AnyVector3<E: Numeric & Hashable>: Vector3 {
+
     public typealias Element = E
-    public var rows: Int
-    public var cols: Int
+    
+    public var rows: Int = 3
+    
+    public var cols: Int = 1
+    
     public var elements: [Element]
 
     public init() {
-        self.rows = 3
-        self.cols = 1
+
         self.elements = [Element](repeating: 0, count: 3)
+    }
+
+    public init(x: Element, y: Element, z: Element) {
+
+        self.elements = [x, y, z]
     }
 }
 
@@ -428,9 +447,12 @@ public struct AnyVector4<E: Numeric & Hashable>: Vector {
         self.cols = 1
         self.elements = vec3.elements + [element]
     }
+}
 
-    public static func * <M: Matrix4> (lhs: M, rhs: Self) -> Self where M.Element == Self.Element {
-        let result = try! lhs.matmul(rhs)
-        return Self(result.elements)
+extension Matrix4 {
+
+    public static func matmul <Vector: Vector4> (_ other: Vector) -> Vector where Self.Element == Vector.Element {
+
+        return Vector(try! self.matmul(other).elements)
     }
 }
