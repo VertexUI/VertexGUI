@@ -7,83 +7,8 @@ import CustomGraphicsMath
 import VisualAppBase
 
 public final class Text: Widget, ConfigurableWidget {
-    public struct PartialConfig: WidgetGUI.PartialConfig {
-        public var fontConfig: PartialFontConfig?
-        public var transform: TextTransform?
-        public var color: Color?
-        public var wrap: Bool?
-        
-        public init() {
 
-        }
-
-        public init(
-            fontConfig: PartialFontConfig? = nil,
-            transform: TextTransform? = nil,
-            color: Color? = nil,
-            wrap: Bool? = nil) {
-                self.fontConfig = fontConfig
-                self.transform = transform
-                self.color = color
-                self.wrap = wrap
-        }
-
-        public static func merged(partials: [PartialConfig]) -> PartialConfig {
-            var result = Self()
-            var fontConfigs = [PartialFontConfig]()
-            for partial in partials.reversed() {
-                if let partial = partial.fontConfig {
-                    fontConfigs.append(partial)
-                }
-                result.transform = partial.transform ?? result.transform
-                result.color = partial.color ?? result.color
-                result.wrap = partial.wrap ?? result.wrap
-            }
-            result.fontConfig = PartialFontConfig(partials: fontConfigs)
-            return result
-        }
-    }
-
-    public struct Config: WidgetGUI.Config, Hashable {
-        
-        public typealias PartialConfig = Text.PartialConfig
-
-        public var fontConfig: FontConfig
-
-        public var transform: TextTransform
-
-        public var color: Color
-        
-        public var wrap: Bool
-        
-        public init(fontConfig: FontConfig, transform: TextTransform, color: Color, wrap: Bool) {
-            
-            self.fontConfig = fontConfig
-            
-            self.transform = transform
-            
-            self.color = color
-
-            self.wrap = wrap
-        }
-
-        public func merged(with partialConfig: PartialConfig?) -> Self {
-
-            var result = self
-            
-            result.fontConfig = FontConfig(partial: partialConfig?.fontConfig, default: defaultConfig.fontConfig)
-            
-            result.transform = partialConfig?.transform ?? defaultConfig.transform
-            
-            result.color = partialConfig?.color ?? defaultConfig.color
-            
-            result.wrap = partialConfig?.wrap ?? defaultConfig.wrap
-
-            return result
-        }
-    }
-
-    public var text: String {
+    @Observable public var text: String/* {
 
         didSet {
 
@@ -94,7 +19,7 @@ public final class Text: Widget, ConfigurableWidget {
                 invalidateRenderState()
             }
         }
-    }
+    }*/
 
     private var transformedText: String {
         
@@ -121,16 +46,70 @@ public final class Text: Widget, ConfigurableWidget {
 
     lazy public var config: Config = combineConfigs()
 
-    public init(_ text: String) {
+    public init(_ text: Observable<String>) {
 
-        self.text = text
+        self._text = text
 
         super.init()
+
+        _ = onDestroy(self._text.onChanged { [unowned self] _ in
+            
+            // TODO: maybe check whether text size changed and then invalidate??
+
+            invalidateLayout()
+
+            layout(constraints: previousConstraints!)
+
+            invalidateRenderState()
+        })
     }
 
     public convenience init(
 
         _ text: String,
+
+        fontFamily: FontFamily? = nil,
+
+        fontSize: Double? = nil,
+
+        fontWeight: FontWeight? = nil,
+
+        fontStyle: FontStyle? = nil,
+
+        transform: TextTransform? = nil,
+
+        color: Color? = nil,
+
+        wrap: Bool? = nil
+
+        ) {
+
+            self.init(Observable(text))
+
+            with(config: PartialConfig(
+
+                fontConfig: PartialFontConfig(
+
+                    family: fontFamily,
+
+                    size: fontSize,
+
+                    weight: fontWeight,
+
+                    style: fontStyle
+                ),
+
+                transform: transform,
+
+                color: color,
+                
+                wrap: wrap
+            ))
+    }
+
+    public convenience init(
+
+        _ text: Observable<String>,
 
         fontFamily: FontFamily? = nil,
 
@@ -262,4 +241,107 @@ public final class Text: Widget, ConfigurableWidget {
 
         return .Text(config.transform.apply(to: text), fontConfig: config.fontConfig, color: config.color, topLeft: globalPosition, wrap: config.wrap, maxWidth: bounds.size.width)
     }
+}
+
+extension Text {
+
+    public struct PartialConfig: WidgetGUI.PartialConfig {
+
+        public var fontConfig: PartialFontConfig?
+
+        public var transform: TextTransform?
+
+        public var color: Color?
+
+        public var wrap: Bool?
+        
+        public init() {
+
+        }
+
+        public init(
+
+            fontConfig: PartialFontConfig? = nil,
+
+            transform: TextTransform? = nil,
+
+            color: Color? = nil,
+
+            wrap: Bool? = nil) {
+
+                self.fontConfig = fontConfig
+
+                self.transform = transform
+                
+                self.color = color
+
+                self.wrap = wrap
+        }
+
+        public static func merged(partials: [PartialConfig]) -> PartialConfig {
+
+            var result = Self()
+
+            var fontConfigs = [PartialFontConfig]()
+
+            for partial in partials.reversed() {
+
+                if let partial = partial.fontConfig {
+
+                    fontConfigs.append(partial)
+                }
+
+                result.transform = partial.transform ?? result.transform
+
+                result.color = partial.color ?? result.color
+
+                result.wrap = partial.wrap ?? result.wrap
+            }
+
+            result.fontConfig = PartialFontConfig(partials: fontConfigs)
+
+            return result
+        }
+    }
+
+    public struct Config: WidgetGUI.Config, Hashable {
+        
+        public typealias PartialConfig = Text.PartialConfig
+
+        public var fontConfig: FontConfig
+
+        public var transform: TextTransform
+
+        public var color: Color
+        
+        public var wrap: Bool
+        
+        public init(fontConfig: FontConfig, transform: TextTransform, color: Color, wrap: Bool) {
+            
+            self.fontConfig = fontConfig
+            
+            self.transform = transform
+            
+            self.color = color
+
+            self.wrap = wrap
+        }
+
+        public func merged(with partialConfig: PartialConfig?) -> Self {
+
+            var result = self
+            
+            result.fontConfig = FontConfig(partial: partialConfig?.fontConfig, default: defaultConfig.fontConfig)
+            
+            result.transform = partialConfig?.transform ?? defaultConfig.transform
+            
+            result.color = partialConfig?.color ?? defaultConfig.color
+            
+            result.wrap = partialConfig?.wrap ?? defaultConfig.wrap
+
+            return result
+        }
+    }
+
+
 }
