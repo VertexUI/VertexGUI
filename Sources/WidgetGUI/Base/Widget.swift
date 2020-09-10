@@ -523,6 +523,11 @@ open class Widget: Bounded, Parent, Child {
         self.previousConstraints = constraints
     }
 
+    open func invalidateLayout() {
+
+        layoutInvalid = true
+    }
+
     open func performLayout(constraints: BoxConstraints) -> DSize2 {
 
         fatalError("performLayout(constraints:) not implemented.")
@@ -625,6 +630,8 @@ open class Widget: Bounded, Parent, Child {
     }
 
     /// This should trigger a rerender of the widget in the next frame.
+    /// 
+    /// Automatically calls itself on each child as well.
     public final func invalidateRenderState() {
 
         if destroyed {

@@ -21,6 +21,8 @@ open class Root: Parent {
 
         didSet {
 
+            rootWidget.invalidateRenderState()
+
             layout()
 
             updateRenderObjectTree()
