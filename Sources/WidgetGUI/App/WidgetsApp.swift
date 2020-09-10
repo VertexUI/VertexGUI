@@ -38,7 +38,7 @@ open class WidgetsApp<S: System, W: Window, R: Renderer>: VisualApp<S, W> {
 
         guiRoot.context = WidgetContext(
             window: window,
-            getTextBoundsSize: { self.getTextBoundsSize($0, $1, $2, renderer) },
+            getTextBoundsSize: { renderer.getTextBoundsSize($0, fontConfig: $1, maxWidth: $2) },
             requestCursor: {
                 self.system.requestCursor($0)
             })
@@ -95,15 +95,6 @@ open class WidgetsApp<S: System, W: Window, R: Renderer>: VisualApp<S, W> {
         windowConfigs.append(WindowConfig(window: window, guiRoot: guiRoot, renderer: renderer))
 
         return window
-    }
-
-    open func getTextBoundsSize(_ text: String, _ fontConfig: FontConfig, _ maxWidth: Double?, _ renderer: Renderer) -> DSize2 {
-        if let maxWidth = maxWidth {
-            return try! renderer.getMultilineTextBoundsSize(text, fontConfig: fontConfig, maxWidth: maxWidth)
-        } else {
-            return try! renderer.getTextBoundsSize(text, fontConfig: fontConfig)
-        }
-        return DSize2(0, 0)
     }
 
     public func render(deltaTime: Int) {

@@ -86,9 +86,9 @@ public extension Matrix {
         }
     }
 
-    func matmul<T: Matrix>(_ other: T) throws -> AnyMatrix<Element> where T.Element == Element {
+    func matmul<T: Matrix>(_ other: T) -> AnyMatrix<Element> where T.Element == Element {
         if (self.cols != other.rows) {
-            throw MatrixMultiplicationError()
+            fatalError("Cannot perform matrix multiplication on two matrices where columns of matrix 1 do not match rows of matrix 2.")
         }
         var result = AnyMatrix<Element>(rows: self.rows, cols: other.cols)
         for rIndex in 0..<self.rows {
@@ -252,9 +252,9 @@ public extension Matrix4 {
         return Self(elements)
     }
 
-    func matmul(_ other: Self) throws -> Self {
+    func matmul(_ other: Self) -> Self {
         if (self.cols != other.rows) {
-            throw MatrixMultiplicationError()
+            fatalError("Cannot perform matrix multiplication on two matrices where columns of matrix 1 do not match rows of matrix 2.")
         }
         var result = Self()
         for rIndex in 0..<self.rows {

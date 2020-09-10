@@ -333,34 +333,42 @@ open class SDL2OpenGL3NanoVGRenderer: Renderer {
         nvgTextAlign(window.nvg, Int32(NVG_ALIGN_LEFT.rawValue | NVG_ALIGN_TOP.rawValue))
     }
 
-    open func text(_ text: String, fontConfig: FontConfig, color: Color, topLeft: DPoint2) {
+    open func text(_ text: String, fontConfig: FontConfig, color: Color, topLeft: DPoint2, maxWidth: Double? = nil) {
+
         nvgBeginPath(window.nvg)
+
         applyFontConfig(fontConfig)
+
         nvgFillColor(window.nvg, color.toNVG())
-        nvgText(window.nvg, Float(topLeft.x), Float(topLeft.y), text, nil)
+
+        if let maxWidth = maxWidth {
+
+            nvgTextBox(window.nvg, Float(topLeft.x), Float(topLeft.y), Float(maxWidth), text, nil)
+
+        } else {
+
+            nvgText(window.nvg, Float(topLeft.x), Float(topLeft.y), text, nil)
+        }
     }
 
-    open func getTextBoundsSize(_ text: String, fontConfig: FontConfig) -> DSize2 {
+    open func getTextBoundsSize(_ text: String, fontConfig: FontConfig, maxWidth: Double? = nil) -> DSize2 {
+
         applyFontConfig(fontConfig)
+
         var bounds = [Float](repeating: 0, count: 4)
-        nvgTextBounds(window.nvg, 0, 0, text, nil, &bounds)
+
+        if let maxWidth = maxWidth {
+
+            nvgTextBoxBounds(window.nvg, 0, 0, Float(maxWidth), text, nil, &bounds)
+
+        } else {
+
+            nvgTextBounds(window.nvg, 0, 0, text, nil, &bounds)
+        }
+
         return DSize2(Double(bounds[2]), Double(bounds[3]))
     }
-
-    open func multilineText(_ text: String, fontConfig: FontConfig, color: Color, topLeft: DPoint2, maxWidth: Double) {
-        nvgBeginPath(window.nvg)
-        applyFontConfig(fontConfig)
-        nvgFillColor(window.nvg, color.toNVG())
-        nvgTextBox(window.nvg, Float(topLeft.x), Float(topLeft.y), Float(maxWidth), text, nil)
-    }
-
-    open func getMultilineTextBoundsSize(_ text: String, fontConfig: FontConfig, maxWidth: Double) -> DSize2 {
-        applyFontConfig(fontConfig)
-        var bounds = [Float](repeating: 0, count: 4)
-        nvgTextBoxBounds(window.nvg, 0, 0, Float(maxWidth), text, nil, &bounds)
-        return DSize2(Double(bounds[2]), Double(bounds[3]))
-    }
-
+ 
     open func globalOpacity(_ opacity: Float) {
         nvgGlobalAlpha(window.nvg, opacity)
     }
