@@ -32,7 +32,7 @@ public final class Background: SingleChildWidget, ConfigurableWidget {
         public init() {}
     }
 
-    public enum Shape {       
+    public enum Shape {   
 
         case Rectangle
         

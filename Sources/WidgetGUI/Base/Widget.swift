@@ -144,6 +144,18 @@ open class Widget: Bounded, Parent, Child {
 
 
 
+    private var reference: ReferenceProtocol? {
+
+        didSet {
+
+            if var reference = reference {
+
+                reference.referenced = self
+            }
+        }
+    }
+
+
     private var renderState = RenderState()
 
 
@@ -203,13 +215,26 @@ open class Widget: Bounded, Parent, Child {
         Logger.log("Deinitialized Widget: \(id) \(self)", level: .Message, context: .Default)
     }
 
+    // TODO: maybe find better names for the following functions?
+
     public final func with(key: String) -> Self {
+
         self.key = key
+
         return self
     }
 
+    public final func connect(ref reference: ReferenceProtocol) -> Self {
+
+        self.reference = reference
+
+        return self
+    }    
+
     public final func with(block: (Self) -> ()) -> Self {
+
         block(self)
+
         return self
     }
  
@@ -676,6 +701,11 @@ open class Widget: Bounded, Parent, Child {
         }
 
         mounted = false
+
+        if var reference = reference {
+
+            reference.referenced = nil
+        }
 
         onParentChanged.removeAllHandlers()
 
