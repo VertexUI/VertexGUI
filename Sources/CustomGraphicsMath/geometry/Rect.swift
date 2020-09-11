@@ -12,13 +12,13 @@ public struct Rect<E: BinaryFloatingPoint>: Equatable, Hashable {
             min + Vector2<E>(size)
         }
         /*set {
-            size = AnySize2<E>(max - min)
+            size = Size2<E>(max - min)
         }*/
     }
 
-    public var size: AnySize2<E>/* {
+    public var size: Size2<E>/* {
         get {
-            AnySize2(max - min)
+            Size2(max - min)
         }
         set {
             max = min + Vector2(newValue)
@@ -62,7 +62,7 @@ public struct Rect<E: BinaryFloatingPoint>: Equatable, Hashable {
     }
 
     // TODO: maybe implement as protocol as well and don't use Vector2<E> but Vector2Protocol where Vector2Protocol.E == E?
-    public init(min: Vector2<E>, size: AnySize2<E>) {
+    public init(min: Vector2<E>, size: Size2<E>) {
 
         self.min = min
 
@@ -73,10 +73,10 @@ public struct Rect<E: BinaryFloatingPoint>: Equatable, Hashable {
 
         self.min = min
 
-        self.size = AnySize2(max - min)
+        self.size = Size2(max - min)
     }
 
-    public init(center: Vector2<E>, size: AnySize2<E>) {
+    public init(center: Vector2<E>, size: Size2<E>) {
 
         self.init(min: Vector2<E>(center.x - size.width / 2, center.y - size.height / 2), size: size)
     }

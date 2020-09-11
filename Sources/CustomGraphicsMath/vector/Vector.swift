@@ -388,6 +388,8 @@ public struct Vector3<E: Numeric & Hashable>: Vector3Protocol {
 
 public typealias DVec3 = Vector3<Double>
 
+public typealias IVec3 = Vector3<Int>
+
 public protocol Vector4Protocol: Vector3Protocol {
     var w: Element { get set }
 }
