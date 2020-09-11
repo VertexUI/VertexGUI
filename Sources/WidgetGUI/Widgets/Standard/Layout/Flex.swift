@@ -50,12 +50,12 @@ public class Flex: Widget {
         self.init(orientation: orientation, spacing: spacing, wrap: wrap, items: buildItems())
     }
 
-    /*private func getMainAxisDimension<Vector: Vector2>(_ vector: Vector) -> Double where Vector.Element == Double {
+    /*private func getMainAxisDimension<VectorProtocol: Vector2Protocol>(_ vector: VectorProtocol) -> Double where VectorProtocol.Element == Double {
 
         return vector.x
     }
 
-    private func getCrossAxisDimension<Vector: Vector2>(_ vector: Vector) -> Double where Vector.Element == Double {
+    private func getCrossAxisDimension<VectorProtocol: Vector2Protocol>(_ vector: VectorProtocol) -> Double where VectorProtocol.Element == Double {
 
         return vector.y
     }*/

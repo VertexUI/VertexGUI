@@ -1,19 +1,19 @@
 public protocol Plane {
-    associatedtype Vector: Vector3
-    var point: Vector { get set }
-    var normal: Vector { get set }
+    associatedtype VectorProtocol: Vector3Protocol
+    var point: VectorProtocol { get set }
+    var normal: VectorProtocol { get set }
 
     init()
 }
 
-public extension Plane where Vector.Element: FloatingPoint {
-    var elevation: Vector.Element {
+public extension Plane where VectorProtocol.Element: FloatingPoint {
+    var elevation: VectorProtocol.Element {
         get {
             return point.dot(normal)
         }
     }
 
-    public init(point: Vector, normal: Vector) {
+    public init(point: VectorProtocol, normal: VectorProtocol) {
         self.init()
         self.point = point
         self.normal = normal.normalized()
@@ -21,12 +21,12 @@ public extension Plane where Vector.Element: FloatingPoint {
 }
 
 public struct AnyPlane<E: Numeric & Hashable>: Plane {
-    public typealias Vector = AnyVector3<E>
-    public var point: AnyVector3<E>
-    public var normal: AnyVector3<E>
+    public typealias VectorProtocol = Vector3<E>
+    public var point: Vector3<E>
+    public var normal: Vector3<E>
 
     public init() {
-        self.point = AnyVector3<E>()
-        self.normal = AnyVector3<E>()
+        self.point = Vector3<E>()
+        self.normal = Vector3<E>()
     }
 }

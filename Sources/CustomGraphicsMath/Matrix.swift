@@ -1,6 +1,6 @@
 import Foundation
 
-public protocol Matrix: Sequence, Equatable, CustomStringConvertible, Hashable {
+public protocol MatrixProtocol: Sequence, Equatable, CustomStringConvertible, Hashable {
     associatedtype Element: Numeric
 
     var rows: Int { get set }
@@ -19,10 +19,10 @@ public protocol Matrix: Sequence, Equatable, CustomStringConvertible, Hashable {
 
 public struct MatrixSizeError: Error {}
 
-public extension Matrix {
+public extension MatrixProtocol {
     var description: String {
         get {
-            return "Matrix r:\(rows) x c:\(cols) \(elements)"
+            return "MatrixProtocol r:\(rows) x c:\(cols) \(elements)"
         }
     }
 
@@ -74,7 +74,7 @@ public extension Matrix {
         return nil
     }
 
-    mutating func add_<T: Matrix>(_ matrix2: T) throws where T.Element == Self.Element {
+    mutating func add_<T: MatrixProtocol>(_ matrix2: T) throws where T.Element == Self.Element {
         if !(matrix2.rows == rows && matrix2.cols == cols) {
             throw MatrixSizeError()
         }
@@ -86,11 +86,11 @@ public extension Matrix {
         }
     }
 
-    func matmul<T: Matrix>(_ other: T) -> AnyMatrix<Element> where T.Element == Element {
+    func matmul<T: MatrixProtocol>(_ other: T) -> Matrix<Element> where T.Element == Element {
         if (self.cols != other.rows) {
             fatalError("Cannot perform matrix multiplication on two matrices where columns of matrix 1 do not match rows of matrix 2.")
         }
-        var result = AnyMatrix<Element>(rows: self.rows, cols: other.cols)
+        var result = Matrix<Element>(rows: self.rows, cols: other.cols)
         for rIndex in 0..<self.rows {
             for cIndex in 0..<other.cols {
                 var element = Self.Element.init(exactly: 0)!
@@ -112,12 +112,12 @@ public extension Matrix {
         return result
     }
 
-    /*func matmul<T: Vector>(_ other: T) throws -> Self {
+    /*func matmul<T: VectorProtocol>(_ other: T) throws -> Self {
 
     }*/
 }
 
-public extension Matrix where Element: FloatingPoint {
+public extension MatrixProtocol where Element: FloatingPoint {
     static func /= (lhs: inout Self, rhs: Element) {
         for i in 0..<lhs.count {
             lhs.elements[i] /= rhs
@@ -136,7 +136,7 @@ public extension Matrix where Element: FloatingPoint {
 
     /// element wise multiplication
     // TODO: multiply only the overlapping elements
-    static func * <Other: Matrix> (lhs: Self, rhs: Other) -> Self where Other.Element == Element {
+    static func * <Other: MatrixProtocol> (lhs: Self, rhs: Other) -> Self where Other.Element == Element {
         var result = lhs.clone()
         for i in 0..<result.count {
             result.elements[i] *= rhs.elements[i]
@@ -153,7 +153,7 @@ public extension Matrix where Element: FloatingPoint {
     }
 }
 
-public extension Matrix where Element: Comparable {
+public extension MatrixProtocol where Element: Comparable {
     func max() -> Element? {
         return elements.max()
     }
@@ -166,7 +166,7 @@ public extension Matrix where Element: Comparable {
     }*/
 }
 
-public extension Matrix where Element: Comparable, Element: SignedNumeric {
+public extension MatrixProtocol where Element: Comparable, Element: SignedNumeric {
     func abs() -> Self {
         var result = Self()
         for i in 0..<count {
@@ -180,7 +180,7 @@ public struct MatrixMultiplicationError: Error {}
 
 // TODO: maybe add more matrix math
 
-/*public func * <T1: Matrix, T2: Matrix>(lhs: T1, rhs: T2) throws -> AnyMatrix<T1.Element> where T1.Element == T2.Element {
+/*public func * <T1: MatrixProtocol, T2: MatrixProtocol>(lhs: T1, rhs: T2) throws -> Matrix<T1.Element> where T1.Element == T2.Element {
     return try lhs.matmul(rhs)
 }*/
 
@@ -188,11 +188,11 @@ public struct MatrixMultiplicationError: Error {}
 
 /*
 THIS IMPLEMENTATION IS LIKELY NOT CORRECT / does not do what *= is expected to do
-public func *= <T: Matrix>(lhs: inout T, rhs: T) throws -> AnyMatrix {
+public func *= <T: MatrixProtocol>(lhs: inout T, rhs: T) throws -> Matrix {
     return try lhs * rhs
 }*/
 
-public struct AnyMatrix<E: Numeric & Hashable>: Matrix {
+public struct Matrix<E: Numeric & Hashable>: MatrixProtocol {
     public typealias Element = E
     public var rows: Int
     public var cols: Int
@@ -229,9 +229,9 @@ public struct AnyMatrix<E: Numeric & Hashable>: Matrix {
     }
 }
 
-public protocol Matrix4: Matrix {}
+public protocol Matrix4Protocol: MatrixProtocol {}
 
-public extension Matrix4 {
+public extension Matrix4Protocol {
     static var identity: Self {
         get {
             return Self([
@@ -270,8 +270,8 @@ public extension Matrix4 {
     }
 }
 
-public extension Matrix4 where Element: FloatingPointGenericMath {
-    static func transformation(translation: AnyVector3<Element>, scaling: AnyVector3<Element>, rotationAxis: AnyVector3<Element>, rotationAngle: Element) -> Self {
+public extension Matrix4Protocol where Element: FloatingPointGenericMath {
+    static func transformation(translation: Vector3<Element>, scaling: Vector3<Element>, rotationAxis: Vector3<Element>, rotationAngle: Element) -> Self {
         let ar = rotationAngle / Element(180) * Element.pi
         let rc = cos(ar)
         let rc1 = 1 - rc
@@ -298,7 +298,7 @@ public extension Matrix4 where Element: FloatingPointGenericMath {
     }
 
     // TODO: the following functions might be specific to openGL, maybe put those in the GLGraphicsMath package
-    static func viewTransformation<V: Vector3>(up: V, right: V, front: V, translation: V) -> Self where V.Element == Self.Element {
+    static func viewTransformation<V: Vector3Protocol>(up: V, right: V, front: V, translation: V) -> Self where V.Element == Self.Element {
         return try! Self([
             right.x, right.y, right.z, 0,
             up.x, up.y, up.z, 0,
@@ -343,7 +343,7 @@ public extension Matrix4 where Element: FloatingPointGenericMath {
     }
 }
 
-public struct AnyMatrix4<E: Numeric & Hashable>: Matrix4 {
+public struct Matrix4<E: Numeric & Hashable>: Matrix4Protocol {
     public typealias Element = E
     public var rows: Int
     public var cols: Int
@@ -355,12 +355,12 @@ public struct AnyMatrix4<E: Numeric & Hashable>: Matrix4 {
         elements = [E](repeating: E.zero, count: rows * cols)
     }
 
-    /*public func matmul(_ other: AnyMatrix4<E>) -> AnyMatrix4<E> {
-        return try! AnyMatrix4(self.matmul(other).elements)
+    /*public func matmul(_ other: Matrix4<E>) -> Matrix4<E> {
+        return try! Matrix4(self.matmul(other).elements)
     }*/
 }
 
 // TODO: might replace this or remove this / current function of this is to simply remove throws
-public func * <E: Numeric>(lhs: AnyMatrix4<E>, rhs: AnyMatrix4<E>) -> AnyMatrix4<E> {
+public func * <E: Numeric>(lhs: Matrix4<E>, rhs: Matrix4<E>) -> Matrix4<E> {
     return try! lhs.matmul(rhs)
 }

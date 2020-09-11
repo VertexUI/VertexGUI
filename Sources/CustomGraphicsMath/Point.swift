@@ -4,12 +4,12 @@
 
 import Foundation
 
-public typealias Point = Vector
-public typealias Point2 = Vector2
-public typealias Point3 = Vector3
-public typealias Point4 = Vector4
+public typealias Point = VectorProtocol
+public typealias Point2 = Vector2Protocol
+public typealias Point3 = Vector3Protocol
+public typealias Point4 = Vector4Protocol
 
-public typealias AnyPoint2<E: Numeric & Hashable> = AnyVector2<E>
+public typealias AnyPoint2<E: Numeric & Hashable> = Vector2<E>
 public typealias DPoint2 = AnyPoint2<Double>
 
 /*

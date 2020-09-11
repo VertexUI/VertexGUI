@@ -2,7 +2,7 @@ import CustomGraphicsMath
 import Foundation
 
 public struct TwoDRaycastStrategy {
-    public func cast(in world: TwoDVoxelWorld, from start: AnyVector2<Double>, to end: AnyVector2<Double>) -> TwoDRaycast {
+    public func cast(in world: TwoDVoxelWorld, from start: Vector2<Double>, to end: Vector2<Double>) -> TwoDRaycast {
         var results = [TwoDRaycastResult]()
         
         let path = end - start 

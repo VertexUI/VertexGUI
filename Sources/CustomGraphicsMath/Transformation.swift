@@ -1,16 +1,16 @@
-// TODO: maybe this class is not needed, might just put it into Matrix
+// TODO: maybe this class is not needed, might just put it into MatrixProtocol
 public struct Transformation<E: FloatingPointGenericMath> {
-    public var translation: AnyVector3<E> {
+    public var translation: Vector3<E> {
         didSet {
             recalc()
         }
     }
-    public var scaling: AnyVector3<E> {
+    public var scaling: Vector3<E> {
         didSet {
             recalc()
         }
     }
-    public var rotationAxis: AnyVector3<E> {
+    public var rotationAxis: Vector3<E> {
         didSet {
             recalc()
         }
@@ -20,27 +20,27 @@ public struct Transformation<E: FloatingPointGenericMath> {
             recalc()
         }
     }
-    public var matrix: AnyMatrix4<E>
+    public var matrix: Matrix4<E>
 
     public init() {
-        self.translation = AnyVector3<E>()
-        self.scaling = AnyVector3<E>([1, 1, 1])
-        self.rotationAxis = AnyVector3<E>([1, 1, 1])
+        self.translation = Vector3<E>()
+        self.scaling = Vector3<E>([1, 1, 1])
+        self.rotationAxis = Vector3<E>([1, 1, 1])
         self.rotationAngle = E.zero
-        self.matrix = AnyMatrix4<E>()
+        self.matrix = Matrix4<E>()
         recalc()
     }
 
-    public init(translation: AnyVector3<E>, scaling: AnyVector3<E>, rotationAxis: AnyVector3<E>, rotationAngle: E) {
+    public init(translation: Vector3<E>, scaling: Vector3<E>, rotationAxis: Vector3<E>, rotationAngle: E) {
         self.translation = translation
         self.scaling = scaling
         self.rotationAxis = rotationAxis
         self.rotationAngle = rotationAngle
-        self.matrix = AnyMatrix4<E>()
+        self.matrix = Matrix4<E>()
         recalc()
     }
 
     public mutating func recalc() {
-        matrix = AnyMatrix4<E>.transformation(translation: translation, scaling: scaling, rotationAxis: rotationAxis, rotationAngle: rotationAngle)
+        matrix = Matrix4<E>.transformation(translation: translation, scaling: scaling, rotationAxis: rotationAxis, rotationAngle: rotationAngle)
     }
 }

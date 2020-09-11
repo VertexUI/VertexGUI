@@ -1,11 +1,11 @@
 import Foundation
 
-public protocol Vector: Matrix {}
+public protocol VectorProtocol: MatrixProtocol {}
 
-public extension Vector {
+public extension VectorProtocol {
     var description: String {
         get {
-            return "Vector \(elements)"
+            return "VectorProtocol \(elements)"
         }
     }
 
@@ -50,11 +50,11 @@ public extension Vector {
     }
 
     /// TODO: maybe this function is not needed --> T might be a vector with different Row count than Self
-    func asType <T: Vector> (_ castElement: (_ x: Element) -> T.Element) -> T {
+    func asType <T: VectorProtocol> (_ castElement: (_ x: Element) -> T.Element) -> T {
         return T(rows: rows, elements: elements.map(castElement))
     }
 
-    /*func to <T: Vector> (_ type: T.Type) -> T where T.Element: () -> Any {
+    /*func to <T: VectorProtocol> (_ type: T.Type) -> T where T.Element: () -> Any {
         return type.init((elements.map(T.Element.init as! (Self.Element) -> Any)) as! [T.Element])
     } */
 
@@ -116,12 +116,12 @@ public extension Vector {
 }
 
 /// - Returns: The component-wise min of two given vectors.
-public func min<V: Vector>(_ vec1: V, _ vec2: V) -> V where V.Element: Comparable {
+public func min<V: VectorProtocol>(_ vec1: V, _ vec2: V) -> V where V.Element: Comparable {
     V.init((0..<vec1.count).map { vec1[$0] < vec2[$0] ? vec1[$0] : vec2[$0] })
 }
 
 /// - Returns: The component-wise max of two given vectors.
-public func max<V: Vector>(_ vec1: V, _ vec2: V) -> V where V.Element: Comparable {
+public func max<V: VectorProtocol>(_ vec1: V, _ vec2: V) -> V where V.Element: Comparable {
     V.init((0..<vec1.count).map { vec1[$0] > vec2[$0] ? vec1[$0] : vec2[$0] })
 }
 
@@ -129,19 +129,19 @@ public func max<V: Vector>(_ vec1: V, _ vec2: V) -> V where V.Element: Comparabl
         self.init()
         self.elements = elements.map(Self.Element.init)
     }*/
-public extension Vector where Element: BinaryInteger {
+public extension VectorProtocol where Element: BinaryInteger {
     // TODO: maybe put those two into matrix
-    init<Other: Vector>(_ other: Other) where Other.Element: BinaryInteger {
+    init<Other: VectorProtocol>(_ other: Other) where Other.Element: BinaryInteger {
 
         self.init(other.map({ Element.init($0) }))
     }
 
-    init<Other: Vector>(_ other: Other) where Other.Element: BinaryFloatingPoint {
+    init<Other: VectorProtocol>(_ other: Other) where Other.Element: BinaryFloatingPoint {
         self.init(other.map({ Element.init($0) }))
     }
 }
 
-public extension Vector where Element: FloatingPoint {
+public extension VectorProtocol where Element: FloatingPoint {
     @available(*, deprecated, message: "Use .magnitude instead.")
     var length: Element {
         get {
@@ -159,11 +159,11 @@ public extension Vector where Element: FloatingPoint {
     }
 
     // TODO: maybe put those two into matrix
-    init<Other: Vector>(_ other: Other) where Other.Element: BinaryFloatingPoint, Self.Element: BinaryFloatingPoint {
+    init<Other: VectorProtocol>(_ other: Other) where Other.Element: BinaryFloatingPoint, Self.Element: BinaryFloatingPoint {
         self.init(other.map(Element.init))
     }
 
-    init<Other: Vector>(_ other: Other) where Other.Element: BinaryInteger {
+    init<Other: VectorProtocol>(_ other: Other) where Other.Element: BinaryInteger {
         self.init(other.map(Element.init))
     }
 
@@ -210,7 +210,7 @@ public extension Vector where Element: FloatingPoint {
         return result
     }
 
-    /*static func / <T: Vector> (lhs: Self, rhs: T) -> Self where T.Element: FloatingPoint , T.Element == Self.Element {
+    /*static func / <T: VectorProtocol> (lhs: Self, rhs: T) -> Self where T.Element: FloatingPoint , T.Element == Self.Element {
         var result = lhs.clone()
         for i in 0..<lhs.count {
             result.elements[i] /= rhs.elements[i]
@@ -219,7 +219,7 @@ public extension Vector where Element: FloatingPoint {
     }*/
 }
 
-public struct AnyVector<E: Numeric & Hashable>: Vector {
+public struct Vector<E: Numeric & Hashable>: VectorProtocol {
     public typealias Element = E
     public var rows: Int
     public var cols: Int
@@ -232,12 +232,12 @@ public struct AnyVector<E: Numeric & Hashable>: Vector {
     }
 }
 
-public protocol Vector2: Vector {
+public protocol Vector2Protocol: VectorProtocol {
     var x: Element { get set }
     var y: Element { get set }
 }
 
-public extension Vector2 {
+public extension Vector2Protocol {
     var x: Element {
         get {
             return elements[0]
@@ -277,7 +277,7 @@ public extension Vector2 {
 }
 
 
-public extension Vector2 where Element: BinaryFloatingPoint, Element.RawSignificand: FixedWidthInteger {
+public extension Vector2Protocol where Element: BinaryFloatingPoint, Element.RawSignificand: FixedWidthInteger {
     static var infinity: Self {
         Self(Element.infinity, Element.infinity)
     }
@@ -287,7 +287,7 @@ public extension Vector2 where Element: BinaryFloatingPoint, Element.RawSignific
     }
 }
 
-public struct AnyVector2<E: Numeric & Hashable>: Vector2 {
+public struct Vector2<E: Numeric & Hashable>: Vector2Protocol {
     public typealias Element = E
     public var rows: Int
     public var cols: Int
@@ -299,15 +299,15 @@ public struct AnyVector2<E: Numeric & Hashable>: Vector2 {
         self.elements = [Element](repeating: 0, count: 2)
     }
 }
-public typealias DVec2 = AnyVector2<Double>
-public typealias FVec2 = AnyVector2<Float>
-public typealias IVec2 = AnyVector2<Int>
+public typealias DVec2 = Vector2<Double>
+public typealias FVec2 = Vector2<Float>
+public typealias IVec2 = Vector2<Int>
 
-public protocol Vector3: Vector2 {
+public protocol Vector3Protocol: Vector2Protocol {
 
 }
 
-public extension Vector3 {
+public extension Vector3Protocol {
     /*public init(_ elements: [Element]) {
         self.init()
         self.elements = elements
@@ -357,7 +357,7 @@ public extension Vector3 {
     }
 }
 
-public extension Vector3 where Element: FloatingPointGenericMath {
+public extension Vector3Protocol where Element: FloatingPointGenericMath {
     /// returns 0 to pi (positive only)
     func absAngle(to otherVector: Self) -> Element {
         let angle = acos(self.normalized().dot(otherVector.normalized()))
@@ -365,7 +365,7 @@ public extension Vector3 where Element: FloatingPointGenericMath {
     }
 }
 
-public struct AnyVector3<E: Numeric & Hashable>: Vector3 {
+public struct Vector3<E: Numeric & Hashable>: Vector3Protocol {
 
     public typealias Element = E
     
@@ -386,13 +386,13 @@ public struct AnyVector3<E: Numeric & Hashable>: Vector3 {
     }
 }
 
-public typealias DVec3 = AnyVector3<Double>
+public typealias DVec3 = Vector3<Double>
 
-public protocol Vector4: Vector3 {
+public protocol Vector4Protocol: Vector3Protocol {
     var w: Element { get set }
 }
 
-public struct AnyVector4<E: Numeric & Hashable>: Vector {
+public struct Vector4<E: Numeric & Hashable>: VectorProtocol {
     public typealias Element = E
     public var rows: Int
     public var cols: Int
@@ -442,17 +442,17 @@ public struct AnyVector4<E: Numeric & Hashable>: Vector {
         self.elements = elements
     }
 
-    public init(_ vec3: AnyVector3<E>, _ element: Element) {
+    public init(_ vec3: Vector3<E>, _ element: Element) {
         self.rows = 4
         self.cols = 1
         self.elements = vec3.elements + [element]
     }
 }
 
-extension Matrix4 {
+extension Matrix4Protocol {
 
-    public static func matmul <Vector: Vector4> (_ other: Vector) -> Vector where Self.Element == Vector.Element {
+    public static func matmul <VectorProtocol: Vector4Protocol> (_ other: VectorProtocol) -> VectorProtocol where Self.Element == VectorProtocol.Element {
 
-        return Vector(try! self.matmul(other).elements)
+        return VectorProtocol(try! self.matmul(other).elements)
     }
 }

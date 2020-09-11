@@ -5,13 +5,13 @@ public struct Tile {
         case Top, Right, Bottom, Left
     }
 
-    /*public var translation: Vector
+    /*public var translation: VectorProtocol
 
-    public init(_ translation: Vector) {
+    public init(_ translation: VectorProtocol) {
         self.translation = translation
     }*/
 
-    public static func edgeVertices<Vector: Vector2>(topLeft: Vector, vectorLayout layout: VectorLayout2<Vector> = .defaultLayout) -> [Edge: (Vector, Vector)] {
+    public static func edgeVertices<VectorProtocol: Vector2Protocol>(topLeft: VectorProtocol, vectorLayout layout: VectorLayout2<VectorProtocol> = .defaultLayout) -> [Edge: (VectorProtocol, VectorProtocol)] {
         return [
             .Top: (topLeft, topLeft + layout.right),
             .Right: (topLeft + layout.right, topLeft + layout.right + layout.down),
