@@ -39,9 +39,15 @@ public protocol Renderer {
 
     func beginPath() 
 
-    func moveTo(_ point: DPoint2) 
+    func move(to position: DPoint2)
 
-    func lineTo(_ point: DPoint2) 
+    func line(to position: DPoint2)
+
+    func arc(center: DPoint2, radius: Double, startAngle: Double, endAngle: Double, direction: Path.Segment.ArcDirection)
+
+    func pathSegment(_ segment: Path.Segment)
+
+    func path(_ path: Path)
 
     func closePath()
 
@@ -69,7 +75,7 @@ public protocol Renderer {
 
     func ellipse(_ bounds: DRect) 
 
-    func lineSegment(from: DPoint2, to: DPoint2) 
+    func lineSegment(from: DPoint2, to: DPoint2)
     
     func text(_ text: String, fontConfig: FontConfig, color: Color, topLeft: DPoint2, maxWidth: Double?) 
     

@@ -224,15 +224,51 @@ open class SDL2OpenGL3NanoVGRenderer: Renderer {
     }
 
     open func beginPath() {
+
         nvgBeginPath(window.nvg)
     }
 
-    open func moveTo(_ point: DPoint2) {
+    open func move(to point: DPoint2) {
+
         nvgMoveTo(window.nvg, Float(point.x), Float(point.y))
     }
 
-    open func lineTo(_ point: DPoint2) {
+    open func line(to point: DPoint2) {
+
         nvgLineTo(window.nvg, Float(point.x), Float(point.y))
+    }
+
+    open func arc(center: DPoint2, radius: Double, startAngle: Double, endAngle: Double, direction: VisualAppBase.Path.Segment.ArcDirection) {
+
+        let nvgDirection = direction == .Clockwise ? Int32(NVG_CW.rawValue) : Int32(NVG_CCW.rawValue)
+
+        nvgArc(window.nvg, Float(center.x), Float(center.y), Float(radius), Float(startAngle), Float(endAngle), nvgDirection)
+    }
+
+    open func pathSegment(_ segment: VisualAppBase.Path.Segment) {
+
+        switch segment {
+
+        case let .Start(position):
+
+            move(to: position)
+
+        case let .Line(position):
+
+            line(to: position)
+
+        case let .Arc(center, radius, startAngle, endAngle, direction):
+
+            arc(center: center, radius: radius, startAngle: startAngle, endAngle: endAngle, direction: direction)
+        }
+    }
+
+    open func path(_ path: VisualAppBase.Path) {
+
+        for segment in path.segments {
+
+            pathSegment(segment)
+        }
     }
 
     open func closePath() {

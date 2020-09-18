@@ -509,13 +509,20 @@ public class RenderObjectTreeRenderer {
             backendRenderer.beginFrame()
 
         case let currentRenderObject as RenderObject.Rectangle:
+
             backendRenderer.beginPath()
+
             if let cornerRadii = currentRenderObject.cornerRadii {
+
                 backendRenderer.roundedRectangle(currentRenderObject.rect, cornerRadii: cornerRadii)
+
             } else {
+
                 backendRenderer.rectangle(currentRenderObject.rect)
             }
+
             backendRenderer.fill()
+
             backendRenderer.stroke()
 
         case let currentRenderObject as RenderObject.Ellipse:
@@ -529,10 +536,21 @@ public class RenderObjectTreeRenderer {
             backendRenderer.stroke()
 
         case let currentRenderObject as RenderObject.LineSegment:
+
             backendRenderer.beginPath()
 
             backendRenderer.lineSegment(from: currentRenderObject.start, to: currentRenderObject.end)
             
+            backendRenderer.stroke()
+
+        case let object as PathRenderObject:
+
+            backendRenderer.beginPath()
+
+            backendRenderer.path(object.path)
+
+            backendRenderer.fill()
+
             backendRenderer.stroke()
 
         case let currentRenderObject as RenderObject.Text:

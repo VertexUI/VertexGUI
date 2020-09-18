@@ -4,6 +4,7 @@ import CustomGraphicsMath
 // TODO: implement function for checking whether render object has content at certain position (--> is not transparent) --> used for mouse events like click etc.
 // TODO: might split into SubTreeRenderObject and LeafRenderObject!!!
 open class RenderObject: CustomDebugStringConvertible, TreeNode {
+    // TODO: maybe remove these shorthands
     public typealias IdentifiedSubTree = VisualAppBase.IdentifiedSubTreeRenderObject
     public typealias Container = VisualAppBase.ContainerRenderObject
     public typealias Uncachable = VisualAppBase.UncachableRenderObject
@@ -14,6 +15,7 @@ open class RenderObject: CustomDebugStringConvertible, TreeNode {
     public typealias Rectangle = VisualAppBase.RectangleRenderObject
     public typealias Ellipse = VisualAppBase.EllipsisRenderObject
     public typealias LineSegment = VisualAppBase.LineSegmentRenderObject
+   // public typealias Path = VisualAppBase.PathRenderObject
     public typealias Custom = VisualAppBase.CustomRenderObject
     public typealias Text = VisualAppBase.TextRenderObject
 
@@ -384,7 +386,32 @@ open class LineSegmentRenderObject: RenderObject {
 // TODO: maybe Rectangle, Ellipsis, LineSegment RenderObjects should inherit from PathRenderObject
 open class PathRenderObject: RenderObject {
 
+    public let path: Path
+    
+    override open var hasTimedRenderValue: Bool {
 
+        return false
+    }
+    
+
+    override open var debugDescription: String {
+
+        "PathRenderObject"
+    }
+
+    override open var individualHash: Int {
+
+        var hasher = Hasher()
+
+        hasher.combine(path)
+
+        return hasher.finalize()
+    }
+
+    public init(_ path: Path) {
+
+        self.path = path
+    }
 }
 
 open class CustomRenderObject: RenderObject {
