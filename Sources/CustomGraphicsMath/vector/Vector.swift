@@ -358,9 +358,12 @@ public extension Vector3Protocol {
 }
 
 public extension Vector3Protocol where Element: FloatingPointGenericMath {
+
     /// returns 0 to pi (positive only)
     func absAngle(to otherVector: Self) -> Element {
-        let angle = acos(self.normalized().dot(otherVector.normalized()))
+
+        let angle = acos(normalized().dot(otherVector.normalized()))
+
         return angle
     }
 }

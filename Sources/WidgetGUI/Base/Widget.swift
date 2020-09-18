@@ -135,7 +135,7 @@ open class Widget: Bounded, Parent, Child {
 
     public private(set) var layouted = false
 
-    public private(set) var previousConstraints: BoxConstraints?
+    public internal(set) var previousConstraints: BoxConstraints?
 
     // TODO: maybe rename to boundsInvalid???
     public internal(set) var layoutInvalid = true
@@ -190,6 +190,10 @@ open class Widget: Bounded, Parent, Child {
     public internal(set) var onRenderStateInvalidated = EventHandlerManager<Widget>()
 
     public internal(set) var onAnyRenderStateInvalidated = EventHandlerManager<Widget>()
+
+    public internal(set) var onLayoutingStarted = EventHandlerManager<BoxConstraints>()
+
+    public internal(set) var onLayoutingFinished = EventHandlerManager<DSize2>()
 
     // TODO: when using the BoxConfig approach might instead have onBoundsInvalidated / BoxConfigInvalidated / LayoutInvalidated
     // to bring the parent to take into account updated pref sizes, max sizes, min sizes etc.
@@ -492,6 +496,8 @@ open class Widget: Bounded, Parent, Child {
 
         layouting = true
 
+        onLayoutingStarted.invokeHandlers(constraints)
+
         let previousBounds = bounds
 
         let isFirstRound = !layouted
@@ -535,6 +541,9 @@ open class Widget: Bounded, Parent, Child {
         layouted = true
 
         layoutInvalid = false
+
+        // TODO: where to call this? after setting bounds or before?
+        onLayoutingFinished.invokeHandlers(bounds.size)
 
         if previousBounds.size != bounds.size && !isFirstRound {
 
@@ -707,9 +716,15 @@ open class Widget: Bounded, Parent, Child {
             reference.referenced = nil
         }
 
+        // TODO: maybe automatically clear all EventHandlerManagers / WidgetEventHandlerManagers by using reflection?
+
         onParentChanged.removeAllHandlers()
 
         onAnyParentChanged.removeAllHandlers()
+
+        onLayoutingStarted.removeAllHandlers()
+
+        onLayoutingFinished.removeAllHandlers()
 
         onRenderStateInvalidated.removeAllHandlers()
 

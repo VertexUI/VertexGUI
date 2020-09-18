@@ -5,6 +5,8 @@ public class Flex: Widget {
 
     private let orientation: Orientation
 
+    private let crossAlignment: CrossAlignment
+
     private let mainAxisVectorIndex: Int
 
     private let crossAxisVectorIndex: Int
@@ -17,9 +19,12 @@ public class Flex: Widget {
 
     private var lines: [Line] = []
 
-    public init(orientation: Orientation, spacing: Double = 0, wrap: Bool = false, items: [Item]) {
+    // TODO: default of crossAlignment = .Stretch slows down computation right now. optimize or change default
+    public init(orientation: Orientation, crossAlignment: CrossAlignment = .Stretch, spacing: Double = 0, wrap: Bool = false, items: [Item]) {
 
         self.orientation = orientation
+
+        self.crossAlignment = crossAlignment
 
         switch orientation {
 
@@ -314,14 +319,16 @@ public class Flex: Widget {
 
             mainAxisPosition = 0*/
 
-            // second pass through items in line, grow rest free space
+            // second pass through items in line, grow rest free space, apply CrossAlignment
             // TODO: might avoid this if no item has grow
             for item in line.items {
 
-                let content = item.content
+                var content = item.content
 
                 var newConstraints = BoxConstraints(
+
                     minSize: content.bounds.size,
+                    
                     maxSize: content.bounds.size
                 )
 
@@ -341,8 +348,10 @@ public class Flex: Widget {
 
                     relayout = true
                 }
+
+                let crossAlignment = item.crossAlignment ?? self.crossAlignment
   
-                switch item.crossAlignment {
+                switch crossAlignment {
                     
                 case .Center:
 
@@ -365,7 +374,17 @@ public class Flex: Widget {
 
                 if relayout {
 
+                    // saving and storing the previousConstraints is a hack currently to
+                    // let the content change it's size according to the real constraints
+                    // it obtained above,
+                    // TODO: might introduce a separate property on Widget like: parentConstraints / mainConstraints
+                    // which can be used by the widget itself to determin how much it can grow on content change
+
+                    let previousConstraints = content.previousConstraints
+
                     content.layout(constraints: newConstraints)
+
+                    content.previousConstraints = previousConstraints
                 }
 
                 mainAxisPosition += content.bounds.size[mainAxisVectorIndex] + item.getMainAxisEndMargin(orientation)
@@ -414,7 +433,7 @@ extension Flex {
         case Row, Column
     }
 
-    public enum Alignment {
+    public enum CrossAlignment {
      
         case Start, Center, End, Stretch
     }
@@ -441,7 +460,7 @@ extension Flex {
 
         var grow: Double
 
-        var crossAlignment: Alignment
+        var crossAlignment: CrossAlignment?
 
         var content: Widget
 
@@ -455,7 +474,7 @@ extension Flex {
 
             grow: Double = 0,
 
-            crossAlignment: Alignment = .Start,
+            crossAlignment: CrossAlignment? = nil,
 
             width: FlexValue? = nil,
 

@@ -112,6 +112,23 @@ public extension MatrixProtocol {
         return result
     }
 
+    static func * (lhs: Self, rhs: Element) -> Self {
+
+        var result = Self()
+
+        for i in 0..<lhs.elements.count {
+
+            result.elements[i] = lhs.elements[i] * rhs
+        }
+
+        return result
+    }
+
+    static func * (lhs: Element, rhs: Self) -> Self {
+        
+        rhs * lhs
+    }
+
     /*func matmul<T: VectorProtocol>(_ other: T) throws -> Self {
 
     }*/
