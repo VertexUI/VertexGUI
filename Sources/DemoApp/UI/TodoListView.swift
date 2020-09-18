@@ -77,7 +77,7 @@ public class TodoListView: SingleChildWidget {
 
             Padding(left: 40 + 48) {
             
-                Divider(color: .Grey, axis: .Horizontal, width: 1)
+                Divider(color: .Grey, axis: .Horizontal, thickness: 1)
             }
         }
     }

@@ -5,7 +5,7 @@ public protocol VectorProtocol: MatrixProtocol {}
 public extension VectorProtocol {
     var description: String {
         get {
-            return "VectorProtocol \(elements)"
+            return "Vector \(elements)"
         }
     }
 

@@ -96,6 +96,38 @@ open class Widget: Bounded, Parent, Child {
         }
     }
 
+    open var width: Double {
+
+        get {
+
+            bounds.size.width
+        }
+    }
+
+    open var height: Double {
+
+        get {
+
+            bounds.size.height
+        }
+    }
+
+    open var x: Double {
+
+        get {
+
+            bounds.min.x
+        }
+    }
+
+    open var y: Double {
+
+        get {
+            
+            bounds.min.y
+        }
+    }
+
     open var globalBounds: DRect {
         get {
             return DRect(min: globalPosition, size: bounds.size)
@@ -187,6 +219,8 @@ open class Widget: Bounded, Parent, Child {
 
     public internal(set) var onAnyParentChanged = EventHandlerManager<Parent?>()
 
+    public internal(set) var onMounted = EventHandlerManager<Void>()
+
     public internal(set) var onRenderStateInvalidated = EventHandlerManager<Widget>()
 
     public internal(set) var onAnyRenderStateInvalidated = EventHandlerManager<Widget>()
@@ -243,11 +277,15 @@ open class Widget: Bounded, Parent, Child {
     }
  
     public final func mount(parent: Parent, with context: ReplacementContext? = nil) {
+        
         var oldSelf: Widget? = context?.previousWidget
       
         if
+            
             let context = context {
+              
                 if let newKey = self.key {
+             
                     oldSelf = context.keyedWidgets[newKey]
                 }
 
@@ -256,15 +294,22 @@ open class Widget: Bounded, Parent, Child {
                     var attemptStateReplace = false
 
                     if 
+                    
                         let newKey = newSelf.key,
+                    
                         let oldKey = oldSelf.key,
+                    
                         oldKey == newKey {
+                    
                             attemptStateReplace = true
+                   
                     } else if newSelf.key == nil, oldSelf.key == nil {
+                   
                         attemptStateReplace = true
                     }
 
                     if attemptStateReplace && type(of: newSelf) == type(of: oldSelf) {
+                   
                         newSelf.anyState = oldSelf.anyState
                     }
                 }
@@ -279,17 +324,28 @@ open class Widget: Bounded, Parent, Child {
         build()
  
         for i in 0..<children.count {
+
             let oldChild: Widget?
+
             if let oldSelf = oldSelf {
+
                 oldChild = oldSelf.children.count > i ? oldSelf.children[i] : nil
+         
             } else {
+
                 oldChild = nil
             }
+
             let childContext = oldChild == nil && context == nil ? nil : ReplacementContext(
+                
                 previousWidget: oldChild, keyedWidgets: context?.keyedWidgets ?? [:])
+           
             mountChild(children[i], with: childContext)
         }
+
         mounted = true
+
+        onMounted.invokeHandlers(Void())
     }
 
     private func resolveDependencies() {
@@ -721,6 +777,8 @@ open class Widget: Bounded, Parent, Child {
         onParentChanged.removeAllHandlers()
 
         onAnyParentChanged.removeAllHandlers()
+
+        onMounted.removeAllHandlers()
 
         onLayoutingStarted.removeAllHandlers()
 

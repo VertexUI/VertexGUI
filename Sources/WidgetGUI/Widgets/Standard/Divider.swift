@@ -8,35 +8,35 @@ open class Divider: Widget {
 
     public var axis: Axis
 
-    public var width: Double
+    public var thickness: Double
 
     private var size: DSize2 {
         switch axis {
 
         case .Horizontal:
 
-            return DSize2(100, width)
+            return DSize2(100, thickness)
 
         case .Vertical:
 
-            return DSize2(width, 100)
+            return DSize2(thickness, 100)
         }
     }
 
-    public init(color: Color, axis: Axis, width: Double = 1) {
+    public init(color: Color, axis: Axis, thickness: Double = 1) {
 
         self.color = color
 
         self.axis = axis
 
-        self.width = width
+        self.thickness = thickness
 
         super.init()
     }
 
     override public func getBoxConfig() -> BoxConfig {
 
-        // TODO: implement something like percentage width / height --> fill parent + calculations probably
+        // TODO: implement something like percentage thickness / height --> fill parent + calculations probably
         BoxConfig(preferredSize: size)
     }
 

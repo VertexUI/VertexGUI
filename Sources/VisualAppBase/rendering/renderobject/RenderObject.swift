@@ -347,28 +347,44 @@ open class EllipsisRenderObject: RenderObject {
 }
 
 open class LineSegmentRenderObject: RenderObject {
+
     public var start: DPoint2
+
     public var end: DPoint2
 
     override open var hasTimedRenderValue: Bool {
+
         return false
     }
     
     override open var debugDescription: String {
+
         "LineSegmentRenderObject"
     }
 
     override open var individualHash: Int {
+
         var hasher = Hasher()
+
         hasher.combine(start)
+
         hasher.combine(end)
+
         return hasher.finalize()
     }
 
     public init(from start: DPoint2, to end: DPoint2) {
+
         self.start = start
+
         self.end = end
     }
+}
+
+// TODO: maybe Rectangle, Ellipsis, LineSegment RenderObjects should inherit from PathRenderObject
+open class PathRenderObject: RenderObject {
+
+
 }
 
 open class CustomRenderObject: RenderObject {
