@@ -530,8 +530,9 @@ public class RenderObjectTreeRenderer {
 
         case let currentRenderObject as RenderObject.LineSegment:
             backendRenderer.beginPath()
+
             backendRenderer.lineSegment(from: currentRenderObject.start, to: currentRenderObject.end)
-            backendRenderer.fill()
+            
             backendRenderer.stroke()
 
         case let currentRenderObject as RenderObject.Text:
