@@ -489,6 +489,13 @@ open class Widget: Bounded, Parent, Child {
         for child in oldChildren {
             child.destroy()
         }
+
+        invalidateLayout()
+
+        // TODO: maybe layout should be called after invalidateLayout automatically
+        layout(constraints: previousConstraints!)
+
+        invalidateRenderState()
     }
 
     open func getBoxConfig() -> BoxConfig {
@@ -616,6 +623,8 @@ open class Widget: Bounded, Parent, Child {
     open func invalidateLayout() {
 
         layoutInvalid = true
+
+        // TODO: maybe need to add something that ensures a relayout after this as well
     }
 
     open func performLayout(constraints: BoxConstraints) -> DSize2 {
