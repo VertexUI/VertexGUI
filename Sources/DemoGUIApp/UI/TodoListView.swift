@@ -15,16 +15,19 @@ public class TodoListView: SingleChildWidget {
     }
 
     override public func buildChild() -> Widget {
+        
+        ScrollArea(scrollX: .Never) { [unowned self] in
 
-        Column(spacing: 16) { [unowned self] in
+            Column(spacing: 16) {
 
-            Text(list.name, fontSize: 32, fontWeight: .Bold, color: list.color)
+                Text(list.name, fontSize: 32, fontWeight: .Bold, color: list.color)
 
-            Column {
+                Column {
 
-                list.items.enumerated().map { (index, todo) in
+                    list.items.enumerated().map { (index, todo) in
 
-                    build(todo: todo, index: index)
+                        build(todo: todo, index: index)
+                    }
                 }
             }
         }

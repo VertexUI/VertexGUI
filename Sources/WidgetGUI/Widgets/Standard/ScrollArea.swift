@@ -5,7 +5,12 @@ public class ScrollArea: SingleChildWidget, GUIMouseEventConsumer {
 
     private let childBuilder: () -> Widget
 
-
+    
+    private let scrollXConfig: ScrollConfig
+    
+    private let scrollYConfig: ScrollConfig
+    
+    
     private var scrollXEnabled = true
 
     private var scrollYEnabled = true
@@ -80,8 +85,13 @@ public class ScrollArea: SingleChildWidget, GUIMouseEventConsumer {
     }
 
 
-    public init(@WidgetBuilder child childBuilder: @escaping () -> Widget) {
+    public init(
+        scrollX scrollXConfig: ScrollConfig = .Auto,
+        scrollY scrollYConfig: ScrollConfig = .Auto,
+        @WidgetBuilder child childBuilder: @escaping () -> Widget) {
         
+        self.scrollXConfig = scrollXConfig
+        self.scrollYConfig = scrollYConfig
         self.childBuilder = childBuilder
     }    
 
@@ -97,12 +107,32 @@ public class ScrollArea: SingleChildWidget, GUIMouseEventConsumer {
 
     override public func performLayout(constraints: BoxConstraints) -> DSize2 {
 
-        let childConstraints = BoxConstraints(
+        var childConstraints = BoxConstraints(
 
             minSize: .zero,
             
             maxSize: .infinity
         )
+        
+        if !scrollXEnabled {
+            
+            childConstraints.maxWidth = constraints.maxWidth
+            
+            if scrollYEnabled {
+                
+                childConstraints.maxWidth -= scrollBarWidths.y
+            }
+        }
+        
+        if !scrollYEnabled {
+            
+            childConstraints.maxHeight = constraints.maxHeight
+            
+            if scrollXEnabled {
+                
+                childConstraints.maxHeight -= scrollBarWidths.x
+            }
+        }
 
         child.layout(constraints: childConstraints)
         
@@ -139,23 +169,46 @@ public class ScrollArea: SingleChildWidget, GUIMouseEventConsumer {
         let previousXEnabled = scrollXEnabled
 
         let previousYEnabled = scrollYEnabled
-
-        if scrollXEnabled {
         
-            scrollYEnabled = maxOwnSize.height - scrollBarWidths.x < childSize.height
-        
-        } else {
-
-            scrollYEnabled = maxOwnSize.height < childSize.height
-        }
-
-        if scrollYEnabled {
+        if case .Always = scrollXConfig {
             
-            scrollXEnabled = maxOwnSize.width - scrollBarWidths.y < childSize.width
+            scrollXEnabled = true
+            
+        } else if case .Never = scrollXConfig {
+            
+            scrollXEnabled = false
+        }
+        
+        if case .Always = scrollYConfig {
+            
+            scrollYEnabled = true
+            
+        } else if case .Never = scrollYConfig {
+            
+            scrollYEnabled = false
+        
+        } else if case .Auto = scrollYConfig {
+            
+            if scrollXEnabled {
+            
+                scrollYEnabled = maxOwnSize.height - scrollBarWidths.x < childSize.height
+            
+            } else {
 
-        } else {
+                scrollYEnabled = maxOwnSize.height < childSize.height
+            }
+        }
+        
+        if case .Auto = scrollXConfig {
 
-            scrollXEnabled = maxOwnSize.width < childSize.width
+            if scrollYEnabled {
+                
+                scrollXEnabled = maxOwnSize.width - scrollBarWidths.y < childSize.width
+
+            } else {
+
+                scrollXEnabled = maxOwnSize.width < childSize.width
+            }
         }
 
         if previousXEnabled != scrollXEnabled || previousYEnabled != scrollYEnabled {
@@ -258,5 +311,13 @@ public class ScrollArea: SingleChildWidget, GUIMouseEventConsumer {
 
             break
         }
+    }
+}
+
+extension ScrollArea {
+    
+    public enum ScrollConfig {
+        
+        case Always, Auto, Never
     }
 }
