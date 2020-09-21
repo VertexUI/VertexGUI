@@ -1,60 +1,33 @@
-/*public struct Config {
-    public var id: Int
+public struct ItemType1 {
+
 }
 
+@_functionBuilder
+public struct TestFunctionBuilder {
+    /*public static func buildExpression(_ item: ItemType1) -> ItemType1 {
+        [item]
+    }*/
 
+    /*public static func buildExpression(_ items: [ItemType1]) -> [ItemType1] {
+        items
+    }*/
 
-@functionBuilder
-struct Builder {
-    public func buildExpression(_ subThing: (inout Config) -> String) -> 
-}*/
+    public static func buildArray(items: [ItemType1]) -> [ItemType1] {
+        return items.compactMap { $0 }
+    }
 
-/*
-func testFunc(param0: String = "", param1: () -> (), param2: (() -> ())? = nil, param3: (() -> ())? = nil) {
-    param1()
-}
-
-testFunc {
-    print("WOW IT WORKS")
-} param2: {
-    print("THIS TOO")
-}
-
-func testFunc2(params: String...) -> [String] {
-    return params
-}*/
-
-/*class TestClass {
-    public init(_ getVals: () -> [String]) {
-        print(getVals())
+    public static func buildBlock(_ items: [ItemType1]) -> [ItemType1] {
+        return items
     }
 }
 
-let test = TestClass({
-    //let a = 21
-    //let b = a + 23
-    "WOW"
-    return ["WSDSDD"]
-})
+@TestFunctionBuilder func build() -> [ItemType1] {
+    //ItemType1()
+    //ItemType1()
 
-func collectionFunc<S: Sequence>(_ anyStuff: S) {
-    print(anyStuff)
+    /*[
+        ItemType1()
+    ]*/
+
+    [ItemType1()]
 }
-
-//collectionFunc(("WOW", "WOW2"))
-
-protocol TestProto {
-    associatedtype Val
-}
-
-struct ProtoImpl: TestProto {
-    typealias Val = String
-}
-
-let test2 = ProtoImpl() as Any
-
-if let test2 = test2, test2 is SomeProto {
-    print("IT IS")
-}
-
-print(test2Conv)*/

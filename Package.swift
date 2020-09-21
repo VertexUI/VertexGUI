@@ -15,8 +15,8 @@ let package = Package(
         ),
 
         .executable(
-            name: "DemoApp",
-            targets: ["DemoApp"]),
+            name: "DemoGUIApp",
+            targets: ["DemoGUIApp"]),
 
         /*.executable(
             name: "StatefulWidgetResearchApp",
@@ -80,7 +80,7 @@ let package = Package(
         //.target(name: "PropertyBindingsResearchApp", dependencies: ["WidgetGUI", "VisualAppBase", "VisualAppBaseImplSDL2OpenGL3NanoVG"]),
        
         .target(
-            name: "DemoApp",
+            name: "DemoGUIApp",
             dependencies: ["WidgetGUI", "VisualAppBase", "ColorizeSwift", "VisualAppBaseImplSDL2OpenGL3NanoVG", "Swim"],
             resources: [.copy("Resources")]),
 

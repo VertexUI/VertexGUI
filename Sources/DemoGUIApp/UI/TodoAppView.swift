@@ -74,7 +74,7 @@ public class TodoAppView: SingleChildWidget {
 
                             Column {
                                 
-                                for list in todoLists {
+                                todoLists.map { list in
 
                                     Column.Item(crossAlignment: .Stretch) {
 

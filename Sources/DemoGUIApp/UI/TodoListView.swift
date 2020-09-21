@@ -16,13 +16,13 @@ public class TodoListView: SingleChildWidget {
 
     override public func buildChild() -> Widget {
 
-        Column(spacing: 16) {
+        Column(spacing: 16) { [unowned self] in
 
             Text(list.name, fontSize: 32, fontWeight: .Bold, color: list.color)
 
             Column {
 
-                for (index, todo) in list.items.enumerated() {
+                list.items.enumerated().map { (index, todo) in
 
                     build(todo: todo, index: index)
                 }
@@ -46,7 +46,6 @@ public class TodoListView: SingleChildWidget {
 
                             Text(todo.description, wrap: true)
                         }
-                        
                     }
 
                     if expandedItemIndices.contains(index) {

@@ -600,6 +600,10 @@ extension Flex {
             items
         }
 
+        public static func buildExpression(_ items: [[Flex.Item]]) -> [Flex.Item] {
+            items.flatMap { $0 }
+        }
+
         /*public static func buildExpression(_ widget: Widget?) -> [Flex.Item] {
             if let widget = widget {
 
@@ -618,8 +622,16 @@ extension Flex {
             items.flatMap { $0 }
         }
 
+        public static func buildBlock(_ items: [[Flex.Item]]) -> [Flex.Item] {
+            items.flatMap { $0 }
+        }
+        /*
         public static func buildArray(_ items: [[Flex.Item]]) -> [Flex.Item] {
             items.flatMap { $0 }
         }
+
+        public static func buildArray(_ items: [Flex.Item]) -> [Flex.Item] {
+            items
+        }*/
     }
 }

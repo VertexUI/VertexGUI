@@ -46,7 +46,7 @@ public class SearchResultsView: SingleChildWidget {
 
             Text("Results for \"\(query)\"", fontSize: 48, fontWeight: .Bold)
 
-            for list in filteredLists {
+            filteredLists.map { list in
 
                 TodoListView(list)
             }

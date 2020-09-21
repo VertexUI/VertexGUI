@@ -4,7 +4,7 @@ This demo application runs on Linux and MacOS. A Swift version of at least 5.3 i
 
 [SDL2 needs to be installed](https://wiki.libsdl.org/Installation) on your system. On ubuntu you can install it with `sudo apt-get install libsdl2-dev` and on MacOS `brew install sdl2` (Homebrew required).
 
-To run the app execute `swift run DemoApp` in the root directory of the package.
+To run the app execute `swift run DemoGUIApp` in the root directory of the package.
 
 # Architecture
 
