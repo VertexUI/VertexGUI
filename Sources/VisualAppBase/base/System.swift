@@ -34,7 +34,7 @@ open class System {
         fatalError("updateCursor() not implemented.")
     }
     
-    open func mainLoop(executeMainLoop: @escaping (_ block: () -> ()) -> ()) throws {
+    open func mainLoop(executeMainLoop: @escaping (_ block: @escaping () -> ()) -> ()) throws {
         
         fatalError("performMainLoop() not implemented.")
     }

@@ -43,9 +43,9 @@ open class VisualApp<S: System, W: Window> {
                     fatalError("system not initialized after setup() call in start()")
                 }*/
                 
-                try self.system.mainLoop { block in
+                try self.system.mainLoop { (_ block: @escaping () -> ()) in
                     
-                    DispatchQueue.main.asnyc { block() }
+                    DispatchQueue.main.async { block() }
                 }
             } catch {
                 print("Error in system.mainLoop()")

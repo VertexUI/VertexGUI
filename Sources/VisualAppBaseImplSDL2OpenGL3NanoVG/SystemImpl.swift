@@ -154,7 +154,7 @@ open class SDL2OpenGL3NanoVGSystem: System {
         } / SDL2OpenGL3NanoVGSystem.fpsBufferCount
     }
 
-    override open func mainLoop(executeMainLoop: @escaping (_ block: () -> ()) -> ()) throws {
+    override open func mainLoop(executeMainLoop: @escaping (_ block: @escaping () -> ()) -> ()) throws {
         
         executeMainLoop {
             
