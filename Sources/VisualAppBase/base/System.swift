@@ -6,7 +6,7 @@ open class System {
     public var onFrame = ThrowingEventHandlerManager<Int>()
 
     public var averageFps = 0 // average FPS over a certain time, TODO: which time?
-
+    
     public init() throws {
 
     }
@@ -33,9 +33,10 @@ open class System {
     open func updateCursor() {
         fatalError("updateCursor() not implemented.")
     }
-
-    open func mainLoop() throws {
-        fatalError("mainLoop() not implemented.")
+    
+    open func mainLoop(executeMainLoop: @escaping (_ block: () -> ()) -> ()) throws {
+        
+        fatalError("performMainLoop() not implemented.")
     }
 
     open func exit() throws {

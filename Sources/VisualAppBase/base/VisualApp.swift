@@ -24,6 +24,13 @@ open class VisualApp<S: System, W: Window> {
     /// Call setup() and other things necessary to run in the correct DispatchQueue.
     /// Will block until exit is executed.
     open func start() throws {
+    
+        #if os(macOS)
+            
+        try self.system.mainLoop { $0() }
+        
+        #elseif os(Linux)
+        
         DispatchQueue.main.async {
             /*do {
                 try self.setup()
@@ -35,18 +42,22 @@ open class VisualApp<S: System, W: Window> {
                 /*guard let system = self.system else {
                     fatalError("system not initialized after setup() call in start()")
                 }*/
-                try self.system.mainLoop()
+                
+                try self.system.mainLoop { block in
+                    
+                    DispatchQueue.main.asnyc { block() }
+                }
             } catch {
                 print("Error in system.mainLoop()")
             }
         }
-
-        #if os(macOS)
-            CFRunLoopRun()
-        #elseif os(Linux)
-            dispatchMain()
+        
+        dispatchMain()
+        
         #else
-            fatalError("Unsupported os.")
+        
+        fatalError("Unsupported os.")
+        
         #endif
     }
 }

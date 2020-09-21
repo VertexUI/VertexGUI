@@ -3,13 +3,15 @@
 import PackageDescription
 
 let package = Package(
-
+    
     name: "GraphicalSwift",
-
+    
+    platforms: [
+        .macOS(.v10_13)
+    ],
+    
     products: [
-
         .library(
-
             name: "GraphicalSwift",
             targets: ["VisualAppBase", "VisualAppBaseImplSDL2OpenGL3NanoVG", "WidgetGUI", "CustomGraphicsMath"]
         ),
@@ -17,14 +19,6 @@ let package = Package(
         .executable(
             name: "DemoGUIApp",
             targets: ["DemoGUIApp"]),
-
-        /*.executable(
-            name: "StatefulWidgetResearchApp",
-            targets: ["StatefulWidgetResearchApp"]),
-
-        .executable(
-            name: "PropertyBindingsResearchApp",
-            targets: ["PropertyBindingsResearchApp"])*/
     ],
 
     dependencies: [
@@ -74,10 +68,6 @@ let package = Package(
             name: "DemoGameApp",
             dependencies: ["WidgetGUI", "VisualAppBase", "VisualAppBaseImplSDL2OpenGL3NanoVG"],
             resources: [.process("Resources")]),
-       
-        //.target(name: "StatefulWidgetResearchApp", dependencies: ["WidgetGUI", "VisualAppBase", "VisualAppBaseImplSDL2OpenGL3NanoVG"]),
-      
-        //.target(name: "PropertyBindingsResearchApp", dependencies: ["WidgetGUI", "VisualAppBase", "VisualAppBaseImplSDL2OpenGL3NanoVG"]),
        
         .target(
             name: "DemoGUIApp",

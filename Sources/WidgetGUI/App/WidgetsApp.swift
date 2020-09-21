@@ -29,7 +29,7 @@ open class WidgetsApp<S: System, W: Window, R: Renderer>: VisualApp<S, W> {
 
     /// - Parameter guiRoot: is an autoclosure. This ensures, that the window
     /// has already been created when the guiRoot is evaluated and e.g. the OpenGL context was created.
-    @discardableResult public func newWindow(guiRoot guiRootBuilder: @autoclosure () -> Root, background: Color) -> Window {
+    public func newWindow(guiRoot guiRootBuilder: @autoclosure () -> Root, background: Color) -> Window {
         let window = try! Window(background: background, size: DSize2(500, 500))
 
         let renderer = createRenderer(for: window)

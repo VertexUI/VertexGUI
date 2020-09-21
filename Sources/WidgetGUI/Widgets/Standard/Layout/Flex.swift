@@ -584,19 +584,24 @@ extension Flex {
 
     @_functionBuilder
     public struct ItemBuilder {
+        
         public static func buildExpression(_ widget: Widget) -> [Flex.Item] {
+            
             [Flex.Item { widget }]
         }
 
         public static func buildExpression(_ widgets: [Widget]) -> [Flex.Item] {
+            
             widgets.map { widget in Flex.Item { widget } }
         }
 
         public static func buildExpression(_ item: Flex.Item) -> [Flex.Item] {
+            
             [item]
         }
 
         public static func buildExpression(_ items: [Flex.Item]) -> [Flex.Item] {
+            
             items
         }
 
@@ -627,6 +632,7 @@ extension Flex {
         }
         /*
         public static func buildArray(_ items: [[Flex.Item]]) -> [Flex.Item] {
+            
             items.flatMap { $0 }
         }
 

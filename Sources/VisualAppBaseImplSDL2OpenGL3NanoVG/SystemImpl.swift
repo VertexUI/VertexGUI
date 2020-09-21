@@ -82,7 +82,7 @@ open class SDL2OpenGL3NanoVGSystem: System {
 
     open func processEvents() throws {
         var event = SDL_Event()
-
+        
         while SDL2OpenGL3NanoVGSystem.isRunning && SDL_PollEvent(&event) != 0 {
             let eventType = SDL_EventType(rawValue: event.type)
             do {
@@ -154,9 +154,10 @@ open class SDL2OpenGL3NanoVGSystem: System {
         } / SDL2OpenGL3NanoVGSystem.fpsBufferCount
     }
 
-    override open func mainLoop() throws {
-        // TODO: maybe this wrapping function should be given as an argument? --> could be different for different systems/apps
-        DispatchQueue.main.async { [unowned self] in
+    override open func mainLoop(executeMainLoop: @escaping (_ block: () -> ()) -> ()) throws {
+        
+        executeMainLoop {
+            
             do {
                 // increment ticker
                 let currentTime = SDL_GetTicks()
@@ -178,10 +179,10 @@ open class SDL2OpenGL3NanoVGSystem: System {
                 if frameDuration < 1000 / UInt32(self.targetFps) {
                     SDL_Delay((1000 / UInt32(self.targetFps)) - frameDuration)
                 }*/
-
+                
                 if SDL2OpenGL3NanoVGSystem.isRunning {
-                    try! self.mainLoop()
-                } 
+                    try! self.mainLoop(executeMainLoop: executeMainLoop)
+                }
             } catch {
                 print("Error in main loop", error)
             }
