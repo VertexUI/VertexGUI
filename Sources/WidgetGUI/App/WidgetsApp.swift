@@ -61,7 +61,7 @@ open class WidgetsApp<S: System, W: Window, R: Renderer>: VisualApp<S, W> {
             guiRoot.bounds.size = $0
         }
 
-        _ = window.onKey { [unowned guiRoot, unowned self] in
+        _ = window.onKey { [unowned self] in
 
             if let event = $0 as? KeyUpEvent, event.key == Key.F12 {
 
@@ -77,7 +77,7 @@ open class WidgetsApp<S: System, W: Window, R: Renderer>: VisualApp<S, W> {
 
                 let devToolsWindow = newWindow(guiRoot: devToolsGuiRoot, background: .Grey)
                
-                _ = devToolsWindow.onKey { [unowned devToolsWindow] in
+                _ = devToolsWindow.onKey {
 
                     if let event = $0 as? KeyUpEvent, event.key == Key.Escape {
                         removeDebuggingDataHandler()
@@ -87,7 +87,7 @@ open class WidgetsApp<S: System, W: Window, R: Renderer>: VisualApp<S, W> {
             }
         }
 
-        _ = window.onClose { [unowned self, unowned window, unowned guiRoot] in
+        _ = window.onClose { [unowned self] in
             guiRoot.destroy()
             windowConfigs.removeAll(where: { $0.window === window })
         }
