@@ -4,13 +4,18 @@
 
 import Foundation
 
-public typealias Point = VectorProtocol
-public typealias Point2 = Vector2Protocol
-public typealias Point3 = Vector3Protocol
-public typealias Point4 = Vector4Protocol
+public typealias PointProtocol = VectorProtocol
+public typealias Point2Protocol = Vector2Protocol
+public typealias Point3Protocol = Vector3Protocol
+public typealias Point4Protocol = Vector4Protocol
 
-public typealias AnyPoint2<E: Numeric & Hashable> = Vector2<E>
-public typealias DPoint2 = AnyPoint2<Double>
+public typealias Point2<E: Numeric & Hashable> = Vector2<E>
+
+public typealias Point3<E: Numeric & Hashable> = Vector3<E>
+
+public typealias DPoint2 = Point2<Double>
+
+public typealias DPoint3 = Point3<Double>
 
 /*
 public struct Point: Equatable {

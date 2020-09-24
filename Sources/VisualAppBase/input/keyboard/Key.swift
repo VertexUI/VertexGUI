@@ -4,9 +4,11 @@
 /// prefix L for letter keys, e.g. B --> B
 public enum Key: CaseIterable {
 
-    case ArrowUp,ArrowRight, ArrowDown, ArrowLeft
+    case ArrowUp, ArrowRight, ArrowDown, ArrowLeft
 
     case Return, Enter, Backspace, Delete, Space, Escape
+
+    case LeftShift, LeftCtrl, LeftAlt
 
     case N0, N1, N2, N3, N4, N5, N6, N7, N8, N9
     

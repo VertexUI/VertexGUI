@@ -452,7 +452,15 @@ public struct Vector4<E: Numeric & Hashable>: VectorProtocol {
         self.cols = 1
         self.elements = vec3.elements + [element]
     }
+
+    public init(_ x: Element, _ y: Element, _ z: Element, _ w: Element) {
+        self.init([x, y, z, w])
+    }
 }
+
+public typealias DVec4 = Vector4<Double>
+
+public typealias FVec4 = Vector4<Float>
 
 extension Matrix4Protocol {
 
