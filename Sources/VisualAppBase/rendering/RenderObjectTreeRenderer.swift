@@ -542,6 +542,8 @@ public class RenderObjectTreeRenderer {
             backendRenderer.lineSegment(from: currentRenderObject.start, to: currentRenderObject.end)
             
             backendRenderer.stroke()
+            
+            backendRenderer.fill()
 
         case let object as PathRenderObject:
 
