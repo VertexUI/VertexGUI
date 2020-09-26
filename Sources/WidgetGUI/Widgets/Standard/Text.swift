@@ -226,7 +226,7 @@ public final class Text: Widget, ConfigurableWidget {
 
             if config.wrap {
                 
-                preferredSize = context!.getTextBoundsSize(transformedText, fontConfig: config.fontConfig, maxWidth: constraints!.maxWidth)
+                preferredSize = context!.getTextBoundsSize(transformedText, fontConfig: config.fontConfig, maxWidth: previousConstraints!.maxWidth)
                 
             } else {
 

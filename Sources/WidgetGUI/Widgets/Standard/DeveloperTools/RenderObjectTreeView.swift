@@ -78,9 +78,9 @@ public class RenderObjectTreeView: Widget {
 
                 for k in 0..<groupedChildren[i].groups[j].children.count {
 
-                    var child = groupedChildren[i].groups[j].children[k]
+                    let child = groupedChildren[i].groups[j].children[k]
 
-                    try child.layout(constraints: constraints)
+                    child.layout(constraints: constraints)
 
                     child.bounds.min = DPoint2(nextX, nextY)
 

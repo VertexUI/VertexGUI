@@ -48,6 +48,7 @@ extension Widget {
 
     // TODO: might need possibility to return all of type + a method that only returns first + in what order depth first / breadth first
     public final func getChild<W: Widget>(ofType type: W.Type) -> W? {
+       
         for child in children {
 
             if let child = child as? W {
@@ -67,14 +68,37 @@ extension Widget {
         return nil
     }
 
+    /**
+    Get a child at any depth where the given condition is true. Depth first.
+    */
+    public final func getChild(where condition: (_ child: Widget) -> Bool) -> Widget? {
+
+        for child in children {
+
+            if condition(child) {
+                
+                return child
+
+            } else if let result = child.getChild(where: condition) {
+
+                return result
+            }
+        }
+
+        return nil
+    }
+
     public final func getConfig<Config: PartialConfig>(ofType type: Config.Type) -> Config? {
+      
         let configProviders = getParents(ofType: ConfigProvider.self)
         
         let configs = configProviders.compactMap {
+        
             $0.retrieveConfig(ofType: type)
         }
 
         if configs.count == 0 {
+        
             return nil
         }
 

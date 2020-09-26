@@ -60,7 +60,7 @@ open class TwoDWorldView: Widget, GUIMouseEventConsumer, StatefulWidget {
         }
     }
 
-    public func consume(_ event: GUIMouseEvent) throws {
+    public func consume(_ event: GUIMouseEvent) {
         print("CALL CONSUME ON MOUSE EVENT", destroyed)
 
         if let event = event as? GUIMouseButtonClickEvent {

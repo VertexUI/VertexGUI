@@ -64,21 +64,24 @@ public class TodoAppView: SingleChildWidget {
 
             Column.Item(grow: 1, crossAlignment: .Stretch) {
 
-                Padding(all: 32) {
+                ScrollArea {
 
-                    Column(spacing: 24) {
+                    Padding(all: 32) {
 
-                        Text("Lists", fontSize: 24, fontWeight: .Bold)
+                        Column(spacing: 24) {
 
-                        Column.Item(crossAlignment: .Stretch) {
+                            Text("Lists", fontSize: 24, fontWeight: .Bold)
 
-                            Column {
-                                
-                                todoLists.map { list in
+                            Column.Item(crossAlignment: .Stretch) {
 
-                                    Column.Item(crossAlignment: .Stretch) {
+                                Column {
+                                    
+                                    todoLists.map { list in
 
-                                        buildMenuListItem(for: list)
+                                        Column.Item(crossAlignment: .Stretch) {
+
+                                            buildMenuListItem(for: list)
+                                        }
                                     }
                                 }
                             }

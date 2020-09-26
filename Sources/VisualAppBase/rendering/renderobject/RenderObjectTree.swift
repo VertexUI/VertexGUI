@@ -1,6 +1,5 @@
 import Foundation
 
-// TODO: maybe name RenderObjectTree
 // TODO: maybe rename RenderObjectTreeRoot
 public class RenderObjectTree: SubTreeRenderObject {
     public enum Update {

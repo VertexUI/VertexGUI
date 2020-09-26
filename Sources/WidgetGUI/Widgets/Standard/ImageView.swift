@@ -74,8 +74,6 @@ public class ImageView: Widget {
             return nil
         }
 
-        print("Rendering Image".bold().onWhite(), bounds.size, boxConfig, previousConstraints)
-
         if !resizingImage && (resizedImage == nil || resizedImage!.width != Int(bounds.size.width) || resizedImage!.height != Int(bounds.size.height)) {
             
             resizeImage()

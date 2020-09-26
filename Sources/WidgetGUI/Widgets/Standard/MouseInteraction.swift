@@ -27,13 +27,13 @@ public class MouseInteraction: SingleChildWidget, GUIMouseEventConsumer {
 
     public func consume(_ event: GUIMouseEvent) {
         switch event {
-        case let event as GUIMouseEnterEvent:
+        case _ as GUIMouseEnterEvent:
             self.state = .Hover
-        case let event as GUIMouseLeaveEvent:
+        case _ as GUIMouseLeaveEvent:
             self.state = .Normal
-        case let event as GUIMouseButtonDownEvent:
+        case _ as GUIMouseButtonDownEvent:
             self.state = .Active
-        case let event as GUIMouseButtonUpEvent:
+        case _ as GUIMouseButtonUpEvent:
             if globalBounds.contains(point: event.position) {
                 self.state = .Hover
             } else {

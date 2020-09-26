@@ -41,7 +41,7 @@ open class Root: Parent {
 
     private var renderObjectTreeRenderer: RenderObjectTreeRenderer
     
-    private var renderObjectTree: RenderObjectTree
+    internal var renderObjectTree: RenderObjectTree
 
     private var rerenderWidgets: [Widget] = []
     
@@ -93,7 +93,9 @@ open class Root: Parent {
 
     @discardableResult open func consume(_ rawMouseEvent: RawMouseEvent) -> Bool {
 
-        _ = self.mouseEventManager.propagate(event: rawMouseEvent, through: self.rootWidget)
+        //_ = self.mouseEventManager.propagate(event: rawMouseEvent, through: self.rootWidget)
+
+        propagate(rawMouseEvent)
 
         return false
     }

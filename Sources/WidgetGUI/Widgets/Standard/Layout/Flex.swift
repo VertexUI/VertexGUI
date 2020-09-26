@@ -323,7 +323,7 @@ public class Flex: Widget {
             // TODO: might avoid this if no item has grow
             for item in line.items {
 
-                var content = item.content
+                let content = item.content
 
                 var newConstraints = BoxConstraints(
 

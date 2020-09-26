@@ -1,6 +1,8 @@
 import VisualAppBase
 import CustomGraphicsMath
 
+// TODO: implement the RenderObjects in a way similar to SVG --> like defining an SVG graphic
+
 // TODO: implement function for checking whether render object has content at certain position (--> is not transparent) --> used for mouse events like click etc.
 // TODO: might split into SubTreeRenderObject and LeafRenderObject!!!
 open class RenderObject: CustomDebugStringConvertible, TreeNode {
@@ -34,6 +36,20 @@ open class RenderObject: CustomDebugStringConvertible, TreeNode {
     open var debugDescription: String {
         fatalError("debugDescription not implemented.")
     }
+
+    /**
+    - Returns: Self if object contains point as well as all children (deep) that contain it.
+    */
+    public func objectsAt(point: DPoint2) -> [ObjectAtPointResult] {
+        fatalError("objectsAt(point:) not implemented for RenderObject \(self)")
+    }
+
+    public struct ObjectAtPointResult {
+
+        public var object: RenderObject
+
+        public var transformedPoint: DPoint2
+    }
 }
 
 open class SubTreeRenderObject: RenderObject {
@@ -57,6 +73,23 @@ open class SubTreeRenderObject: RenderObject {
             }
         }
         return hasher.finalize()
+    }
+
+    override public func objectsAt(point: DPoint2) -> [ObjectAtPointResult] {
+
+        var result = [ObjectAtPointResult]()
+
+        for child in children {
+
+            result.append(contentsOf: child.objectsAt(point: point))
+        }
+
+        if result.count > 0 {
+
+            result.append(ObjectAtPointResult(object: self, transformedPoint: point))
+        }
+
+        return result
     }
 }
 
@@ -194,6 +227,7 @@ open class RenderStyleRenderObject: SubTreeRenderObject {
 }
 
 open class TranslationRenderObject: SubTreeRenderObject {
+  
     public var translation: DVec2
 
     override open var hasTimedRenderValue: Bool { false }
@@ -201,18 +235,43 @@ open class TranslationRenderObject: SubTreeRenderObject {
     override open var debugDescription: String { "TranslationRenderObject" }
 
     override open var individualHash: Int {
+       
         var hasher = Hasher()
+       
         hasher.combine(translation)
+      
         return hasher.finalize()
     }
 
     public init(_ translation: DVec2, children: [RenderObject]) {
+      
         self.translation = translation
+      
         super.init(children: children)
     }
 
     public convenience init(_ translation: DVec2, @RenderObjectBuilder children: () -> [RenderObject]) {
+        
         self.init(translation, children: children())
+    }
+
+    override public func objectsAt(point: DPoint2) -> [ObjectAtPointResult] {
+
+        var result = [ObjectAtPointResult]()
+
+        let reverseTranslatedPoint = point - translation
+
+        for child in children {
+
+            result.append(contentsOf: child.objectsAt(point: reverseTranslatedPoint))
+        }
+
+        if result.count > 0 {
+
+            result.append(ObjectAtPointResult(object: self, transformedPoint: point))
+        }
+
+        return result
     }
 }
 
@@ -242,11 +301,14 @@ open class ClipRenderObject: SubTreeRenderObject {
 }
 
 open class UncachableRenderObject: SubTreeRenderObject {
+
     override open var hasTimedRenderValue: Bool {
+  
         return false
     }
 
     override open var debugDescription: String {
+   
         "UncachableRenderObject"
     }
 
@@ -318,6 +380,16 @@ open class RectangleRenderObject: RenderObject {
 
         self.cornerRadii = cornerRadii
     }
+
+    override public func objectsAt(point: DPoint2) -> [ObjectAtPointResult] {
+        
+        if rect.contains(point: point) {
+
+            return [ObjectAtPointResult(object: self, transformedPoint: point)]
+        }
+
+        return []
+    }
 }
 
 open class EllipsisRenderObject: RenderObject {
@@ -345,6 +417,18 @@ open class EllipsisRenderObject: RenderObject {
 
     public init(_ bounds: DRect) {
         self.bounds = bounds
+    }
+
+    override public func objectsAt(point: DPoint2) -> [ObjectAtPointResult] {
+        
+        // TODO: check whether point is inside the filled area
+
+        if bounds.contains(point: point) {
+
+            return [ObjectAtPointResult(object: self, transformedPoint: point)]
+        }
+
+        return []
     }
 }
 
@@ -381,6 +465,11 @@ open class LineSegmentRenderObject: RenderObject {
 
         self.end = end
     }
+
+    override public func objectsAt(point: DPoint2) -> [ObjectAtPointResult] {
+    
+        return []
+    }
 }
 
 // TODO: maybe Rectangle, Ellipsis, LineSegment RenderObjects should inherit from PathRenderObject
@@ -412,67 +501,120 @@ open class PathRenderObject: RenderObject {
 
         self.path = path
     }
+
+    override public func objectsAt(point: DPoint2) -> [ObjectAtPointResult] {
+    
+        // TODO: get path bounds and check simply first
+
+        return []
+    }
 }
 
 open class CustomRenderObject: RenderObject {
+
     public var render: (_ renderer: Renderer) throws -> Void
 
     override open var hasTimedRenderValue: Bool {
+
         return false
     } 
     
     override open var debugDescription: String {
+
         "CustomRenderObject"
     }
 
     private var id: UInt
+
     override open var individualHash: Int {
+
         var hasher = Hasher()
+
         hasher.combine(id)
+
         return hasher.finalize()
     }
 
     /// - Parameter id: Used for hashing, should be unique for each render function.
     public init(id: UInt, _ render: @escaping (_ renderer: Renderer) throws -> Void) {
+       
         self.id = id
+       
         self.render = render
+        
         super.init()
+    }
+
+    override public func objectsAt(point: DPoint2) -> [ObjectAtPointResult] {
+    
+        // TODO: implement for CustomRenderObject, maybe add a parameter that handles this
+
+        return []
     }
 }
 
 open class TextRenderObject: RenderObject {
+   
     public var text: String
+   
     public var fontConfig: FontConfig
+
     public var color: Color
+   
     public var topLeft: DVec2
+   
     public var wrap: Bool
+   
     public var maxWidth: Double?
 
     override open var hasTimedRenderValue: Bool {
+   
         return false
     }
     
     override open var debugDescription: String {
+
         "TextRenderObject"
     }
     
     override open var individualHash: Int {
+       
         var hasher = Hasher()
+      
         hasher.combine(text)
+      
         hasher.combine(fontConfig)
+     
         hasher.combine(color)
+     
         hasher.combine(topLeft)
+     
         hasher.combine(maxWidth)
+     
         hasher.combine(wrap)
+      
         return hasher.finalize()
     }
 
     public init(_ text: String, fontConfig: FontConfig, color: Color, topLeft: DVec2, wrap: Bool = false, maxWidth: Double? = nil) {
+      
         self.text = text
+       
         self.fontConfig = fontConfig
+      
         self.color = color
+      
         self.topLeft = topLeft
+       
         self.wrap = wrap
+      
         self.maxWidth = maxWidth
+    }
+
+    override public func objectsAt(point: DPoint2) -> [ObjectAtPointResult] {
+    
+        // TODO: implement this for Text --> need to store bounds / get access via a context
+
+        return []
     }
 }

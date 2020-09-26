@@ -1,5 +1,4 @@
 import VisualAppBase
-import WidgetGUI
 
 public class MouseArea: SingleChildWidget, GUIMouseEventConsumer {
 
@@ -96,7 +95,7 @@ public class MouseArea: SingleChildWidget, GUIMouseEventConsumer {
         return inputChild
     }
 
-    public func consume(_ event: GUIMouseEvent) throws {
+    public func consume(_ event: GUIMouseEvent) {
 
         switch event {
 

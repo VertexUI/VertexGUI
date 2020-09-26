@@ -88,7 +88,7 @@ public class WidgetTreeMouseEventManager {
 
                 for previousTarget in previousMouseEventTargets[ObjectIdentifier(GUIMouseButtonDownEvent.self)]! {
 
-                    try previousTarget.consume(
+                    previousTarget.consume(
 
                         GUIMouseButtonUpEvent(
                             
@@ -121,7 +121,7 @@ public class WidgetTreeMouseEventManager {
 
                             if !previousTarget.destroyed && previousTarget.id == mouseEventTarget.id {
 
-                                try mouseEventTarget.consume(
+                                mouseEventTarget.consume(
 
                                     GUIMouseButtonClickEvent(
 

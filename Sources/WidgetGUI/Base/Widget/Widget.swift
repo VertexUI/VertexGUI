@@ -349,16 +349,21 @@ open class Widget: Bounded, Parent, Child {
     }
 
     private func resolveDependencies() {
+
         var injectables = [AnyInject]()
         
         let mirror = Mirror(reflecting: self)
         
         for child in mirror.children {
+            
             // TODO: this type of value needs to be caught specifically for some reason or there will be a crash
             if child.value is [AnyObject] {
+
                 continue
             }
+
             if child.value is AnyInject {
+
                 injectables.append(child.value as! AnyInject)
             }
         }
