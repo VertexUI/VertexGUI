@@ -1,6 +1,6 @@
 public protocol TreeNode {
     associatedtype Child: TreeNode
-    var children: [Child] { get set }
+    var children: [Child] { get }
     var isBranching: Bool { get }
 }
 

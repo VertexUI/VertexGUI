@@ -131,7 +131,7 @@ open class Root: Parent {
         if renderObjectTree.children.count == 0 {
 
             // TODO: provide an insert function
-            renderObjectTree.children.append(rootWidget.render())
+            renderObjectTree.appendChild(rootWidget.render())
 
             if let context = renderObjectContext {
                 
@@ -171,13 +171,6 @@ open class Root: Parent {
             widget.updateRenderState()
         }
 
-        if let context = renderObjectContext {
-                
-            renderObjectTree.context = context
-        }
-
-
-
         rerenderWidgets = []
 
         try! renderObjectTreeRenderer.render(with: renderer, in: bounds)
@@ -195,26 +188,12 @@ open class Root: Parent {
     ]
 
     internal func propagate(_ event: RawMouseEvent) {
-
-        switch event {
-
-        case _ as RawMouseButtonDownEvent:
-
-            previousMouseEventTargets[ObjectIdentifier(GUIMouseButtonDownEvent.self)] = []
-
-        case let event as RawMouseButtonUpEvent:
-
-            for previousDownEventTarget in previousMouseEventTargets[ObjectIdentifier(GUIMouseButtonDownEvent.self)]! {
-                
-                // TODO: need to calculate point translation here as well for the previous targets
-
-                previousDownEventTarget.consume(GUIMouseButtonUpEvent(button: event.button, position: event.position))
-            }
         
-        default:
-        
-            break
-        }
+        // first get the current target widgets by performing a raycast over the render object tree
+
+        var currentTargets = [Widget & GUIMouseEventConsumer]()
+
+        var currentTargetPositions: [ObjectIdentifier: DPoint2] = [:]
 
         let renderObjectsAtPoint = self.renderObjectTree.objectsAt(point: event.position)
 
@@ -230,52 +209,89 @@ open class Root: Parent {
                     if let widget = widget as? GUIMouseEventConsumer & Widget {
 
                         print("WOW GOT A MOUSE CONSUMER WIDGET!!!!", widget)
-                        switch event {
-                        
-                        case let event as RawMouseButtonDownEvent:
-
-                            widget.consume(GUIMouseButtonDownEvent(button: event.button, position: renderObjectAtPoint.transformedPoint))
-
-                            previousMouseEventTargets[ObjectIdentifier(GUIMouseButtonDownEvent.self)]!.append(widget)
-
-                        case let event as RawMouseButtonUpEvent:
-
-                            var wasPreviousTarget = false
-
-                            for previousTarget in previousMouseEventTargets[ObjectIdentifier(GUIMouseButtonDownEvent.self)]! {
-
-                                if previousTarget.mounted && previousTarget === widget {
-
-                                    previousTarget.consume(GUIMouseButtonClickEvent(button: event.button, position: renderObjectAtPoint.transformedPoint))
-
-                                    wasPreviousTarget = true
-                                }
-                            }
-
-                            if !wasPreviousTarget {
-
-                                widget.consume(GUIMouseButtonUpEvent(button: event.button, position: renderObjectAtPoint.transformedPoint))
-                            }
-
-                        case let event as RawMouseMoveEvent:
-
-                            let pointTransformation = renderObjectAtPoint.transformedPoint - event.position
-
-                            widget.consume(GUIMouseMoveEvent(position: renderObjectAtPoint.transformedPoint, previousPosition: event.previousPosition + pointTransformation))
-
-                        default:
-
-                            print("Unsupported event.")
-                        }
                      
-                        // TODO: implement click
+                        currentTargets.append(widget)
 
-                        //widget.consume(GUIMouseButtonClickEvent(button: .Left, position: renderObjectAtPoint.transformedPoint))
+                        currentTargetPositions[ObjectIdentifier(widget)] = renderObjectAtPoint.transformedPoint 
                     }
                 }
             }
         }
-    }
+
+        // now use the information about the current targets and the previous targets to forward the events
+
+        switch event {
+
+        case let event as RawMouseButtonDownEvent:
+
+            previousMouseEventTargets[ObjectIdentifier(GUIMouseButtonDownEvent.self)] = currentTargets
+
+            for target in currentTargets {
+
+                let currentPosition = currentTargetPositions[ObjectIdentifier(target)]!
+                
+                target.consume(GUIMouseButtonDownEvent(button: event.button, position: currentPosition))
+            }
+
+        case let event as RawMouseButtonUpEvent:
+
+            for previousDownEventTarget in previousMouseEventTargets[ObjectIdentifier(GUIMouseButtonDownEvent.self)]! {
+                
+                // TODO: need to calculate point translation here as well for the previous targets
+                // TODO: or if something was a previous down target but the up is occurring on the outside, maybe force the position into the bounds of the widget?
+
+                previousDownEventTarget.consume(GUIMouseButtonUpEvent(button: event.button, position: event.position))
+            }
+
+            for target in currentTargets {
+                
+                let currentPosition = currentTargetPositions[ObjectIdentifier(target)]!
+                
+                var wasPreviousTarget = false
+
+                for previousTarget in previousMouseEventTargets[ObjectIdentifier(GUIMouseButtonDownEvent.self)]! {
+
+                    if previousTarget.mounted && previousTarget === target {
+
+                        previousTarget.consume(GUIMouseButtonClickEvent(button: event.button, position: currentPosition))
+
+                        wasPreviousTarget = true
+                    }
+                }
+
+                if !wasPreviousTarget {
+
+                    target.consume(GUIMouseButtonUpEvent(button: event.button, position: currentPosition))
+                }
+            }
+        
+        case let event as RawMouseMoveEvent:
+
+            for target in currentTargets {
+
+                let currentPosition = currentTargetPositions[ObjectIdentifier(target)]!
+
+                let translation = currentPosition - event.position
+
+                target.consume(GUIMouseMoveEvent(position: currentPosition, previousPosition: event.previousPosition + translation))
+
+                // TODO: implement mouse enter and mouse leave
+            }
+
+        case let event as RawMouseWheelEvent:
+
+            for target in currentTargets {
+                
+                let currentPosition = currentTargetPositions[ObjectIdentifier(target)]!
+
+                target.consume(GUIMouseWheelEvent(scrollAmount: event.scrollAmount, position: currentPosition))
+            }
+
+        default:
+        
+            print("Could not forward MouseEvent \(event), not supported.")
+        }
+     }
 
     internal func propagate(_ rawKeyEvent: KeyEvent) {
 

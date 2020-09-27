@@ -221,6 +221,12 @@ public class ScrollArea: SingleChildWidget, GUIMouseEventConsumer {
 
         return RenderObject.Container {
 
+            // to catch events in spaces where there is no content
+            RenderStyleRenderObject(fillColor: .Transparent) {
+
+                RectangleRenderObject(globalBounds)
+            }
+
             RenderObject.Clip(globalBounds) {
 
                 RenderObject.Translation(-offsets) {

@@ -681,16 +681,16 @@ open class Widget: Bounded, Parent, Child {
 
         if mounted && layouted && !layouting {
 
-            subTree.children = []
+            subTree.removeChildren()
 
             if let content = renderContent() {
 
-                subTree.children.append(content)
+                subTree.appendChild(content)
             }
 
             if debugLayout {
 
-                subTree.children.append(renderLayoutDebuggingInformation())
+                subTree.appendChild(renderLayoutDebuggingInformation())
             }
 
         } else {

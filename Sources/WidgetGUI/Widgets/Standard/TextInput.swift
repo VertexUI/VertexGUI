@@ -269,32 +269,41 @@ public final class TextInput: SingleChildWidget, StatefulWidget, ConfigurableWid
        
         let caretBounds = DRect(min: globalBounds.min + DVec2(preCaretBounds.max.x, 0), size: caretSize)
 
-        return RenderObject.Translation(translation) { [unowned self] in
-          
-            if focused {
-                
-                RenderObject.RenderStyle(
-                   
-                    fill: TimedRenderValue<Fill>(
-                      
-                        id: 0, 
-                       
-                        startTimestamp: Date.timeIntervalSinceReferenceDate, 
-                       
-                        duration: 1, 
-                       
-                        repetitions: 0) {
-                        
-                            let alphaFactor = max(0, min(1, 6 * pow($0 - 0.5, 2) - 0.2))
-                           
-                            return .Color(config.caretColor.adjusted(alpha: UInt8(255 * alphaFactor)))
-                    }) {
-                       
-                        RenderObject.Rectangle(caretBounds)
-                    }
-            }
+        return ContainerRenderObject {
 
-            child.render()
+            // to catch mouse events
+            RenderStyleRenderObject(fillColor: .Transparent) {
+
+                RectangleRenderObject(globalBounds)
+            }
+            
+            RenderObject.Translation(translation) { [unowned self] in
+            
+                if focused {
+                    
+                    RenderObject.RenderStyle(
+                    
+                        fill: TimedRenderValue<Fill>(
+                        
+                            id: 0, 
+                        
+                            startTimestamp: Date.timeIntervalSinceReferenceDate, 
+                        
+                            duration: 1, 
+                        
+                            repetitions: 0) {
+                            
+                                let alphaFactor = max(0, min(1, 6 * pow($0 - 0.5, 2) - 0.2))
+                            
+                                return .Color(config.caretColor.adjusted(alpha: UInt8(255 * alphaFactor)))
+                        }) {
+                        
+                            RenderObject.Rectangle(caretBounds)
+                        }
+                }
+
+                child.render()
+            }
         }
     }
 

@@ -21,7 +21,8 @@ open class RenderObject: CustomDebugStringConvertible, TreeNode {
     public typealias Custom = VisualAppBase.CustomRenderObject
     public typealias Text = VisualAppBase.TextRenderObject
 
-    open var children: [RenderObject] = []
+    public internal(set) var children: [RenderObject] = []
+
     open var isBranching: Bool { false }
 
     internal var _context: RenderObjectContext?
@@ -32,7 +33,7 @@ open class RenderObject: CustomDebugStringConvertible, TreeNode {
 
             guard let context = _context else {
                 
-                fatalError("No context provided to RenderObject.")
+                fatalError("No context provided to RenderObject \(self).")
             }
 
             return context
@@ -50,15 +51,18 @@ open class RenderObject: CustomDebugStringConvertible, TreeNode {
     }
 
     open var hasTimedRenderValue: Bool {
+        
         fatalError("hasTimedRenderValue not implemented.")
     }
 
     /// The hash for the objects properties. Excludes children.
     open var individualHash: Int {
+
         fatalError("individualHash not implemented.")
     }
 
     open var debugDescription: String {
+
         fatalError("debugDescription not implemented.")
     }
 
@@ -67,6 +71,7 @@ open class RenderObject: CustomDebugStringConvertible, TreeNode {
     // TODO: might rename to raycast() --> RaycastResult
     */
     public func objectsAt(point: DPoint2) -> [ObjectAtPointResult] {
+
         fatalError("objectsAt(point:) not implemented for RenderObject \(self)")
     }
 
@@ -75,6 +80,21 @@ open class RenderObject: CustomDebugStringConvertible, TreeNode {
         public var object: RenderObject
 
         public var transformedPoint: DPoint2
+    }
+
+    public func appendChild(_ child: RenderObject) {
+
+        children.append(child)
+
+        if let context = _context {
+
+            child.context = context
+        }
+    }
+
+    public func removeChildren() {
+        
+        children = []
     }
 }
 
@@ -91,15 +111,23 @@ open class SubTreeRenderObject: RenderObject {
 
     /// The hash including own properties and the hashes of children.
     var combinedHash: Int {
+
         var hasher = Hasher()
+
         hasher.combine(individualHash)
+
         for child in children {
+
             if child is SubTreeRenderObject {
+
                 hasher.combine((child as! SubTreeRenderObject).combinedHash)
+
             } else {
+
                 hasher.combine(child.individualHash)
             }
         }
+
         return hasher.finalize()
     }
 
@@ -122,6 +150,7 @@ open class SubTreeRenderObject: RenderObject {
 }
 
 open class IdentifiedSubTreeRenderObject: SubTreeRenderObject {
+
     public var id: UInt
 
     override open var hasTimedRenderValue: Bool {
