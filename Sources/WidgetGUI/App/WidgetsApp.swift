@@ -36,12 +36,16 @@ open class WidgetsApp<S: System, W: Window, R: Renderer>: VisualApp<S, W> {
 
         let guiRoot = guiRootBuilder()
 
-        guiRoot.context = WidgetContext(
+        guiRoot.widgetContext = WidgetContext(
             window: window,
             getTextBoundsSize: { renderer.getTextBoundsSize($0, fontConfig: $1, maxWidth: $2) },
             requestCursor: {
                 self.system.requestCursor($0)
             })
+
+        guiRoot.renderObjectContext = RenderObjectContext(
+            getTextBoundsSize: { renderer.getTextBoundsSize($0, fontConfig: $1, maxWidth: $2) }
+        )
 
         guiRoot.bounds.size = window.size
         
@@ -99,15 +103,11 @@ open class WidgetsApp<S: System, W: Window, R: Renderer>: VisualApp<S, W> {
 
     public func render(deltaTime: Int) {
         for windowConfig in windowConfigs {
-            do {
-                try windowConfig.renderer.beginFrame()
-                try windowConfig.renderer.clear(windowConfig.window.background)
-                try windowConfig.guiRoot.render(with: windowConfig.renderer)
-                try windowConfig.renderer.endFrame()
-                try windowConfig.window.updateContent()
-            } catch {
-                print("Error in App render() for window:", windowConfig.window, error)
-            }
+            windowConfig.renderer.beginFrame()
+            windowConfig.renderer.clear(windowConfig.window.background)
+            windowConfig.guiRoot.render(with: windowConfig.renderer)
+            windowConfig.renderer.endFrame()
+            windowConfig.window.updateContent()
         }
     }
 

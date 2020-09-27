@@ -41,7 +41,7 @@ public class Inject<T>: AnyInject {
 
             } else {
 
-                fatalError("Tried to set value of Inject to different type than specified. Specified type: \(T.self), got new value: \(newValue).")
+                fatalError("Tried to set value of Inject to different type than specified. Specified type: \(T.self), got new value: \(String(describing: newValue)).")
             }
         }
     }

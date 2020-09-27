@@ -214,7 +214,7 @@ public final class Text: Widget, ConfigurableWidget {
 
         var preferredSize = DSize2.zero
 
-        let partialText = text.substring(to: text.index(text.startIndex, offsetBy: index))
+        let partialText = String(text[..<text.index(text.startIndex, offsetBy: index)])
 
         let transformedText = config.transform.apply(to: partialText)
 
@@ -239,7 +239,7 @@ public final class Text: Widget, ConfigurableWidget {
 
     override public func renderContent() -> RenderObject? {
 
-        return .Text(config.transform.apply(to: text), fontConfig: config.fontConfig, color: config.color, topLeft: globalPosition, wrap: config.wrap, maxWidth: bounds.size.width)
+        TextRenderObject(config.transform.apply(to: text), fontConfig: config.fontConfig, color: config.color, topLeft: globalPosition, maxWidth: config.wrap ? bounds.size.width : nil)
     }
 }
 

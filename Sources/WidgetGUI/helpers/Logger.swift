@@ -185,10 +185,6 @@ public struct ConsoleLogRenderer: LogRenderer {
                 case .Black:
 
                     partialString = partialString.onBlack()
-
-                default:
-
-                    fatalError("Unsupported LogText background color in ConsoleLogRenderer: \(backgroundColor)")
                 }
             }
 
@@ -199,10 +195,6 @@ public struct ConsoleLogRenderer: LogRenderer {
                 case .Bold:
 
                     partialString = partialString.bold()
-
-                default:
-
-                    fatalError("Unsupported LogText font style in ConsoleLogRenderer: \(fontStyle).")
                 }
             }
 

@@ -207,7 +207,7 @@ public final class Button: SingleChildWidget, StatefulWidget, ConfigurableWidget
 
     override public func renderContent() -> RenderObject? {
 
-        let style: StateStyle
+        /*let style: StateStyle
 
         switch state {
 
@@ -222,7 +222,7 @@ public final class Button: SingleChildWidget, StatefulWidget, ConfigurableWidget
         case .Active:
 
             style = config.activeStyle
-        }
+        }*/
 
         return RenderObject.Container {
             /*if state == .Normal {

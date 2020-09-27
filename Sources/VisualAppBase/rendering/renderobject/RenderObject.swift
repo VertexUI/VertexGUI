@@ -24,6 +24,31 @@ open class RenderObject: CustomDebugStringConvertible, TreeNode {
     open var children: [RenderObject] = []
     open var isBranching: Bool { false }
 
+    internal var _context: RenderObjectContext?
+
+    open var context: RenderObjectContext {
+
+        get {
+
+            guard let context = _context else {
+                
+                fatalError("No context provided to RenderObject.")
+            }
+
+            return context
+        }
+
+        set {
+
+            _context = newValue
+
+            for child in children {
+
+                child.context = context
+            }
+        }
+    }
+
     open var hasTimedRenderValue: Bool {
         fatalError("hasTimedRenderValue not implemented.")
     }
@@ -39,6 +64,7 @@ open class RenderObject: CustomDebugStringConvertible, TreeNode {
 
     /**
     - Returns: Self if object contains point as well as all children (deep) that contain it.
+    // TODO: might rename to raycast() --> RaycastResult
     */
     public func objectsAt(point: DPoint2) -> [ObjectAtPointResult] {
         fatalError("objectsAt(point:) not implemented for RenderObject \(self)")
@@ -57,7 +83,9 @@ open class SubTreeRenderObject: RenderObject {
     override final public var isBranching: Bool { true }
 
     public init(children: [RenderObject]) {
+
         super.init()
+        
         self.children = children
     }
 
@@ -563,8 +591,6 @@ open class TextRenderObject: RenderObject {
    
     public var topLeft: DVec2
    
-    public var wrap: Bool
-   
     public var maxWidth: Double?
 
     override open var hasTimedRenderValue: Bool {
@@ -591,12 +617,10 @@ open class TextRenderObject: RenderObject {
      
         hasher.combine(maxWidth)
      
-        hasher.combine(wrap)
-      
         return hasher.finalize()
     }
 
-    public init(_ text: String, fontConfig: FontConfig, color: Color, topLeft: DVec2, wrap: Bool = false, maxWidth: Double? = nil) {
+    public init(_ text: String, fontConfig: FontConfig, color: Color, topLeft: DVec2, maxWidth: Double? = nil) {
       
         self.text = text
        
@@ -606,14 +630,17 @@ open class TextRenderObject: RenderObject {
       
         self.topLeft = topLeft
        
-        self.wrap = wrap
-      
         self.maxWidth = maxWidth
     }
 
     override public func objectsAt(point: DPoint2) -> [ObjectAtPointResult] {
     
-        // TODO: implement this for Text --> need to store bounds / get access via a context
+        let size = context.getTextBoundsSize(text, fontConfig: fontConfig, maxWidth: maxWidth)
+
+        if DRect(min: topLeft, size: size).contains(point: point) {
+
+            return [ObjectAtPointResult(object: self, transformedPoint: point)]
+        }
 
         return []
     }

@@ -16,7 +16,7 @@ public class DefaultTheme: Theme {
 
     public init(mode: Mode, primaryColor: Color) {
 
-        let backgroundColor: Color = mode == .Light ? Color.White : Color.Grey
+        //let backgroundColor: Color = mode == .Light ? Color.White : Color.Grey
 
         self.mode = mode
 

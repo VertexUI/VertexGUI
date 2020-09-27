@@ -261,7 +261,7 @@ public class ScrollArea: SingleChildWidget, GUIMouseEventConsumer {
                 mouseTrackingStartPosition = event.position
             }
 
-        case let event as GUIMouseButtonUpEvent:
+        case _ as GUIMouseButtonUpEvent:
 
             scrollXActive = false
 

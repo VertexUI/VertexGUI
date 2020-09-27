@@ -62,7 +62,7 @@ public class RenderObjectTreeView: Widget {
 
     override open func performLayout(constraints: BoxConstraints) -> DSize2 {
 
-        var spacing: Double = 30
+        let spacing: Double = 30
         
         var nextX: Double = 0
 
