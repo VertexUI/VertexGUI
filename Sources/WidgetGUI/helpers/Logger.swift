@@ -16,7 +16,7 @@ public class Logger {
 
     public static var renderer: LogRenderer = ConsoleLogRenderer()
 
-    public static func log(_ outputs: [LogText], level: Level, context: Context) {
+    public static func log(_ outputs: @autoclosure () -> [LogText], level: Level, context: Context) {
 
         if !enabled {
             
@@ -25,23 +25,28 @@ public class Logger {
 
         if activeContexts.contains(context) && activeLevels.contains(level) {
             
-            renderer.log(["\(context) \(level): ".with(style: .Bold)] + outputs)
+            renderer.log(["\(context) \(level): ".with(style: .Bold)] + outputs())
         }
     }
 
-    public static func log(_ outputs: LogText..., level: Level, context: Context) {
+    public static func log(_ output: @autoclosure () -> LogText, level: Level, context: Context) {
 
-        log(outputs, level: level, context: context)
-    }
-
-    public static func debug(_ outputs: LogText..., context: Context = .Default) {
-
-        log(outputs, level: .Debug, context: context)
+        log([output()], level: level, context: context)
     }
     
-    public static func warn(_ outputs: LogText..., context: Context = .Default) {
+    public static func log(_ output1: @autoclosure () -> LogText, _ output2: @autoclosure () -> LogText, level: Level, context: Context) {
+        
+        log([output1(), output2()], level: level, context: context)
+    }
 
-        log(outputs, level: .Warning, context: context)
+    public static func debug(_ output: @autoclosure () -> LogText, context: Context = .Default) {
+
+        log([output()], level: .Debug, context: context)
+    }
+    
+    public static func warn(_ output: @autoclosure () -> LogText, context: Context = .Default) {
+
+        log([output()], level: .Warning, context: context)
     }
 
     public enum Level: CaseIterable {
