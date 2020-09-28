@@ -20,7 +20,7 @@ public class ImageView: Widget {
 
         super.init()
 
-        _ = onDestroy(onBoundsChanged { [unowned self] _ in
+        _ = onDestroy(onSizeChanged { [unowned self] _ in
 
             print("IMAGE BOUNDS CHANGED!".onWhite(), bounds.size)
 

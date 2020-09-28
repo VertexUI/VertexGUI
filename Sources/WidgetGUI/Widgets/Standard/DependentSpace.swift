@@ -16,7 +16,7 @@ public class DependentSpace: Widget {
 
         super.init()
 
-        _ = onDestroy(dependency.onBoundsChanged { [unowned self] _ in
+        _ = onDestroy(dependency.onSizeChanged { [unowned self] _ in
             
             invalidateBoxConfig()
         })

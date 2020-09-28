@@ -2,34 +2,44 @@ import VisualAppBase
 import CustomGraphicsMath
 
 open class WidgetsApp<S: System, W: Window, R: Renderer>: VisualApp<S, W> {
+    
     public struct WindowConfig {
+        
         public var window: Window
+        
         public var guiRoot: Root
+        
         public var renderer: Renderer
     }
+    
     public typealias Renderer = R
 
     private var windowConfigs = ObservableArray<WindowConfig>()
 
     override public init(system: System) {
+        
         super.init(system: system)
 
         _ = system.onFrame(render)
 
         _ = windowConfigs.onChanged { [unowned self] _ in
+            
             if windowConfigs.count == 0 {
+                
                 exit()
             }
         }
     }
 
     open func createRenderer(for window: Window) -> Renderer {
+        
         fatalError("createRenderer() not implemented.")
     }
 
     /// - Parameter guiRoot: is an autoclosure. This ensures, that the window
     /// has already been created when the guiRoot is evaluated and e.g. the OpenGL context was created.
     public func newWindow(guiRoot guiRootBuilder: @autoclosure () -> Root, background: Color) -> Window {
+        
         let window = try! Window(background: background, size: DSize2(500, 500))
 
         let renderer = createRenderer(for: window)
@@ -37,31 +47,40 @@ open class WidgetsApp<S: System, W: Window, R: Renderer>: VisualApp<S, W> {
         let guiRoot = guiRootBuilder()
 
         guiRoot.widgetContext = WidgetContext(
+            
             window: window,
+            
             getTextBoundsSize: { renderer.getTextBoundsSize($0, fontConfig: $1, maxWidth: $2) },
+            
             requestCursor: {
+                
                 self.system.requestCursor($0)
             })
 
         guiRoot.renderObjectContext = RenderObjectContext(
+            
             getTextBoundsSize: { renderer.getTextBoundsSize($0, fontConfig: $1, maxWidth: $2) }
         )
 
         guiRoot.bounds.size = window.size
         
         _ = window.onMouse {
+            
             guiRoot.consume($0)
         }
 
         _ = window.onKey {
+            
             guiRoot.consume($0)
         }
 
         _ = window.onText {
+            
             guiRoot.consume($0)
         }
 
         _ = window.onResize {
+            
             guiRoot.bounds.size = $0
         }
 
@@ -72,10 +91,12 @@ open class WidgetsApp<S: System, W: Window, R: Renderer>: VisualApp<S, W> {
                 let devToolsView = DeveloperToolsView()
 
                 let devToolsGuiRoot = WidgetGUI.Root(
+                    
                     rootWidget: devToolsView
                 )
 
                 let removeDebuggingDataHandler = guiRoot.onDebuggingDataAvailable {
+                    
                     devToolsView.debuggingData = $0
                 }
 
@@ -84,7 +105,9 @@ open class WidgetsApp<S: System, W: Window, R: Renderer>: VisualApp<S, W> {
                 _ = devToolsWindow.onKey {
 
                     if let event = $0 as? KeyUpEvent, event.key == Key.Escape {
+                        
                         removeDebuggingDataHandler()
+                        
                         devToolsWindow.close()
                     }
                 }
@@ -92,7 +115,9 @@ open class WidgetsApp<S: System, W: Window, R: Renderer>: VisualApp<S, W> {
         }
 
         _ = window.onClose { [unowned self] in
+            
             guiRoot.destroy()
+            
             windowConfigs.removeAll(where: { $0.window === window })
         }
 
@@ -102,16 +127,29 @@ open class WidgetsApp<S: System, W: Window, R: Renderer>: VisualApp<S, W> {
     }
 
     public func render(deltaTime: Int) {
+                      
         for windowConfig in windowConfigs {
-            windowConfig.renderer.beginFrame()
-            windowConfig.renderer.clear(windowConfig.window.background)
-            windowConfig.guiRoot.render(with: windowConfig.renderer)
-            windowConfig.renderer.endFrame()
-            windowConfig.window.updateContent()
+        
+            // TODO: maybe call this in system.onFrame? might need an option to add a handler before all other handlers
+            windowConfig.guiRoot.tick()
+            
+            if windowConfig.guiRoot.rerenderNeeded {
+            
+                windowConfig.renderer.beginFrame()
+                
+                windowConfig.renderer.clear(windowConfig.window.background)
+                
+                windowConfig.guiRoot.render(with: windowConfig.renderer)
+                
+                windowConfig.renderer.endFrame()
+                
+                windowConfig.window.updateContent()
+            }
         }
     }
 
     override open func exit() {
+        
         try! system.exit()
     }
 }

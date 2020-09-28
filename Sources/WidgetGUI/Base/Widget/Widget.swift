@@ -148,19 +148,6 @@ open class Widget: Bounded, Parent, Child {
             
             DRect(min: position, size: size)
         }
-        
-        /*didSet {
-            
-            if oldValue != bounds {
-
-                if mounted && layouted && !layouting && !destroyed {
-
-                    onBoundsChanged.invokeHandlers(bounds)
-
-                    invalidateRenderState()
-                }
-            }
-        }*/
     }
     
     @inlinable open var globalBounds: DRect {
@@ -238,23 +225,21 @@ open class Widget: Bounded, Parent, Child {
     private var _debugLayout: Bool?
 
     public var debugLayout: Bool {
+        
         get {
+            
             _debugLayout ?? context?.debugLayout ?? false
         }
 
         set {
+            
             _debugLayout = newValue
         }
     }
 
     public var layoutDebuggingColor = Color.Red
 
-    private let layoutDebuggingTextFontConfig = FontConfig(
-        family: defaultFontFamily,
-        size: 16,
-        weight: .Regular,
-        style: .Normal
-    )
+    private let layoutDebuggingTextFontConfig = FontConfig(family: defaultFontFamily, size: 16, weight: .Regular, style: .Normal)
 
 
 
@@ -265,10 +250,6 @@ open class Widget: Bounded, Parent, Child {
     public internal(set) var onMounted = EventHandlerManager<Void>()
 
     public internal(set) var onBoxConfigChanged = EventHandlerManager<BoxConfig>()
-
-    // TODO: when using the BoxConfig approach might instead have onBoundsInvalidated / BoxConfigInvalidated / LayoutInvalidated
-    // to bring the parent to take into account updated pref sizes, max sizes, min sizes etc.
-    public internal(set) var onBoundsChanged = EventHandlerManager<DRect>()
 
     public internal(set) var onSizeChanged = EventHandlerManager<DSize2>()
 
@@ -470,9 +451,6 @@ open class Widget: Bounded, Parent, Child {
                 Logger.log("Performing layout on parent parent.", level: .Message, context: .WidgetLayouting)
                 
                 invalidateLayout()
-                //layoutInvalid = true
-                
-                //layout(constraints: previousConstraints!)
             }
         }
         
@@ -677,7 +655,7 @@ open class Widget: Bounded, Parent, Child {
 
             Logger.log("Size changed and is not first round.".with(fg: .Yellow), level: .Message, context: .WidgetLayouting)
 
-            onBoundsChanged.invokeHandlers(bounds)
+            onSizeChanged.invokeHandlers(size)
 
             invalidateRenderState()
         }
@@ -857,9 +835,7 @@ open class Widget: Bounded, Parent, Child {
         onMounted.removeAllHandlers()
 
         onBoxConfigChanged.removeAllHandlers()
-        
-        onBoundsChanged.removeAllHandlers()
-        
+                
         onSizeChanged.removeAllHandlers()
         
         onLayoutInvalidated.removeAllHandlers()

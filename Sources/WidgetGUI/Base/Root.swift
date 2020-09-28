@@ -56,7 +56,15 @@ open class Root: Parent {
     
     internal var layoutInvalidatedWidgets: [Widget] = []
 
-    private var rerenderWidgets: [Widget] = []
+    private var rerenderWidgets: [Widget] = [] {
+        
+        didSet {
+            
+            rerenderNeeded = true
+        }
+    }
+    
+    public var rerenderNeeded: Bool = false
     
     private var mouseEventManager = WidgetTreeMouseEventManager()
 
@@ -82,11 +90,6 @@ open class Root: Parent {
         renderObjectTreeRenderer = RenderObjectTreeRenderer(renderObjectTree)
         
         rootWidget.mount(parent: self)
-
-        /*_ = rootWidget.onRenderStateInvalidated { [unowned self] in
-
-            updateRenderObjectTree($0)
-        }*/
 
         _ = rootWidget.onBoxConfigChanged { [unowned self] _ in
 
@@ -164,20 +167,23 @@ open class Root: Parent {
             renderObjectTree.context = context
         }
 
-
-
         try! onDebuggingDataAvailable.invokeHandlers(renderObjectTreeRenderer.debuggingData)
+        
+        rerenderNeeded = true
     }
-
-    // TODO: maybe this little piece of rendering logic belongs into the App as well? / Maybe return a render object tree as well???? 
-    // TODO: --> A Game scene could also be a render object with custom logic which is redrawn on every frame by render strategy.
-    open func render(with renderer: Renderer) {
+    
+    open func tick() {
         
         for widget in layoutInvalidatedWidgets {
             
             widget.layout(constraints: widget.previousConstraints!)
         }
-        
+    }
+
+    // TODO: maybe this little piece of rendering logic belongs into the App as well? / Maybe return a render object tree as well???? 
+    // TODO: --> A Game scene could also be a render object with custom logic which is redrawn on every frame by render strategy.
+    open func render(with renderer: Renderer) {
+                
         for widget in rerenderWidgets {
             
             widget.updateRenderState()
@@ -186,6 +192,8 @@ open class Root: Parent {
         rerenderWidgets = []
 
         try! renderObjectTreeRenderer.render(with: renderer, in: bounds)
+        
+        rerenderNeeded = false
     }
 
 

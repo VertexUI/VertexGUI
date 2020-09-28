@@ -8,7 +8,7 @@ import VisualAppBase
 open class SDL2OpenGL3NanoVGSystem: System {
     public static var windows = [Int: SDL2OpenGL3NanoVGWindow]()
     public static var isRunning = true
-    //public var targetFps = 60
+    public var targetFps = 60
     public var currentFps = 0
     public static let fpsBufferCount = 100
     public var fpsBuffer = [Int](repeating: 0, count: SDL2OpenGL3NanoVGSystem.fpsBufferCount) // history of fpsBufferCount fps values
@@ -159,24 +159,33 @@ open class SDL2OpenGL3NanoVGSystem: System {
             do {
                 // increment ticker
                 let currentTime = SDL_GetTicks()
+                
                 let deltaTime = currentTime - self.lastFrameTime
+                
                 self.currentFps = deltaTime > 0 ? Int(1000 / deltaTime) : 0
+                
                 self.fpsBufferIndex += 1
+                
                 self.fpsBufferIndex = self.fpsBufferIndex % SDL2OpenGL3NanoVGSystem.fpsBufferCount
+                
                 self.fpsBuffer[self.fpsBufferIndex] = self.currentFps
+                
                 self.calcAverageFps()
 
                 self.lastFrameTime = currentTime
+                
                 self.totalTime += deltaTime
 
                 try self.processEvents()
 
                 try! self.onFrame.invokeHandlers(Int(deltaTime))
 
-                /*let frameDuration = SDL_GetTicks() - currentTime
+                let frameDuration = SDL_GetTicks() - currentTime
+                
                 if frameDuration < 1000 / UInt32(self.targetFps) {
+                    
                     SDL_Delay((1000 / UInt32(self.targetFps)) - frameDuration)
-                }*/
+                }
                 
                 if SDL2OpenGL3NanoVGSystem.isRunning {
                     try! self.mainLoop(executeMainLoop: executeMainLoop)
