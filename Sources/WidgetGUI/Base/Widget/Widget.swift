@@ -241,6 +241,10 @@ open class Widget: Bounded, Parent, Child {
 
     private let layoutDebuggingTextFontConfig = FontConfig(family: defaultFontFamily, size: 16, weight: .Regular, style: .Normal)
 
+    public var countCalls: Bool = true
+
+    private var callCounter = CallCounter()
+
 
 
     public internal(set) var onParentChanged = EventHandlerManager<Parent?>()
@@ -498,50 +502,54 @@ open class Widget: Bounded, Parent, Child {
                 Logger.log("Own box config is changed. Perform layout with previous constraints: \(String(describing: previousConstraints))".with(fg: .Yellow), level: .Message, context: .WidgetLayouting)
                 
                 invalidateLayout()
-                
-                //layoutInvalid = true
-
-                //layout(constraints: previousConstraints!)
             }
         }
     }
 
     // TODO: this function might be better suited to parent
     public func replaceChildren(with newChildren: [Widget]) {
+
         let oldChildren = children
 
         var keyedChildren: [String: Widget] = [:]
 
         var checkChildren: [Widget] = oldChildren
+
         while let child = checkChildren.popLast() {
+
             if let key = child.key {
+
                 keyedChildren[key] = child
             }
+
             checkChildren.append(contentsOf: child.children)
         }
 
         children = newChildren
         
         for i in 0..<children.count {
+
             let newChild = children[i]
+
             let oldChild: Widget? = oldChildren.count > i ? oldChildren[i] : nil
+
             let childContext = ReplacementContext(previousWidget: oldChild, keyedWidgets: keyedChildren)
+
             mountChild(newChild, with: childContext)
         }
 
         for child in oldChildren {
+
             child.destroy()
         }
 
         invalidateLayout()
 
-        // TODO: maybe layout should be called after invalidateLayout automatically
-        //layout(constraints: previousConstraints!)
-
         invalidateRenderState()
     }
 
     open func getBoxConfig() -> BoxConfig {
+
         fatalError("getBoxConfig() not implemented for Widget \(self).")
     }
 
@@ -556,13 +564,20 @@ open class Widget: Bounded, Parent, Child {
 
             boxConfig = newBoxConfig
 
-            //layoutInvalid = true
-
             onBoxConfigChanged.invokeHandlers(newBoxConfig)
         }
     }
 
     open func layout(constraints: BoxConstraints) {
+
+        #if (DEBUG)
+
+        if countCalls {
+
+            callCounter.count(.Layout)
+        }
+
+        #endif
 
         Logger.log("Attempting layout".with(fg: .Yellow), "on Widget: \(self).", level: .Message, context: .WidgetLayouting)
 
@@ -571,9 +586,7 @@ open class Widget: Bounded, Parent, Child {
             fatalError("Widget received constraints that contain infinite value in min size: \(self)")
         }
 
-        if !layoutInvalid, let previousConstraints = previousConstraints, constraints == previousConstraints {/* ||
-        
-            (constraints.minSize == bounds.size && constraints.maxSize == bounds.size) {*/
+        if !layoutInvalid, let previousConstraints = previousConstraints, constraints == previousConstraints {
 
             Logger.log("Constraints equal pervious constraints and layout is not invalid.", "Not performing layout.".with(fg: .Yellow), level: .Message, context: .WidgetLayouting)
 
@@ -664,6 +677,16 @@ open class Widget: Bounded, Parent, Child {
     }
 
     open func invalidateLayout() {
+    
+        #if (DEBUG)
+
+        if countCalls {
+
+            callCounter.count(.InvalidateLayout)
+        }
+
+        #endif
+
 
         layoutInvalid = true
 
@@ -678,21 +701,35 @@ open class Widget: Bounded, Parent, Child {
     }
 
     public func requestFocus() {
+
         if focusable {
+
             if context!.requestFocus(self) {
+
                 focused = true
             }
         }
     }
 
     public func dropFocus() {
+
         if focusable {
+
             focused = false
         }
     }
 
     /// Returns the result of renderContent() wrapped in an IdentifiedSubTreeRenderObject
     public final func render() -> RenderObject.IdentifiedSubTree {
+
+        #if (DEBUG)
+
+        if countCalls {
+
+            callCounter.count(.Render)
+        }
+
+        #endif
 
         if renderState.invalid {
 
@@ -777,6 +814,15 @@ open class Widget: Bounded, Parent, Child {
     /// 
     /// Automatically calls itself on each child as well.
     public final func invalidateRenderState() {
+
+        #if (DEBUG)
+
+        if countCalls {
+
+            callCounter.count(.InvalidateRenderState)
+        }
+
+        #endif
 
         if destroyed {
 
@@ -866,5 +912,30 @@ open class Widget: Bounded, Parent, Child {
     }
 
     open func destroySelf() {}
+}
+
+extension Widget {
+
+    private struct CallCounter {
+
+        public private(set) var counts = DefinitiveDictionary(
+            
+            CallType.allCases.reduce(into: [CallType: UInt]()) {
+
+                $0[$1] = 0
+            })
+
+        mutating func count(_ callType: CallType) {
+
+            counts[callType] += 1
+
+            print(callType, "called", counts[callType], "times")
+        }
+    }
+
+    private enum CallType: CaseIterable {
+
+        case Layout, Render, InvalidateRenderState, InvalidateLayout
+    }
 }
 

@@ -3,6 +3,12 @@ import Foundation
 
 /// There might be different approaches.
 // TODO: might merge this into Root
+/*
+*
+* UNUSED
+* ----------------
+*
+*/
 public class WidgetTreeMouseEventManager {
 
     //private var previousMouseEventTarget: GUIMouseEventConsumer?

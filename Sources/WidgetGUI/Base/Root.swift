@@ -173,6 +173,8 @@ open class Root: Parent {
     }
     
     open func tick() {
+
+        // TODO: might do boxConfig recalculations here also
         
         for widget in layoutInvalidatedWidgets {
             
