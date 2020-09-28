@@ -78,10 +78,14 @@ open class SDL2OpenGL3NanoVGSystem: System {
         }
     }
 
-    open func processEvents() throws {
+    open func processEvents(_ timeout: Int) throws {
+        
         var event = SDL_Event()
         
-        while SDL2OpenGL3NanoVGSystem.isRunning && SDL_PollEvent(&event) != 0 {
+        if SDL2OpenGL3NanoVGSystem.isRunning && SDL_WaitEventTimeout(&event, Int32(timeout)) != 0 {
+            
+        repeat {
+            
             let eventType = SDL_EventType(rawValue: event.type)
             do {
                 switch eventType {
@@ -143,21 +147,16 @@ open class SDL2OpenGL3NanoVGSystem: System {
             }
 
             event.type = 0
+        } while SDL2OpenGL3NanoVGSystem.isRunning && SDL_PollEvent(&event) != 0
         }
     }
 
-    private func calcAverageFps() {
-        averageFps = fpsBuffer.reduce(0) {
-            $0 + $1
-        } / SDL2OpenGL3NanoVGSystem.fpsBufferCount
-    }
-
-    override open func mainLoop(executeMainLoop: @escaping (_ block: @escaping () -> ()) -> ()) throws {
+    override open func mainLoop() throws {
         
-        executeMainLoop {
-            
+        while SDL2OpenGL3NanoVGSystem.isRunning {
+        
             do {
-                // increment ticker
+                
                 let currentTime = SDL_GetTicks()
                 
                 let deltaTime = currentTime - self.lastFrameTime
@@ -176,24 +175,25 @@ open class SDL2OpenGL3NanoVGSystem: System {
                 
                 self.totalTime += deltaTime
 
-                try self.processEvents()
-
                 try! self.onFrame.invokeHandlers(Int(deltaTime))
-
-                let frameDuration = SDL_GetTicks() - currentTime
                 
-                if frameDuration < 1000 / UInt32(self.targetFps) {
-                    
-                    SDL_Delay((1000 / UInt32(self.targetFps)) - frameDuration)
-                }
-                
-                if SDL2OpenGL3NanoVGSystem.isRunning {
-                    try! self.mainLoop(executeMainLoop: executeMainLoop)
-                }
+                let frameDuration = Int(SDL_GetTicks() - currentTime)
+                                
+                let eventProcessingDuration = max(10, (1000 / self.targetFps) - frameDuration)
+                                
+                try self.processEvents(eventProcessingDuration)
+                                
             } catch {
+                
                 print("Error in main loop", error)
             }
         }
+    }
+    
+    private func calcAverageFps() {
+        averageFps = fpsBuffer.reduce(0) {
+            $0 + $1
+        } / SDL2OpenGL3NanoVGSystem.fpsBufferCount
     }
 
     override open func exit() throws {

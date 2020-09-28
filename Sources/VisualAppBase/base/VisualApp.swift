@@ -27,7 +27,7 @@ open class VisualApp<S: System, W: Window> {
     
         #if os(macOS)
             
-        try self.system.mainLoop { $0() }
+        try self.system.mainLoop() // { $0() }
         
         #elseif os(Linux)
         
@@ -43,10 +43,10 @@ open class VisualApp<S: System, W: Window> {
                     fatalError("system not initialized after setup() call in start()")
                 }*/
                 
-                try self.system.mainLoop { (_ block: @escaping () -> ()) in
+                try self.system.mainLoop() // { (_ block: @escaping () -> ()) in
                     
-                    DispatchQueue.main.async { block() }
-                }
+                //    DispatchQueue.main.async { block() }
+                //}
             } catch {
                 print("Error in system.mainLoop()")
             }
