@@ -10,7 +10,8 @@ open class Divider: Widget {
 
     public var thickness: Double
 
-    private var size: DSize2 {
+    private var orientedSize: DSize2 {
+        
         switch axis {
 
         case .Horizontal:
@@ -37,12 +38,12 @@ open class Divider: Widget {
     override public func getBoxConfig() -> BoxConfig {
 
         // TODO: implement something like percentage thickness / height --> fill parent + calculations probably
-        BoxConfig(preferredSize: size)
+        BoxConfig(preferredSize: orientedSize)
     }
 
     override open func performLayout(constraints: BoxConstraints) -> DSize2 {
         
-        return constraints.constrain(size)
+        return constraints.constrain(orientedSize)
     }
 
     override open func renderContent() -> RenderObject? {

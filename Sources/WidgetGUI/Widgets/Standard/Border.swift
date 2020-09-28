@@ -71,7 +71,7 @@ public class Border: SingleChildWidget {
 
         child.layout(constraints: childConstraints)
 
-        child.bounds.min = DVec2(borders.left, borders.top)
+        child.position = DVec2(borders.left, borders.top)
 
         let ownSize = child.bounds.size + borderSize
 

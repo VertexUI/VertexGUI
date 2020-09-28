@@ -3,21 +3,21 @@ import VisualAppBase
 
 public class Space: Widget {
 
-    private let size: DSize2
+    private let preferredSize: DSize2
 
-    public init(_ size: DSize2) {
+    public init(_ preferredSize: DSize2) {
         
-        self.size = size
+        self.preferredSize = preferredSize
     }
 
     override public func getBoxConfig() -> BoxConfig {
 
-        BoxConfig(preferredSize: size)
+        BoxConfig(preferredSize: preferredSize)
     }
 
     override public func performLayout(constraints: BoxConstraints) -> DSize2 {
 
-        constraints.constrain(size)
+        constraints.constrain(preferredSize)
     }
 
     override public func renderContent() -> RenderObject? {

@@ -25,7 +25,7 @@ public class Center: SingleChildWidget {
 
         let ownSize = constraints.constrain(child.bounds.size)
 
-        child.bounds.min = DVec2(ownSize - child.bounds.size) / 2
+        child.position = DVec2(ownSize - child.bounds.size) / 2
 
         return ownSize
     }

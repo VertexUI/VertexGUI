@@ -211,9 +211,9 @@ public class Flex: Widget {
 
             content.layout(constraints: contentConstraints)
 
-            content.bounds.min[mainAxisVectorIndex] = mainAxisPosition
+            content.position[mainAxisVectorIndex] = mainAxisPosition
 
-            content.bounds.min[crossAxisVectorIndex] = lines.last!.crossAxisStart + item.getCrossAxisStartMargin(orientation)
+            content.position[crossAxisVectorIndex] = lines.last!.crossAxisStart + item.getCrossAxisStartMargin(orientation)
 
             lines[lines.count - 1].totalGrow += Double(item.grow)
 
@@ -300,7 +300,7 @@ public class Flex: Widget {
 
                     mainAxisPosition += item.getMainAxisStartMargin(orientation)
 
-                    content.bounds.min[mainAxisVectorIndex] = mainAxisPosition
+                    content.position[mainAxisVectorIndex] = mainAxisPosition
 
                     if item.grow > 0 {
 
@@ -321,7 +321,7 @@ public class Flex: Widget {
 
                         let marginedCrossAxisItemSize = content.bounds.size[crossAxisVectorIndex] + item.getCrossAxisStartMargin(orientation) + item.getCrossAxisEndMargin(orientation)
 
-                        content.bounds.min[crossAxisVectorIndex] = line.crossAxisStart + line.size[crossAxisVectorIndex] / 2 - marginedCrossAxisItemSize / 2
+                        content.position[crossAxisVectorIndex] = line.crossAxisStart + line.size[crossAxisVectorIndex] / 2 - marginedCrossAxisItemSize / 2
 
                     case .Stretch:
 

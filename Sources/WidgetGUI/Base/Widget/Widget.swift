@@ -80,7 +80,7 @@ open class Widget: Bounded, Parent, Child {
 
     // TODO: might need to create something like layoutBounds and renderBounds (area that is invalidated on rerender request --> could be more than layoutBounds and affect outside widgets (e.g. a drop shadow that is not included in layoutBounds))
     // TODO: make size unsettable from outside when new layout approach completed
-    open var bounds: DRect = DRect(min: DPoint2(0,0), size: DSize2(0,0)) {
+    open private(set) var bounds: DRect = DRect(min: DPoint2(0,0), size: DSize2(0,0)) {
         
         didSet {
             
@@ -95,8 +95,21 @@ open class Widget: Bounded, Parent, Child {
             }
         }
     }
+    
+    open var size: DSize2 {
+        
+        @inlinable get {
+            
+            bounds.size
+        }
+        
+        set {
+            
+            bounds.size = newValue
+        }
+    }
 
-    open var width: Double {
+    @inlinable open var width: Double {
 
         get {
 
@@ -104,41 +117,71 @@ open class Widget: Bounded, Parent, Child {
         }
     }
 
-    open var height: Double {
+    @inlinable open var height: Double {
 
         get {
 
             bounds.size.height
         }
     }
+    
+    open var position: DPoint2 {
+        
+        @inlinable get {
+            
+            bounds.min
+        }
+
+        
+        set {
+            
+            bounds.min = newValue
+        }
+    }
 
     open var x: Double {
 
-        get {
+        @inlinable get {
 
             bounds.min.x
+        }
+        
+        set {
+            
+            bounds.min.x = newValue
         }
     }
 
     open var y: Double {
 
-        get {
+        @inlinable get {
             
             bounds.min.y
         }
+        
+        set {
+            
+            bounds.min.y = newValue
+        }
     }
 
-    open var globalBounds: DRect {
+    @inlinable open var globalBounds: DRect {
+        
         get {
+            
             return DRect(min: globalPosition, size: bounds.size)
         }
     }
     
-    open var globalPosition: DPoint2 {
+    @inlinable open var globalPosition: DPoint2 {
+        
         get {
+            
             if parent != nil {
+                
                 return parent!.globalPosition + bounds.min
             }
+            
             return bounds.min
         }
     }
@@ -150,7 +193,9 @@ open class Widget: Bounded, Parent, Child {
 
     
     public internal(set) var focused = false {
+        
         didSet {
+            
             onFocusChanged.invokeHandlers(focused)
         }
     }
@@ -221,20 +266,22 @@ open class Widget: Bounded, Parent, Child {
 
     public internal(set) var onMounted = EventHandlerManager<Void>()
 
-    public internal(set) var onRenderStateInvalidated = EventHandlerManager<Widget>()
-
-    public internal(set) var onAnyRenderStateInvalidated = EventHandlerManager<Widget>()
-
-    public internal(set) var onLayoutingStarted = EventHandlerManager<BoxConstraints>()
-
-    public internal(set) var onLayoutingFinished = EventHandlerManager<DSize2>()
-
     // TODO: when using the BoxConfig approach might instead have onBoundsInvalidated / BoxConfigInvalidated / LayoutInvalidated
     // to bring the parent to take into account updated pref sizes, max sizes, min sizes etc.
     public internal(set) var onBoundsChanged = EventHandlerManager<DRect>()
 
     open internal(set) var onBoxConfigChanged = EventHandlerManager<BoxConfig>()
 
+    public internal(set) var onLayoutInvalidated = EventHandlerManager<Void>()
+    
+    public internal(set) var onLayoutingStarted = EventHandlerManager<BoxConstraints>()
+
+    public internal(set) var onLayoutingFinished = EventHandlerManager<DSize2>()
+    
+    public internal(set) var onRenderStateInvalidated = EventHandlerManager<Widget>()
+
+    public internal(set) var onAnyRenderStateInvalidated = EventHandlerManager<Widget>()
+    
     // TODO: this could lead to a strong reference cycle
     public internal(set) var onFocusChanged = WidgetEventHandlerManager<Bool>()
 
@@ -414,10 +461,11 @@ open class Widget: Bounded, Parent, Child {
             if layouted && !layouting {
 
                 Logger.log("Performing layout on parent parent.", level: .Message, context: .WidgetLayouting)
-
-                layoutInvalid = true
                 
-                layout(constraints: previousConstraints!)
+                invalidateLayout()
+                //layoutInvalid = true
+                
+                //layout(constraints: previousConstraints!)
             }
         }
 
@@ -463,10 +511,12 @@ open class Widget: Bounded, Parent, Child {
             if oldBoxConfig == newBoxConfig {
 
                 Logger.log("Own box config is changed. Perform layout with previous constraints: \(String(describing: previousConstraints))".with(fg: .Yellow), level: .Message, context: .WidgetLayouting)
+                
+                invalidateLayout()
+                
+                //layoutInvalid = true
 
-                layoutInvalid = true
-
-                layout(constraints: previousConstraints!)
+                //layout(constraints: previousConstraints!)
             }
         }
     }
@@ -521,7 +571,7 @@ open class Widget: Bounded, Parent, Child {
 
             boxConfig = newBoxConfig
 
-            layoutInvalid = true
+            //layoutInvalid = true
 
             onBoxConfigChanged.invokeHandlers(newBoxConfig)
         }
@@ -632,7 +682,7 @@ open class Widget: Bounded, Parent, Child {
 
         layoutInvalid = true
 
-        // TODO: maybe need to add something that ensures a relayout after this as well
+        onLayoutInvalidated.invokeHandlers(Void())
     }
 
     open func performLayout(constraints: BoxConstraints) -> DSize2 {

@@ -1,6 +1,8 @@
 import CustomGraphicsMath
 
 public protocol Bounded {
+    
     var globalBounds: DRect { get }
-    var bounds: DRect { get set }
+    
+    var bounds: DRect { get }
 }

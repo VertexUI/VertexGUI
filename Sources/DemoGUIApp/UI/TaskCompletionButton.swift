@@ -6,7 +6,7 @@ public class TaskCompletionButton: Widget {
 
     private var color: Color
 
-    private let size = DSize2(32, 32)
+    private let preferredSize = DSize2(32, 32)
 
     public init(color: Color) {
 
@@ -15,12 +15,12 @@ public class TaskCompletionButton: Widget {
 
     override public func getBoxConfig() -> BoxConfig {
 
-        BoxConfig(preferredSize: size)
+        BoxConfig(preferredSize: preferredSize)
     }
 
     override public func performLayout(constraints: BoxConstraints) -> DSize2 {
 
-        constraints.constrain(size)
+        constraints.constrain(preferredSize)
     }
 
     override public func renderContent() -> RenderObject? {

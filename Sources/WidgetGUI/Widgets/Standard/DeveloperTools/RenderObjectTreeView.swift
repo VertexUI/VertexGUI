@@ -82,7 +82,7 @@ public class RenderObjectTreeView: Widget {
 
                     child.layout(constraints: constraints)
 
-                    child.bounds.min = DPoint2(nextX, nextY)
+                    child.position = DPoint2(nextX, nextY)
 
                     nextX += child.bounds.size.width + spacing
 

@@ -53,7 +53,7 @@ public class Padding: SingleChildWidget {
             maxSize: max(DSize2.zero, constraints.maxSize - paddingSize)
         ))
 
-        child.bounds.min = DVec2(padding.left, padding.top)
+        child.position = DVec2(padding.left, padding.top)
 
         return constraints.constrain(child.bounds.size + paddingSize)
     }

@@ -26,20 +26,20 @@ public class Aligner: Widget {
             if let child = child as? Alignable {
                 switch child.horizontalAlignment {
                 case .Start:
-                    child.bounds.min.x = 0
+                    child.x = 0
                 case .Center:
-                    child.bounds.min.x = size.width / 2 - child.bounds.size.width / 2
+                    child.x = size.width / 2 - child.bounds.size.width / 2
                 case .End:
-                    child.bounds.min.x = size.width - child.bounds.size.width
+                    child.x = size.width - child.bounds.size.width
                 }
 
                 switch child.verticalAlignment {
                 case .Start:
-                    child.bounds.min.y = 0
+                    child.y = 0
                 case .Center:
-                    child.bounds.min.y = size.height / 2 - child.bounds.size.height / 2
+                    child.y = size.height / 2 - child.bounds.size.height / 2
                 case .End:
-                    child.bounds.min.y = size.height - child.bounds.size.height
+                    child.y = size.height - child.bounds.size.height
                 }
             }
         }
