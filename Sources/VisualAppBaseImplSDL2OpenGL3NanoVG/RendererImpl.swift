@@ -77,7 +77,7 @@ open class SDL2OpenGL3NanoVGRenderer: Renderer {
         glBindVertexArray(compositionVAO)
 
         var compositionVBO = GLMap.UInt()
-        var vertices: [Float] = [
+        let vertices: [Float] = [
             -1, -1, 0.5,
             1, -1, 0.5,
             1, 1, 0.5,
@@ -183,7 +183,7 @@ open class SDL2OpenGL3NanoVGRenderer: Renderer {
     }
 
     open func pushVirtualScreen(_ screen: VirtualScreen) {
-        if try virtualScreenStackContains(screen) {
+        if virtualScreenStackContains(screen) {
             fatalError("Tried to add same virtual screen to the stack twice.")
         }
         let screen = checkVirtualScreen(screen)
@@ -362,7 +362,7 @@ open class SDL2OpenGL3NanoVGRenderer: Renderer {
 
     private func applyFontConfig(_ config: FontConfig) {
         if fontIds[config.face.path] == nil {
-            loadFont(config.face.path)
+            _ = loadFont(config.face.path)
         }
         nvgFontFaceId(window.nvg, fontIds[config.face.path]!)
         nvgFontSize(window.nvg, Float(config.size))

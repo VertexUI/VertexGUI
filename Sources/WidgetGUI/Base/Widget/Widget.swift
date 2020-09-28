@@ -462,7 +462,7 @@ open class Widget: Bounded, Parent, Child {
             // TODO: maybe there is a better solution
             if oldBoxConfig == newBoxConfig {
 
-                Logger.log("Own box config is changed. Perform layout with previous constraints: \(previousConstraints)".with(fg: .Yellow), level: .Message, context: .WidgetLayouting)
+                Logger.log("Own box config is changed. Perform layout with previous constraints: \(String(describing: previousConstraints))".with(fg: .Yellow), level: .Message, context: .WidgetLayouting)
 
                 layoutInvalid = true
 

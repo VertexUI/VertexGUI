@@ -114,17 +114,26 @@ public class Flex: Widget {
 
     // TODO: might create an extra, simpler function that is faster for non-wrapping Flex layouts
     override public func performLayout(constraints: BoxConstraints) -> DSize2 {
-
+        
         lines = [
 
             Line(crossAxisStart: 0)
         ]
 
+        var needSecondsPass = false
+        
         var mainAxisSize = constraints.minSize[mainAxisVectorIndex]
 
         var mainAxisPosition = 0.0
         
         for item in items {
+            
+            let crossAlignment = item.crossAlignment ?? self.crossAlignment
+
+            if !needSecondsPass {
+                
+                needSecondsPass = crossAlignment == .Center || crossAlignment == .End || crossAlignment == .Stretch || item.grow > 0
+            }
 
             let content = item.content
 
@@ -248,169 +257,124 @@ public class Flex: Widget {
                 lines[0].size[crossAxisVectorIndex] = constraints.minSize[crossAxisVectorIndex]
             }
         }
+        
+        if needSecondsPass {
 
-        // second pass through all lines
-        for index in 0..<lines.count {
+            // second pass through all lines
+            for index in 0..<lines.count {
 
-            var line = lines[index]
+                var line = lines[index]
 
-            var mainAxisPosition = 0.0
+                var mainAxisPosition = 0.0
 
-            let freeMainAxisSpace: Double
+                let freeMainAxisSpace: Double
 
-            if constraints.maxSize[mainAxisVectorIndex].isFinite {
+                if constraints.maxSize[mainAxisVectorIndex].isFinite {
 
-                freeMainAxisSpace = constraints.maxSize[mainAxisVectorIndex] - line.size[mainAxisVectorIndex]
+                    freeMainAxisSpace = constraints.maxSize[mainAxisVectorIndex] - line.size[mainAxisVectorIndex]
 
-            } else {
+                } else {
 
-                freeMainAxisSpace = mainAxisSize - line.size[mainAxisVectorIndex]
-            }
+                    freeMainAxisSpace = mainAxisSize - line.size[mainAxisVectorIndex]
+                }
 
-            if index > 0 {
+                if index > 0 {
 
-                line.crossAxisStart = lines[index - 1].crossAxisStart + lines[index - 1].size[crossAxisVectorIndex]
-            }
+                    line.crossAxisStart = lines[index - 1].crossAxisStart + lines[index - 1].size[crossAxisVectorIndex]
+                }
 
+                // pass through items in line, grow rest free space, apply CrossAlignment
+                // TODO: might avoid this if no item has grow
+                for item in line.items {
 
-           /* // first pass through items in line, apply explicit widths, heights
-            for item in line.items {
+                    let content = item.content
 
-                let content = item.content
-                
-                var newConstraints = BoxConstraints(
-                    minSize: .zero,
-                    maxSize: .infinity
-                )
+                    var newConstraints = BoxConstraints(
 
-                var relayout = false
-                
-                if let explicitHeight = item[crossAxisVectorIndex] {
+                        minSize: content.bounds.size,
+                        
+                        maxSize: content.bounds.size
+                    )
 
-                    let heightValue: Double
+                    var relayout = false
 
-                    switch explicitHeight {
+                    mainAxisPosition += item.getMainAxisStartMargin(orientation)
 
-                    case .Pixels(value):
+                    content.bounds.min[mainAxisVectorIndex] = mainAxisPosition
 
-                        heightValue = value
+                    if item.grow > 0 {
 
-                    case .Percentage(value):
+                        let mainAxisGrowSpace = freeMainAxisSpace * (item.grow / line.totalGrow)
 
-                        heightValue = value * constraints.maxSize[mainAxisVectorIndex]
+                        newConstraints.minSize[mainAxisVectorIndex] = content.bounds.size[mainAxisVectorIndex] + mainAxisGrowSpace
+                        
+                        newConstraints.maxSize[mainAxisVectorIndex] = content.bounds.size[mainAxisVectorIndex] + mainAxisGrowSpace
+
+                        relayout = true
                     }
+
+                    let crossAlignment = item.crossAlignment ?? self.crossAlignment
+      
+                    switch crossAlignment {
+                        
+                    case .Center:
+
+                        let marginedCrossAxisItemSize = content.bounds.size[crossAxisVectorIndex] + item.getCrossAxisStartMargin(orientation) + item.getCrossAxisEndMargin(orientation)
+
+                        content.bounds.min[crossAxisVectorIndex] = line.crossAxisStart + line.size[crossAxisVectorIndex] / 2 - marginedCrossAxisItemSize / 2
+
+                    case .Stretch:
+
+                        newConstraints.minSize[crossAxisVectorIndex] = line.size[crossAxisVectorIndex]
+                        
+                        newConstraints.maxSize[crossAxisVectorIndex] = line.size[crossAxisVectorIndex]
+
+                        relayout = true
+
+                    default:
+
+                        break
+                    }
+
+                    if relayout {
+
+                        // saving and storing the previousConstraints is a hack currently to
+                        // let the content change it's size according to the real constraints
+                        // it obtained above,
+                        // TODO: might introduce a separate property on Widget like: parentConstraints / mainConstraints
+                        // which can be used by the widget itself to determin how much it can grow on content change
+
+                        let previousConstraints = content.previousConstraints
+
+                        content.layout(constraints: newConstraints)
+
+                        content.previousConstraints = previousConstraints
+                    }
+
+                    mainAxisPosition += content.bounds.size[mainAxisVectorIndex] + item.getMainAxisEndMargin(orientation)
+
+                    if content.bounds.size[crossAxisVectorIndex] > line.size[crossAxisVectorIndex] {
+
+                        line.size[crossAxisVectorIndex] = content.bounds.size[crossAxisVectorIndex]
+                    }
+
+                    if mainAxisPosition > line.size[mainAxisVectorIndex] {
+
+                        line.size[mainAxisVectorIndex] = mainAxisPosition
+                    }
+
+                    if mainAxisPosition > mainAxisSize {
+
+                        mainAxisSize = mainAxisPosition
+                    }
+
+                    mainAxisPosition += spacing
                 }
 
-                if relayout {
 
-                    content.layout(constraints: newConstraints)
-                }
-
-                mainAxisPosition += content.bounds.size[mainAxisVectorIndex]
-
-                if mainAxisPosition > line[mainAxisVectorIndex] {
-
-                    line[mainAxisVectorIndex] = mainAxisPosition
-                }
-
-                // TODO: maybe check for height as well?
+                lines[index] = line
             }
-
-
-            mainAxisPosition = 0*/
-
-            // second pass through items in line, grow rest free space, apply CrossAlignment
-            // TODO: might avoid this if no item has grow
-            for item in line.items {
-
-                let content = item.content
-
-                var newConstraints = BoxConstraints(
-
-                    minSize: content.bounds.size,
-                    
-                    maxSize: content.bounds.size
-                )
-
-                var relayout = false
-
-                mainAxisPosition += item.getMainAxisStartMargin(orientation)
-
-                content.bounds.min[mainAxisVectorIndex] = mainAxisPosition
-
-                if item.grow > 0 {
-
-                    let mainAxisGrowSpace = freeMainAxisSpace * (item.grow / line.totalGrow)
-
-                    newConstraints.minSize[mainAxisVectorIndex] = content.bounds.size[mainAxisVectorIndex] + mainAxisGrowSpace
-                    
-                    newConstraints.maxSize[mainAxisVectorIndex] = content.bounds.size[mainAxisVectorIndex] + mainAxisGrowSpace
-
-                    relayout = true
-                }
-
-                let crossAlignment = item.crossAlignment ?? self.crossAlignment
-  
-                switch crossAlignment {
-                    
-                case .Center:
-
-                    let marginedCrossAxisItemSize = content.bounds.size[crossAxisVectorIndex] + item.getCrossAxisStartMargin(orientation) + item.getCrossAxisEndMargin(orientation)
-
-                    content.bounds.min[crossAxisVectorIndex] = line.crossAxisStart + line.size[crossAxisVectorIndex] / 2 - marginedCrossAxisItemSize / 2
-
-                case .Stretch:
-
-                    newConstraints.minSize[crossAxisVectorIndex] = line.size[crossAxisVectorIndex]
-                    
-                    newConstraints.maxSize[crossAxisVectorIndex] = line.size[crossAxisVectorIndex]
-
-                    relayout = true
-
-                default:
-
-                    break
-                }
-
-                if relayout {
-
-                    // saving and storing the previousConstraints is a hack currently to
-                    // let the content change it's size according to the real constraints
-                    // it obtained above,
-                    // TODO: might introduce a separate property on Widget like: parentConstraints / mainConstraints
-                    // which can be used by the widget itself to determin how much it can grow on content change
-
-                    let previousConstraints = content.previousConstraints
-
-                    content.layout(constraints: newConstraints)
-
-                    content.previousConstraints = previousConstraints
-                }
-
-                mainAxisPosition += content.bounds.size[mainAxisVectorIndex] + item.getMainAxisEndMargin(orientation)
-
-                if content.bounds.size[crossAxisVectorIndex] > line.size[crossAxisVectorIndex] {
-
-                    line.size[crossAxisVectorIndex] = content.bounds.size[crossAxisVectorIndex]
-                }
-
-                if mainAxisPosition > line.size[mainAxisVectorIndex] {
-
-                    line.size[mainAxisVectorIndex] = mainAxisPosition
-                }
-
-                if mainAxisPosition > mainAxisSize {
-
-                    mainAxisSize = mainAxisPosition
-                }
-
-                mainAxisPosition += spacing
-            }
-
-
-            lines[index] = line
         }
-
 
 
         switch orientation {

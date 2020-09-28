@@ -142,9 +142,9 @@ open class Root: Parent {
 
         } else {
 
-            var updatedWidget = widget ?? rootWidget
+            let updatedWidget = widget ?? rootWidget
 
-            var updatedSubTree = updatedWidget.render()
+            let updatedSubTree = updatedWidget.render()
 
             if let update = renderObjectTree.replace(updatedSubTree) {
 
@@ -200,15 +200,10 @@ open class Root: Parent {
         for renderObjectAtPoint in renderObjectsAtPoint {
 
             if let object = renderObjectAtPoint.object as? IdentifiedSubTreeRenderObject {
-
-               // print("Mouse Event On Identified RenderObject with id", object.id)
      
-                if let widget = rootWidget.getChild { $0.id == object.id } {
+                if let widget = rootWidget.getChild(where: { $0.id == object.id }) {
 
-                    //print("WOW got a widget", widget, event)
                     if let widget = widget as? GUIMouseEventConsumer & Widget {
-
-                        print("WOW GOT A MOUSE CONSUMER WIDGET!!!!", widget)
                      
                         currentTargets.append(widget)
 

@@ -155,10 +155,6 @@ public struct ConsoleLogRenderer: LogRenderer {
                 case .White:
 
                     partialString = partialString.white()
-
-                default:
-
-                    fatalError("Unsupported LogText foreground color in ConsoleLogRenderer: \(foregroundColor).")
                 }
             }
 

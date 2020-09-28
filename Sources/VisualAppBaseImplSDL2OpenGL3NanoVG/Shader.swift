@@ -65,7 +65,6 @@ open class Shader {
     open func use() {
         guard let id = self.id else {
             fatalError("Called use on shader before it was compiled.")
-            return
         }
         glUseProgram(id)
     }

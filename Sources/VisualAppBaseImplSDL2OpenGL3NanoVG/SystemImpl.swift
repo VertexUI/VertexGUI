@@ -50,8 +50,6 @@ open class SDL2OpenGL3NanoVGSystem: System {
                 SDL_SetCursor(SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_HAND))
             case .Text:
                 SDL_SetCursor(SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_IBEAM))
-            default:
-                fatalError("Cursor type not implemented: \(cursor)")
             }
         } else {
             SDL_SetCursor(SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_ARROW))
