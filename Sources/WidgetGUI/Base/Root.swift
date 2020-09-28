@@ -53,6 +53,8 @@ open class Root: Parent {
     private var renderObjectTreeRenderer: RenderObjectTreeRenderer
     
     internal var renderObjectTree: RenderObjectTree
+    
+    internal var layoutInvalidatedWidgets: [Widget] = []
 
     private var rerenderWidgets: [Widget] = []
     
@@ -89,6 +91,11 @@ open class Root: Parent {
         _ = rootWidget.onBoxConfigChanged { [unowned self] _ in
 
             layout()
+        }
+        
+        _ = rootWidget.onAnyLayoutInvalidated { [unowned self] in
+            
+            layoutInvalidatedWidgets.append($0)
         }
 
         _ = rootWidget.onAnyRenderStateInvalidated { [unowned self] in
@@ -165,6 +172,11 @@ open class Root: Parent {
     // TODO: maybe this little piece of rendering logic belongs into the App as well? / Maybe return a render object tree as well???? 
     // TODO: --> A Game scene could also be a render object with custom logic which is redrawn on every frame by render strategy.
     open func render(with renderer: Renderer) {
+        
+        for widget in layoutInvalidatedWidgets {
+            
+            widget.layout(constraints: widget.previousConstraints!)
+        }
         
         for widget in rerenderWidgets {
             

@@ -31,9 +31,10 @@ open class SingleChildWidget: Widget {
         // TODO: make sure layout is not performed twice shortly after another
         // it is probably already called by invalidateBoxConfig
         // have a flag to show that layout is up to date already
-        layoutInvalid = true
+        //layoutInvalid = true
 
-        layout(constraints: previousConstraints!)
+        //layout(constraints: previousConstraints!)
+        invalidateLayout()
 
         invalidateRenderState()
     }
