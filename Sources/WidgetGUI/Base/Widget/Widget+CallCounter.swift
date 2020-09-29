@@ -2,7 +2,7 @@ import Foundation
 
 extension Widget {
 
-    internal struct CallCounter {
+    @usableFromInline internal struct CallCounter {
 
         private static let burstInterval = 0.001 // in seconds
 
@@ -17,7 +17,7 @@ extension Widget {
         // TODO: does this cause a retain cycle?
         unowned public var widget: Widget
 
-        mutating func count(_ callType: CallType) {
+        @usableFromInline mutating func count(_ callType: CallType) {
 
             counts[callType] += 1
 
@@ -58,7 +58,7 @@ extension Widget {
         }
     }
 
-    internal enum CallType: CaseIterable {
+    @usableFromInline internal enum CallType: CaseIterable {
 
         case Layout, Render, InvalidateRenderState, InvalidateLayout
     }

@@ -78,6 +78,20 @@ open class Widget: Bounded, Parent, Child {
 
     lazy open internal(set) var boxConfig = getBoxConfig()
 
+    /// bridge boxConfig for use in @inlinable functions
+    @usableFromInline internal var _boxConfig: BoxConfig {
+
+        get {
+
+            boxConfig
+        }
+
+        set {
+
+            boxConfig = newValue
+        }
+    }
+
  
     
     open private(set) var size = DSize2(0, 0) {
@@ -185,6 +199,20 @@ open class Widget: Bounded, Parent, Child {
         }
     }
 
+    /// bridge focused property for use in @inlinable functions
+    @usableFromInline internal var _focused: Bool {
+
+        get {
+
+            return focused
+        }
+
+        set {
+
+            focused = newValue
+        }
+    }
+
     public private(set) var mounted = false
 
     // TODO: maybe something better
@@ -206,7 +234,7 @@ open class Widget: Bounded, Parent, Child {
 
 
 
-    private var reference: ReferenceProtocol? {
+    @usableFromInline internal var reference: ReferenceProtocol? {
 
         didSet {
 
@@ -218,7 +246,7 @@ open class Widget: Bounded, Parent, Child {
     }
 
 
-    private var renderState = RenderState()
+    @usableFromInline internal var renderState = RenderState()
 
 
     /// Flag whether to show bounds and sizes for debugging purposes.
@@ -243,7 +271,7 @@ open class Widget: Bounded, Parent, Child {
 
     public var countCalls: Bool = true
 
-    lazy private var callCounter = CallCounter(widget: self)
+    @usableFromInline lazy internal var callCounter = CallCounter(widget: self)
 
 
 
@@ -293,21 +321,21 @@ open class Widget: Bounded, Parent, Child {
 
     // TODO: maybe find better names for the following functions?
 
-    public final func with(key: String) -> Self {
+    @inlinable public final func with(key: String) -> Self {
 
         self.key = key
 
         return self
     }
 
-    public final func connect(ref reference: ReferenceProtocol) -> Self {
+    @inlinable public final func connect(ref reference: ReferenceProtocol) -> Self {
 
         self.reference = reference
 
         return self
     }    
 
-    public final func with(block: (Self) -> ()) -> Self {
+    @inlinable public final func with(block: (Self) -> ()) -> Self {
 
         block(self)
 
@@ -386,7 +414,7 @@ open class Widget: Bounded, Parent, Child {
         onMounted.invokeHandlers(Void())
     }
 
-    private func resolveDependencies() {
+    private final func resolveDependencies() {
 
         var injectables = [AnyInject]()
         
@@ -474,7 +502,7 @@ open class Widget: Bounded, Parent, Child {
         }
     }
 
-    private func handleChildBoxConfigChanged(child: Widget) {
+    private final func handleChildBoxConfigChanged(child: Widget) {
 
         Logger.log("Box config of child: \(child) of parent \(self) changed.".with(fg: .Blue, style: .Bold), level: .Message, context: .WidgetLayouting)
 
@@ -507,7 +535,7 @@ open class Widget: Bounded, Parent, Child {
     }
 
     // TODO: this function might be better suited to parent
-    public func replaceChildren(with newChildren: [Widget]) {
+    public final func replaceChildren(with newChildren: [Widget]) {
 
         let oldChildren = children
 
@@ -554,7 +582,7 @@ open class Widget: Bounded, Parent, Child {
     }
 
     // TODO: maybe call this updateBoxConfig / or queueBoxConfigUpdate??? --> on next tick?
-    public func invalidateBoxConfig() {
+    @inlinable public final func invalidateBoxConfig() {
         
         let currentBoxConfig = boxConfig
 
@@ -562,40 +590,61 @@ open class Widget: Bounded, Parent, Child {
 
         if currentBoxConfig != newBoxConfig {
 
-            boxConfig = newBoxConfig
+            _boxConfig = newBoxConfig
 
             onBoxConfigChanged.invokeHandlers(newBoxConfig)
         }
     }
 
-    open func layout(constraints: BoxConstraints) {
+    @inlinable public final func layout(constraints: BoxConstraints) {
 
+        #if DEBUG
+        
         Logger.log("Attempting layout".with(fg: .Yellow), "on Widget: \(self).", level: .Message, context: .WidgetLayouting)
 
-        if constraints.minWidth.isInfinite || constraints.minHeight.isInfinite {
-
-            fatalError("Widget received constraints that contain infinite value in min size: \(self)")
-        }
+        #endif
 
         if !layoutInvalid, let previousConstraints = previousConstraints, constraints == previousConstraints {
+            
+            #if DEBUG
 
             Logger.log("Constraints equal pervious constraints and layout is not invalid.", "Not performing layout.".with(fg: .Yellow), level: .Message, context: .WidgetLayouting)
+            
+            #endif
 
             return
         }
         
         if !layoutable {
+
+            #if DEBUG
             
             Logger.warn("Called layout() on Widget that is not layoutable: \(self)", context: .WidgetLayouting)
+
+            #endif
 
             return
         }
 
         if layouting {
+
+            #if DEBUG
             
             Logger.warn("Called layout() on Widget while that Widget was still layouting: \(self)", context: .WidgetLayouting)
 
+            #endif
+
             return
+        }
+
+        _layout(constraints: constraints)
+    }
+
+    @usableFromInline internal final func _layout(constraints: BoxConstraints) {
+
+        if constraints.minWidth.isInfinite || constraints.minHeight.isInfinite {
+
+            fatalError("Widget received constraints that contain infinite value in min size: \(self)")
         }
 
         #if (DEBUG)
@@ -605,13 +654,13 @@ open class Widget: Bounded, Parent, Child {
             callCounter.count(.Layout)
         }
 
-        #endif
-
         Logger.log("Layouting Widget: \(self)".with(fg: .Blue, style: .Bold), level: .Message, context: .WidgetLayouting)
 
         Logger.log("Constraints: \(constraints)", level: .Message, context: .WidgetLayouting)
         
         Logger.log("Current size: \(bounds.size)", level: .Message, context: .WidgetLayouting)
+
+        #endif
 
         layouting = true
 
@@ -627,18 +676,26 @@ open class Widget: Bounded, Parent, Child {
 
         let layoutDuration = Date.timeIntervalSinceReferenceDate - startTimestamp
 
+        #if DEBUG
+
         Logger.log("Layout of Widget: \(self) took time:", (layoutDuration.description + " s").with(style: .Bold), level: .Message, context: .WidgetLayouting)
 
         Logger.log("Layout of Widget: \(self) produced result.".with(fg: .Green, style: .Bold), level: .Message, context: .WidgetLayouting)
 
         Logger.log("New self size: \(newUnconstrainedSize)", level: .Message, context: .WidgetLayouting)
 
+        #endif
+
         let constrainedSize = constraints.constrain(newUnconstrainedSize)
+
+        #if DEBUG
 
         if newUnconstrainedSize != constrainedSize {
 
             Logger.warn("New size does not respect constraints. Size: \(newUnconstrainedSize), Constraints: \(constraints)", context: .WidgetLayouting)
         }
+
+        #endif
 
         let boxConfigConstrainedSize = BoxConstraints(
 
@@ -676,15 +733,24 @@ open class Widget: Bounded, Parent, Child {
         self.previousConstraints = constraints
     }
 
-    open func invalidateLayout() {
-    
+    @inlinable public final func invalidateLayout() {
+ 
         if layoutInvalid {
+            
+            #if DEBUG
 
             Logger.warn("Called invalidateLayout() on a Widget where layout is already invalid: \(self)", context: .WidgetLayouting)
+
+            #endif
 
             return
         }
 
+        _invalidateLayout()
+    }
+
+    @usableFromInline internal final func _invalidateLayout() {
+    
         #if (DEBUG)
 
         if countCalls {
@@ -706,27 +772,27 @@ open class Widget: Bounded, Parent, Child {
         fatalError("performLayout(constraints:) not implemented.")
     }
 
-    public func requestFocus() {
+    @inlinable public final func requestFocus() {
 
         if focusable {
 
             if context!.requestFocus(self) {
 
-                focused = true
+                _focused = true
             }
         }
     }
 
-    public func dropFocus() {
+    @inlinable public func dropFocus() {
 
         if focusable {
 
-            focused = false
+            _focused = false
         }
     }
 
     /// Returns the result of renderContent() wrapped in an IdentifiedSubTreeRenderObject
-    public final func render() -> RenderObject.IdentifiedSubTree {
+    @inlinable public final func render() -> RenderObject.IdentifiedSubTree {
 
         if renderState.invalid {
 
@@ -737,25 +803,33 @@ open class Widget: Bounded, Parent, Child {
                 callCounter.count(.Render)
             }
 
-            #endif
-
             Logger.log("Render state of Widget: \(self) invalid. Rerendering.".with(fg: .Yellow), level: .Message, context: .WidgetRendering)
+
+            #endif
 
             updateRenderState()
 
         } else {
 
+            #if DEBUG
+            
             Logger.log("Render state of Widget: \(self) valid. Using cached state.".with(fg: .Yellow), level: .Message, context: .WidgetRendering)
+
+            #endif
         }
 
         return renderState.content!
     }
 
-    public final func updateRenderState() {
+    @usableFromInline internal final func updateRenderState() {
 
         if !renderState.invalid {
 
+            #if DEBUG
+
             Logger.warn("Called updateRenderState on Widget where renderState is not invalid.".with(fg: .White, bg: .Red), context: .WidgetRendering)
+
+            #endif
 
             return
         }
@@ -777,8 +851,12 @@ open class Widget: Bounded, Parent, Child {
             }
 
         } else {
+
+            #if DEBUG
             
             Logger.warn("Called updateRenderState on Widget that cannot be rendered in it's current state.".with(fg: .White, bg: .Red), context: .WidgetRendering)
+
+            #endif            
         }
 
         renderState.content = subTree
@@ -795,7 +873,7 @@ open class Widget: Bounded, Parent, Child {
         }
     }
 
-    private func renderLayoutDebuggingInformation() -> RenderObject {
+    private final func renderLayoutDebuggingInformation() -> RenderObject {
 
         RenderObject.Container {
 
@@ -819,29 +897,53 @@ open class Widget: Bounded, Parent, Child {
     /// This should trigger a rerender of the widget in the next frame.
     /// 
     /// Automatically calls itself on each child as well.
-    public final func invalidateRenderState() {
+    @inlinable public final func invalidateRenderState() {
+
+        if renderState.invalid {
+
+            #if DEBUG
+
+            Logger.warn("Called invalidateRenderState() when render state is already invalid on Widget: \(self)", context: .WidgetRendering)
+
+            #endif
+
+            return
+        }
 
         if destroyed {
 
+            #if DEBUG
+
             Logger.warn("Tried to call invalidateRenderState() on destroyed widget: \(self)", context: .WidgetRendering)
            
+            #endif
+
             return
         }
 
         if !mounted {
+
+            #if DEBUG
             
             Logger.warn("Called invalidateRenderState() on an unmounted Widget: \(self)", context: .WidgetRendering)
 
-            return
-        }
-
-        if renderState.invalid {
-
-            Logger.warn("Called invalidateRenderState() when render state is already invalid on Widget: \(self)", context: .WidgetRendering)
+            #endif
 
             return
         }
 
+        _invalidateRenderState()
+    }
+
+    @inlinable public final func invalidateRenderState(after block: () -> ()) {
+
+        block()
+
+        invalidateRenderState()
+    }
+
+    @usableFromInline internal final func _invalidateRenderState() {
+ 
         #if (DEBUG)
 
         if countCalls {
@@ -861,13 +963,6 @@ open class Widget: Bounded, Parent, Child {
         onRenderStateInvalidated.invokeHandlers(self)
 
         onAnyRenderStateInvalidated.invokeHandlers(self)
-    }
-
-    public final func invalidateRenderState(after block: () -> ()) {
-
-        block()
-
-        invalidateRenderState()
     }
 
     // TODO: how to name this?
