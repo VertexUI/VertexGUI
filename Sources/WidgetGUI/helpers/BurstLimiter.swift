@@ -6,6 +6,8 @@ public class BurstLimiter {
     @usableFromInline internal let minDelay: Double
 
     @usableFromInline internal var lastInvocationTimestamp: Double = 0
+
+    @usableFromInline internal var delayedWorkItem: DispatchWorkItem? = nil
     
     public init(minDelay: Double) {
         
@@ -28,10 +30,17 @@ public class BurstLimiter {
             
             let remainingDelay = minDelay - currentDelay
 
-            DispatchQueue.main.asyncAfter(deadline: .now() + remainingDelay) { [weak self] in
+            if let currentWorkItem = delayedWorkItem {
+
+                currentWorkItem.cancel()
+            }
+
+            delayedWorkItem = DispatchWorkItem { [weak self] in
 
                 self?.limit(block)
             }
+
+            DispatchQueue.main.asyncAfter(deadline: .now() + remainingDelay, execute: delayedWorkItem!) 
         }
     }
 }
