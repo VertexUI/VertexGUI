@@ -35,6 +35,7 @@ public class ScrollArea: SingleChildWidget, GUIMouseEventConsumer {
             if scrollProgress.x < 0 {
 
                 scrollProgress.x = 0
+
             } else if scrollProgress.x > 1 {
 
                 scrollProgress.x = 1
@@ -43,7 +44,9 @@ public class ScrollArea: SingleChildWidget, GUIMouseEventConsumer {
             if scrollProgress.y < 0 {
 
                 scrollProgress.y = 0
+
             } else if scrollProgress.y > 1 {
+
                 scrollProgress.y = 1
             }
         }
@@ -85,6 +88,9 @@ public class ScrollArea: SingleChildWidget, GUIMouseEventConsumer {
     }
 
 
+    private let mouseMoveBurstLimiter = BurstLimiter(minDelay: 0.01)
+
+
     public init(
         scrollX scrollXConfig: ScrollConfig = .Auto,
         scrollY scrollYConfig: ScrollConfig = .Auto,
@@ -95,17 +101,17 @@ public class ScrollArea: SingleChildWidget, GUIMouseEventConsumer {
         self.childBuilder = childBuilder
     }    
 
-    override public func buildChild() -> Widget {
+    override public final func buildChild() -> Widget {
 
         childBuilder()
     }
 
-    override public func getBoxConfig() -> BoxConfig {
+    override public final func getBoxConfig() -> BoxConfig {
 
         BoxConfig(preferredSize: child.boxConfig.preferredSize + DSize2(scrollBarWidths.y, scrollBarWidths.x))
     }
 
-    override public func performLayout(constraints: BoxConstraints) -> DSize2 {
+    override public final func performLayout(constraints: BoxConstraints) -> DSize2 {
 
         var childConstraints = BoxConstraints(
 
@@ -164,7 +170,7 @@ public class ScrollArea: SingleChildWidget, GUIMouseEventConsumer {
         return constrainedSize
     }
 
-    private func updateEnabledDimensions(maxOwnSize: DSize2, childSize: DSize2) {
+    private final func updateEnabledDimensions(maxOwnSize: DSize2, childSize: DSize2) {
 
         let previousXEnabled = scrollXEnabled
 
@@ -217,7 +223,7 @@ public class ScrollArea: SingleChildWidget, GUIMouseEventConsumer {
         }
     }
 
-    override public func renderContent() -> RenderObject? {
+    override public final func renderContent() -> RenderObject? {
 
         return RenderObject.Container {
 
@@ -250,7 +256,7 @@ public class ScrollArea: SingleChildWidget, GUIMouseEventConsumer {
         }
     }
 
-    public func consume(_ event: GUIMouseEvent) {
+    public final func consume(_ event: GUIMouseEvent) {
 
         switch event {
         
@@ -277,27 +283,8 @@ public class ScrollArea: SingleChildWidget, GUIMouseEventConsumer {
 
         case let event as GUIMouseMoveEvent:
             
-            let totalMove = event.position - mouseTrackingStartPosition
-            
-            let scrollProgressBeforeUpdate = scrollProgress
-
-            scrollProgress = previousScrollProgress
-
-            if scrollXActive {
-
-                scrollProgress.x += totalMove.x / maxScrollBarTranslations.x
-            }
-
-            if scrollYActive {
-
-                scrollProgress.y += totalMove.y / maxScrollBarTranslations.y
-            }
-
-            if scrollProgressBeforeUpdate != scrollProgress {
-
-                invalidateRenderState()
-            }
-
+            handleMouseMoveEvent(event)
+   
         case let event as GUIMouseWheelEvent:
 
             if scrollYEnabled {
@@ -316,6 +303,38 @@ public class ScrollArea: SingleChildWidget, GUIMouseEventConsumer {
         default:
 
             break
+        }
+    }
+
+    private final func handleMouseMoveEvent(_ event: GUIMouseMoveEvent) {
+
+        mouseMoveBurstLimiter.limit { [weak self] in
+
+            guard let self = self else {
+                
+                return
+            }
+
+            let totalMove = event.position - self.mouseTrackingStartPosition
+            
+            let scrollProgressBeforeUpdate = self.scrollProgress
+
+            self.scrollProgress = self.previousScrollProgress
+
+            if self.scrollXActive {
+
+                self.scrollProgress.x += totalMove.x / self.maxScrollBarTranslations.x
+            }
+
+            if self.scrollYActive {
+
+                self.scrollProgress.y += totalMove.y / self.maxScrollBarTranslations.y
+            }
+
+            if scrollProgressBeforeUpdate != self.scrollProgress {
+
+                self.invalidateRenderState()
+            }
         }
     }
 }
