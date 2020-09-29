@@ -570,15 +570,6 @@ open class Widget: Bounded, Parent, Child {
 
     open func layout(constraints: BoxConstraints) {
 
-        #if (DEBUG)
-
-        if countCalls {
-
-            callCounter.count(.Layout)
-        }
-
-        #endif
-
         Logger.log("Attempting layout".with(fg: .Yellow), "on Widget: \(self).", level: .Message, context: .WidgetLayouting)
 
         if constraints.minWidth.isInfinite || constraints.minHeight.isInfinite {
@@ -606,6 +597,15 @@ open class Widget: Bounded, Parent, Child {
 
             return
         }
+
+        #if (DEBUG)
+
+        if countCalls {
+
+            callCounter.count(.Layout)
+        }
+
+        #endif
 
         Logger.log("Layouting Widget: \(self)".with(fg: .Blue, style: .Bold), level: .Message, context: .WidgetLayouting)
 
@@ -678,6 +678,13 @@ open class Widget: Bounded, Parent, Child {
 
     open func invalidateLayout() {
     
+        if layoutInvalid {
+
+            Logger.warn("Called invalidateLayout() on a Widget where layout is already invalid: \(self)", context: .WidgetLayouting)
+
+            return
+        }
+
         #if (DEBUG)
 
         if countCalls {
@@ -686,7 +693,6 @@ open class Widget: Bounded, Parent, Child {
         }
 
         #endif
-
 
         layoutInvalid = true
 
@@ -722,16 +728,16 @@ open class Widget: Bounded, Parent, Child {
     /// Returns the result of renderContent() wrapped in an IdentifiedSubTreeRenderObject
     public final func render() -> RenderObject.IdentifiedSubTree {
 
-        #if (DEBUG)
-
-        if countCalls {
-
-            callCounter.count(.Render)
-        }
-
-        #endif
-
         if renderState.invalid {
+
+            #if (DEBUG)
+
+            if countCalls {
+
+                callCounter.count(.Render)
+            }
+
+            #endif
 
             Logger.log("Render state of Widget: \(self) invalid. Rerendering.".with(fg: .Yellow), level: .Message, context: .WidgetRendering)
 
@@ -815,15 +821,6 @@ open class Widget: Bounded, Parent, Child {
     /// Automatically calls itself on each child as well.
     public final func invalidateRenderState() {
 
-        #if (DEBUG)
-
-        if countCalls {
-
-            callCounter.count(.InvalidateRenderState)
-        }
-
-        #endif
-
         if destroyed {
 
             Logger.warn("Tried to call invalidateRenderState() on destroyed widget: \(self)", context: .WidgetRendering)
@@ -837,6 +834,22 @@ open class Widget: Bounded, Parent, Child {
 
             return
         }
+
+        if renderState.invalid {
+
+            Logger.warn("Called invalidateRenderState() when render state is already invalid on Widget: \(self)", context: .WidgetRendering)
+
+            return
+        }
+
+        #if (DEBUG)
+
+        if countCalls {
+
+            callCounter.count(.InvalidateRenderState)
+        }
+
+        #endif
 
         renderState.invalid = true
 

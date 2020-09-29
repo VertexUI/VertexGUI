@@ -4,7 +4,7 @@ extension Widget {
 
     internal struct CallCounter {
 
-        private static let burstInterval = 0.0001 // in seconds
+        private static let burstInterval = 0.001 // in seconds
 
         private static let burstLogThreshold = 3 // after which call count in the burst interval should a message be printed?
 

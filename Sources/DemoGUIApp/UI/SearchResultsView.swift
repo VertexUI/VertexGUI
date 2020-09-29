@@ -34,10 +34,10 @@ public class SearchResultsView: SingleChildWidget {
 
         super.init()
 
-        _ = self._query.onChanged { [unowned self] _ in
+        _ = onDestroy(self._query.onChanged { [unowned self] _ in
 
             invalidateChild()
-        }
+        })
     }
 
     override public func buildChild() -> Widget {
