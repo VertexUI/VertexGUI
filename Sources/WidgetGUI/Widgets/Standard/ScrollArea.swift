@@ -87,8 +87,9 @@ public class ScrollArea: SingleChildWidget, GUIMouseEventConsumer {
         DRect(min: DVec2(bounds.size.width - scrollBarWidths.y, scrollBarTranslations.y), size: DSize2(scrollBarWidths.y, scrollBarLengths.y))
     }
 
+    private var mouseIsDown = false
 
-    private let mouseMoveBurstLimiter = BurstLimiter(minDelay: 0.01)
+    private let mouseMoveBurstLimiter = BurstLimiter(minDelay: 0.005)
 
 
     public init(
@@ -271,19 +272,29 @@ public class ScrollArea: SingleChildWidget, GUIMouseEventConsumer {
                 scrollYActive = yScrollBarBounds.contains(point: localPosition)
 
                 mouseTrackingStartPosition = event.position
+
+                mouseIsDown = true
             }
 
-        case _ as GUIMouseButtonUpEvent:
+        case let event as GUIMouseButtonUpEvent:
 
-            scrollXActive = false
+            if event.button == .Left {
 
-            scrollYActive = false
+                scrollXActive = false
 
-            previousScrollProgress = scrollProgress
+                scrollYActive = false
+
+                previousScrollProgress = scrollProgress
+
+                mouseIsDown = false
+            }
 
         case let event as GUIMouseMoveEvent:
+
+            if mouseIsDown {
             
-            handleMouseMoveEvent(event)
+                handleMouseMoveEvent(event)
+            }
    
         case let event as GUIMouseWheelEvent:
 

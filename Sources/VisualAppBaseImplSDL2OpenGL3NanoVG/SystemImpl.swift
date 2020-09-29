@@ -6,31 +6,47 @@ import CustomGraphicsMath
 import VisualAppBase
 
 open class SDL2OpenGL3NanoVGSystem: System {
+
     public static var windows = [Int: SDL2OpenGL3NanoVGWindow]()
+
     public static var isRunning = true
+
     public var targetFps = 60
+
     public var currentFps = 0
+
     public static let fpsBufferCount = 100
+
     public var fpsBuffer = [Int](repeating: 0, count: SDL2OpenGL3NanoVGSystem.fpsBufferCount) // history of fpsBufferCount fps values
+
     public var fpsBufferIndex = 0
+    
     var lastFrameTime = SDL_GetTicks()
+
     var totalTime: UInt32 = 0
     
     public var relativeMouseMode = false {
+
         didSet {
+
             SDL_SetRelativeMouseMode(relativeMouseMode ? SDL_TRUE : SDL_FALSE)
         }
     }
 
     public var mousePosition: DPoint2 = DPoint2(0, 0)
+
     private var pressedMouseButtons = [
+
         MouseButton.Left: false
     ]
 
     override public init() throws {
+
         if SDL_Init(SDL_INIT_VIDEO) != 0 {
+
             throw SDLError("Unable to initialize SDL.", SDL_GetError())
         }
+        
         //let info = SDL_GetVideoInfo()
         //if (SDL_SetVideoMode(400, 800, info.vfmt.BitsPerPixel, SDL_OPENGL.rawValue) == 0) {
          //   print("Failed to set video mode.")
@@ -40,40 +56,59 @@ open class SDL2OpenGL3NanoVGSystem: System {
     }
 
     override open func updateCursor() {
+
         if cursorRequests.count > 0 {
+
             print("HAVE CURSOR REQUEST")
-            let cursor = Array(cursorRequests.values)[0] 
+
+            let cursor = Array(cursorRequests.values)[0]
+
             switch cursor {
+
             case .Arrow:
+
                 SDL_SetCursor(SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_ARROW))
+
             case .Hand:
+
                 SDL_SetCursor(SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_HAND))
+
             case .Text:
+
                 SDL_SetCursor(SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_IBEAM))
             }
+
         } else {
+
             SDL_SetCursor(SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_ARROW))
         }
     }
 
     open func setCursorShown(_ shown: Bool) {
+
         SDL_ShowCursor(shown ? SDL_ENABLE : SDL_DISABLE)
     }
 
     open func forward(_ event: RawMouseEvent, windowId: Int) {
+
         if let window = SDL2OpenGL3NanoVGSystem.windows[windowId] {
+
             window.onMouse.invokeHandlers(event)
         }
     }
 
     open func forward(_ event: KeyEvent, windowId: Int) {
+
         if let window = SDL2OpenGL3NanoVGSystem.windows[windowId] {
+
             window.onKey.invokeHandlers(event)
         }
     }
 
     open func forward(_ event: TextEvent, windowId: Int) {
+
         if let window = SDL2OpenGL3NanoVGSystem.windows[windowId] {
+
             window.onText.invokeHandlers(event)
         }
     }
@@ -197,7 +232,7 @@ open class SDL2OpenGL3NanoVGSystem: System {
 
                 event.type = 0
                 
-            } while SDL2OpenGL3NanoVGSystem.isRunning &&  SDL_PollEvent(&event) != 0
+            } while SDL2OpenGL3NanoVGSystem.isRunning && (Int(SDL_GetTicks()) - startTime < timeout) && SDL_PollEvent(&event) != 0
         }
     }
 
@@ -241,13 +276,18 @@ open class SDL2OpenGL3NanoVGSystem: System {
     }
     
     private func calcAverageFps() {
+
         averageFps = fpsBuffer.reduce(0) {
+
             $0 + $1
+
         } / SDL2OpenGL3NanoVGSystem.fpsBufferCount
     }
 
     override open func exit() throws {
+
         SDL2OpenGL3NanoVGSystem.isRunning = false
+
         Foundation.exit(0)
     }
 }
