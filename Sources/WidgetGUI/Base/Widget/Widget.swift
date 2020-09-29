@@ -243,7 +243,7 @@ open class Widget: Bounded, Parent, Child {
 
     public var countCalls: Bool = true
 
-    private var callCounter = CallCounter()
+    lazy private var callCounter = CallCounter(widget: self)
 
 
 
@@ -913,29 +913,3 @@ open class Widget: Bounded, Parent, Child {
 
     open func destroySelf() {}
 }
-
-extension Widget {
-
-    private struct CallCounter {
-
-        public private(set) var counts = DefinitiveDictionary(
-            
-            CallType.allCases.reduce(into: [CallType: UInt]()) {
-
-                $0[$1] = 0
-            })
-
-        mutating func count(_ callType: CallType) {
-
-            counts[callType] += 1
-
-            print(callType, "called", counts[callType], "times")
-        }
-    }
-
-    private enum CallType: CaseIterable {
-
-        case Layout, Render, InvalidateRenderState, InvalidateLayout
-    }
-}
-

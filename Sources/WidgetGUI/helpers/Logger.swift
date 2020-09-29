@@ -2,7 +2,7 @@ import ColorizeSwift
 
 public class Logger {
 
-    public static var enabled = false
+    public static var enabled = true
 
     public static var activeLevels: Set<Level> = [
 
@@ -11,7 +11,7 @@ public class Logger {
 
     public static var activeContexts: Set<Context> = [
 
-        .Default, .WidgetLayouting, .WidgetRendering
+        .Performance //.Default, .WidgetLayouting, .WidgetRendering
     ]
 
     public static var renderer: LogRenderer = ConsoleLogRenderer()
@@ -56,7 +56,7 @@ public class Logger {
 
     public enum Context: CaseIterable {
 
-        case Default, WidgetLayouting, WidgetRendering
+        case Default, WidgetLayouting, WidgetRendering, Performance
     }
 }
 
