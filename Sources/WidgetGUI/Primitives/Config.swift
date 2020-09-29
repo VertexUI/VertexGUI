@@ -1,17 +1,17 @@
 import Runtime
 
-public protocol ConfigMarker {
+public protocol ConfigMarkerProtocol {
     func merged(with partialConfig: Any) -> Any
 }
 
-public protocol Config: ConfigMarker {
+public protocol ConfigProtocol: ConfigMarkerProtocol {
     associatedtype PartialConfig
 
     /// Fill all the unset properties of partial with the values in default.
     func merged(with partialConfig: PartialConfig?) -> Self
 }
 
-public extension Config {
+public extension ConfigProtocol {
     func merged(with partialConfig: Any) -> Any {
         return merged(with: partialConfig as? PartialConfig)
     }
@@ -29,17 +29,17 @@ public extension Config {
 
                 if let value = try! partialProperty.get(from: partialConfig) as Optional<Any> {
                     
-                    if let subPartial = value as? PartialConfigMarker {
+                    if let subPartial = value as? PartialConfigMarkerProtocolProtocol {
                         
                         let defaultValue = try! resultProperty.get(from: result)
 
-                        if let defaultSubPartial = defaultValue as? PartialConfigMarker {
+                        if let defaultSubPartial = defaultValue as? PartialConfigMarkerProtocolProtocol {
 
                             let subMerged = subPartial.merged(partials: [subPartial, defaultSubPartial])
 
                             try! resultProperty.set(value: subMerged, on: &result)
 
-                        } else if let defaultSubConfig = defaultValue as? ConfigMarker {
+                        } else if let defaultSubConfig = defaultValue as? ConfigMarkerProtocol {
                             
                             let subMerged = defaultSubConfig.merged(with: subPartial)
                             

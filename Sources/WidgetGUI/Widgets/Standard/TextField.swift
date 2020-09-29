@@ -3,7 +3,7 @@ import CustomGraphicsMath
 
 public final class TextField: SingleChildWidget, ConfigurableWidget {
 
-    public struct Config: WidgetGUI.Config {
+    public struct Config: ConfigProtocol {
 
         public typealias PartialConfig = TextField.PartialConfig
 
@@ -19,7 +19,7 @@ public final class TextField: SingleChildWidget, ConfigurableWidget {
         }
     }
 
-    public struct PartialConfig: WidgetGUI.PartialConfig {
+    public struct PartialConfig: PartialConfigProtocol {
 
         public var backgroundConfig = Background.PartialConfig()
 

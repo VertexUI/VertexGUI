@@ -245,7 +245,7 @@ public final class Text: Widget, ConfigurableWidget {
 
 extension Text {
 
-    public struct PartialConfig: WidgetGUI.PartialConfig {
+    public struct PartialConfig: PartialConfigProtocol {
 
         public var fontConfig: PartialFontConfig?
 
@@ -304,7 +304,7 @@ extension Text {
         }
     }
 
-    public struct Config: WidgetGUI.Config, Hashable {
+    public struct Config: ConfigProtocol, Hashable {
         
         public typealias PartialConfig = Text.PartialConfig
 

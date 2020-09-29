@@ -1,3 +1,3 @@
 public protocol Theme: class {
-    var configs: [PartialConfigMarker] { get }
+    var configs: [PartialConfigMarkerProtocolProtocol] { get }
 }

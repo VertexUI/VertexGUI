@@ -1,17 +1,17 @@
 public class ConfigProvider: SingleChildWidget {
 
-    private var configs: [PartialConfigMarker]
+    private var configs: [PartialConfigMarkerProtocolProtocol]
 
     private var childBuilder: () -> Widget
     
-    public init(_ configs: [PartialConfigMarker], @WidgetBuilder child childBuilder: @escaping () -> Widget) {
+    public init(_ configs: [PartialConfigMarkerProtocolProtocol], @WidgetBuilder child childBuilder: @escaping () -> Widget) {
 
         self.configs = configs
 
         self.childBuilder = childBuilder
     }
 
-    public convenience init(_ configs: PartialConfigMarker..., @WidgetBuilder child childBuilder: @escaping () -> Widget) {
+    public convenience init(_ configs: PartialConfigMarkerProtocolProtocol..., @WidgetBuilder child childBuilder: @escaping () -> Widget) {
 
         self.init(configs, child: childBuilder)
     }
@@ -21,7 +21,7 @@ public class ConfigProvider: SingleChildWidget {
         childBuilder()
     }
 
-    public func retrieveConfig<Config: PartialConfig>(ofType configType: Config.Type) -> Config? {
+    public func retrieveConfig<Config: PartialConfigProtocol>(ofType configType: Config.Type) -> Config? {
 
         for config in configs {
 

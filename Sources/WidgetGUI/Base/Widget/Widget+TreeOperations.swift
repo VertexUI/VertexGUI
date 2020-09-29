@@ -88,7 +88,9 @@ extension Widget {
         return nil
     }
 
-    public final func getConfig<Config: PartialConfig>(ofType type: Config.Type) -> Config? {
+    /// Retrieve a config of a given type from any parent. If there are multiple configs in the hierarchy,
+    /// properties get overwritten by deeper nested configs.
+    public final func getConfig<Config: PartialConfigProtocol>(ofType type: Config.Type) -> Config? {
       
         let configProviders = getParents(ofType: ConfigProvider.self)
         

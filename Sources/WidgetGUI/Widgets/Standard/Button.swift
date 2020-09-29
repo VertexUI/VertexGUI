@@ -10,7 +10,7 @@ public final class Button: SingleChildWidget, StatefulWidget, ConfigurableWidget
         case Normal, Hover, Active
     }
 
-    public struct StateStyle: WidgetGUI.Config {
+    public struct StateStyle: ConfigProtocol {
 
         public typealias PartialConfig = Button.PartialStateStyle
 
@@ -31,7 +31,7 @@ public final class Button: SingleChildWidget, StatefulWidget, ConfigurableWidget
         }*/
     }
 
-    public struct PartialStateStyle: WidgetGUI.PartialConfig {
+    public struct PartialStateStyle: PartialConfigProtocol {
 
         public var backgroundConfig: Background.PartialConfig = Background.PartialConfig()
 
@@ -40,7 +40,7 @@ public final class Button: SingleChildWidget, StatefulWidget, ConfigurableWidget
         public init() {}
     }
 
-    public struct Config: WidgetGUI.Config {
+    public struct Config: ConfigProtocol {
 
         public typealias PartialConfig = Button.PartialConfig
 
@@ -60,7 +60,7 @@ public final class Button: SingleChildWidget, StatefulWidget, ConfigurableWidget
         }
     }
     
-    public struct PartialConfig: WidgetGUI.PartialConfig {
+    public struct PartialConfig: PartialConfigProtocol {
 
         public var normalStyle: PartialStateStyle = PartialStateStyle()
 

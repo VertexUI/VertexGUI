@@ -1,6 +1,6 @@
 public protocol ConfigurableWidget where Self: Widget, Config.PartialConfig == PartialConfig {
-    associatedtype Config: WidgetGUI.Config
-    associatedtype PartialConfig: WidgetGUI.PartialConfig
+    associatedtype Config: ConfigProtocol
+    associatedtype PartialConfig: PartialConfigProtocol
 
     static var defaultConfig: Config { get }
     var localConfig: Config? { get set }

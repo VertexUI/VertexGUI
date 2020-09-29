@@ -4,7 +4,7 @@ import VisualAppBase
 
 public final class TextInput: SingleChildWidget, StatefulWidget, ConfigurableWidget, GUIMouseEventConsumer, GUIKeyEventConsumer, GUITextEventConsumer {
     
-    public struct Config: WidgetGUI.Config {
+    public struct Config: ConfigProtocol {
 
         public typealias PartialConfig = TextInput.PartialConfig
 
@@ -27,7 +27,7 @@ public final class TextInput: SingleChildWidget, StatefulWidget, ConfigurableWid
         }
     }
 
-    public struct PartialConfig: WidgetGUI.PartialConfig {
+    public struct PartialConfig: PartialConfigProtocol {
 
         public var textConfig: Text.PartialConfig? = Text.PartialConfig()
 

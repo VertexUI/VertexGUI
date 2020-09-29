@@ -3,17 +3,6 @@ import CustomGraphicsMath
 
 public class Border: SingleChildWidget {
 
-    public struct Borders {
-
-        public var top: Double
-        
-        public var right: Double
-
-        public var bottom: Double
-
-        public var left: Double
-    }
-
     private let borders: Borders
 
     private var borderSize: DSize2 {
@@ -117,4 +106,22 @@ public class Border: SingleChildWidget {
             }
         }
     }
+}
+
+extension Border {
+
+    public struct Borders {
+
+        public var top: Double
+        
+        public var right: Double
+
+        public var bottom: Double
+
+        public var left: Double
+    }
+
+/*    public struct Config: ConfigProtocol {
+
+    }*/
 }

@@ -2,7 +2,7 @@ import CustomGraphicsMath
 import VisualAppBase
 
 public final class Background: SingleChildWidget, ConfigurableWidget {
-    public struct Config: WidgetGUI.Config {
+    public struct Config: ConfigProtocol {
 
         public typealias PartialConfig = Background.PartialConfig
 
@@ -23,7 +23,7 @@ public final class Background: SingleChildWidget, ConfigurableWidget {
         }*/
     }
 
-    public struct PartialConfig: WidgetGUI.PartialConfig {
+    public struct PartialConfig: PartialConfigProtocol {
 
         public var fill: Color?
 

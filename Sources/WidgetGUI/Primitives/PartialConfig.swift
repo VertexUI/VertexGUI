@@ -1,12 +1,12 @@
 import Runtime
 
-public protocol PartialConfigMarker {
+public protocol PartialConfigMarkerProtocolProtocol {
    
     /// - Parameter partials: will be merged with lower index entries overwriting properties of higher index entries
     func merged(partials: [Any]) -> Any
 }
 
-public protocol PartialConfig: PartialConfigMarker {
+public protocol PartialConfigProtocol: PartialConfigMarkerProtocolProtocol {
     
     init()
     
@@ -21,7 +21,7 @@ public protocol PartialConfig: PartialConfigMarker {
     mutating func callAsFunction(_ modifier: (inout Self) -> ())
 }
 
-public extension PartialConfig {
+public extension PartialConfigProtocol {
 
     init(_ modifier: (inout Self) -> ()) {
 
@@ -44,7 +44,7 @@ public extension PartialConfig {
 
                 if let value = try! property.get(from: partial) as Optional<Any> {
 
-                    if value is PartialConfigMarker {
+                    if value is PartialConfigMarkerProtocolProtocol {
                         
                         if nestedPartials[property.name] == nil {
                             nestedPartials[property.name] = [Any]()
@@ -65,7 +65,7 @@ public extension PartialConfig {
         for (propertyName, partials) in nestedPartials {
             let property = try! typeInfo.property(named: propertyName)
 
-            let merged = (partials[0] as! PartialConfigMarker).merged(partials: partials)
+            let merged = (partials[0] as! PartialConfigMarkerProtocolProtocol).merged(partials: partials)
 
             try! property.set(value: merged, on: &instance)
         }
