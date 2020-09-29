@@ -70,19 +70,24 @@ public final class TextField: SingleChildWidget, ConfigurableWidget {
         
         textInput.with(config: config.textInputConfig)
 
-        return Border(bottom: 3, color: .Blue) { [unowned self] in
+        return ConfigProvider([
 
-            Background {
+            self.config.backgroundConfig
+        ]) {
+            
+            Border(bottom: 3, color: .Blue) { [unowned self] in
 
-                Clip {
+                Background {
 
-                    Padding(top: 8, right: 16, bottom: 8, left: 16) {
+                    Clip {
 
-                        textInput
+                        Padding(top: 8, right: 16, bottom: 8, left: 16) {
+
+                            textInput
+                        }
                     }
                 }
-
-            }.with(config: config.backgroundConfig)
+            }
         }
     }
 

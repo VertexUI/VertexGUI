@@ -11,7 +11,7 @@ public class TodoAppView: SingleChildWidget {
 
     private var todoLists = TodoList.mocks
 
-    private var searchWidget: Widget?
+    @Reference private var activeViewTopSpace: Space
 
     @Observable private var selectedList: TodoList? = nil
 
@@ -21,30 +21,33 @@ public class TodoAppView: SingleChildWidget {
 
     override public func buildChild() -> Widget {
 
-        DependencyProvider(provide: [
+        ThemeProvider(appTheme) { [unowned self] in
 
-            Dependency(todoLists)
+            DependencyProvider(provide: [
 
-        ]) {
+                Dependency(todoLists)
 
-            Background(fill: Color(240, 240, 240, 255)) { [unowned self] in
+            ]) {
 
-                Column(spacing: 32) {
+                Background(fill: appTheme.backgroundColor) { [unowned self] in
 
-                    Text("TODO Application", fontSize: 24, fontWeight: .Bold)
+                    Column(spacing: 32) {
 
-                    Column.Item(grow: 1, crossAlignment: .Stretch) {
+                        Text("TODO Application", fontSize: 24, fontWeight: .Bold)
 
-                        Row {
+                        Column.Item(grow: 1, crossAlignment: .Stretch) {
+
+                            Row {
+                                
+                                Row.Item(crossAlignment: .Stretch) {
                             
-                            Row.Item(crossAlignment: .Stretch) {
-                        
-                                buildMenu()
-                            }
+                                    buildMenu()
+                                }
 
-                            Row.Item(grow: 1, crossAlignment: .Stretch) {
+                                Row.Item(grow: 1, crossAlignment: .Stretch) {
 
-                                buildActiveView()
+                                    buildActiveView()
+                                }
                             }
                         }
                     }
@@ -55,32 +58,41 @@ public class TodoAppView: SingleChildWidget {
 
     private func buildMenu() -> Widget {
 
-        Column { [unowned self] in
-            
-            Column.Item(crossAlignment: .Stretch) {
+        Border(right: 1, color: appTheme.backgroundColor.darkened(40)) {
 
-                buildSearch()
-            }
+            Column { [unowned self] in
+                
+                Column.Item(crossAlignment: .Stretch) {
 
-            Column.Item(grow: 1, crossAlignment: .Stretch) {
+                    buildSearch()
+                }
 
-                ScrollArea {
+                Button {
 
-                    Padding(all: 32) {
+                    Text("New List")
+                }
 
-                        Column(spacing: 24) {
+                // TODO: implement Flex shrink
+                Column.Item(grow: 0, crossAlignment: .Stretch) {
 
-                            Text("Lists", fontSize: 24, fontWeight: .Bold)
+                    ScrollArea {
 
-                            Column.Item(crossAlignment: .Stretch) {
+                        Padding(all: 32) {
 
-                                Column {
-                                    
-                                    todoLists.map { list in
+                            Column(spacing: 24) {
 
-                                        Column.Item(crossAlignment: .Stretch) {
+                                Text("Lists", fontSize: 24, fontWeight: .Bold)
 
-                                            buildMenuListItem(for: list)
+                                Column.Item(crossAlignment: .Stretch) {
+
+                                    Column {
+                                        
+                                        todoLists.map { list in
+
+                                            Column.Item(crossAlignment: .Stretch) {
+
+                                                buildMenuListItem(for: list)
+                                            }
                                         }
                                     }
                                 }
@@ -94,7 +106,7 @@ public class TodoAppView: SingleChildWidget {
 
     private func buildSearch() -> Widget {
 
-        searchWidget = Background(fill: .White) { [unowned self] in
+        Background(fill: .White) { [unowned self] in
 
             Padding(all: 32) {
 
@@ -147,32 +159,40 @@ public class TodoAppView: SingleChildWidget {
                     }
                 }
             }
-        }
 
-        return searchWidget!
+        }.with { [unowned self] in
+
+            _ = onDestroy($0.onSizeChanged {
+
+                activeViewTopSpace.preferredSize = $0
+            })
+        }
     }
 
     private func buildMenuListItem(for list: TodoList) -> Widget {
 
         MouseArea {
 
-            Background(fill: .White) {
-                
-                Padding(all: 16) {
+            Border(bottom: 2, color: appTheme.backgroundColor.darkened(40)) {
+           
+                Background(fill: appTheme.backgroundColor) {
                     
-                    Row(spacing: 24) {
+                    Padding(all: 16) {
                         
-                        Background(fill: list.color) {
+                        Row(spacing: 24) {
                             
-                            Padding(all: 8) {
+                            Background(fill: list.color) {
+                                
+                                Padding(all: 8) {
 
-                                MaterialIcon(.formatListBulletedSquare, color: .White)
+                                    MaterialIcon(.formatListBulletedSquare, color: .White)
+                                }
                             }
-                        }
-                        
-                        Row.Item(crossAlignment: .Center) {
+                            
+                            Row.Item(crossAlignment: .Center) {
 
-                            Text(list.name)
+                                Text(list.name)
+                            }
                         }
                     }
                 }
@@ -188,15 +208,11 @@ public class TodoAppView: SingleChildWidget {
 
     private func buildActiveView() -> Widget {
 
-        Background(fill: .White) { [unowned self] in
+        Background(fill: appTheme.backgroundColor) { [unowned self] in
 
             Column {
                 
-                // TODO: maybe instead of using a variable, might use a child(where: ) function
-                DependentSpace(dependency: searchWidget!) {
-
-                    $0.globalBounds.size
-                }
+                Space(DSize2(0, 0)).connect(ref: $activeViewTopSpace)
 
                 Column.Item(grow: 1, crossAlignment: .Stretch) {
 

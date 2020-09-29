@@ -14,7 +14,9 @@ public class DefaultTheme: Theme {
 
     public var primaryColor: Color
 
-    public init(mode: Mode, primaryColor: Color) {
+    public var backgroundColor: Color
+
+    public init(mode: Mode, primaryColor: Color, backgroundColor: Color) {
 
         //let backgroundColor: Color = mode == .Light ? Color.White : Color.Grey
 
@@ -22,7 +24,21 @@ public class DefaultTheme: Theme {
 
         self.primaryColor = primaryColor
 
+        self.backgroundColor = backgroundColor
+
         self.configs = [
+
+            Background.PartialConfig {
+
+                $0.fill = backgroundColor
+
+                $0.shape = .Rectangle
+            },
+
+            Text.PartialConfig {
+
+                $0.color = mode == .Light ? Color.Black : Color.White
+            },
 
             TextField.PartialConfig {
 
@@ -30,7 +46,7 @@ public class DefaultTheme: Theme {
 
                     $0.fill = Color(40, 40, 50, 255)
 
-                    $0.shape = .RoundedRectangle(CornerRadii(all: 24))
+                    $0.shape = .Rectangle// .RoundedRectangle(CornerRadii(all: 24))
                 }
             },
             

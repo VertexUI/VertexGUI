@@ -58,12 +58,6 @@ public final class Button: SingleChildWidget, StatefulWidget, ConfigurableWidget
 
             self.activeStyle = activeStyle
         }
-
-        /*public init(partial partialConfig: PartialConfig?, default defaultConfig: Self) {
-            self.normalStyle = StateStyle(partial: partialConfig?.normalStyle, default: defaultConfig.normalStyle)
-            self.hoverStyle = /*partialConfig?.hoverStyle ??*/ defaultConfig.hoverStyle
-            self.activeStyle = /*partialConfig?.activeStyle ??*/ defaultConfig.activeStyle
-        }*/
     }
     
     public struct PartialConfig: WidgetGUI.PartialConfig {
@@ -158,6 +152,10 @@ public final class Button: SingleChildWidget, StatefulWidget, ConfigurableWidget
             }
 
             self.childBuilder = childBuilder
+
+            super.init()
+
+            self.debugLayout = true
     }
 
     public convenience init(@WidgetBuilder child childBuilder: @escaping () -> Widget) {
@@ -167,19 +165,25 @@ public final class Button: SingleChildWidget, StatefulWidget, ConfigurableWidget
 
     override public func buildChild() -> Widget {
 
-        MouseArea {
+        MouseArea { [unowned self] in
 
-            Background {
+            ConfigProvider([
 
-                Padding(all: 16) { [unowned self] in
+                config.normalStyle.backgroundConfig,
 
-                    TextConfigProvider(config: config.normalStyle.textConfig) {
+                config.normalStyle.textConfig
+
+            ]) {
+
+                Background {
+
+                    Padding(all: 16) {
 
                         childBuilder()
                     }
-                }
 
-            }.with(config: config.normalStyle.backgroundConfig)
+                }
+            }
 
         } onClick: { [unowned self] in
 
@@ -207,41 +211,7 @@ public final class Button: SingleChildWidget, StatefulWidget, ConfigurableWidget
 
     override public func renderContent() -> RenderObject? {
 
-        /*let style: StateStyle
-
-        switch state {
-
-        case .Normal:
-
-            style = config.normalStyle
-
-        case .Hover:
-
-            style = config.hoverStyle
-
-        case .Active:
-
-            style = config.activeStyle
-        }*/
-
-        return RenderObject.Container {
-            /*if state == .Normal {
-                RenderObject.RenderStyle(
-                    fillColor: FixedRenderValue(Color(0, 255, 120, 255))) {
-                        RenderObject.Rectangle(globalBounds)
-                }
-            } else if state == .Hover {
-                RenderObject.RenderStyle(
-                    fillColor: TimedRenderValue(
-                        id: 0, 
-                        startTimestamp: Date.timeIntervalSinceReferenceDate, 
-                        duration: 3,
-                        valueAt: { progress in Color(UInt8(progress * 255), 0, 0, 255) })) {
-                    RenderObject.Rectangle(globalBounds)
-                }
-            }*/
-            child.render() 
-        }
+        return child.render()
     }
 
     override public func destroySelf() {

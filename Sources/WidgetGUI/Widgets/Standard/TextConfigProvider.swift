@@ -3,7 +3,7 @@ import CustomGraphicsMath
 
 public class TextConfigProvider: ConfigProvider {
     public init(config: Text.PartialConfig, @WidgetBuilder child childBuilder: @escaping () -> Widget) {
-        super.init(configs: [config], child: childBuilder)
+        super.init([config], child: childBuilder)
     }
 
     public convenience init(

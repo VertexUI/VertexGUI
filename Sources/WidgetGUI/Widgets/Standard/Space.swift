@@ -3,7 +3,15 @@ import VisualAppBase
 
 public class Space: Widget {
 
-    private let preferredSize: DSize2
+    public var preferredSize: DSize2 {
+
+        didSet {
+
+            invalidateBoxConfig()
+
+            invalidateLayout()
+        }
+    }
 
     public init(_ preferredSize: DSize2) {
         
