@@ -895,8 +895,6 @@ open class Widget: Bounded, Parent, Child {
     }
 
     /// This should trigger a rerender of the widget in the next frame.
-    /// 
-    /// Automatically calls itself on each child as well.
     @inlinable public final func invalidateRenderState() {
 
         if renderState.invalid {
@@ -954,11 +952,6 @@ open class Widget: Bounded, Parent, Child {
         #endif
 
         renderState.invalid = true
-
-        for child in children {
-
-            child.invalidateRenderState()
-        }
 
         onRenderStateInvalidated.invokeHandlers(self)
 
