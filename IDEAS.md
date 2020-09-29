@@ -1,0 +1,4 @@
+- use function builders to create deeply nested and constrained (receiver constrained) widget configs (--> like css)
+- make configs reactive / observable values
+- for MouseInteraction Widget: change an observable value during mouse interaction / provide different configs that are passed down for different states
+- use Protocols to mark types as acceptable for fill properties --> Colors, Gradients, TransitionedValues, AnimatedValues
