@@ -33,22 +33,25 @@ public final class MouseInteraction: SingleChildWidget, GUIMouseEventConsumer, C
             config.stateConfigs[state]
         }
 
-        self._providedConfigs.computeValue = { [unowned self] in
-
-            activeStateConfig != nil ? [activeStateConfig!] : []
-        }
-    }
+        self._activeStateConfig.dependencies = [self.$state.any]
+   }
 
     override public func addedToParent() {
         
-        // activeStateConfig = config.stateConfigs[state]
+        self._providedConfigs.computeValue = { [unowned self] in
+
+            return activeStateConfig != nil ? [activeStateConfig!] : []
+        }
+
+        self._providedConfigs.dependencies = [self.$activeStateConfig.any]
     }
 
     override public func buildChild() -> Widget {
 
-        ConfigProvider(providedConfigs) { [unowned self] in
+        ConfigProvider($providedConfigs) { [unowned self] in
 
             childBuilder()
+
         }
     }
 
@@ -68,7 +71,7 @@ public final class MouseInteraction: SingleChildWidget, GUIMouseEventConsumer, C
 
             self.state = .Active
 
-        case _ as GUIMouseButtonUpEvent:
+        case let event as GUIMouseButtonUpEvent:
 
             if globalBounds.contains(point: event.position) {
 
@@ -83,8 +86,6 @@ public final class MouseInteraction: SingleChildWidget, GUIMouseEventConsumer, C
 
             return
         }
-
-        invalidateChild()
     }
 }
 

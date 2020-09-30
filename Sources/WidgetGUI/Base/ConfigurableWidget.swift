@@ -35,7 +35,7 @@ public extension ConfigurableWidget {
         return self
     }
 
-    func combineConfigs() -> Config {
+    func combineConfigsComputed() -> Computed<Config> {
 
         // TODO: maybe provide an extra flag through Widget to see whether Widget was added to a parent
         if parent == nil {
@@ -45,13 +45,26 @@ public extension ConfigurableWidget {
 
         if let fullConfig = localConfig {
      
-            return fullConfig
+            return Computed({ fullConfig }, dependencies: [])
         }
 
-        let inheritedPartial = getConfig(ofType: PartialConfig.self)?.value
+        let computedInheritedPartial = getConfig(ofType: PartialConfig.self)
 
-        let combinedPartial = PartialConfig.merged(partials: [localPartialConfig, inheritedPartial].compactMap { $0 })
+        // TODO: if a config provider parent changes the Computed property has to be setup again!
 
-        return Self.defaultConfig.merged(with: combinedPartial)
+        return Computed({ [unowned self] in
+
+            let inheritedPartial = computedInheritedPartial.value
+
+            let combinedPartial = PartialConfig.merged(partials: [localPartialConfig, inheritedPartial].compactMap { $0 })
+            
+            return Self.defaultConfig.merged(with: combinedPartial)
+
+        }, dependencies: [computedInheritedPartial.projectedValue.any])
+    }
+
+    func combineConfigs() -> Config {
+
+        combineConfigsComputed().value
     }
 }

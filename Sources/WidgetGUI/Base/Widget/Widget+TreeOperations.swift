@@ -90,22 +90,29 @@ extension Widget {
 
     /// Retrieve a config of a given type from any parent. If there are multiple configs in the hierarchy,
     /// properties get overwritten by deeper nested configs.
-    public final func getConfig<Config: PartialConfigProtocol>(ofType type: Config.Type) -> Computed<Config>? {
+    public final func getConfig<Config: PartialConfigProtocol>(ofType type: Config.Type) -> Computed<Config?> {
       
         let configProviders = getParents(ofType: ConfigProvider.self)
         
-        let configs = configProviders.compactMap {
-        
-            $0.retrieveConfig(ofType: type)
-        }
+        // TODO: if the config providers change, because the parent is swapped and child is retained
+        // the returned computed property needs to be setup again!
 
-        if configs.count == 0 {
-        
-            return nil
-        }
+        return Computed({
 
-        let resultConfig = type.merged(partials: configs)
-        
-        return Computed({ resultConfig }, dependencies: [])
+            let configs = configProviders.compactMap {
+            
+                $0.retrieveConfig(ofType: type)
+            }
+
+            if configs.count == 0 {
+            
+                return nil
+            }
+
+            let resultConfig = type.merged(partials: configs)
+            
+            return resultConfig
+
+         }, dependencies: configProviders.map { $0.$configs.any })
     }
 }

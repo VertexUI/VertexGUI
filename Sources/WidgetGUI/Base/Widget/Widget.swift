@@ -960,6 +960,16 @@ open class Widget: Bounded, Parent, Child {
         onAnyRenderStateInvalidated.invokeHandlers(self)
     }
 
+    /*public static func == (lhs: Widget, rhs: Widget) -> Bool {
+
+        ObjectIdentifier(lhs) == ObjectIdentifier(rhs)
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        
+        hasher.combine(ObjectIdentifier(self))
+    }*/
+
     // TODO: how to name this?
     public final func destroy() {
 

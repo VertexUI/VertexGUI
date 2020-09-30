@@ -42,6 +42,14 @@ public class Observable<Value> {
         }
     }
 
+    public var any: AnyObservable {
+
+        get {
+
+            return AnyObservable(self)
+        }
+    }
+
     public internal(set) var onChanged = EventHandlerManager<Value>()
     
     public init(_ initialValue: Value) {

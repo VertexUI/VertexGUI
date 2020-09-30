@@ -47,6 +47,9 @@ public final class Background: SingleChildWidget, ConfigurableWidget {
     
     lazy public var config: Config = combineConfigs()
 
+    @Computed
+    public var computedConfig: Config
+
     private var inputChild: Widget
 
     public init(
@@ -69,6 +72,16 @@ public final class Background: SingleChildWidget, ConfigurableWidget {
             with(config: Config(fill: fill, shape: shape))
     }
 
+    override public func addedToParent() {
+
+        _computedConfig = combineConfigsComputed()
+    
+        _ = onDestroy(_computedConfig.onChanged { [unowned self] _ in
+
+            invalidateRenderState()
+        })
+    }
+
     override public func buildChild() -> Widget {
 
         inputChild
@@ -78,13 +91,13 @@ public final class Background: SingleChildWidget, ConfigurableWidget {
 
         return .Container { [unowned self] in
 
-            RenderObject.RenderStyle(fillColor: config.fill) {
+            RenderObject.RenderStyle(fillColor: computedConfig.fill) {
 
-                if case .Rectangle = config.shape {
+                if case .Rectangle = computedConfig.shape {
 
                     RenderObject.Rectangle(globalBounds)
 
-                } else if case let .RoundedRectangle(cornerRadii) = config.shape {
+                } else if case let .RoundedRectangle(cornerRadii) = computedConfig.shape {
                     
                     RenderObject.Rectangle(globalBounds, cornerRadii: cornerRadii)
                 }

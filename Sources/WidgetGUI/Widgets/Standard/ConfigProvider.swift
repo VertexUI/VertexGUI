@@ -2,11 +2,11 @@ import VisualAppBase
 
 public class ConfigProvider: SingleChildWidget {
 
-    @Observable private var configs: [PartialConfigMarkerProtocol]
+    @Observable public internal(set) var configs: [PartialConfigMarkerProtocol]
 
     private var childBuilder: () -> Widget
 
-    public internal(set) var onConfigsChanged = EventHandlerManager<Void>()
+   // public internal(set) var onConfigsChanged = EventHandlerManager<Void>()
 
     public init(_ configs: Observable<[PartialConfigMarkerProtocol]>, @WidgetBuilder child childBuilder: @escaping () -> Widget) {
 
@@ -16,10 +16,10 @@ public class ConfigProvider: SingleChildWidget {
 
         super.init()
 
-        _ = onDestroy(self._configs.onChanged { [unowned self] _ in
+       /* _ = onDestroy(self._configs.onChanged { [unowned self] _ in
 
             onConfigsChanged.invokeHandlers(Void())
-        })
+        })*/
     }
 
     public convenience init(_ configs: [PartialConfigMarkerProtocol], @WidgetBuilder child childBuilder: @escaping () -> Widget) {
@@ -50,8 +50,8 @@ public class ConfigProvider: SingleChildWidget {
         return nil
     }
 
-    override public func destroySelf() {
+   /* override public func destroySelf() {
 
         onConfigsChanged.removeAllHandlers()
-    }
+    }*/
 }

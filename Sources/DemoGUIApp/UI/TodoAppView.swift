@@ -204,7 +204,11 @@ public class TodoAppView: SingleChildWidget {
 
                 $0.stateConfigs = [.Normal: Background.PartialConfig {
 
-                    $0.fill = Color.Black
+                    $0.fill = appTheme.backgroundColor
+
+                }, .Hover: Background.PartialConfig {
+
+                    $0.fill = appTheme.primaryColor
                 }]
             })
 

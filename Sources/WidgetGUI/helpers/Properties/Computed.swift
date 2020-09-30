@@ -72,8 +72,6 @@ public class Computed<T> {
 
     deinit {
 
-        print("DEINITIALIZED COMPUTED PROPERTY")
-
         onChanged.removeAllHandlers()
 
         removeDependencyHandlers()
