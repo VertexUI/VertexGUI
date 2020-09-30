@@ -29,11 +29,11 @@ public extension ConfigProtocol {
 
                 if let value = try! partialProperty.get(from: partialConfig) as Optional<Any> {
                     
-                    if let subPartial = value as? PartialConfigMarkerProtocolProtocol {
+                    if let subPartial = value as? PartialConfigMarkerProtocol {
                         
                         let defaultValue = try! resultProperty.get(from: result)
 
-                        if let defaultSubPartial = defaultValue as? PartialConfigMarkerProtocolProtocol {
+                        if let defaultSubPartial = defaultValue as? PartialConfigMarkerProtocol {
 
                             let subMerged = subPartial.merged(partials: [subPartial, defaultSubPartial])
 

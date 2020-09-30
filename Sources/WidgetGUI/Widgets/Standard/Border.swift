@@ -120,8 +120,4 @@ extension Border {
 
         public var left: Double
     }
-
-/*    public struct Config: ConfigProtocol {
-
-    }*/
 }
