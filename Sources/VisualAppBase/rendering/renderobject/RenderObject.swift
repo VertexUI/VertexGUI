@@ -201,6 +201,7 @@ open class ContainerRenderObject: SubTreeRenderObject {
 }
 
 // TODO: maybe add something layer BlendMode
+// TODO: is this even needed or should the colors etc. all be added to the individual leaf RenderObjects?
 open class RenderStyleRenderObject: SubTreeRenderObject {
     public var fill: AnyRenderValue<Fill>?
     public var strokeWidth: Double?

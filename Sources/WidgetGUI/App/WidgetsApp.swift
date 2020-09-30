@@ -133,7 +133,8 @@ open class WidgetsApp<S: System, W: Window, R: Renderer>: VisualApp<S, W> {
             // TODO: maybe call this in system.onFrame? might need an option to add a handler before all other handlers
             windowConfig.guiRoot.tick()
             
-            if windowConfig.guiRoot.rerenderNeeded {
+            // TODO: reimplement rerenderNeeded --> check whether transitions running!
+            //if windowConfig.guiRoot.rerenderNeeded {
             
                 windowConfig.renderer.beginFrame()
                 
@@ -144,7 +145,7 @@ open class WidgetsApp<S: System, W: Window, R: Renderer>: VisualApp<S, W> {
                 windowConfig.renderer.endFrame()
                 
                 windowConfig.window.updateContent()
-            }
+            //}
         }
     }
 

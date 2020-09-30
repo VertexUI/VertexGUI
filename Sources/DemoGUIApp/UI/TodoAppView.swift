@@ -209,6 +209,8 @@ public class TodoAppView: SingleChildWidget {
                 }, .Hover: Background.PartialConfig {
 
                     $0.fill = appTheme.primaryColor
+
+                    $0.fillTransition = Background.FillTransition(duration: 0.3)
                 }]
             })
 

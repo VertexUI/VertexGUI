@@ -1,43 +1,8 @@
+import Foundation
 import CustomGraphicsMath
 import VisualAppBase
 
 public final class Background: SingleChildWidget, ConfigurableWidget {
-    public struct Config: ConfigProtocol {
-
-        public typealias PartialConfig = Background.PartialConfig
-
-        public var fill: Color
-
-        public var shape: Shape
-
-        public init(fill: Color, shape: Shape) {
-
-            self.fill = fill
-
-            self.shape = shape
-        }
-
-        /*public init(partial partialConfig: PartialConfig?, default defaultConfig: Self) {
-            self.fill = partialConfig?.fill ?? defaultConfig.fill
-            self.shape = partialConfig?.shape ?? defaultConfig.shape
-        }*/
-    }
-
-    public struct PartialConfig: PartialConfigProtocol {
-
-        public var fill: Color?
-
-        public var shape: Shape?
-
-        public init() {}
-    }
-
-    public enum Shape {
-
-        case Rectangle
-        
-        case RoundedRectangle(_ cornerRadii: CornerRadii)
-    } 
 
     public static let defaultConfig = Config(fill: .Transparent, shape: .Rectangle)    
 
@@ -46,6 +11,8 @@ public final class Background: SingleChildWidget, ConfigurableWidget {
     public var localPartialConfig: PartialConfig?
     
     lazy public var config: Config = combineConfigs()
+
+    private var currentFillRenderValue: AnyRenderValue<Fill>?
 
     @Computed
     public var computedConfig: Config
@@ -89,9 +56,38 @@ public final class Background: SingleChildWidget, ConfigurableWidget {
 
     override public func renderContent() -> RenderObject? {
 
+        if let fillTransition = computedConfig.fillTransition,
+
+            let previousFillRenderValue = currentFillRenderValue {
+
+                guard case let .Color(previousFill) = previousFillRenderValue.getValue(at: Date.timeIntervalSinceReferenceDate) else {
+
+                    fatalError()
+                }
+
+                currentFillRenderValue = AnyRenderValue(
+
+                    TimedRenderValue(
+                        
+                        id: 0,
+                        
+                        startTimestamp: Date.timeIntervalSinceReferenceDate,
+                        
+                        duration: fillTransition.duration,
+                        
+                        valueAt: { [unowned self] in
+
+                            return Fill.Color(previousFill.mixed(computedConfig.fill, $0 * 100))
+                        }))
+
+        } else {
+
+            currentFillRenderValue = AnyRenderValue(FixedRenderValue(Fill.Color(computedConfig.fill)))
+        }
+
         return .Container { [unowned self] in
 
-            RenderObject.RenderStyle(fillColor: computedConfig.fill) {
+            RenderObject.RenderStyle(fill: currentFillRenderValue!) {
 
                 if case .Rectangle = computedConfig.shape {
 
@@ -104,6 +100,62 @@ public final class Background: SingleChildWidget, ConfigurableWidget {
             }
             
             child.render()
+        }
+    }
+}
+
+extension Background {
+ 
+    public struct Config: ConfigProtocol {
+
+        public typealias PartialConfig = Background.PartialConfig
+
+        public var fill: Color
+
+        public var fillTransition: FillTransition?
+
+        public var shape: Shape
+
+        /*public init(fill: Color, fillTransition: FillTransition? = nil, shape: Shape) {
+
+            self.fill = fill
+
+            self.fillTransition = fillTransition
+
+            self.shape = shape
+        }*/
+
+        /*public init(partial partialConfig: PartialConfig?, default defaultConfig: Self) {
+            self.fill = partialConfig?.fill ?? defaultConfig.fill
+            self.shape = partialConfig?.shape ?? defaultConfig.shape
+        }*/
+    }
+
+    public struct PartialConfig: PartialConfigProtocol {
+
+        public var fill: Color?
+
+        public var fillTransition: FillTransition?
+
+        public var shape: Shape?
+
+        public init() {}
+    }
+
+    public enum Shape {
+
+        case Rectangle
+        
+        case RoundedRectangle(_ cornerRadii: CornerRadii)
+    }
+
+    public struct FillTransition {
+
+        public var duration: Double
+
+        public init(duration: Double) {
+
+            self.duration = duration
         }
     }
 }

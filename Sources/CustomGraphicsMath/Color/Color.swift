@@ -109,4 +109,18 @@ public struct Color: Hashable, Equatable {
 
         Self(h: h, s: s, l: l - l * (percentage / 100), a: Double(a) / 255)
     }
+
+    /// - Parameter percentage: How much of the resulting color should be the other color?
+    public func mixed(_ other: Color, _ percentage: Double) -> Self {
+
+        let ownFactor = (100 - percentage) / 100
+
+        let otherFactor = percentage / 100
+
+        return Self(
+            r: UInt8(Double(r) * ownFactor + Double(other.r) * otherFactor),
+            g: UInt8(Double(g) * ownFactor + Double(other.g) * otherFactor),
+            b: UInt8(Double(b) * ownFactor + Double(other.b) * otherFactor),
+            a: UInt8(Double(a) * ownFactor + Double(other.a) * otherFactor))
+    }
 }

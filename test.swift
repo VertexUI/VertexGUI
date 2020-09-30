@@ -1,33 +1,26 @@
-public struct ItemType1 {
-
-}
-
-@_functionBuilder
-public struct TestFunctionBuilder {
-    /*public static func buildExpression(_ item: ItemType1) -> ItemType1 {
-        [item]
-    }*/
-
-    /*public static func buildExpression(_ items: [ItemType1]) -> [ItemType1] {
-        items
-    }*/
-
-    public static func buildArray(items: [ItemType1]) -> [ItemType1] {
-        return items.compactMap { $0 }
-    }
-
-    public static func buildBlock(_ items: [ItemType1]) -> [ItemType1] {
-        return items
+public class Generic<T> {
+    public var value: T
+    public init(_ value: T) {
+        self.value = value
     }
 }
 
-@TestFunctionBuilder func build() -> [ItemType1] {
-    //ItemType1()
-    //ItemType1()
-
-    /*[
-        ItemType1()
-    ]*/
-
-    [ItemType1()]
+protocol Printable {
+    var text: String { get }
 }
+
+extension Generic: Printable where T == String {
+
+    var text: String {
+
+        return value
+    }
+}
+
+func printPrintable(_ printable: Printable) {
+    print(printable.text)
+}
+
+var testVar = Generic("Hello World")
+
+printPrintable(testVar)

@@ -23,3 +23,7 @@
 # widget identification
 
 - make Widgets equatable by id?
+
+# keeping everything together
+
+- e.g. for Widget class, may add context / tag information to each function, property as well as side effects and when it is valid to use them in the lifecycle
