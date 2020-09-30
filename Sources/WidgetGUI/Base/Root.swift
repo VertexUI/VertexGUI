@@ -206,7 +206,9 @@ open class Root: Parent {
     */
     internal var previousMouseEventTargets: [ObjectIdentifier: [Widget & GUIMouseEventConsumer]] = [
 
-        ObjectIdentifier(GUIMouseButtonDownEvent.self): []
+        ObjectIdentifier(GUIMouseButtonDownEvent.self): [],
+
+        ObjectIdentifier(GUIMouseMoveEvent.self): []
     ]
 
     internal func propagate(_ event: RawMouseEvent) {
@@ -284,16 +286,38 @@ open class Root: Parent {
         
         case let event as RawMouseMoveEvent:
 
+            var previousTargets = previousMouseEventTargets[ObjectIdentifier(GUIMouseMoveEvent.self)]!
+
             for target in currentTargets {
 
                 let currentPosition = currentTargetPositions[ObjectIdentifier(target)]!
 
                 let translation = currentPosition - event.position
 
-                target.consume(GUIMouseMoveEvent(position: currentPosition, previousPosition: event.previousPosition + translation))
+                // TODO: maybe instead of contains by object identity, use contains by Widget identity 
+                // --> same type, same position, same id
+                if previousTargets.contains(where: { ObjectIdentifier($0) == ObjectIdentifier(target) }) {
 
-                // TODO: implement mouse enter and mouse leave
+                    previousTargets.removeAll { ObjectIdentifier($0) == ObjectIdentifier(target) }
+
+                    // TODO: save the previous translated position for this target!
+                    target.consume(GUIMouseMoveEvent(position: currentPosition, previousPosition: event.previousPosition + translation))
+
+                } else {
+
+                    target.consume(GUIMouseEnterEvent(position: currentPosition))
+                }
             }
+
+            // the targets left in previousTargets are only those which were not targets of the current event
+            // which means the mouse has left them
+            for target in previousTargets {
+                
+                // TODO: save the previous translated position for this specific target and pass it here instead!
+                target.consume(GUIMouseLeaveEvent(previousPosition: event.previousPosition))
+            }
+
+            previousMouseEventTargets[ObjectIdentifier(GUIMouseMoveEvent.self)] = currentTargets
 
         case let event as RawMouseWheelEvent:
 
