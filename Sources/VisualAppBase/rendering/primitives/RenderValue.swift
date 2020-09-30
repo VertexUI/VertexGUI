@@ -62,10 +62,13 @@ public struct TimedRenderValue<V: Hashable>: RenderValue {
 }
 
 // TODO: maybe add a ScopedRenderValue as well which retrieves values from a Variables provided by any parent of type VariableDefinitionRenderObject
-
+// TODO: make AnyRenderValue or protocol, maybe name it AnyRenderValueProtocol and let Fixed and Transition conform to it
 public struct AnyRenderValue<V: Hashable>: RenderValue {
+
     public typealias Value = V
+
     private var fixedBase: FixedRenderValue<V>?
+
     private var timedBase: TimedRenderValue<V>?    
 
     public var isTimed: Bool {
@@ -73,12 +76,25 @@ public struct AnyRenderValue<V: Hashable>: RenderValue {
     }
 
     public init<B: RenderValue>(_ base: B) where B.Value == V {
+
         switch base {
+
         case let base as FixedRenderValue<V>:
+
             self.fixedBase = base
+
         case let base as TimedRenderValue<V>:
+
             self.timedBase = base
+
+        case let base as AnyRenderValue<V>:
+
+            self.fixedBase = base.fixedBase
+            
+            self.timedBase = base.timedBase
+
         default:
+
             fatalError("Unsupported RenderValue given as base.")
         }
     }
