@@ -135,7 +135,7 @@ public final class TextInput: SingleChildWidget, StatefulWidget, ConfigurableWid
 
     public func consume(_ event: GUIMouseEvent) {
 
-        if event is GUIMouseButtonClickEvent {
+        if let event = event as? GUIMouseButtonClickEvent {
 
             requestFocus()
 
