@@ -173,30 +173,40 @@ public class TodoAppView: SingleChildWidget {
 
         MouseArea {
 
-            Border(bottom: 2, color: appTheme.backgroundColor.darkened(40)) {
-           
-                Background(fill: appTheme.backgroundColor) {
-                    
-                    Padding(all: 16) {
+            MouseInteraction {
+
+                Border(bottom: 2, color: appTheme.backgroundColor.darkened(40)) {
+            
+                    Background {
                         
-                        Row(spacing: 24) {
+                        Padding(all: 16) {
                             
-                            Background(fill: list.color) {
+                            Row(spacing: 24) {
                                 
-                                Padding(all: 8) {
+                                Background(fill: list.color) {
+                                    
+                                    Padding(all: 8) {
 
-                                    MaterialIcon(.formatListBulletedSquare, color: .White)
+                                        MaterialIcon(.formatListBulletedSquare, color: .White)
+                                    }
                                 }
-                            }
-                            
-                            Row.Item(crossAlignment: .Center) {
+                                
+                                Row.Item(crossAlignment: .Center) {
 
-                                Text(list.name)
+                                    Text(list.name)
+                                }
                             }
                         }
                     }
                 }
-            }
+
+            }.with(config: MouseInteraction.PartialConfig {
+
+                $0.stateConfigs = [.Normal: Background.PartialConfig {
+
+                    $0.fill = Color.Black
+                }]
+            })
 
         } onClick: { [unowned self] _ in
 
