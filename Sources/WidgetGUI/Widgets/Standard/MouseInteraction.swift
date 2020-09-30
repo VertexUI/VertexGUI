@@ -1,7 +1,7 @@
 // TODO: find a better name, maybe; sounds too similar to MouseArea / Why need both even?
 public final class MouseInteraction: SingleChildWidget, GUIMouseEventConsumer, ConfigurableWidget {
 
-    private var state: State = .Normal
+    @Observable private var state: State = .Normal
 
     lazy public var config: Config = combineConfigs()
 
@@ -16,16 +16,37 @@ public final class MouseInteraction: SingleChildWidget, GUIMouseEventConsumer, C
 
     private let childBuilder: () -> Widget
 
+    @Computed
+    private var activeStateConfig: PartialConfigMarkerProtocol?
+
+    @Computed
+    private var providedConfigs: [PartialConfigMarkerProtocol]
+
     public init(@WidgetBuilder child childBuilder: @escaping () -> Widget) {
 
         self.childBuilder = childBuilder
+
+        super.init()
+
+        self._activeStateConfig.computeValue = { [unowned self] in
+
+            config.stateConfigs[state]
+        }
+
+        self._providedConfigs.computeValue = { [unowned self] in
+
+            activeStateConfig != nil ? [activeStateConfig!] : []
+        }
+    }
+
+    override public func addedToParent() {
+        
+        // activeStateConfig = config.stateConfigs[state]
     }
 
     override public func buildChild() -> Widget {
 
-        let stateConfig = config.stateConfigs[state]
-
-        return ConfigProvider(stateConfig != nil ? [stateConfig!] : []) { [unowned self] in
+        ConfigProvider(providedConfigs) { [unowned self] in
 
             childBuilder()
         }

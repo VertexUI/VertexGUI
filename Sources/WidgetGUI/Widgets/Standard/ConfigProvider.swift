@@ -1,17 +1,33 @@
+import VisualAppBase
+
 public class ConfigProvider: SingleChildWidget {
 
-    private var configs: [PartialConfigMarkerProtocolProtocol]
+    @Observable private var configs: [PartialConfigMarkerProtocol]
 
     private var childBuilder: () -> Widget
-    
-    public init(_ configs: [PartialConfigMarkerProtocolProtocol], @WidgetBuilder child childBuilder: @escaping () -> Widget) {
 
-        self.configs = configs
+    public internal(set) var onConfigsChanged = EventHandlerManager<Void>()
+
+    public init(_ configs: Observable<[PartialConfigMarkerProtocol]>, @WidgetBuilder child childBuilder: @escaping () -> Widget) {
 
         self.childBuilder = childBuilder
+
+        self._configs = configs
+
+        super.init()
+
+        _ = onDestroy(self._configs.onChanged { [unowned self] _ in
+
+            onConfigsChanged.invokeHandlers(Void())
+        })
     }
 
-    public convenience init(_ configs: PartialConfigMarkerProtocolProtocol..., @WidgetBuilder child childBuilder: @escaping () -> Widget) {
+    public convenience init(_ configs: [PartialConfigMarkerProtocol], @WidgetBuilder child childBuilder: @escaping () -> Widget) {
+
+        self.init(ObservableArray(configs), child: childBuilder)
+    }
+
+    public convenience init(_ configs: PartialConfigMarkerProtocol..., @WidgetBuilder child childBuilder: @escaping () -> Widget) {
 
         self.init(configs, child: childBuilder)
     }
@@ -32,5 +48,10 @@ public class ConfigProvider: SingleChildWidget {
         }
 
         return nil
+    }
+
+    override public func destroySelf() {
+
+        onConfigsChanged.removeAllHandlers()
     }
 }

@@ -2,3 +2,5 @@
 - make configs reactive / observable values
 - for MouseInteraction Widget: change an observable value during mouse interaction / provide different configs that are passed down for different states
 - use Protocols to mark types as acceptable for fill properties --> Colors, Gradients, TransitionedValues, AnimatedValues
+- add Binding which can set values and remove set capability from Observable
+- introduce ConfigCaches which combine all the configs of higher level ConfigProviders (if makes sense performance wise)

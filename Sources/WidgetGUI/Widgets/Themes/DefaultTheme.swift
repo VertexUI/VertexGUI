@@ -8,7 +8,7 @@ public class DefaultTheme: Theme {
         case Light, Dark
     }
 
-    public var configs: [PartialConfigMarkerProtocolProtocol]
+    public var configs: [PartialConfigMarkerProtocol]
     
     public var mode: Mode
 

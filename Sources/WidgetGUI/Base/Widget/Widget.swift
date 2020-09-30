@@ -16,6 +16,8 @@ open class Widget: Bounded, Parent, Child {
 
     open var key: String?
 
+    open var classes: [String] = []
+
     open var _context: WidgetContext?
 
     open var context: WidgetContext? {
