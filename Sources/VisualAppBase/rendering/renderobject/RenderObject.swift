@@ -1,3 +1,5 @@
+import Foundation
+import Dispatch
 import VisualAppBase
 import CustomGraphicsMath
 
@@ -25,7 +27,7 @@ open class RenderObject: CustomDebugStringConvertible, TreeNode {
 
     open var isBranching: Bool { false }
 
-    internal var _context: RenderObjectContext?
+    fileprivate var _context: RenderObjectContext?
 
     open var context: RenderObjectContext {
 
@@ -203,41 +205,77 @@ open class ContainerRenderObject: SubTreeRenderObject {
 // TODO: maybe add something layer BlendMode
 // TODO: is this even needed or should the colors etc. all be added to the individual leaf RenderObjects?
 open class RenderStyleRenderObject: SubTreeRenderObject {
+
     public var fill: AnyRenderValue<Fill>?
+
     public var strokeWidth: Double?
+
     public var strokeColor: AnyRenderValue<Color>?
 
     override open var hasTimedRenderValue: Bool {
+
         return fill?.isTimed ?? false || strokeColor?.isTimed ?? false
     }
 
     override open var debugDescription: String {
+
         "RenderStyleRenderObject"
     }
 
+    override open var context: RenderObjectContext {
+
+        didSet  {
+            
+            // TODO: create a better system for detecting transition start, transition end
+            if let fill = self.fill {
+
+                if let timedValue = fill.timedBase {
+
+                    context.bus.publish(.TransitionStarted)
+
+                    DispatchQueue.main.asyncAfter(deadline: .now() + timedValue.duration) { [weak self] in
+
+                        self?.context.bus.publish(.TransitionEnded)                 
+                    }
+                }
+            }
+        }
+    }
+
     override open var individualHash: Int {
+
         var hasher = Hasher()
+
         hasher.combine(fill)
+
         hasher.combine(strokeWidth)
+
         hasher.combine(strokeColor)
+
         return hasher.finalize()
     }
 
     public init<FillRenderValue: RenderValue, StrokeRenderValue: RenderValue>(
+
         fill: FillRenderValue? = nil, 
+
         strokeWidth: Double? = nil, 
+
         strokeColor: StrokeRenderValue? = nil,
+
         @RenderObjectBuilder children: () -> [RenderObject]) where 
 
             FillRenderValue.Value == Fill, StrokeRenderValue.Value == Color  {
 
                 if let fill = fill {
+
                     self.fill = AnyRenderValue<Fill>(fill) 
                 }
 
                 self.strokeWidth = strokeWidth
 
                 if let strokeColor = strokeColor {
+
                     self.strokeColor = AnyRenderValue<Color>(strokeColor) 
                 }
 
@@ -245,41 +283,68 @@ open class RenderStyleRenderObject: SubTreeRenderObject {
     }
 
     public convenience init<FillRenderValue: RenderValue>(
+
         fill: FillRenderValue,
+
         @RenderObjectBuilder children: () -> [RenderObject]) where FillRenderValue.Value == Fill {
+
             self.init(
+
                 fill: fill,
+
                 strokeWidth: nil,
+                
                 strokeColor: Optional<FixedRenderValue<Color>>.none,
+
                 children: children)
     }
 
     public convenience init<StrokeRenderValue: RenderValue>(
+
         strokeWidth: Double?, 
+
         strokeColor: StrokeRenderValue?, 
+
         @RenderObjectBuilder children: () -> [RenderObject]) where StrokeRenderValue.Value == Color {
+
             self.init(
+
                 fill: Optional<FixedRenderValue<Fill>>.none,
+
                 strokeWidth: strokeWidth,
+
                 strokeColor: strokeColor,
+
                 children: children)
     }
 
     public convenience init<StrokeRenderValue: RenderValue>(
+
         fillColor: Color, 
+
         strokeWidth: Double? = nil, 
+
         strokeColor: StrokeRenderValue? = nil, 
+
         @RenderObjectBuilder children: () -> [RenderObject]) where StrokeRenderValue.Value == Color {
+
             self.init(fill: FixedRenderValue(Fill.Color(fillColor)), strokeWidth: strokeWidth, strokeColor: strokeColor, children: children)     
     }
 
     public convenience init(
+
         fillColor: Color,
+
         @RenderObjectBuilder children: () -> [RenderObject]) {
+
             self.init(
+
                 fill: FixedRenderValue(Fill.Color(fillColor)),
+
                 strokeWidth: nil,
+
                 strokeColor: Optional<FixedRenderValue<Color>>.none,
+
                 children: children)     
     }
 }

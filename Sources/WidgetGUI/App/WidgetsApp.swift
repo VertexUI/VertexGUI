@@ -57,7 +57,11 @@ open class WidgetsApp<S: System, W: Window, R: Renderer>: VisualApp<S, W> {
                 self.system.requestCursor($0)
             })
 
+        // TODO: this should be created in VisualApp, rendering the tree should probably be handled there
+
         guiRoot.renderObjectContext = RenderObjectContext(
+
+            bus: RenderObjectBus(),
             
             getTextBoundsSize: { renderer.getTextBoundsSize($0, fontConfig: $1, maxWidth: $2) }
         )

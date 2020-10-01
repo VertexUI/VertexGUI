@@ -52,7 +52,7 @@ open class Root: Parent {
 
     private var renderObjectTreeRenderer: RenderObjectTreeRenderer
     
-    internal var renderObjectTree: RenderObjectTree
+    internal var renderObjectTree: RenderObjectTreeRoot
     
     internal var layoutInvalidatedWidgets: [Widget] = []
 
@@ -87,7 +87,7 @@ open class Root: Parent {
 
         rootWidget = contentRootWidget
         
-        renderObjectTree = RenderObjectTree()
+        renderObjectTree = RenderObjectTreeRoot()
         
         renderObjectTreeRenderer = RenderObjectTreeRenderer(renderObjectTree)
         

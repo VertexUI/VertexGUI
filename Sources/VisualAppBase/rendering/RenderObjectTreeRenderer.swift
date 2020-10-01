@@ -51,13 +51,13 @@ public struct CachableRenderGroup: RenderGroup {
 // TODO: give rendering an extra package outside of VisualAppBase
 // TODO: maybe rename to RenderObjectTreeRenderer?
 // TODO: maybe have a RenderObjectTreeGroupGenerator with efficientUpdate(identified: ...) etc. + a group renderer?
-// TODO: create a RenderState --> contains RenderObjectTree, Transitions and more depending on RenderStrategy, maybe
+// TODO: create a RenderState --> contains RenderObjectTreeRoot, Transitions and more depending on RenderStrategy, maybe
 public class RenderObjectTreeRenderer {
     public struct DebuggingData {
-        public var tree: RenderObjectTree
+        public var tree: RenderObjectTreeRoot
         public var sequence: [RenderSequenceItem]
 
-        public init(tree: RenderObjectTree, sequence: [RenderSequenceItem]) {
+        public init(tree: RenderObjectTreeRoot, sequence: [RenderSequenceItem]) {
             self.tree = tree
             self.sequence = sequence
         }
@@ -73,7 +73,7 @@ public class RenderObjectTreeRenderer {
         }
     }
 
-    private var tree: RenderObjectTree
+    private var tree: RenderObjectTreeRoot
     private var sequence: [RenderSequenceItem] = []
     // TODO: maybe define this as a RenderState object?
     //public var renderSequence = [RenderGroup]()
@@ -91,7 +91,7 @@ public class RenderObjectTreeRenderer {
 
     private var renderObjectMeta: [ObjectIdentifier: Any] = [:]
     
-    public init(_ tree: RenderObjectTree) {
+    public init(_ tree: RenderObjectTreeRoot) {
         self.tree = tree
     }
 
@@ -99,12 +99,12 @@ public class RenderObjectTreeRenderer {
         sequence = [RenderSequenceItem(range: TreeRange(), cachable: false)]
     }
 
-    public func processUpdate(_ update: RenderObjectTree.Update) {
+    public func processUpdate(_ update: RenderObjectTreeRoot.Update) {
         refresh()
         // TODO: delete RenderObjectMeta here!
     }
 
-    /*public func setRenderObjectTree(_ tree: RenderObjectTree) {
+    /*public func setRenderObjectTree(_ tree: RenderObjectTreeRoot) {
         self.tree = tree
         generaterenderSequence()
     }*/
@@ -390,7 +390,7 @@ public class RenderObjectTreeRenderer {
 
         switch (currentRenderObject) {
 
-        case let currentRenderObject as RenderObjectTree:
+        case let currentRenderObject as RenderObjectTreeRoot:
             for i in 0..<nextPaths.count {
                 try render(object: nextRenderObjects[i], at: nextPaths[i], in: range, with: backendRenderer)
             }

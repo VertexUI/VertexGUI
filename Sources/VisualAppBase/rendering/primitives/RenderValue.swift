@@ -77,9 +77,9 @@ public struct AnyRenderValue<V: Hashable>: RenderValue {
 
     public typealias Value = V
 
-    private var fixedBase: FixedRenderValue<V>?
+    internal var fixedBase: FixedRenderValue<V>?
 
-    private var timedBase: TimedRenderValue<V>?    
+    internal var timedBase: TimedRenderValue<V>?    
 
     public var isTimed: Bool {
         return timedBase != nil

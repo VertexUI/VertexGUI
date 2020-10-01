@@ -193,7 +193,7 @@ public final class Button: SingleChildWidget, StatefulWidget, ConfigurableWidget
 
             state = .Hover
 
-            // TODO: might need to implement cursor via render object and check in RenderObjectTree renderer which renderobject below mouse
+            // TODO: might need to implement cursor via render object and check in RenderObjectTreeRoot renderer which renderobject below mouse
             dropCursorRequest = context!.requestCursor(.Hand)
 
         } onMouseLeave: { [unowned self] _ in
