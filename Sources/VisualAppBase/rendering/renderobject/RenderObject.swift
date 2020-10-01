@@ -27,9 +27,9 @@ open class RenderObject: CustomDebugStringConvertible, TreeNode {
 
     open var isBranching: Bool { false }
 
-    fileprivate var _context: RenderObjectContext?
+    fileprivate var _context: RenderObject.Context?
 
-    open var context: RenderObjectContext {
+    open var context: RenderObject.Context {
 
         get {
 
@@ -222,7 +222,7 @@ open class RenderStyleRenderObject: SubTreeRenderObject {
         "RenderStyleRenderObject"
     }
 
-    override open var context: RenderObjectContext {
+    override open var context: RenderObject.Context {
 
         didSet  {
             
@@ -231,11 +231,11 @@ open class RenderStyleRenderObject: SubTreeRenderObject {
 
                 if let timedValue = fill.timedBase {
 
-                    context.bus.publish(.TransitionStarted)
+                    context.rootwardBus.publish(.TransitionStarted)
 
                     DispatchQueue.main.asyncAfter(deadline: .now() + timedValue.duration) { [weak self] in
 
-                        self?.context.bus.publish(.TransitionEnded)                 
+                        self?.context.rootwardBus.publish(.TransitionEnded)                 
                     }
                 }
             }

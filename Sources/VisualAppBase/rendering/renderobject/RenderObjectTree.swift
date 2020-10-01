@@ -1,9 +1,9 @@
 import Foundation
 
-// TODO: maybe rename RenderObjectTreeRoot
-public class RenderObjectTreeRoot: SubTreeRenderObject {
+// TODO: maybe rename RenderObjectTree
+public class RenderObjectTree: SubTreeRenderObject {
 
-    public private(set) var state = RenderObjectTreeState()
+    public private(set) var state = State()
 
     public var idPaths = [UInt: TreePath]()
 
@@ -14,7 +14,7 @@ public class RenderObjectTreeRoot: SubTreeRenderObject {
 
     override open var debugDescription: String {
 
-        "RenderObjectTreeRoot"
+        "RenderObjectTree"
     }
 
     override open var individualHash: Int {
@@ -22,11 +22,11 @@ public class RenderObjectTreeRoot: SubTreeRenderObject {
         return 0
     }
 
-    override open var context: RenderObjectContext {
+    override open var context: RenderObject.Context {
 
         didSet {
 
-            _ = context.bus.onMessage { [weak self] in
+            _ = context.rootwardBus.onMessage { [weak self] in
 
                 self?.processBusMessage($0)
             }
@@ -111,7 +111,7 @@ public class RenderObjectTreeRoot: SubTreeRenderObject {
     /*mutating private func retrieveIdPaths(_ startRenderObject: RenderObject, _ startPath: TreePath) {
         idPaths = [UInt: TreePath]()
         var currentPath = TreePath([0])
-        // TODO: maybe instead of wrapping in a container here, just add a protocol that RenderObjectTreeRoot (maybe rename to RenderObjectTreeRoot) and SubTreeRenderObject conform too
+        // TODO: maybe instead of wrapping in a container here, just add a protocol that RenderObjectTree (maybe rename to RenderObjectTree) and SubTreeRenderObject conform too
         var parents: [SubTreeRenderObject] = [.Container(children)]
         var checkChildren = children
         outer: while parents.count > 0 {
@@ -194,7 +194,7 @@ public class RenderObjectTreeRoot: SubTreeRenderObject {
        
         var replacedIdentifiedSubTree: IdentifiedSubTreeRenderObject?
        
-        var newTree: RenderObjectTreeRoot?
+        var newTree: RenderObjectTree?
 
         var parents: [SubTreeRenderObject] = [self]
      
@@ -257,7 +257,7 @@ public class RenderObjectTreeRoot: SubTreeRenderObject {
          
             } else {
           
-                newTree = newFinished as? RenderObjectTreeRoot
+                newTree = newFinished as? RenderObjectTree
             }
         }
 
@@ -340,7 +340,7 @@ public class RenderObjectTreeRoot: SubTreeRenderObject {
         } while parents.count > 0
     }
 
-    private func processBusMessage(_ message: RenderObjectBus.Message) {
+    private final func processBusMessage(_ message: RootwardMessage) {
 
         print("RECEIVED MESSAGE", message)
 
@@ -355,9 +355,19 @@ public class RenderObjectTreeRoot: SubTreeRenderObject {
             state.activeTransitionCount -= 1
         }
     }
+
+    /// - Parameter step: timestep in seconds
+    public final func tick(_ step: Double) {
+
+        state.currentTick += 1
+
+        state.currentTimestamp += step
+
+        context.leafwardBus.publish(.Tick)
+    }
 }
 
-extension RenderObjectTreeRoot {
+extension RenderObjectTree {
 
     public enum Update {
 

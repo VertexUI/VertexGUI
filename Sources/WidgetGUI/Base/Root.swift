@@ -17,7 +17,7 @@ open class Root: Parent {
         }
     }
     
-    open var renderObjectContext: RenderObjectContext? {
+    open var renderObjectContext: RenderObject.Context? {
 
         didSet {
 
@@ -52,7 +52,7 @@ open class Root: Parent {
 
     private var renderObjectTreeRenderer: RenderObjectTreeRenderer
     
-    internal var renderObjectTree: RenderObjectTreeRoot
+    internal var renderObjectTree: RenderObjectTree
     
     internal var layoutInvalidatedWidgets: [Widget] = []
 
@@ -87,7 +87,7 @@ open class Root: Parent {
 
         rootWidget = contentRootWidget
         
-        renderObjectTree = RenderObjectTreeRoot()
+        renderObjectTree = RenderObjectTree()
         
         renderObjectTreeRenderer = RenderObjectTreeRenderer(renderObjectTree)
         

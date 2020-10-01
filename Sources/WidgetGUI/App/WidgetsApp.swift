@@ -59,10 +59,8 @@ open class WidgetsApp<S: System, W: Window, R: Renderer>: VisualApp<S, W> {
 
         // TODO: this should be created in VisualApp, rendering the tree should probably be handled there
 
-        guiRoot.renderObjectContext = RenderObjectContext(
+        guiRoot.renderObjectContext = RenderObject.Context(
 
-            bus: RenderObjectBus(),
-            
             getTextBoundsSize: { renderer.getTextBoundsSize($0, fontConfig: $1, maxWidth: $2) }
         )
 
