@@ -29,6 +29,15 @@
         }
       },
       {
+        "package": "Easing",
+        "repositoryURL": "https://github.com/manuelCarlos/Easing.git",
+        "state": {
+          "branch": null,
+          "revision": "7f4ef32ad74dcaab33855adce2779dee9f2a919a",
+          "version": "2.0.6"
+        }
+      },
+      {
         "package": "Path.swift",
         "repositoryURL": "https://github.com/mxcl/Path.swift.git",
         "state": {
@@ -44,6 +53,15 @@
           "branch": null,
           "revision": "61c9776f47d2951bdc562486ad348e5e1ca2e180",
           "version": "2.1.1"
+        }
+      },
+      {
+        "package": "swift-numerics",
+        "repositoryURL": "https://github.com/apple/swift-numerics",
+        "state": {
+          "branch": null,
+          "revision": "6b24333510e9044cf4716a07bed65eeed6bc6393",
+          "version": "0.0.8"
         }
       },
       {

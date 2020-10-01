@@ -216,7 +216,7 @@ public class TodoAppView: SingleChildWidget {
 
                 }, .Active: Background.PartialConfig {
 
-                    $0.fill = appTheme.primaryColor.darkened(20)
+                    $0.fill = appTheme.primaryColor.darkened(50)
 
                     $0.fillTransition = Background.FillTransition(duration: 0.3)
                 }]

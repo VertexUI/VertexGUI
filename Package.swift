@@ -27,7 +27,8 @@ let package = Package(
         .package(name: "Swim", url: "https://github.com/t-ae/swim.git", .branch("master")),
         .package(url: "https://github.com/UnGast/Cnanovg.git", .branch("master")),
         .package(url: "https://github.com/wickwirew/Runtime.git", from: "2.1.1"),
-        .package(url: "https://github.com/mtynior/ColorizeSwift", .branch("master"))
+        .package(url: "https://github.com/mtynior/ColorizeSwift", .branch("master")),
+        .package(url: "https://github.com/manuelCarlos/Easing.git", from: "2.0.0")
     ],
 
     targets: [
@@ -51,7 +52,7 @@ let package = Package(
         .target(
                 // TODO: maybe rename to SwiftApplicationFramework or so...? or split to SwiftApplicationFramework and SwiftUIFramework
             name: "WidgetGUI",
-            dependencies: ["VisualAppBase", "CustomGraphicsMath", "Runtime", "ColorizeSwift"],
+            dependencies: ["VisualAppBase", "CustomGraphicsMath", "Runtime", "ColorizeSwift", "Easing"],
             resources: [.process("Resources")]
         ),
 
