@@ -184,13 +184,20 @@ open class Root: Parent {
         rerenderNeeded = true
     }
     
-    open func tick() {
+    open func tick(_ timeStep: Double) {
 
         // TODO: might do boxConfig recalculations here also
         
         for widget in layoutInvalidatedWidgets {
             
             widget.layout(constraints: widget.previousConstraints!)
+        }
+
+        renderObjectTree.tick(timeStep)
+
+        if renderObjectTree.state.activeTransitionCount > 0 {
+
+            rerenderNeeded = true
         }
     }
 

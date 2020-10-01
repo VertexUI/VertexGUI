@@ -68,6 +68,10 @@ open class RenderObject: CustomDebugStringConvertible, TreeNode {
         fatalError("debugDescription not implemented.")
     }
 
+    private var nextTickHandlers: [() -> ()] = []
+
+    private var removeNextTickListener: (() -> ())?
+
     /**
     - Returns: Self if object contains point as well as all children (deep) that contain it.
     // TODO: might rename to raycast() --> RaycastResult
@@ -97,6 +101,38 @@ open class RenderObject: CustomDebugStringConvertible, TreeNode {
     public func removeChildren() {
         
         children = []
+    }
+
+    internal func nextTick(_ execute: @escaping () -> ()) {
+
+        if removeNextTickListener == nil {
+
+            removeNextTickListener = context.leafwardBus.onMessage { [weak self] in
+
+                switch $0 {
+
+                case .Tick:
+
+                    for handler in self?.nextTickHandlers ?? [] {
+
+                        handler()
+                    }
+
+                    self?.nextTickHandlers = []
+
+                    if let remove = self?.removeNextTickListener {
+
+                        remove()
+                    }
+
+                default:
+
+                    break
+                }
+            }
+        }
+
+        self.nextTickHandlers.append(execute)
     }
 }
 
@@ -222,20 +258,55 @@ open class RenderStyleRenderObject: SubTreeRenderObject {
         "RenderStyleRenderObject"
     }
 
+    private var removeTransitionEndListener: (() -> ())? = nil
+
     override open var context: RenderObject.Context {
 
         didSet  {
-            
-            // TODO: create a better system for detecting transition start, transition end
+
+            // TODO: put this into some mounted() or contextProvided() or something like that function
             if let fill = self.fill {
 
                 if let timedValue = fill.timedBase {
 
                     context.rootwardBus.publish(.TransitionStarted)
 
-                    DispatchQueue.main.asyncAfter(deadline: .now() + timedValue.duration) { [weak self] in
+                    if let remove = removeTransitionEndListener {
 
-                        self?.context.rootwardBus.publish(.TransitionEnded)                 
+                        context.rootwardBus.publish(.TransitionEnded)
+
+                        removeTransitionEndListener = nil
+
+                        print("REMOVE")
+
+                        remove()
+                    }
+
+                    removeTransitionEndListener = context.leafwardBus.onMessage { [weak self] in
+
+                        switch $0 {
+
+                        case .Tick:
+
+                            if timedValue.endTimestamp <= Date.timeIntervalSinceReferenceDate {
+                                
+                                self?.nextTick {
+                                    
+                                    self?.context.rootwardBus.publish(.TransitionEnded)
+                                }
+
+                                if let remove = self?.removeTransitionEndListener {
+
+                                    remove()
+
+                                    self?.removeTransitionEndListener = nil
+                                }
+
+                            }                     
+                        default:
+                            
+                            break
+                        }
                     }
                 }
             }
@@ -280,6 +351,16 @@ open class RenderStyleRenderObject: SubTreeRenderObject {
                 }
 
                 super.init(children: children())
+    }
+
+    deinit {
+
+        if let remove = removeTransitionEndListener {
+
+            remove()
+            
+            context.rootwardBus.publish(.TransitionEnded)
+        }
     }
 
     public convenience init<FillRenderValue: RenderValue>(

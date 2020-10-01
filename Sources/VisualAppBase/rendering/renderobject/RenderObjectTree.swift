@@ -342,8 +342,6 @@ public class RenderObjectTree: SubTreeRenderObject {
 
     private final func processBusMessage(_ message: RootwardMessage) {
 
-        print("RECEIVED MESSAGE", message)
-
         switch message {
 
         case .TransitionStarted:
@@ -356,12 +354,12 @@ public class RenderObjectTree: SubTreeRenderObject {
         }
     }
 
-    /// - Parameter step: timestep in seconds
-    public final func tick(_ step: Double) {
+    /// - Parameter timeStep: in seconds
+    public final func tick(_ timeStep: Double) {
 
         state.currentTick += 1
 
-        state.currentTimestamp += step
+        state.currentTimestamp += timeStep
 
         context.leafwardBus.publish(.Tick)
     }
