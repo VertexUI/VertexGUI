@@ -68,6 +68,8 @@ open class Root: Parent {
     
     private var mouseEventManager = WidgetTreeMouseEventManager()
 
+    private var mouseMoveEventBurstLimiter = BurstLimiter(minDelay: 0.015)
+
     public var debugLayout = false {
 
         didSet {
@@ -116,7 +118,17 @@ open class Root: Parent {
 
         //_ = self.mouseEventManager.propagate(event: rawMouseEvent, through: self.rootWidget)
 
-        propagate(rawMouseEvent)
+        if let event = rawMouseEvent as? RawMouseMoveEvent {
+
+            mouseMoveEventBurstLimiter.limit { [weak self] in
+
+                self?.propagate(rawMouseEvent)
+            }
+
+        } else {
+
+                propagate(rawMouseEvent)
+        }
 
         return false
     }

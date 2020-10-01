@@ -260,10 +260,10 @@ open class SDL2OpenGL3NanoVGSystem: System {
                 
                 self.totalTime += deltaTime
 
-                try! self.onFrame.invokeHandlers(Int(deltaTime))
-                
+                self.onFrame.invokeHandlers(Int(deltaTime))
+
                 let frameDuration = Int(SDL_GetTicks() - frameStartTime)
-                                
+
                 let eventProcessingDuration = max(10, (1000 / self.targetFps) - frameDuration)
                                 
                 try self.processEvents(timeout: eventProcessingDuration)
