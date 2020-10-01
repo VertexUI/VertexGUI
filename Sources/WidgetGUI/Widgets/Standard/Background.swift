@@ -65,6 +65,10 @@ public final class Background: SingleChildWidget, ConfigurableWidget {
                     fatalError()
                 }
 
+                // need to copy value here because else reference to most recent computed config will be used
+                // in getting the previous value
+                let targetFill = computedConfig.fill
+
                 currentFillRenderValue = AnyRenderValue(
 
                     TimedRenderValue(
@@ -75,9 +79,9 @@ public final class Background: SingleChildWidget, ConfigurableWidget {
                         
                         duration: fillTransition.duration,
                         
-                        valueAt: { [unowned self] in
+                        valueAt: {
 
-                            return Fill.Color(previousFill.mixed(computedConfig.fill, $0 * 100))
+                            Fill.Color(previousFill.mixed(targetFill, $0 * 100))
                         }))
 
         } else {

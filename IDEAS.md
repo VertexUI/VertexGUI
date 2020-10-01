@@ -12,6 +12,8 @@
 
 - maybe instead of Observable for configs, use simple didSet and if ConfigProvider changes trigger Config update on all children --> which is more performant / developer friendly
 
+- maybe need only PartialConfig and no Config --> each Widget can define the defaults as it likes / use conditional access with defaults
+
 # fills
 
 - use Protocols to mark types as acceptable for fill properties --> Colors, Gradients, TransitionedValues, AnimatedValues
