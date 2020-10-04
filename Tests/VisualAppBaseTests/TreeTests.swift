@@ -2,6 +2,7 @@
     @testable import VisualAppBase
 
     final class TreeTests: XCTestCase {
+
         func testTreePathComparison() {
             var path1 = TreePath([0, 1, 1])
             var path2 = TreePath([0, 1, 1, 2])
@@ -47,8 +48,29 @@
             XCTAssertFalse(range.contains(TreePath([0, 1, 1, 5])))
         }
 
+        func testTreeSliceIteration() {
+
+            var tree = RenderObjectTree([
+
+                ContainerRenderObject {
+
+                },
+
+                ContainerRenderObject {
+
+                }
+            ])
+
+            var slice = RenderObjectTree.TreeSlice(tree: tree, start: TreePath([]), end: TreePath([]))
+
+            for node in slice.depthFirst {
+
+            }
+        }
+
         static var allTests = [
             ("testTreePathComparison", testTreePathComparison),
             ("testTreeRangeContains", testTreeRangeContains),
+            ("testTreeRangeContains", testTreeRangeContains)
         ]
     }

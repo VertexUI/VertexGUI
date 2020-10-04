@@ -564,3 +564,13 @@ public class RenderObjectTreeRenderer {
         }
     }
 }
+
+extension RenderObjectTreeRenderer {
+
+    public struct RenderGroup {
+
+        public var slices: [RenderObjectTree.TreeSlice]
+
+        public var renderBuffer: UInt
+    }
+}

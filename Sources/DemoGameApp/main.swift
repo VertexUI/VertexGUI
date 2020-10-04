@@ -52,7 +52,8 @@ public class DemoGameApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGW
         Root(rootWidget: DependencyProvider(provide: [
             Dependency(gameRuleset)
         ]) {
-            ThemeProvider(DefaultTheme(mode: .Dark, primaryColor: .Blue)) { [unowned self] in
+            Space(DSize2(20, 20))
+            /*ThemeProvider(DefaultTheme(mode: .Dark, primaryColor: .Blue)) { [unowned self] in
                 Column {
                     ComputedSize {
                         Background(fill: Color(40, 40, 80, 255), shape: .Rectangle) {
@@ -82,12 +83,12 @@ public class DemoGameApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGW
                         }
                     }
                 }
-            }
+            }*/
         })
     }
 
     private func handleGameMouseMove(_ event: GUIMouseEvent) {
-        let localPosition = event.position - gameView.bounds.min
+       // let localPosition = event.position - gameView.bounds.min
         
     }
 

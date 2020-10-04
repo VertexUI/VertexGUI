@@ -19,7 +19,8 @@ open class TwoDWorldPage: SingleChildWidget {
     }
     
     override open func buildChild() -> Widget {
-        Background(fill: Color(120, 160, 255, 255)) { [unowned self] in
+        Space(DSize2(20, 20))
+        /*Background(fill: Color(120, 160, 255, 255)) { [unowned self] in
             Row {                
                 Column {
                     Padding(all: 20) {
@@ -111,6 +112,6 @@ open class TwoDWorldPage: SingleChildWidget {
                     BoxConstraints(size: $0.constrain(DSize2($0.maxWidth, $0.maxHeight)))
                 }
             }
-        }
+        }*/
     }
 }

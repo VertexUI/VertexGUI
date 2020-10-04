@@ -29,6 +29,8 @@ open class RenderObject: CustomDebugStringConvertible, TreeNode {
 
     fileprivate var _context: RenderObject.Context?
 
+    weak public internal(set) var parent: RenderObject? = nil
+
     open var context: RenderObject.Context {
 
         get {
@@ -95,6 +97,8 @@ open class RenderObject: CustomDebugStringConvertible, TreeNode {
         if let context = _context {
 
             child.context = context
+
+            child.parent = self
         }
     }
 
@@ -277,8 +281,6 @@ open class RenderStyleRenderObject: SubTreeRenderObject {
 
                         removeTransitionEndListener = nil
 
-                        print("REMOVE")
-
                         remove()
                     }
 
@@ -302,7 +304,8 @@ open class RenderStyleRenderObject: SubTreeRenderObject {
                                     self?.removeTransitionEndListener = nil
                                 }
 
-                            }                     
+                            }
+
                         default:
                             
                             break

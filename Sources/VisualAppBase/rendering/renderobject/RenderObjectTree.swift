@@ -371,4 +371,91 @@ extension RenderObjectTree {
 
         case Replace(path: TreePath, old: RenderObject, new: RenderObject)
     }
+
+    public struct TreeSlice {
+
+        public let tree: RenderObjectTree
+
+        public let startPath: TreePath
+
+        public let endPath: TreePath
+
+        public init(tree: RenderObjectTree, start: TreePath, end: TreePath) {
+
+            self.tree = tree
+
+            self.startPath = start
+
+            self.endPath = end
+        }
+
+        public var depthFirst: DepthFirstTreeSliceSequence {
+
+            DepthFirstTreeSliceSequence(self)
+        }
+    }
+
+    public struct DepthFirstTreeSliceSequence: Sequence {
+        
+        private let slice: TreeSlice
+
+        public init(_ slice: TreeSlice) {
+
+            self.slice = slice
+        }
+
+        public func makeIterator() -> DepthFirstTreeIterator {
+
+            DepthFirstTreeIterator(slice.tree, start: slice.startPath, end: slice.endPath)
+        }
+    }
+
+    public struct DepthFirstTreeSequence: Sequence {
+
+        public let tree: RenderObjectTree
+
+        public init(tree: RenderObjectTree) {
+            
+            self.tree = tree
+        }
+
+        public func makeIterator() -> DepthFirstTreeIterator {
+            
+            DepthFirstTreeIterator(tree, start: TreePath([]), end: TreePath([]))
+        }
+    }
+
+    public struct DepthFirstTreeIterator: IteratorProtocol {
+
+        public let tree: RenderObjectTree
+
+        private var nextPath: TreePath
+
+        public init(_ tree: RenderObjectTree, start: TreePath, end: TreePath) {
+
+            self.tree = tree
+
+            self.nextPath = start
+        }
+
+        mutating public func next() -> RenderObject? {
+
+            let node = tree[nextPath]
+
+            if let node = node, node.children.count > 0 {
+
+                nextPath = nextPath/0
+
+            } else if let node = node, let parent = node.parent, parent.children.count > nextPath.last! + 1 {
+                
+                nextPath = nextPath + 1
+
+            } else {
+
+                nextPath = nextPath.dropLast()
+            }
+
+            return node
+        }
+    }
 }
