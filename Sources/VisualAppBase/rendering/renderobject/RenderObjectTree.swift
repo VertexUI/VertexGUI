@@ -431,6 +431,8 @@ extension RenderObjectTree {
 
         private var nextPath: TreePath
 
+        private var ended = false
+
         public init(_ tree: RenderObjectTree, start: TreePath, end: TreePath) {
 
             self.tree = tree
@@ -440,19 +442,60 @@ extension RenderObjectTree {
 
         mutating public func next() -> RenderObject? {
 
+            if ended {
+
+                return nil
+            }
+
             let node = tree[nextPath]
 
-            if let node = node, node.children.count > 0 {
+            print("NODE PARENT", node?.parent)
 
-                nextPath = nextPath/0
+            if let node = node {
 
-            } else if let node = node, let parent = node.parent, parent.children.count > nextPath.last! + 1 {
-                
-                nextPath = nextPath + 1
+                if node.children.count > 0 {
 
-            } else {
+                    nextPath = nextPath/0
 
-                nextPath = nextPath.dropLast()
+                } else if let parent = node.parent, parent.children.count > nextPath.last! + 1 {
+                    
+                    nextPath = nextPath + 1
+
+                } else if nextPath.count > 0 {
+
+                    // until find a parent that has children that have not been visited dropLast
+
+                    var currentChildPath = nextPath.dropLast()
+
+                    var currentParent = node.parent?.parent
+
+                    while true {
+
+                        if currentParent == nil {
+
+                            ended = true
+                            
+                            break
+                        }
+
+                        if currentParent!.children.count > currentChildPath.last! + 1 {
+
+                            currentChildPath = currentChildPath + 1
+
+                            break
+
+                        } else {
+                            
+                            currentChildPath = currentChildPath.dropLast()
+
+                            currentParent = currentParent!.parent
+                        }
+                    }
+
+                } else {
+                    
+                    ended = true
+                }
             }
 
             return node

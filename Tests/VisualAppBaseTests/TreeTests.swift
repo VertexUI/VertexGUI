@@ -52,25 +52,45 @@
 
             var tree = RenderObjectTree([
 
-                ContainerRenderObject {
+                IdentifiedSubTreeRenderObject(1) {
 
                 },
 
-                ContainerRenderObject {
+                IdentifiedSubTreeRenderObject(2) {
 
+                },
+
+                IdentifiedSubTreeRenderObject(3) {
+
+                    IdentifiedSubTreeRenderObject(4) {
+
+                    }
                 }
             ])
 
             var slice = RenderObjectTree.TreeSlice(tree: tree, start: TreePath([]), end: TreePath([]))
 
-            for node in slice.depthFirst {
+            var iteratedNodeCount = 0
 
+            for (index, node) in slice.depthFirst.enumerated() {
+
+                if let node = node as? IdentifiedSubTreeRenderObject {
+                   
+                    if index != node.id {
+
+                        XCTAssertEqual(index, Int(node.id))
+                    }
+                }
+
+                iteratedNodeCount += 1
             }
+
+            XCTAssertEqual(iteratedNodeCount, 5)
         }
 
         static var allTests = [
             ("testTreePathComparison", testTreePathComparison),
             ("testTreeRangeContains", testTreeRangeContains),
-            ("testTreeRangeContains", testTreeRangeContains)
+            ("testTreeSliceIteration", testTreeSliceIteration)
         ]
     }

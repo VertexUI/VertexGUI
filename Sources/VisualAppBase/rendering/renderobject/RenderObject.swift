@@ -74,32 +74,16 @@ open class RenderObject: CustomDebugStringConvertible, TreeNode {
 
     private var removeNextTickListener: (() -> ())?
 
-    /**
-    - Returns: Self if object contains point as well as all children (deep) that contain it.
-    // TODO: might rename to raycast() --> RaycastResult
-    */
-    public func objectsAt(point: DPoint2) -> [ObjectAtPointResult] {
-
-        fatalError("objectsAt(point:) not implemented for RenderObject \(self)")
-    }
-
-    public struct ObjectAtPointResult {
-
-        public var object: RenderObject
-
-        public var transformedPoint: DPoint2
-    }
-
     public func appendChild(_ child: RenderObject) {
 
-        children.append(child)
+        child.parent = self
 
         if let context = _context {
 
             child.context = context
-
-            child.parent = self
         }
+        
+        children.append(child)
     }
 
     public func removeChildren() {
@@ -138,6 +122,22 @@ open class RenderObject: CustomDebugStringConvertible, TreeNode {
 
         self.nextTickHandlers.append(execute)
     }
+
+    /**
+    - Returns: Self if object contains point as well as all children (deep) that contain it.
+    // TODO: might rename to raycast() --> RaycastResult
+    */
+    public func objectsAt(point: DPoint2) -> [ObjectAtPointResult] {
+
+        fatalError("objectsAt(point:) not implemented for RenderObject \(self)")
+    }
+
+    public struct ObjectAtPointResult {
+
+        public var object: RenderObject
+
+        public var transformedPoint: DPoint2
+    }
 }
 
 open class SubTreeRenderObject: RenderObject {
@@ -148,7 +148,10 @@ open class SubTreeRenderObject: RenderObject {
 
         super.init()
         
-        self.children = children
+        for child in children {
+
+            appendChild(child)
+        }
     }
 
     /// The hash including own properties and the hashes of children.

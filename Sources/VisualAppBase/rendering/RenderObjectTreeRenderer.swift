@@ -560,6 +560,7 @@ public class RenderObjectTreeRenderer {
             backendRenderer.text(currentRenderObject.text, fontConfig: currentRenderObject.fontConfig, color: currentRenderObject.color, topLeft: currentRenderObject.topLeft, maxWidth: currentRenderObject.maxWidth)
 
         default:
+        
             print("Could not render RenderObject, implementation missing for:", currentRenderObject)
         }
     }
