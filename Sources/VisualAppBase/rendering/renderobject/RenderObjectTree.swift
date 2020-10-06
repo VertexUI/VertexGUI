@@ -442,14 +442,14 @@ extension RenderObjectTree {
 
         mutating public func next() -> RenderObject? {
 
+            // TODO: this algorithm can be optimized!!!
+
             if ended {
 
                 return nil
             }
 
             let node = tree[nextPath]
-
-            print("NODE PARENT", node?.parent)
 
             if let node = node {
 
@@ -491,6 +491,8 @@ extension RenderObjectTree {
                             currentParent = currentParent!.parent
                         }
                     }
+
+                    nextPath = currentChildPath
 
                 } else {
                     

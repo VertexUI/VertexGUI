@@ -54,15 +54,22 @@
 
                 IdentifiedSubTreeRenderObject(1) {
 
-                },
+                    IdentifiedSubTreeRenderObject(2) {
 
-                IdentifiedSubTreeRenderObject(2) {
-
+                    }
                 },
 
                 IdentifiedSubTreeRenderObject(3) {
 
-                    IdentifiedSubTreeRenderObject(4) {
+                },
+
+                IdentifiedSubTreeRenderObject(4) {
+
+                    IdentifiedSubTreeRenderObject(5) {
+
+                    }
+
+                    IdentifiedSubTreeRenderObject(6) {
 
                     }
                 }
@@ -75,7 +82,7 @@
             for (index, node) in slice.depthFirst.enumerated() {
 
                 if let node = node as? IdentifiedSubTreeRenderObject {
-                   
+
                     if index != node.id {
 
                         XCTAssertEqual(index, Int(node.id))
@@ -85,7 +92,7 @@
                 iteratedNodeCount += 1
             }
 
-            XCTAssertEqual(iteratedNodeCount, 5)
+            XCTAssertEqual(iteratedNodeCount, 7)
         }
 
         static var allTests = [
