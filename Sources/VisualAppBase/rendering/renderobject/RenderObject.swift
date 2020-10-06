@@ -722,7 +722,7 @@ open class PathRenderObject: RenderObject {
 
 open class CustomRenderObject: RenderObject {
 
-    public var render: (_ renderer: Renderer) throws -> Void
+    public var render: (_ renderer: Renderer) -> Void
 
     override open var hasTimedRenderValue: Bool {
 
@@ -746,7 +746,7 @@ open class CustomRenderObject: RenderObject {
     }
 
     /// - Parameter id: Used for hashing, should be unique for each render function.
-    public init(id: UInt, _ render: @escaping (_ renderer: Renderer) throws -> Void) {
+    public init(id: UInt, _ render: @escaping (_ renderer: Renderer) -> Void) {
        
         self.id = id
        

@@ -55,15 +55,15 @@ public struct CachableRenderGroup: RenderGroup {
 public class RenderObjectTreeRenderer {
     public struct DebuggingData {
         public var tree: RenderObjectTree
-        public var sequence: [RenderSequenceItem]
+        public var sequence: [RenderGroup]
 
-        public init(tree: RenderObjectTree, sequence: [RenderSequenceItem]) {
+        public init(tree: RenderObjectTree, sequence: [RenderGroup]) {
             self.tree = tree
             self.sequence = sequence
         }
     }
 
-    public struct RenderSequenceItem {
+    /*public struct RenderSequenceItem {
         public var range: TreeRange?
         public var cachable: Bool
 
@@ -71,10 +71,12 @@ public class RenderObjectTreeRenderer {
             self.range = range
             self.cachable = cachable
         }
-    }
+    }*/
 
     private var tree: RenderObjectTree
-    private var sequence: [RenderSequenceItem] = []
+    
+    //private var sequence: [RenderSequenceItem] = []
+
     // TODO: maybe define this as a RenderState object?
     //public var renderSequence = [RenderGroup]()
     //private var _nextRenderGroupId = 0
@@ -86,20 +88,31 @@ public class RenderObjectTreeRenderer {
     }*/
     //private var availableCaches = [VirtualScreen]()
     public var debuggingData: DebuggingData {
-        DebuggingData(tree: tree, sequence: sequence)
+        DebuggingData(tree: tree, sequence: [])
     }
+
+    private var groups: [RenderGroup] = []
 
     private var renderObjectMeta: [ObjectIdentifier: Any] = [:]
     
     public init(_ tree: RenderObjectTree) {
+         
         self.tree = tree
     }
 
+    private func makeGroups() {
+
+        self.groups = [RenderGroup(slices: [RenderObjectTree.TreeSlice(tree: tree, start: TreePath([]), end: TreePath([]))], renderBuffer: 0)]
+    }
+
     public func refresh() {
-        sequence = [RenderSequenceItem(range: TreeRange(), cachable: false)]
+        
+        //sequence = [RenderSequenceItem(range: TreeRange(), cachable: false)]
+        makeGroups()
     }
 
     public func processUpdate(_ update: RenderObjectTree.Update) {
+       
         refresh()
         // TODO: delete RenderObjectMeta here!
     }
@@ -326,94 +339,388 @@ public class RenderObjectTreeRenderer {
         optimizeGroups()
     }*/
 
-    public func render(with backendRenderer: Renderer, in bounds: DRect) throws {
-        for i in 0..<sequence.count {
-            if let range = sequence[i].range {
-                /*if var group = renderSequence[i] as? CachableRenderGroup {
-                    if group.cache == nil {
-                        if var cache = availableCaches.popLast() {
-                            backendRenderer.resizeVirtualScreen(&cache, DSize2(bounds.min + DVec2(bounds.size)))
-                            group.cache = cache
-                            print("Reused render cache.", "Old caches available:", availableCaches.count)
-                        } else {
-                            group.cache = backendRenderer.makeVirtualScreen(size: DSize2(bounds.min + DVec2(bounds.size)))
+    public func render(with backendRenderer: Renderer, in bounds: DRect) {
+        
+        for group in groups {
+
+            render(group: group, with: backendRenderer)
+
+       
+            
+              //  if let range = groups[i].slices {
+                    /*if var group = renderSequence[i] as? CachableRenderGroup {
+                        if group.cache == nil {
+                            if var cache = availableCaches.popLast() {
+                                backendRenderer.resizeVirtualScreen(&cache, DSize2(bounds.min + DVec2(bounds.size)))
+                                group.cache = cache
+                                print("Reused render cache.", "Old caches available:", availableCaches.count)
+                            } else {
+                                group.cache = backendRenderer.makeVirtualScreen(size: DSize2(bounds.min + DVec2(bounds.size)))
+                            }
+                            group.cacheInvalidated = true
                         }
-                        group.cacheInvalidated = true
-                    }
-                    if group.cacheInvalidated  {
-                        backendRenderer.pushVirtualScreen(group.cache!)
+                        if group.cacheInvalidated  {
+                            backendRenderer.pushVirtualScreen(group.cache!)
+                            backendRenderer.beginFrame()
+                            backendRenderer.clear(Color(0, 0, 0, 0))
+                            try render(range: range, with: backendRenderer)
+                            backendRenderer.endFrame()
+                            backendRenderer.popVirtualScreen()
+                            group.cacheInvalidated = false
+                            renderSequence[i] = group
+                        }
                         backendRenderer.beginFrame()
-                        backendRenderer.clear(Color(0, 0, 0, 0))
-                        try render(range: range, with: backendRenderer)
+                        // TODO: if multiple cached things follow each other, draw them in one step
+                        backendRenderer.drawVirtualScreens([group.cache!], at: [DVec2(0, 0)])
                         backendRenderer.endFrame()
-                        backendRenderer.popVirtualScreen()
-                        group.cacheInvalidated = false
-                        renderSequence[i] = group
+                    } else {*/
+
+                    
+                //        try render(range: range, with: backendRenderer)
+                
+                // }
+            //}
+          //  }
+
+
+
+        }
+    }
+
+    // TODO: check whether inline is good for performance
+    @inline(__always)
+    private func render(group: RenderGroup, with backendRenderer: Renderer) {
+         
+        backendRenderer.beginFrame()
+        
+        for slice in group.slices {
+
+            render(slice: slice, with: backendRenderer)
+        }
+
+        backendRenderer.endFrame()
+    }
+
+    @inline(__always)
+    private func render(slice: RenderObjectTree.TreeSlice, with backendRenderer: Renderer) {
+ 
+        var currentPath = slice.startPath
+
+        //var currentNode: RenderObject? = nil
+
+        outer: while let currentNode = slice[currentPath] {
+
+            if currentNode.isBranching, currentNode.children.count > 0 {
+
+                renderOpen(node: currentNode, with: backendRenderer)
+            
+                currentPath = currentPath/0
+
+            } else {
+
+                if currentNode.isBranching {
+            
+                    renderClose(node: currentNode, with: backendRenderer)
+
+                } else {
+                    
+                    renderLeaf(node: currentNode, with: backendRenderer)
+                }
+
+                var currentParent: RenderObject? = currentNode.parent
+
+                var currentChildPath = currentPath
+
+                while currentParent != nil {
+
+                    renderClose(node: currentParent!, with: backendRenderer)
+
+                    if currentParent!.children.count > currentChildPath.last! + 1 {
+
+                        currentPath = currentChildPath + 1
+
+                        continue outer
                     }
-                    backendRenderer.beginFrame()
-                    // TODO: if multiple cached things follow each other, draw them in one step
-                    backendRenderer.drawVirtualScreens([group.cache!], at: [DVec2(0, 0)])
-                    backendRenderer.endFrame()
-                } else {*/
-                    backendRenderer.beginFrame()
-                    try render(range: range, with: backendRenderer)
-                    backendRenderer.endFrame()
-               // }
+
+                    currentChildPath = currentChildPath.dropLast()
+
+                    currentParent = currentParent?.parent
+                }
+
+                break
             }
         }
     }
 
-    private func render(range: TreeRange, with backendRenderer: Renderer) throws {
-        try render(object: self.tree, at: TreePath(), in: range, with: backendRenderer)
+    private func renderOpen(node: RenderObject, with backendRenderer: Renderer) {
+        
+        let timestamp = Date.timeIntervalSinceReferenceDate
+
+        switch node {
+
+        case let node as RenderStyleRenderObject:
+            // TODO: implement tracking current render style as layers, whenever moving out of a child render style,
+            // need to reapply the next parent
+           // var performFill = false
+           // var performStroke = false
+
+            if let fillRenderValue = node.fill {
+
+                let fill = fillRenderValue.getValue(at: timestamp)
+
+                if fillRenderValue.isTimed {
+
+                    switch fill {
+
+                    case let .Color(value):
+
+                        backendRenderer.fillColor(value)
+
+                    case let .Image(value, position):
+
+                        backendRenderer.fillImage(value, position: position)
+                    }
+
+                } else {
+                    
+                    switch fill {
+
+                    case let .Color(value):
+
+                        backendRenderer.fillColor(value)
+                    
+                    case let .Image(value, position):
+
+                        let id = ObjectIdentifier(node)
+                        
+                        if let cachedLoadedFill = renderObjectMeta[id] as? LoadedFill {
+                       
+                           backendRenderer.applyFill(cachedLoadedFill)
+                      
+                        } else {
+                           
+                            let loadedFill = backendRenderer.fillImage(value, position: position)
+                           
+                            renderObjectMeta[id] = loadedFill
+                        }
+                    }
+                }
+
+               // performFill = true
+
+            } else {
+
+                backendRenderer.fillColor(.Transparent)
+            }
+
+            if let strokeWidth = node.strokeWidth,
+
+                let strokeColor = node.strokeColor {
+
+                backendRenderer.strokeWidth(strokeWidth)
+
+                backendRenderer.strokeColor(strokeColor.getValue(at: timestamp))
+
+               // performStroke = true
+            } else {
+
+                backendRenderer.strokeWidth(0)
+
+                backendRenderer.strokeColor(.Transparent)
+            }
+
+            /*for i in 0..<nextPaths.count {
+
+                try render(object: nextRenderObjects[i], at: nextPaths[i], in: range, with: backendRenderer)
+            }*/
+
+            //backendRenderer.fillColor(.Transparent)
+
+            //backendRenderer.strokeWidth(0)
+
+            //backendRenderer.strokeColor(.Transparent)
+
+
+
+            // TODO: after render, reset style to style that was present before
+        case let node as RenderObject.Translation:
+
+            backendRenderer.translate(node.translation)
+
+        case let node as RenderObject.Clip:
+
+            // TODO: right now, clip areas can't be nested --> implement clip area bounds stack
+
+            backendRenderer.clipArea(bounds: node.clipBounds)
+
+        default: 
+
+            break
+        }
     }
 
+    private func renderClose(node: RenderObject, with backendRenderer: Renderer) {
+
+        switch node {
+
+        case let node as TranslationRenderObject:
+
+            backendRenderer.translate(-node.translation)
+
+        case let node as ClipRenderObject:
+
+            backendRenderer.releaseClipArea()
+
+        default:
+
+            break
+        }
+    }
+
+    private func renderLeaf(node: RenderObject, with backendRenderer: Renderer) {
+
+        switch node {
+
+        case let node as RectangleRenderObject:
+
+            backendRenderer.beginPath()
+
+            if let cornerRadii = node.cornerRadii {
+
+                backendRenderer.roundedRectangle(node.rect, cornerRadii: cornerRadii)
+
+            } else {
+
+                backendRenderer.rectangle(node.rect)
+            }
+
+            backendRenderer.fill()
+
+            backendRenderer.stroke()
+ 
+        case let node as CustomRenderObject:
+
+            // TODO: this might be a dirty solution
+            backendRenderer.endFrame()
+
+            node.render(backendRenderer)
+
+            backendRenderer.beginFrame()
+
+        case let node as EllipsisRenderObject:
+
+            backendRenderer.beginPath()
+
+            backendRenderer.ellipse(node.bounds)
+
+            backendRenderer.fill()
+
+            backendRenderer.stroke()
+
+        case let node as LineSegmentRenderObject:
+
+            backendRenderer.beginPath()
+
+            backendRenderer.lineSegment(from: node.start, to: node.end)
+            
+            backendRenderer.stroke()
+            
+            backendRenderer.fill()
+
+        case let node as PathRenderObject:
+
+            backendRenderer.beginPath()
+
+            backendRenderer.path(node.path)
+
+            backendRenderer.fill()
+
+            backendRenderer.stroke()
+
+        case let node as RenderObject.Text:
+
+            backendRenderer.text(node.text, fontConfig: node.fontConfig, color: node.color, topLeft: node.topLeft, maxWidth: node.maxWidth)
+
+        default:
+
+            break
+        }
+    }
+
+    /*private func render(_ node: RenderObject) {
+
+    }*/
+
+    /*private func render(range: TreeRange, with backendRenderer: Renderer) throws {
+        
+        try render(object: self.tree, at: TreePath(), in: range, with: backendRenderer)
+    }*/
+
     // TODO: maybe do layering via z?
-    private func render(object currentRenderObject: RenderObject, at currentPath: TreePath, in range: TreeRange, with backendRenderer: Renderer) throws {
-        if !range.contains(currentPath) {
+    /*/*private func render(_ currentRenderObject: RenderObject, at currentPath: TreePath, in range: TreeRange, with backendRenderer: Renderer) throws {
+        
+        /*if !range.contains(currentPath) {
+
             return
         }
         
         var nextPaths = [TreePath]()
+
         var nextRenderObjects = [RenderObject]()
 
         if let currentRenderObject = currentRenderObject as? SubTreeRenderObject {
+
             for i in 0..<currentRenderObject.children.count {
+
                 let nextPath = TreePath(currentPath.segments + [i])
+
                 if range.contains(nextPath) {
+
                     nextPaths.append(nextPath)
+
                     nextRenderObjects.append(currentRenderObject.children[i])
                 }
             }
-        }
+        }*/
 
         let timestamp = Date.timeIntervalSinceReferenceDate
 
         switch (currentRenderObject) {
 
         case let currentRenderObject as RenderObjectTree:
+
             for i in 0..<nextPaths.count {
+
                 try render(object: nextRenderObjects[i], at: nextPaths[i], in: range, with: backendRenderer)
             }
 
         case let currentRenderObject as RenderObject.IdentifiedSubTree:
+
             for i in 0..<nextPaths.count {
+
                 try render(object: nextRenderObjects[i], at: nextPaths[i], in: range, with: backendRenderer)
             }
 
         case let currentRenderObject as RenderObject.Container:
+
             for i in 0..<nextPaths.count {
+
                 try render(object: nextRenderObjects[i], at: nextPaths[i], in: range, with: backendRenderer)
             }
 
         case let currentRenderObject as RenderObject.Uncachable:
+
             for i in 0..<nextPaths.count {
+
                 try render(object: nextRenderObjects[i], at: nextPaths[i], in: range, with: backendRenderer)
             }
             
         case let currentRenderObject as RenderObject.CacheSplit:
+
             for i in 0..<nextPaths.count {
+
                 try render(object: nextRenderObjects[i], at: nextPaths[i], in: range, with: backendRenderer)
-            }
+            }*/
 
         case let currentRenderObject as RenderObject.RenderStyle:
             // TODO: implement tracking current render style as layers, whenever moving out of a child render style,
@@ -428,25 +735,36 @@ public class RenderObjectTreeRenderer {
                 if fillRenderValue.isTimed {
 
                     switch fill {
+
                     case let .Color(value):
+
                         backendRenderer.fillColor(value)
+
                     case let .Image(value, position):
+
                         backendRenderer.fillImage(value, position: position)
                     }
 
                 } else {
                     
                     switch fill {
+
                     case let .Color(value):
+
                         backendRenderer.fillColor(value)
                     
                     case let .Image(value, position):
+
                         let id = ObjectIdentifier(currentRenderObject)
                         
                         if let cachedLoadedFill = renderObjectMeta[id] as? LoadedFill {
-                            backendRenderer.applyFill(cachedLoadedFill)
+                       
+                           backendRenderer.applyFill(cachedLoadedFill)
+                      
                         } else {
+                           
                             let loadedFill = backendRenderer.fillImage(value, position: position)
+                           
                             renderObjectMeta[id] = loadedFill
                         }
                     }
@@ -455,6 +773,7 @@ public class RenderObjectTreeRenderer {
                // performFill = true
 
             } else {
+
                 backendRenderer.fillColor(.Transparent)
             }
 
@@ -463,31 +782,38 @@ public class RenderObjectTreeRenderer {
                 let strokeColor = currentRenderObject.strokeColor {
 
                 backendRenderer.strokeWidth(strokeWidth)
+
                 backendRenderer.strokeColor(strokeColor.getValue(at: timestamp))
 
                // performStroke = true
-
             } else {
 
                 backendRenderer.strokeWidth(0)
+
                 backendRenderer.strokeColor(.Transparent)
-
             }
 
-            for i in 0..<nextPaths.count {
+            /*for i in 0..<nextPaths.count {
+
                 try render(object: nextRenderObjects[i], at: nextPaths[i], in: range, with: backendRenderer)
-            }
+            }*/
 
             backendRenderer.fillColor(.Transparent)
+
             backendRenderer.strokeWidth(0)
+
             backendRenderer.strokeColor(.Transparent)
             // TODO: after render, reset style to style that was present before
 
         case let currentRenderObject as RenderObject.Translation:
+
             backendRenderer.translate(currentRenderObject.translation)
-            for i in 0..<nextPaths.count {
+
+            /*for i in 0..<nextPaths.count {
+
                 try render(object: nextRenderObjects[i], at: nextPaths[i], in: range, with: backendRenderer)
             }
+
             backendRenderer.translate(-currentRenderObject.translation)
 
         case let renderObject as RenderObject.Clip:
@@ -497,15 +823,19 @@ public class RenderObjectTreeRenderer {
             backendRenderer.clipArea(bounds: renderObject.clipBounds)
 
             for i in 0..<nextPaths.count {
+
                 try render(object: nextRenderObjects[i], at: nextPaths[i], in: range, with: backendRenderer)
             }
 
             backendRenderer.releaseClipArea()
 
         case let currentRenderObject as RenderObject.Custom:
+
             // TODO: this might be a dirty solution
             backendRenderer.endFrame()
+
             try currentRenderObject.render(backendRenderer)
+
             backendRenderer.beginFrame()
 
         case let currentRenderObject as RenderObject.Rectangle:
@@ -563,7 +893,7 @@ public class RenderObjectTreeRenderer {
         
             print("Could not render RenderObject, implementation missing for:", currentRenderObject)
         }
-    }
+    }*/*/
 }
 
 extension RenderObjectTreeRenderer {

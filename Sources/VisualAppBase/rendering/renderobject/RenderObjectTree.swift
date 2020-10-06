@@ -389,13 +389,23 @@ extension RenderObjectTree {
             self.endPath = end
         }
 
-        public var depthFirst: DepthFirstTreeSliceSequence {
+        /*public var depthFirst: DepthFirstTreeSliceSequence {
 
             DepthFirstTreeSliceSequence(self)
+        }*/
+
+        public func sequence() -> TreeSliceSequence {
+
+            return TreeSliceSequence(self)
+        }
+
+        public subscript(_ path: TreePath) -> RenderObject? {
+
+            tree[path]
         }
     }
 
-    public struct DepthFirstTreeSliceSequence: Sequence {
+    public struct TreeSliceSequence: Sequence {
         
         private let slice: TreeSlice
 

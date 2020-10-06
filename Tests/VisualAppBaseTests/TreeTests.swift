@@ -79,7 +79,7 @@
 
             var iteratedNodeCount = 0
 
-            for (index, node) in slice.depthFirst.enumerated() {
+            for (index, node) in slice.sequence().enumerated() {
 
                 if let node = node as? IdentifiedSubTreeRenderObject {
 
