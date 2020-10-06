@@ -115,7 +115,9 @@ public class RenderObjectTreeRenderer {
             // TODO: refine conditions for cache split
             if let currentNode = currentNode as? CacheSplitRenderObject {
 
-                groups.append(RenderGroup(slices: [RenderObjectTree.TreeSlice(tree: tree, start: nextGroupStart, end: currentPath)], renderBuffer: 0))
+                groups.append(RenderGroup(slices: [RenderObjectTree.TreeSlice(tree: tree, start: nextGroupStart, end: currentPath)]))
+
+                print("MADE NEW GROUP FROM", nextGroupStart, "TO", currentPath)
 
                 nextGroupStart = currentPath
             }
@@ -152,9 +154,9 @@ public class RenderObjectTreeRenderer {
             }
         }
 
-        self.groups.append(RenderGroup(slices: [RenderObjectTree.TreeSlice(tree: tree, start: nextGroupStart, end: TreePath())], renderBuffer: 0))
+        self.groups.append(RenderGroup(slices: [RenderObjectTree.TreeSlice(tree: tree, start: nextGroupStart, end: TreePath())]))
 
-        print("MADAE", self.groups.count, "groups")
+        print("MADE", self.groups.count, "groups")
     }
 
     public func refresh() {
@@ -395,7 +397,7 @@ public class RenderObjectTreeRenderer {
         
         for group in groups {
 
-            render(group: group, with: backendRenderer)
+            render(group: group, with: backendRenderer, in: bounds)
 
        
             
@@ -441,16 +443,39 @@ public class RenderObjectTreeRenderer {
 
     // TODO: check whether inline is good for performance
     @inline(__always)
-    private func render(group: RenderGroup, with backendRenderer: Renderer) {
-         
-        backendRenderer.beginFrame()
+    private func render(group: RenderGroup, with backendRenderer: Renderer, in bounds: DRect) {
         
-        for slice in group.slices {
+        var group = group
 
-            render(slice: slice, with: backendRenderer)
+        if group.cache == nil {
+
+            // TODO: maybe set screen size to group size
+            let cache = backendRenderer.makeVirtualScreen(size: bounds.size)
+
+            backendRenderer.pushVirtualScreen(cache)
+            
+            backendRenderer.beginFrame()
+            
+            for slice in group.slices {
+
+                render(slice: slice, with: backendRenderer)
+            }
+            
+            backendRenderer.endFrame()
+
+            backendRenderer.popVirtualScreen()
+
+            group.cache = cache
         }
 
-        backendRenderer.endFrame()
+        if let cache = group.cache {
+
+            backendRenderer.beginFrame()
+
+            backendRenderer.drawVirtualScreens([cache], at: [DVec2.zero])
+
+            backendRenderer.endFrame()
+        }
     }
 
     @inline(__always)
@@ -958,6 +983,6 @@ extension RenderObjectTreeRenderer {
 
         public var slices: [RenderObjectTree.TreeSlice]
 
-        public var renderBuffer: UInt
+        public var cache: VirtualScreen? = nil
     }
 }

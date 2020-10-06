@@ -183,43 +183,71 @@ open class SDL2OpenGL3NanoVGRenderer: Renderer {
     }
 
     open func pushVirtualScreen(_ screen: VirtualScreen) {
+       
         if virtualScreenStackContains(screen) {
+       
             fatalError("Tried to add same virtual screen to the stack twice.")
         }
+       
         let screen = checkVirtualScreen(screen)
+       
         glBindFramebuffer(GLMap.FRAMEBUFFER, screen.framebuffer)
+       
         glViewport(0, 0, GLMap.Size(screen.size.width), GLMap.Size(screen.size.height))
+       
         virtualScreenStack.append(screen)
     }
 
     @discardableResult open func popVirtualScreen() -> VirtualScreen? {
+       
         if let popped = virtualScreenStack.popLast() {
+          
             if virtualScreenStack.count == 0 {
+            
                 glBindFramebuffer(GLMap.FRAMEBUFFER, 0)
+            
                 glViewport(0, 0, GLMap.Size(window.drawableSize.width), GLMap.Size(window.drawableSize.height))
+         
             } else {
+          
                 let virtualScreen = checkVirtualScreen(virtualScreenStack.last!)
+           
                 glBindFramebuffer(GLMap.FRAMEBUFFER, virtualScreen.framebuffer)
+           
                 glViewport(0, 0, GLMap.Size(virtualScreen.size.width), GLMap.Size(virtualScreen.size.height))
             }
+            
             return popped
         }
+        
         return nil
     }
 
     open func drawVirtualScreens(_ screens: [VirtualScreen], at positions: [DVec2]? = nil) {
+
         let screen = checkVirtualScreen(screens[0])
+
         // TODO: implement rendering of all in array
         let positions = positions ?? screens.map { _ in DVec2.zero }
+
         let translation = positions[0] * DVec2(1, -1) / DVec2(window.drawableSize)
+
         glEnable(GLMap.BLEND)
+
         glBlendFunc(GLMap.SRC_ALPHA, GLMap.ONE_MINUS_SRC_ALPHA)
+
         compositionShader.use()
+
         glUniform2fv(glGetUniformLocation(compositionShader.id!, "translation"), 1, translation.map(Float.init))
+       
         glBindTexture(GLMap.TEXTURE_2D, screen.texture)
+       
         glBindVertexArray(compositionVAO)
+       
         glDrawArrays(GLMap.TRIANGLES, 0, 6)
+       
         glBindTexture(GLMap.TEXTURE_2D, 0)
+       
         glBindVertexArray(0)
     }
 
