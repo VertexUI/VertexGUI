@@ -102,7 +102,59 @@ public class RenderObjectTreeRenderer {
 
     private func makeGroups() {
 
-        self.groups = [RenderGroup(slices: [RenderObjectTree.TreeSlice(tree: tree, start: TreePath([]), end: TreePath([]))], renderBuffer: 0)]
+        groups = []
+
+        var currentPath = TreePath()
+
+        var currentNode: RenderObject = tree
+
+        var nextGroupStart = TreePath()
+
+        outer: while true {
+
+            // TODO: refine conditions for cache split
+            if let currentNode = currentNode as? CacheSplitRenderObject {
+
+                groups.append(RenderGroup(slices: [RenderObjectTree.TreeSlice(tree: tree, start: nextGroupStart, end: currentPath)], renderBuffer: 0))
+
+                nextGroupStart = currentPath
+            }
+
+            if currentNode.isBranching, currentNode.children.count > 0 {
+
+                currentPath = currentPath/0
+
+                currentNode = currentNode.children[0]
+            
+            } else {
+
+                var currentParent = currentNode.parent
+
+                while currentParent != nil {
+
+                    if currentParent!.children.count > currentPath.last! + 1 {
+
+                        currentPath = currentPath + 1
+
+                        currentNode = currentParent!.children[currentPath.last!]
+
+                        continue outer
+
+                    } else {
+
+                        currentPath = currentPath.dropLast()
+
+                        currentParent = currentParent?.parent       
+                    }
+                }
+
+                break
+            }
+        }
+
+        self.groups.append(RenderGroup(slices: [RenderObjectTree.TreeSlice(tree: tree, start: nextGroupStart, end: TreePath())], renderBuffer: 0))
+
+        print("MADAE", self.groups.count, "groups")
     }
 
     public func refresh() {
@@ -406,9 +458,11 @@ public class RenderObjectTreeRenderer {
  
         var currentPath = slice.startPath
 
-        //var currentNode: RenderObject? = nil
+        var renderedNodeCount = 0
 
         outer: while let currentNode = slice[currentPath] {
+
+            renderedNodeCount += 1
 
             if currentNode.isBranching, currentNode.children.count > 0 {
 
@@ -450,6 +504,8 @@ public class RenderObjectTreeRenderer {
                 break
             }
         }
+
+        print("Rendered slice with", renderedNodeCount, "nodes")
     }
 
     private func renderOpen(node: RenderObject, with backendRenderer: Renderer) {
