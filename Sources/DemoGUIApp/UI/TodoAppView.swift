@@ -58,40 +58,43 @@ public class TodoAppView: SingleChildWidget {
 
     private func buildMenu() -> Widget {
 
-        Border(right: 1, color: appTheme.backgroundColor.darkened(40)) {
+        RenderGroup {
 
-            Column { [unowned self] in
-                
-                Column.Item(crossAlignment: .Stretch) {
+            Border(right: 1, color: appTheme.backgroundColor.darkened(40)) {
 
-                    buildSearch()
-                }
+                Column { [unowned self] in
+                    
+                    Column.Item(crossAlignment: .Stretch) {
 
-                Button {
+                        buildSearch()
+                    }
 
-                    Text("New List")
-                }
+                    Button {
 
-                // TODO: implement Flex shrink
-                Column.Item(grow: 0, crossAlignment: .Stretch) {
+                        Text("New List")
+                    }
 
-                    ScrollArea {
+                    // TODO: implement Flex shrink
+                    Column.Item(grow: 0, crossAlignment: .Stretch) {
 
-                        Padding(all: 32) {
+                        ScrollArea {
 
-                            Column(spacing: 24) {
+                            Padding(all: 32) {
 
-                                Text("Lists", fontSize: 24, fontWeight: .Bold)
+                                Column(spacing: 24) {
 
-                                Column.Item(crossAlignment: .Stretch) {
+                                    Text("Lists", fontSize: 24, fontWeight: .Bold)
 
-                                    Column {
-                                        
-                                        todoLists.map { list in
+                                    Column.Item(crossAlignment: .Stretch) {
 
-                                            Column.Item(crossAlignment: .Stretch) {
+                                        Column {
+                                            
+                                            todoLists.map { list in
 
-                                                buildMenuListItem(for: list)
+                                                Column.Item(crossAlignment: .Stretch) {
+
+                                                    buildMenuListItem(for: list)
+                                                }
                                             }
                                         }
                                     }

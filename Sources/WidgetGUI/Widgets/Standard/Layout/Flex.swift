@@ -388,14 +388,6 @@ public class Flex: Widget {
                 return constraints.constrain(DSize2(lines.last!.crossAxisStart + lines.last!.size[crossAxisVectorIndex], mainAxisSize))
         }
     }
-
-    override public func renderContent() -> RenderObject? {
-        
-        CacheSplitRenderObject {
-
-            super.renderContent()
-        }
-    }
 }
 
 extension Flex {
