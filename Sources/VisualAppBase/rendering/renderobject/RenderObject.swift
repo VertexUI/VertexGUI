@@ -27,39 +27,9 @@ open class RenderObject: CustomDebugStringConvertible, TreeNode {
 
     open var isBranching: Bool { false }
 
-    // TODO: provide a default that will just sink all messages if not listend to or not?
-    internal var _treeContext: RenderObjectTree.Context? = RenderObjectTree.Context()
-
     weak public internal(set) var parent: RenderObject? = nil
 
-    open var treeContext: RenderObjectTree.Context {
-
-        get {
-
-            guard let treeContext = _treeContext else {
-                
-                fatalError("No treeContext provided to RenderObject \(self).")
-            }
-
-            return treeContext
-        }
-
-        set {
-
-            _treeContext = newValue
-
-            for child in children {
-
-                child.treeContext = treeContext
-            }
-        }
-    }
-
-    // TODO: or call this contextualized or something??
-    private var mounted: Bool {
-
-        parent != nil
-    }
+    open var bus = Bus()
 
     open var hasTimedRenderValue: Bool {
         
@@ -85,16 +55,18 @@ open class RenderObject: CustomDebugStringConvertible, TreeNode {
 
         child.parent = self
 
-        if let treeContext = _treeContext {
+        /*if let treeContext = _treeContext {
 
             child.treeContext = treeContext
-        }
+        }*/
+
+        child.bus = bus
         
         children.append(child)
         
-        treeContext.rootwardBus.publish(
+        bus.up(
             
-            RenderObjectTree.RootwardMessage(sender: self, content: .ChildrenUpdated)
+            UpwardMessage(sender: self, content: .ChildrenUpdated)
         )
     }
 
@@ -102,9 +74,9 @@ open class RenderObject: CustomDebugStringConvertible, TreeNode {
         
         children = []
 
-        treeContext.rootwardBus.publish(
+        bus.up(
 
-            RenderObjectTree.RootwardMessage(sender: self, content: .ChildrenUpdated)
+            UpwardMessage(sender: self, content: .ChildrenUpdated)
         )
     }
 
@@ -112,7 +84,7 @@ open class RenderObject: CustomDebugStringConvertible, TreeNode {
 
         if removeNextTickListener == nil {
 
-            removeNextTickListener = treeContext.leafwardBus.onMessage { [weak self] in
+            removeNextTickListener = bus.onDownwardMessage { [weak self] in
 
                 switch $0 {
 
@@ -284,7 +256,7 @@ open class RenderStyleRenderObject: SubTreeRenderObject {
 
     private var removeTransitionEndListener: (() -> ())? = nil
 
-    override open var treeContext: RenderObjectTree.Context {
+    override open var bus: Bus {
 
         didSet  {
 
@@ -293,13 +265,13 @@ open class RenderStyleRenderObject: SubTreeRenderObject {
 
                 if let timedValue = fill.timedBase {
 
-                    treeContext.rootwardBus.publish(RenderObjectTree.RootwardMessage(
+                    bus.up(UpwardMessage(
                         
                         sender: self, content: .TransitionStarted))
 
                     if let remove = removeTransitionEndListener {
 
-                        treeContext.rootwardBus.publish(RenderObjectTree.RootwardMessage(
+                        bus.up(UpwardMessage(
 
                             sender: self, content: .TransitionEnded
                         ))
@@ -309,7 +281,7 @@ open class RenderStyleRenderObject: SubTreeRenderObject {
                         remove()
                     }
 
-                    removeTransitionEndListener = treeContext.leafwardBus.onMessage { [weak self] in
+                    removeTransitionEndListener = bus.onDownwardMessage { [weak self] in
 
                         switch $0 {
 
@@ -319,7 +291,7 @@ open class RenderStyleRenderObject: SubTreeRenderObject {
                                 
                                 self?.nextTick {
                                     
-                                    self?.treeContext.rootwardBus.publish(RenderObjectTree.RootwardMessage(
+                                    self?.bus.up(UpwardMessage(
 
                                         sender: self!, content: .TransitionEnded))
                                 }
@@ -389,7 +361,7 @@ open class RenderStyleRenderObject: SubTreeRenderObject {
 
             remove()
             
-            treeContext.rootwardBus.publish(RenderObjectTree.RootwardMessage(
+            bus.up(UpwardMessage(
 
                 sender: self, content: .TransitionEnded))
         }

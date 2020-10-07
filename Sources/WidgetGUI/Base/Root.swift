@@ -178,7 +178,7 @@ open class Root: Parent {
             widget.layout(constraints: widget.previousConstraints!)
         }
 
-        renderObjectTree.tick(timeStep)
+        //renderObjectTree.tick(timeStep)
 
         if renderObjectTree.state.activeTransitionCount > 0 {
 

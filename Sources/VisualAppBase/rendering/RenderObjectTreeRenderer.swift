@@ -66,8 +66,6 @@ public class RenderObjectTreeRenderer {
 
     private var tree: RenderObjectTree
 
-    private var treeMessageBuffer: [RenderObjectTree.RootwardMessage] = []
-    
     //private var sequence: [RenderSequenceItem] = []
 
     // TODO: maybe define this as a RenderState object?
@@ -92,21 +90,9 @@ public class RenderObjectTreeRenderer {
     public init(_ tree: RenderObjectTree) {
          
         self.tree = tree
-
-        _ = tree.treeContext.rootwardBus.onMessage { [unowned self] in
-
-            treeMessageBuffer.append($0)
-        }
     }
 
     public func tick() {
-
-        for message in treeMessageBuffer {
-
-            processTreeMessage(message)
-        }
-
-        treeMessageBuffer = []
 
         if groups.count == 0 {
 
@@ -124,16 +110,22 @@ public class RenderObjectTreeRenderer {
 
         var nextGroupStart = TreePath()
 
+        var nextGroupBus = RenderObject.Bus()
+
         outer: while true {
+
+            currentNode.bus = nextGroupBus
 
             // TODO: refine conditions for cache split
             if let currentNode = currentNode as? CacheSplitRenderObject {
 
-                groups.append(RenderGroup(slices: [RenderObjectTree.TreeSlice(tree: tree, start: nextGroupStart, end: currentPath)]))
+                groups.append(RenderGroup(slices: [RenderObjectTree.TreeSlice(tree: tree, start: nextGroupStart, end: currentPath)], bus: nextGroupBus))
 
                 print("MADE NEW GROUP FROM", nextGroupStart, "TO", currentPath)
 
                 nextGroupStart = currentPath
+
+                nextGroupBus = RenderObject.Bus()
             }
 
             if currentNode.isBranching, currentNode.children.count > 0 {
@@ -168,20 +160,18 @@ public class RenderObjectTreeRenderer {
             }
         }
 
-        self.groups.append(RenderGroup(slices: [RenderObjectTree.TreeSlice(tree: tree, start: nextGroupStart, end: TreePath())]))
+        self.groups.append(
+
+            RenderGroup(slices: [RenderObjectTree.TreeSlice(tree: tree, start: nextGroupStart, end: TreePath())], bus: nextGroupBus))
 
         print("MADE", self.groups.count, "groups")
     }
 
-    private func processTreeMessage(_ message: RenderObjectTree.RootwardMessage) {
+    /*private func processTreeMessage(_ message: RenderObjectTree.RootwardMessage) {
        
         print("RECEIVED BUS MESSAGE", message)
 
         switch message.content {
-
-        case .ChildrenUpdated:
-
-            self.groups = []
 
         default:
 
@@ -189,7 +179,7 @@ public class RenderObjectTreeRenderer {
         }
 
         // TODO: delete RenderObjectMeta here!
-    }
+    }*/
 
     /*public func setRenderObjectTree(_ tree: RenderObjectTree) {
         self.tree = tree
@@ -1003,11 +993,42 @@ extension RenderObjectTreeRenderer {
 
         public var slices: [RenderObjectTree.TreeSlice]
 
+        public var bus: RenderObject.Bus
+
+        public var activeTransitionCount = 0
+
         public var cache: VirtualScreen? = nil
 
-        public init(slices: [RenderObjectTree.TreeSlice]) {
+        public init(slices: [RenderObjectTree.TreeSlice], bus: RenderObject.Bus) {
 
             self.slices = slices
+
+            self.bus = bus
+
+            _ = self.bus.onUpwardMessage { [unowned self] in
+
+                processBusMessage($0)
+            }
+        }
+
+        private func processBusMessage(_ message: RenderObject.UpwardMessage) {
+
+            print("Render group received bus message!", message)
+
+            switch message.content {
+
+            case .ChildrenUpdated:
+
+                cache = nil
+
+            case .TransitionStarted:
+
+                activeTransitionCount += 1
+
+            case .TransitionEnded:
+
+                activeTransitionCount -= 1
+            }
         }
     }
 

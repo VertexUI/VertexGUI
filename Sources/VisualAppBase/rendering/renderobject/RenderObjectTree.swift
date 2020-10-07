@@ -26,21 +26,6 @@ public class RenderObjectTree: SubTreeRenderObject {
 
     //public internal(set) var onUpdate = EventHandlerManager<Update>()
 
-    private var rootTreeContext = Context()
-
-    override open var treeContext: Context {
-
-        get {
-
-            rootTreeContext
-        }
-
-        set {
-
-            fatalError("Tried to set treeContext on RenderObjectTree.")
-        }
-    }
-
     public init(_ children: [RenderObject] = []) {
 
         self.idPaths = [:]
@@ -346,7 +331,7 @@ public class RenderObjectTree: SubTreeRenderObject {
         } while parents.count > 0
     }
 
-    private final func processBusMessage(_ message: RootwardMessage) {
+    /*private final func processBusMessage(_ message: RootwardMessage) {
 
         switch message.content {
 
@@ -362,17 +347,17 @@ public class RenderObjectTree: SubTreeRenderObject {
 
             break
         }
-    }
+    }*/
 
     /// - Parameter timeStep: in seconds
-    public final func tick(_ timeStep: Double) {
+    /*public final func tick(_ timeStep: Double) {
 
         state.currentTick += 1
 
         state.currentTimestamp += timeStep
 
         treeContext.leafwardBus.publish(.Tick)
-    }
+    }*/
 }
 
 extension RenderObjectTree {
