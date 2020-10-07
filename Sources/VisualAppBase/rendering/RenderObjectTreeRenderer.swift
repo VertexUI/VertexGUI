@@ -2,7 +2,7 @@ import VisualAppBase
 import CustomGraphicsMath
 import Path
 import Foundation
-
+/*
 public protocol RenderGroup {
     var id: Int { get }
     //var treeMask: RenderObjectTreeMask { get set }
@@ -46,7 +46,7 @@ public struct CachableRenderGroup: RenderGroup {
     public init(id: Int) {
         self.id = id
     }
-}
+}*/
 
 // TODO: give rendering an extra package outside of VisualAppBase
 // TODO: maybe rename to RenderObjectTreeRenderer?
@@ -442,12 +442,13 @@ public class RenderObjectTreeRenderer {
     }
 
     // TODO: check whether inline is good for performance
-    @inline(__always)
     private func render(group: RenderGroup, with backendRenderer: Renderer, in bounds: DRect) {
         
         var group = group
 
         if group.cache == nil {
+
+            print("GROUP HAS NO CACHE")
 
             // TODO: maybe set screen size to group size
             let cache = backendRenderer.makeVirtualScreen(size: bounds.size)
@@ -470,6 +471,8 @@ public class RenderObjectTreeRenderer {
 
         if let cache = group.cache {
 
+            print("GROUP HAS CACHE, render from cache")
+
             backendRenderer.beginFrame()
 
             backendRenderer.drawVirtualScreens([cache], at: [DVec2.zero])
@@ -478,7 +481,6 @@ public class RenderObjectTreeRenderer {
         }
     }
 
-    @inline(__always)
     private func render(slice: RenderObjectTree.TreeSlice, with backendRenderer: Renderer) {
  
         var currentPath = slice.startPath
@@ -530,7 +532,7 @@ public class RenderObjectTreeRenderer {
             }
         }
 
-        print("Rendered slice with", renderedNodeCount, "nodes")
+        //print("Rendered slice with", renderedNodeCount, "nodes")
     }
 
     private func renderOpen(node: RenderObject, with backendRenderer: Renderer) {
@@ -979,10 +981,15 @@ public class RenderObjectTreeRenderer {
 
 extension RenderObjectTreeRenderer {
 
-    public struct RenderGroup {
+    public class RenderGroup {
 
         public var slices: [RenderObjectTree.TreeSlice]
 
         public var cache: VirtualScreen? = nil
+
+        public init(slices: [RenderObjectTree.TreeSlice]) {
+
+            self.slices = slices
+        }
     }
 }
