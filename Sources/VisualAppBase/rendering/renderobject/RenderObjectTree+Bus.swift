@@ -12,9 +12,16 @@ extension RenderObjectTree {
         }
     }
 
-    public enum RootwardMessage {
+    public struct RootwardMessage {
 
-        case TransitionStarted, TransitionEnded
+        public var sender: RenderObject
+
+        public var content: RootwardMessageContent
+    }
+    
+    public enum RootwardMessageContent {
+
+        case TransitionStarted, TransitionEnded, ChildrenUpdated
     }
 
     public enum LeafwardMessage {

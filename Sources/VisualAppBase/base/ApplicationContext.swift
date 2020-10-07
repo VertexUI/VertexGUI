@@ -5,8 +5,7 @@
 import Foundation
 import CustomGraphicsMath
 
-// TODO: Maybe call it ApplicationContext? Or only expose certain methods? Or window context? Well, it should be specific to a certain System, Window and Renderer (e.g. for text bounds), there could be more per window...
-public class RenderContext<S: System, W: Window, R: Renderer> {
+public class ApplicationContext<S: System, W: Window, R: Renderer> {
     public var mousePosition = DPoint2(0,0)
    // public var cursorRequests: [UInt64: Cursor] = [:] // TODO: maybe handle first come first or z index
     //public var nextCursorRequestId: UInt64 = 0

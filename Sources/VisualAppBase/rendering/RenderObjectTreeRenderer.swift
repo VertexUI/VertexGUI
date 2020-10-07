@@ -48,20 +48,11 @@ public struct CachableRenderGroup: RenderGroup {
     }
 }*/
 
-// TODO: give rendering an extra package outside of VisualAppBase
+// TODO: maybe give rendering an extra package outside of VisualAppBase
 // TODO: maybe rename to RenderObjectTreeRenderer?
 // TODO: maybe have a RenderObjectTreeGroupGenerator with efficientUpdate(identified: ...) etc. + a group renderer?
 // TODO: create a RenderState --> contains RenderObjectTree, Transitions and more depending on RenderStrategy, maybe
 public class RenderObjectTreeRenderer {
-    public struct DebuggingData {
-        public var tree: RenderObjectTree
-        public var sequence: [RenderGroup]
-
-        public init(tree: RenderObjectTree, sequence: [RenderGroup]) {
-            self.tree = tree
-            self.sequence = sequence
-        }
-    }
 
     /*public struct RenderSequenceItem {
         public var range: TreeRange?
@@ -74,6 +65,8 @@ public class RenderObjectTreeRenderer {
     }*/
 
     private var tree: RenderObjectTree
+
+    private var treeMessageBuffer: [RenderObjectTree.RootwardMessage] = []
     
     //private var sequence: [RenderSequenceItem] = []
 
@@ -88,6 +81,7 @@ public class RenderObjectTreeRenderer {
     }*/
     //private var availableCaches = [VirtualScreen]()
     public var debuggingData: DebuggingData {
+
         DebuggingData(tree: tree, sequence: [])
     }
 
@@ -98,6 +92,26 @@ public class RenderObjectTreeRenderer {
     public init(_ tree: RenderObjectTree) {
          
         self.tree = tree
+
+        _ = tree.treeContext.rootwardBus.onMessage { [unowned self] in
+
+            treeMessageBuffer.append($0)
+        }
+    }
+
+    public func tick() {
+
+        for message in treeMessageBuffer {
+
+            processTreeMessage(message)
+        }
+
+        treeMessageBuffer = []
+
+        if groups.count == 0 {
+
+            makeGroups()
+        }
     }
 
     private func makeGroups() {
@@ -159,15 +173,21 @@ public class RenderObjectTreeRenderer {
         print("MADE", self.groups.count, "groups")
     }
 
-    public func refresh() {
-        
-        //sequence = [RenderSequenceItem(range: TreeRange(), cachable: false)]
-        makeGroups()
-    }
-
-    public func processUpdate(_ update: RenderObjectTree.Update) {
+    private func processTreeMessage(_ message: RenderObjectTree.RootwardMessage) {
        
-        refresh()
+        print("RECEIVED BUS MESSAGE", message)
+
+        switch message.content {
+
+        case .ChildrenUpdated:
+
+            self.groups = []
+
+        default:
+
+            break
+        }
+
         // TODO: delete RenderObjectMeta here!
     }
 
@@ -531,8 +551,6 @@ public class RenderObjectTreeRenderer {
                 break
             }
         }
-
-        //print("Rendered slice with", renderedNodeCount, "nodes")
     }
 
     private func renderOpen(node: RenderObject, with backendRenderer: Renderer) {
@@ -990,6 +1008,16 @@ extension RenderObjectTreeRenderer {
         public init(slices: [RenderObjectTree.TreeSlice]) {
 
             self.slices = slices
+        }
+    }
+
+    public struct DebuggingData {
+        public var tree: RenderObjectTree
+        public var sequence: [RenderGroup]
+
+        public init(tree: RenderObjectTree, sequence: [RenderGroup]) {
+            self.tree = tree
+            self.sequence = sequence
         }
     }
 }

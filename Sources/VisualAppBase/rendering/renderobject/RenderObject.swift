@@ -27,31 +27,38 @@ open class RenderObject: CustomDebugStringConvertible, TreeNode {
 
     open var isBranching: Bool { false }
 
-    fileprivate var _context: RenderObject.Context?
+    // TODO: provide a default that will just sink all messages if not listend to or not?
+    internal var _treeContext: RenderObjectTree.Context? = RenderObjectTree.Context()
 
     weak public internal(set) var parent: RenderObject? = nil
 
-    open var context: RenderObject.Context {
+    open var treeContext: RenderObjectTree.Context {
 
         get {
 
-            guard let context = _context else {
+            guard let treeContext = _treeContext else {
                 
-                fatalError("No context provided to RenderObject \(self).")
+                fatalError("No treeContext provided to RenderObject \(self).")
             }
 
-            return context
+            return treeContext
         }
 
         set {
 
-            _context = newValue
+            _treeContext = newValue
 
             for child in children {
 
-                child.context = context
+                child.treeContext = treeContext
             }
         }
+    }
+
+    // TODO: or call this contextualized or something??
+    private var mounted: Bool {
+
+        parent != nil
     }
 
     open var hasTimedRenderValue: Bool {
@@ -78,24 +85,34 @@ open class RenderObject: CustomDebugStringConvertible, TreeNode {
 
         child.parent = self
 
-        if let context = _context {
+        if let treeContext = _treeContext {
 
-            child.context = context
+            child.treeContext = treeContext
         }
         
         children.append(child)
+        
+        treeContext.rootwardBus.publish(
+            
+            RenderObjectTree.RootwardMessage(sender: self, content: .ChildrenUpdated)
+        )
     }
 
     public func removeChildren() {
         
         children = []
+
+        treeContext.rootwardBus.publish(
+
+            RenderObjectTree.RootwardMessage(sender: self, content: .ChildrenUpdated)
+        )
     }
 
     internal func nextTick(_ execute: @escaping () -> ()) {
 
         if removeNextTickListener == nil {
 
-            removeNextTickListener = context.leafwardBus.onMessage { [weak self] in
+            removeNextTickListener = treeContext.leafwardBus.onMessage { [weak self] in
 
                 switch $0 {
 
@@ -267,7 +284,7 @@ open class RenderStyleRenderObject: SubTreeRenderObject {
 
     private var removeTransitionEndListener: (() -> ())? = nil
 
-    override open var context: RenderObject.Context {
+    override open var treeContext: RenderObjectTree.Context {
 
         didSet  {
 
@@ -276,18 +293,23 @@ open class RenderStyleRenderObject: SubTreeRenderObject {
 
                 if let timedValue = fill.timedBase {
 
-                    context.rootwardBus.publish(.TransitionStarted)
+                    treeContext.rootwardBus.publish(RenderObjectTree.RootwardMessage(
+                        
+                        sender: self, content: .TransitionStarted))
 
                     if let remove = removeTransitionEndListener {
 
-                        context.rootwardBus.publish(.TransitionEnded)
+                        treeContext.rootwardBus.publish(RenderObjectTree.RootwardMessage(
+
+                            sender: self, content: .TransitionEnded
+                        ))
 
                         removeTransitionEndListener = nil
 
                         remove()
                     }
 
-                    removeTransitionEndListener = context.leafwardBus.onMessage { [weak self] in
+                    removeTransitionEndListener = treeContext.leafwardBus.onMessage { [weak self] in
 
                         switch $0 {
 
@@ -297,7 +319,9 @@ open class RenderStyleRenderObject: SubTreeRenderObject {
                                 
                                 self?.nextTick {
                                     
-                                    self?.context.rootwardBus.publish(.TransitionEnded)
+                                    self?.treeContext.rootwardBus.publish(RenderObjectTree.RootwardMessage(
+
+                                        sender: self!, content: .TransitionEnded))
                                 }
 
                                 if let remove = self?.removeTransitionEndListener {
@@ -365,7 +389,9 @@ open class RenderStyleRenderObject: SubTreeRenderObject {
 
             remove()
             
-            context.rootwardBus.publish(.TransitionEnded)
+            treeContext.rootwardBus.publish(RenderObjectTree.RootwardMessage(
+
+                sender: self, content: .TransitionEnded))
         }
     }
 
@@ -817,7 +843,7 @@ open class TextRenderObject: RenderObject {
 
     override public func objectsAt(point: DPoint2) -> [ObjectAtPointResult] {
     
-        let size = context.getTextBoundsSize(text, fontConfig: fontConfig, maxWidth: maxWidth)
+        let size = DSize2(20, 20) // treeContext.getTextBoundsSize(text, fontConfig: fontConfig, maxWidth: maxWidth)
 
         if DRect(min: topLeft, size: size).contains(point: point) {
 

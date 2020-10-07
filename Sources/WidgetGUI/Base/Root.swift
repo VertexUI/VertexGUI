@@ -17,13 +17,13 @@ open class Root: Parent {
         }
     }
     
-    open var renderObjectContext: RenderObject.Context? {
+    open var renderContext: RenderContext? {
 
         didSet {
 
-            if let renderObjectContext = renderObjectContext {
+            if let renderContext = renderContext {
 
-                renderObjectTree.context = renderObjectContext
+                //renderObjectTree.context = renderObjectContext
             }
         }
     }
@@ -147,38 +147,23 @@ open class Root: Parent {
         return false
     }
 
-    /// - Parameter widget: If a specific widget is passed only the sub tree that was created by the widget will be updated.
-    open func updateRenderObjectTree(_ widget: Widget? = nil) {
+    private func updateRenderObjectTree() {
 
         if renderObjectTree.children.count == 0 {
 
-            // TODO: provide an insert function
             renderObjectTree.appendChild(rootWidget.render())
-
-            if let context = renderObjectContext {
-                
-                renderObjectTree.context = context
-            }
-
-            renderObjectTreeRenderer.refresh()
 
         } else {
 
-            let updatedWidget = widget ?? rootWidget
+            renderObjectTree.removeChildren()
 
-            let updatedSubTree = updatedWidget.render()
-
-            if let update = renderObjectTree.replace(updatedSubTree) {
-
-                renderObjectTreeRenderer.processUpdate(update)
-            }
+            renderObjectTree.appendChild(rootWidget.render())
         }
-
-        if let context = renderObjectContext {
+        
+        /*if let context = renderObjectContext {
                 
             renderObjectTree.context = context
-        }
-
+        }*/
         try! onDebuggingDataAvailable.invokeHandlers(renderObjectTreeRenderer.debuggingData)
         
         rerenderNeeded = true
@@ -199,6 +184,8 @@ open class Root: Parent {
 
             rerenderNeeded = true
         }
+
+        renderObjectTreeRenderer.tick()
     }
 
     // TODO: maybe this little piece of rendering logic belongs into the App as well? / Maybe return a render object tree as well???? 

@@ -22,14 +22,22 @@ public class RenderObjectTree: SubTreeRenderObject {
         return 0
     }
 
-    override open var context: RenderObject.Context {
+    //override internal var _context: RenderObject.Context? = RenderObject.Context()
 
-        didSet {
+    //public internal(set) var onUpdate = EventHandlerManager<Update>()
 
-            _ = context.rootwardBus.onMessage { [weak self] in
+    private var rootTreeContext = Context()
 
-                self?.processBusMessage($0)
-            }
+    override open var treeContext: Context {
+
+        get {
+
+            rootTreeContext
+        }
+
+        set {
+
+            fatalError("Tried to set treeContext on RenderObjectTree.")
         }
     }
 
@@ -187,7 +195,8 @@ public class RenderObjectTree: SubTreeRenderObject {
         }
         return (updatedRenderObjects, updatePath)
     }*/
-    public func replace(_ identifiedSubTree: IdentifiedSubTreeRenderObject) -> Update? {
+    /*public func replace(_ identifiedSubTree: IdentifiedSubTreeRenderObject) {
+
         //let identifiedPath = idPaths[identifiedSubTree.id]!
 
         var replacedIdentifiedSubTreePath: TreePath?
@@ -268,14 +277,11 @@ public class RenderObjectTree: SubTreeRenderObject {
 
         if let unwrappedReplacedIdentifiedSubTree = replacedIdentifiedSubTree, let replacedPath = replacedIdentifiedSubTreePath {
        
-            return .Replace(path: replacedPath, old: unwrappedReplacedIdentifiedSubTree, new: identifiedSubTree)
-    
-        } else {
-            //print("Warning: No SubTree with same id was present: \(identifiedSubTree.id)")
-      
-            return nil
+            onUpdate.invokeHandlers(
+
+                .Replace(path: replacedPath, old: unwrappedReplacedIdentifiedSubTree, new: identifiedSubTree))
         }
-    }
+    }*/
 
     /// - Warnings: Unused, untested
     public func traverseDepth(onObject objectHandler: (_ object: RenderObject, _ path: TreePath, _ index: Int, _ parentIndex: Int) throws -> Void) rethrows {
@@ -342,7 +348,7 @@ public class RenderObjectTree: SubTreeRenderObject {
 
     private final func processBusMessage(_ message: RootwardMessage) {
 
-        switch message {
+        switch message.content {
 
         case .TransitionStarted:
 
@@ -351,6 +357,10 @@ public class RenderObjectTree: SubTreeRenderObject {
         case .TransitionEnded:
 
             state.activeTransitionCount -= 1
+
+        default:
+
+            break
         }
     }
 
@@ -361,7 +371,7 @@ public class RenderObjectTree: SubTreeRenderObject {
 
         state.currentTimestamp += timeStep
 
-        context.leafwardBus.publish(.Tick)
+        treeContext.leafwardBus.publish(.Tick)
     }
 }
 
