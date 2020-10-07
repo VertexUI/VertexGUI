@@ -29,7 +29,27 @@ open class RenderObject: CustomDebugStringConvertible, TreeNode {
 
     weak public internal(set) var parent: RenderObject? = nil
 
-    open var bus = Bus()
+    open var bus = Bus() {
+
+        didSet {
+
+            for child in children {
+
+                child.bus = bus
+            }
+        }
+    }
+
+    open var treePath: TreePath = TreePath([]) {
+
+        didSet {
+
+            for (index, child) in children.enumerated() {
+
+                child.treePath = treePath/index
+            }
+        }
+    }
 
     open var hasTimedRenderValue: Bool {
         
@@ -55,12 +75,9 @@ open class RenderObject: CustomDebugStringConvertible, TreeNode {
 
         child.parent = self
 
-        /*if let treeContext = _treeContext {
-
-            child.treeContext = treeContext
-        }*/
-
         child.bus = bus
+
+        child.treePath = treePath/children.count
         
         children.append(child)
         
@@ -258,7 +275,7 @@ open class RenderStyleRenderObject: SubTreeRenderObject {
 
     override open var bus: Bus {
 
-        didSet  {
+        didSet {
 
             // TODO: put this into some mounted() or contextProvided() or something like that function
             if let fill = self.fill {
@@ -357,14 +374,14 @@ open class RenderStyleRenderObject: SubTreeRenderObject {
 
     deinit {
 
-        if let remove = removeTransitionEndListener {
+        /*if let remove = removeTransitionEndListener {
 
             remove()
             
             bus.up(UpwardMessage(
 
                 sender: self, content: .TransitionEnded))
-        }
+        }*/
     }
 
     public convenience init<FillRenderValue: RenderValue>(

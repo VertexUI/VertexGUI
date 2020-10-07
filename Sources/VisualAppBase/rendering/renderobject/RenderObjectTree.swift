@@ -398,6 +398,43 @@ extension RenderObjectTree {
 
             tree[path]
         }
+        
+        public func contains(_ path: TreePath) -> Bool {
+
+            var maxCompareCount = min(path.count, startPath.count)
+
+            for i in 0..<maxCompareCount {
+
+                if path[i] > startPath[i] {
+
+                    break
+
+                } else if path[i] < startPath[i] {
+
+                    return false
+                }/* else if path[i] == start[i] && i == maxCompareCount - 1 && path.count > start.count {
+                    return false
+                }*/
+            }
+
+            maxCompareCount = min(path.count, endPath.count)
+
+            for i in 0..<maxCompareCount {
+
+                if path[i] < endPath[i] {
+
+                    break
+
+                } else if path[i] > endPath[i] {
+
+                    return false
+                }/* else if path[i] == start[i] && i == maxCompareCount - 1 && path.count > end.count {
+                    return false
+                }*/
+            }
+
+            return true
+        }
     }
 
     public struct TreeSliceSequence: Sequence {
