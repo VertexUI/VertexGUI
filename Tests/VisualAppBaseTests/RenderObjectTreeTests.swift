@@ -1,11 +1,20 @@
+import Foundation
 import XCTest
+import CustomGraphicsMath
 @testable import VisualAppBase
 
 final class RenderObjectTreeTests: XCTestCase {
 
-    func makeTestTree() -> RenderObjectTree {
+    private func makeTestTree() -> RenderObjectTree {
 
         RenderObjectTree {
+
+            ContainerRenderObject {
+
+                ContainerRenderObject {
+
+                }
+            }
 
             ContainerRenderObject {
 
@@ -13,6 +22,11 @@ final class RenderObjectTreeTests: XCTestCase {
         }
     }
 
+    /**
+    When setting the bus object on the root node,
+    does it propagate to the children?
+    And do the message propagate properly?
+    */
     func testBusPropagation() {
 
         let tree = makeTestTree()
@@ -35,8 +49,114 @@ final class RenderObjectTreeTests: XCTestCase {
         XCTAssertEqual(messageBuffer[0].content, RenderObject.UpwardMessageContent.ChildrenUpdated)
     }
 
+    /**
+    When a new node is inserted into the tree,
+    does it receive the bus instance from it's parents
+    and do messages propagate properly?
+    */
+    func testBusRetention() {
+
+        let tree = makeTestTree()
+
+        let bus = RenderObject.Bus()
+
+        tree.bus = bus
+
+        tree.children[0].removeChildren()
+
+        tree.children[0].appendChild(ContainerRenderObject {})
+
+        let newNode = tree[TreePath(0, 0)]!
+
+        XCTAssertTrue(newNode.bus === bus)
+
+        var messageBuffer = [RenderObject.UpwardMessage]()
+
+        _ = bus.onUpwardMessage {
+
+            messageBuffer.append($0)
+        }
+
+        newNode.appendChild(ContainerRenderObject {})
+
+        XCTAssertEqual(messageBuffer.count, 1)
+    }
+
+    /**
+    Does the tick message propagate to the RenderObjects properly and do
+    the onTick handlers inside of each RenderObject work?
+    */
+    func testRenderObjectOnTick() {
+
+        let tree = makeTestTree()
+
+        let bus = RenderObject.Bus()
+
+        tree.bus = bus
+
+        let testObject = ContainerRenderObject {}
+
+        tree.appendChild(testObject)
+
+        var propagatedTick: Tick?
+
+        _ = testObject.onTick {
+            
+            propagatedTick = $0
+        }
+
+        let tick = Tick(deltaTime: 10, totalTime: 100)
+
+        bus.down(.Tick(tick: tick))
+
+        XCTAssertEqual(tick, propagatedTick)
+    }
+
+    /**
+    Do the transition messages of the RenderStyle RenderObject work correctly?
+    */
+    func testRenderStyleTransitionMessages() {
+
+        let tree = makeTestTree()
+
+        let bus = RenderObject.Bus()
+
+        tree.bus = bus
+
+        let testedNode = RenderStyleRenderObject(fill: TimedRenderValue(
+
+            id: 0,
+
+            startTimestamp: 10,
+
+            duration: 1
+        ) { _ in
+
+            return Fill.Color(Color.White)
+        }) {}
+
+        var messageBuffer = [RenderObject.UpwardMessage]()
+
+        _ = bus.onUpwardMessage {
+
+            messageBuffer.append($0)
+        }
+
+        bus.down(.Tick(tick: Tick(deltaTime: 5, totalTime: 100)))
+
+        print("MESSAGES", messageBuffer)
+
+        XCTAssertTrue(messageBuffer.contains {
+            
+            $0.content == RenderObject.UpwardMessageContent.TransitionStarted
+        })
+    }
+
     static var allTests = [
 
-        ("testBusPropagation", testBusPropagation)
+        ("testBusPropagation", testBusPropagation),
+        ("testBusRetention", testBusRetention),
+        ("testRenderObjectOnTick", testRenderObjectOnTick),
+        ("testRenderStyleTransitionMessages", testRenderStyleTransitionMessages),
     ]
 }

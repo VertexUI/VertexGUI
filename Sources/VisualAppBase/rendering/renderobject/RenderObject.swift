@@ -37,8 +37,17 @@ open class RenderObject: CustomDebugStringConvertible, TreeNode {
 
                 child.bus = bus
             }
+
+            if let remove = removeOnTickMessageHandler {
+
+                remove()
+            }
+
+            setupOnTick()
         }
     }
+
+    private var removeOnTickMessageHandler: (() -> ())?
 
     open var treePath: TreePath = TreePath([]) {
 
@@ -70,6 +79,13 @@ open class RenderObject: CustomDebugStringConvertible, TreeNode {
     private var nextTickHandlers: [() -> ()] = []
 
     private var removeNextTickListener: (() -> ())?
+
+    internal private(set) var onTick = EventHandlerManager<Tick>()
+
+    public init() {
+
+        setupOnTick()
+    }
 
     public func appendChild(_ child: RenderObject) {
 
@@ -127,6 +143,23 @@ open class RenderObject: CustomDebugStringConvertible, TreeNode {
         }
 
         self.nextTickHandlers.append(execute)
+    }
+
+    private func setupOnTick() {
+
+        removeOnTickMessageHandler = bus.onDownwardMessage { [unowned self] in
+
+            switch $0 {
+            
+            case let .Tick(tick):
+
+                onTick.invokeHandlers(tick)
+
+            default:
+
+                break
+            }
+        }
     }
 
     /**
@@ -273,65 +306,6 @@ open class RenderStyleRenderObject: SubTreeRenderObject {
 
     private var removeTransitionEndListener: (() -> ())? = nil
 
-    override open var bus: Bus {
-
-        didSet {
-
-            // TODO: put this into some mounted() or contextProvided() or something like that function
-            if let fill = self.fill {
-
-                if let timedValue = fill.timedBase {
-
-                    bus.up(UpwardMessage(
-                        
-                        sender: self, content: .TransitionStarted))
-
-                    if let remove = removeTransitionEndListener {
-
-                        bus.up(UpwardMessage(
-
-                            sender: self, content: .TransitionEnded
-                        ))
-
-                        removeTransitionEndListener = nil
-
-                        remove()
-                    }
-
-                    removeTransitionEndListener = bus.onDownwardMessage { [weak self] in
-
-                        switch $0 {
-
-                        case .Tick:
-
-                            if timedValue.endTimestamp <= Date.timeIntervalSinceReferenceDate {
-                                
-                                self?.nextTick {
-                                    
-                                    self?.bus.up(UpwardMessage(
-
-                                        sender: self!, content: .TransitionEnded))
-                                }
-
-                                if let remove = self?.removeTransitionEndListener {
-
-                                    remove()
-
-                                    self?.removeTransitionEndListener = nil
-                                }
-
-                            }
-
-                        default:
-                            
-                            break
-                        }
-                    }
-                }
-            }
-        }
-    }
-
     override open var individualHash: Int {
 
         var hasher = Hasher()
@@ -370,6 +344,67 @@ open class RenderStyleRenderObject: SubTreeRenderObject {
                 }
 
                 super.init(children: children())
+
+                if let fill = self.fill {
+
+                    if let timedValue = fill.timedBase {
+
+                        var removeOnTickHandler: (() -> ())? = nil
+
+                        removeOnTickHandler = onTick { [unowned self] tick in
+
+                            if timedValue.startTimestamp <= tick.totalTime {
+
+                                bus.up(UpwardMessage(
+                                    
+                                    sender: self, content: .TransitionStarted))
+
+                                if let remove = removeTransitionEndListener {
+
+                                    bus.up(UpwardMessage(
+
+                                        sender: self, content: .TransitionEnded
+                                    ))
+
+                                    removeTransitionEndListener = nil
+
+                                    remove()
+                                }
+
+                                removeTransitionEndListener = bus.onDownwardMessage { [weak self] in
+
+                                    switch $0 {
+
+                                    case .Tick:
+
+                                        if timedValue.endTimestamp <= Date.timeIntervalSinceReferenceDate {
+                                            
+                                            self?.nextTick {
+                                                
+                                                self?.bus.up(UpwardMessage(
+
+                                                    sender: self!, content: .TransitionEnded))
+                                            }
+
+                                            if let remove = self?.removeTransitionEndListener {
+
+                                                remove()
+
+                                                self?.removeTransitionEndListener = nil
+                                            }
+                                        }
+
+                                    default:
+                                        
+                                        break
+                                    }
+                                }
+
+                                removeOnTickHandler!()
+                            }
+                        }
+                    }
+                }
     }
 
     deinit {

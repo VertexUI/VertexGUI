@@ -17,6 +17,10 @@ public struct TreePath: Sequence, Comparable, Hashable, Equatable, CustomDebugSt
         self.segments = segments
     }
 
+    public init(_ segments: Int...) {
+        self.segments = segments
+    }
+
     public subscript(index: Int) -> Int {
         get {
             segments[index]
