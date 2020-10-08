@@ -94,9 +94,9 @@ final class RenderObjectTreeTests: XCTestCase {
 
         tree.bus = bus
 
-        let testObject = ContainerRenderObject {}
+        let testObject = RenderStyleRenderObject(fillColor: .Black) {}
 
-        tree.appendChild(testObject)
+        tree.children[0].appendChild(testObject)
 
         var propagatedTick: Tick?
 
@@ -130,26 +130,110 @@ final class RenderObjectTreeTests: XCTestCase {
             startTimestamp: 10,
 
             duration: 1
+
         ) { _ in
 
             return Fill.Color(Color.White)
         }) {}
 
+        tree.children[0].appendChild(testedNode)
+
         var messageBuffer = [RenderObject.UpwardMessage]()
+
+        var transitionCount = 0
 
         _ = bus.onUpwardMessage {
 
             messageBuffer.append($0)
+
+            switch $0.content {
+            
+            case .TransitionStarted:
+
+                transitionCount += 1
+            
+            case .TransitionEnded:
+
+                transitionCount -= 1
+
+            default:
+
+                break
+            }
         }
 
-        bus.down(.Tick(tick: Tick(deltaTime: 5, totalTime: 100)))
-
-        print("MESSAGES", messageBuffer)
+        bus.down(.Tick(tick: Tick(deltaTime: 5, totalTime: 10.5)))
 
         XCTAssertTrue(messageBuffer.contains {
             
             $0.content == RenderObject.UpwardMessageContent.TransitionStarted
         })
+
+        XCTAssertTrue(!messageBuffer.contains {
+            
+            $0.content == RenderObject.UpwardMessageContent.TransitionEnded
+        })
+
+        XCTAssertEqual(transitionCount, 1)
+        
+        bus.down(.Tick(tick: Tick(deltaTime: 5, totalTime: 11.1)))
+
+        bus.down(.Tick(tick: Tick(deltaTime: 1, totalTime: 11.2)))
+
+        XCTAssertTrue(messageBuffer.contains {
+            
+            $0.content == RenderObject.UpwardMessageContent.TransitionEnded
+        })
+
+        XCTAssertEqual(transitionCount, 0)
+    }
+
+    /**
+    Test whether the correct messages are output when a RenderStyle RenderObject
+    is deinitialized before a transition finishes.
+    */
+    func testRenderStyleTransitionDeinit() {
+
+        var testedNode: RenderObject? = RenderStyleRenderObject(fill: TimedRenderValue(
+
+            id: 0,
+
+            startTimestamp: 10,
+
+            duration: 1
+        ) { _ in
+
+            return .Color(.White)
+            
+        }) {}
+
+        var transitionCount = 0
+
+        _ = testedNode!.bus.onUpwardMessage {
+
+            switch $0.content {
+
+            case .TransitionStarted:
+
+                transitionCount += 1
+            
+            case .TransitionEnded:
+
+                transitionCount -= 1
+
+            default:
+
+                break
+            }
+        }
+
+        testedNode!.bus.down(.Tick(tick: Tick(deltaTime: 1, totalTime: 10)))
+
+        XCTAssertEqual(transitionCount, 1)
+
+        testedNode = nil
+
+        XCTAssertEqual(transitionCount, 0)
     }
 
     static var allTests = [
@@ -158,5 +242,6 @@ final class RenderObjectTreeTests: XCTestCase {
         ("testBusRetention", testBusRetention),
         ("testRenderObjectOnTick", testRenderObjectOnTick),
         ("testRenderStyleTransitionMessages", testRenderStyleTransitionMessages),
+        ("testRenderStyleTransitionDeinit", testRenderStyleTransitionDeinit)
     ]
 }

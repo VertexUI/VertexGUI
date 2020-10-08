@@ -12,11 +12,13 @@ public struct FixedRenderValue<V: Hashable>: RenderValue {
 }
 
 public struct TimedRenderValue<V: Hashable>: RenderValue {
+  
     public typealias Value = V
     /// a timestamp relative to something
     /// (e.g. reference date 1.1.2000, something like that), in seconds
     // TODO: make timestamp relative to creation time of renderobjecttree --> provide own .now() + seconds interface
     public var startTimestamp: Double
+   
     /// in seconds
     public var duration: Double
 

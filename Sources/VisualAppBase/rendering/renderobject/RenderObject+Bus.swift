@@ -33,6 +33,6 @@ extension RenderObject {
 
     public enum DownwardMessage {
 
-        case Tick
+        case Tick(tick: Tick)
     }
 }

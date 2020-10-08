@@ -371,36 +371,27 @@ open class RenderStyleRenderObject: SubTreeRenderObject {
                                     remove()
                                 }
 
-                                removeTransitionEndListener = bus.onDownwardMessage { [weak self] in
+                                removeOnTickHandler!()
 
-                                    switch $0 {
+                                removeTransitionEndListener = onTick { [weak self] tick in
 
-                                    case .Tick:
-
-                                        if timedValue.endTimestamp <= Date.timeIntervalSinceReferenceDate {
+                                    if timedValue.endTimestamp <= tick.totalTime {
+                                        
+                                        self?.nextTick {
                                             
-                                            self?.nextTick {
-                                                
-                                                self?.bus.up(UpwardMessage(
+                                            self?.bus.up(UpwardMessage(
 
-                                                    sender: self!, content: .TransitionEnded))
-                                            }
-
-                                            if let remove = self?.removeTransitionEndListener {
-
-                                                remove()
-
-                                                self?.removeTransitionEndListener = nil
-                                            }
+                                                sender: self!, content: .TransitionEnded))
                                         }
 
-                                    default:
-                                        
-                                        break
+                                        if let remove = self?.removeTransitionEndListener {
+
+                                            remove()
+
+                                            self?.removeTransitionEndListener = nil
+                                        }
                                     }
                                 }
-
-                                removeOnTickHandler!()
                             }
                         }
                     }
@@ -409,14 +400,14 @@ open class RenderStyleRenderObject: SubTreeRenderObject {
 
     deinit {
 
-        /*if let remove = removeTransitionEndListener {
+        if let remove = removeTransitionEndListener {
 
             remove()
             
             bus.up(UpwardMessage(
 
                 sender: self, content: .TransitionEnded))
-        }*/
+        }
     }
 
     public convenience init<FillRenderValue: RenderValue>(
