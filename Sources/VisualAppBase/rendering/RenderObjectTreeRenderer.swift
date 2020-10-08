@@ -147,8 +147,6 @@ public class RenderObjectTreeRenderer {
             }
         }
 
-        // TODO: forward tree message to group that contains the sender
-
         switch message.content {
 
         case .ChildrenUpdated:

@@ -13,7 +13,7 @@ import Foundation
     var texture: GLMap.UInt { get set }
 }*/
 
-public struct SDL2OpenGL3NanoVGVirtualScreen: VirtualScreen {
+public class SDL2OpenGL3NanoVGVirtualScreen: VirtualScreen {
     public var size: DSize2
     public var framebuffer = GLMap.UInt()
     public var texture = GLMap.UInt()
@@ -21,6 +21,11 @@ public struct SDL2OpenGL3NanoVGVirtualScreen: VirtualScreen {
 
     public init(_ size: DSize2) {
         self.size = size
+    }
+
+    deinit {
+
+        delete()
     }
 
     public func delete() {
