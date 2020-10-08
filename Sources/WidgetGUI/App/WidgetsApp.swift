@@ -51,6 +51,8 @@ open class WidgetsApp<S: System, W: Window, R: Renderer>: VisualApp<S, W> {
             window: window,
             
             getTextBoundsSize: { renderer.getTextBoundsSize($0, fontConfig: $1, maxWidth: $2) },
+
+            getApplicationTime: { [unowned self] in system.currentTime },
             
             requestCursor: {
                 

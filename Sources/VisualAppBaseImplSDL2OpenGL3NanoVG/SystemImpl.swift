@@ -23,7 +23,12 @@ open class SDL2OpenGL3NanoVGSystem: System {
     
     var lastFrameTime = SDL_GetTicks()
 
-    var totalTime: UInt32 = 0
+    var totalTime: UInt32 = 0 // in ms
+
+    override open var currentTime: Double { // in s
+
+        return Double(totalTime) / 1000
+    }
     
     public var relativeMouseMode = false {
 

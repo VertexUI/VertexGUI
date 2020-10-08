@@ -6,6 +6,11 @@ open class System {
     public var onFrame = EventHandlerManager<Int>()
 
     public var averageFps = 0 // average FPS over a certain time, TODO: which time?
+
+    open var currentTime: Double {
+
+        fatalError("currentTime not implemented")
+    }
     
     public init() throws {
 
