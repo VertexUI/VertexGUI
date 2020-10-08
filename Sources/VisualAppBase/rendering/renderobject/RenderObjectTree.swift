@@ -35,6 +35,11 @@ public class RenderObjectTree: SubTreeRenderObject {
         self.idPaths = getIdPathsRecursively(self, TreePath(), [UInt: TreePath]())
     }
 
+    public convenience init(@RenderObjectBuilder children childrenBuilder: () -> [RenderObject]) {
+
+        self.init(childrenBuilder())
+    }
+
     // TODO: maybe add setter...
     public subscript(path: TreePath) -> RenderObject? {
 

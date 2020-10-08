@@ -32,7 +32,7 @@ public class GameView: Widget, GUIMouseEventConsumer {
             player.stateManager.retrieveUpdates()
 
             // TODO: retrieve delta time from RenderObject render function
-            try gameRenderer.render(renderArea: globalBounds, window: context!.window, renderer: renderer, deltaTime: deltaTime)
+            gameRenderer.render(renderArea: globalBounds, window: context!.window, renderer: renderer, deltaTime: deltaTime)
         }
     }
 

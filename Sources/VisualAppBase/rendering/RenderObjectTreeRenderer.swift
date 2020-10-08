@@ -501,7 +501,7 @@ extension RenderObjectTreeRenderer {
 
         public func processBusMessage(_ message: RenderObject.UpwardMessage) {
 
-            print("RENDER GROUP RECEIVED BUS message!", message)
+            print("RENDER GROUP RECEIVED BUS message!", message, "from", message.sender)
 
             switch message.content {
 

@@ -86,7 +86,7 @@ public class GameRenderer {
         //state.unregister(bufferId: eventBufferId)
     }
 
-    public func render(renderArea: DRect, window: Window, renderer: Renderer, deltaTime: Double) throws {      
+    public func render(renderArea: DRect, window: Window, renderer: Renderer, deltaTime: Double) {      
         updateRenderState(deltaTime: deltaTime)
 
         let perspective = state.player.perspective

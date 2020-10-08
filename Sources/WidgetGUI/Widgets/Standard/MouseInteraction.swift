@@ -51,7 +51,6 @@ public final class MouseInteraction: SingleChildWidget, GUIMouseEventConsumer, C
         ConfigProvider($providedConfigs) { [unowned self] in
 
             childBuilder()
-
         }
     }
 

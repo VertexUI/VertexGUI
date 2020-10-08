@@ -14,12 +14,17 @@ import Foundation
 }*/
 
 public class SDL2OpenGL3NanoVGVirtualScreen: VirtualScreen {
+
     public var size: DSize2
+
     public var framebuffer = GLMap.UInt()
+
     public var texture = GLMap.UInt()
+
     public var depthStencilBuffer = GLMap.UInt()
 
     public init(_ size: DSize2) {
+
         self.size = size
     }
 
@@ -29,10 +34,14 @@ public class SDL2OpenGL3NanoVGVirtualScreen: VirtualScreen {
     }
 
     public func delete() {
+       
         // TODO: handle delete in renderer / attach to renderer and track whether should be deleted
         print("Warning: delete function of screen called and due to current implementation called outside of parent renderer.")
+        
         glDeleteFramebuffers(1, [framebuffer])
+       
         glDeleteTextures(1, [texture])
+       
         glDeleteRenderbuffers(1, [depthStencilBuffer])
     }
 }
