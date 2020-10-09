@@ -2,35 +2,31 @@ import WidgetGUI
 import Foundation
 import CSDL2
 import CnanovgGL3
-//import Cnanovg
-
-//import Cnanovg.gl
 import GL
 import Path
 import CustomGraphicsMath
 import VisualAppBase
 
-/*
-public typealias UnregisterCallback = () throws -> Void
-public typealias OnFrameCallback = (_ deltaTime: UInt32, _ unregister: UnregisterCallback) -> Void
-public typealias OnResizeCallback = (_ newSize: DSize2, _ unregister: UnregisterCallback) throws -> Void
-public typealias OnMouseCallback = (_ event: MouseEvent, _ unregister: UnregisterCallback) -> Void
-*/
-
 open class SDL2OpenGL3NanoVGWindow: Window {
+    
     public var sdlWindow: OpaquePointer
-    public var glContext: SDL_GLContext 
+    
+    public var glContext: SDL_GLContext
+    
     public var nvg: UnsafeMutablePointer<NVGcontext>
 
     override open var id: Int {
+        
         get {
+            
             return Int(SDL_GetWindowID(sdlWindow))
         }
     }
-
-    public var drawableSize: DSize2 = DSize2(0, 0)
+    
     public var pixelRatio: Float {
+        
         get {
+            
             return Float(drawableSize.width / size.width)
         }
     }

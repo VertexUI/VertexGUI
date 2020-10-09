@@ -20,10 +20,7 @@ open class WidgetsApp<S: System, W: Window, R: Renderer>: VisualApp<S, W> {
         
         super.init(system: system)
 
-        /*_ = system.onTick({ [unowned self] in
-            
-            //self.tick($0)
-        })*/
+        _ = system.onTick(tick)
 
         _ = system.onFrame(render)
 
@@ -146,16 +143,18 @@ open class WidgetsApp<S: System, W: Window, R: Renderer>: VisualApp<S, W> {
     public func render(deltaTime: Int) {
                       
         for windowConfig in windowConfigs {
-            
-            windowConfig.guiRoot.tick(Tick(deltaTime: Double(deltaTime) / 1000, totalTime: system.currentTime))
-                   
+                               
             if windowConfig.guiRoot.rerenderNeeded {
+                
+                print("RERENDERING")
                 
                 windowConfig.renderer.beginFrame()
                 
                 windowConfig.renderer.clear(windowConfig.window.background)
                 
-                windowConfig.guiRoot.render(with: windowConfig.renderer)
+                windowConfig.guiRoot.render(
+                    with: windowConfig.renderer,
+                    in: DRect(min: .zero, size: windowConfig.window.drawableSize))
                 
                 windowConfig.renderer.endFrame()
                 

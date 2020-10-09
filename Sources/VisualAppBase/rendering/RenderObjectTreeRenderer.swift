@@ -24,6 +24,8 @@ public class RenderObjectTreeRenderer {
 
     private var renderObjectMeta: [ObjectIdentifier: Any] = [:]
     
+    public private(set) var rerenderNeeded = true
+    
     public init(_ tree: RenderObjectTree) {
          
         self.tree = tree
@@ -43,12 +45,16 @@ public class RenderObjectTreeRenderer {
 
         treeMessageBuffer = []
 
+        tree.bus.down(.Tick(tick: tick))
+        
+        // TODO: the processTreeMessage can also have lead to multiple
+        // calls to makeGroups()
+        // make a flag or so and call it after the processTreeMessage in this
+        // function here one time
         if groups.count == 0 {
 
             makeGroups()
         }
-
-        tree.bus.down(.Tick(tick: tick))
 
         for group in groups {
 
@@ -168,6 +174,10 @@ public class RenderObjectTreeRenderer {
         case .ChildrenUpdated:
 
             makeGroups()
+            
+        case .RerenderNeeded:
+            
+            rerenderNeeded = true
         }
     }
 
@@ -177,6 +187,8 @@ public class RenderObjectTreeRenderer {
 
             render(group: group, with: backendRenderer, in: bounds)
         }
+        
+        rerenderNeeded = false
     }
 
     // TODO: check whether inline is good for performance
@@ -185,6 +197,14 @@ public class RenderObjectTreeRenderer {
         var group = group
 
         if group.cachable {
+                        
+            if let cache = group.cache {
+                
+                if cache.size != bounds.size {
+                    
+                    group.cache = nil
+                }
+            }
 
             print("GROUP IS CACHABLE")
 
@@ -510,6 +530,8 @@ extension RenderObjectTreeRenderer {
             case .ChildrenUpdated:
 
                 cache = nil
+                
+                onMessage.invokeHandlers(.RerenderNeeded)
 
             case .TransitionStarted:
 
@@ -531,7 +553,7 @@ extension RenderObjectTreeRenderer {
 
         public enum Message {
 
-            case ChildrenUpdated
+            case ChildrenUpdated, RerenderNeeded
         }
     }
 

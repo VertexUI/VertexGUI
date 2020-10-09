@@ -180,17 +180,22 @@ open class Root: Parent {
 
         //renderObjectTree.tick(timeStep)
 
-        if renderObjectTree.state.activeTransitionCount > 0 {
+        /*if renderObjectTree.state.activeTransitionCount > 0 {
 
             rerenderNeeded = true
-        }
+        }*/
 
         renderObjectTreeRenderer.tick(tick)
+        
+        if renderObjectTreeRenderer.rerenderNeeded {
+            
+            rerenderNeeded = true
+        }
     }
 
     // TODO: maybe this little piece of rendering logic belongs into the App as well? / Maybe return a render object tree as well???? 
     // TODO: --> A Game scene could also be a render object with custom logic which is redrawn on every frame by render strategy.
-    open func render(with renderer: Renderer) {
+    open func render(with renderer: Renderer, in bounds: DRect) {
                 
         for widget in rerenderWidgets {
             
