@@ -20,6 +20,8 @@ open class WidgetsApp<S: System, W: Window, R: Renderer>: VisualApp<S, W> {
         
         super.init(system: system)
 
+        _ = system.onTick(tick)
+
         _ = system.onFrame(render)
 
         _ = windowConfigs.onChanged { [unowned self] _ in
@@ -130,14 +132,18 @@ open class WidgetsApp<S: System, W: Window, R: Renderer>: VisualApp<S, W> {
         return window
     }
 
+    public func tick(_ tick: Tick) {
+
+        for windowConfig in windowConfigs {
+
+            windowConfig.guiRoot.tick(tick)
+        }
+    }
+
     public func render(deltaTime: Int) {
                       
         for windowConfig in windowConfigs {
-        
-            // TODO: maybe call this in system.onFrame? might need an option to add a handler before all other handlers
-            windowConfig.guiRoot.tick(Double(deltaTime) / 1000)
-            
-            // TODO: reimplement rerenderNeeded --> check whether transitions running!
+                   
             if windowConfig.guiRoot.rerenderNeeded {
                 
                 windowConfig.renderer.beginFrame()

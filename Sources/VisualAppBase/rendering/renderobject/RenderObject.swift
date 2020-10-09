@@ -47,8 +47,6 @@ open class RenderObject: CustomDebugStringConvertible, TreeNode {
         }
     }
 
-    private var removeOnTickMessageHandler: (() -> ())?
-
     open var treePath: TreePath = TreePath([]) {
 
         didSet {
@@ -80,11 +78,21 @@ open class RenderObject: CustomDebugStringConvertible, TreeNode {
 
     private var removeNextTickListener: (() -> ())?
 
+    private var removeOnTickMessageHandler: (() -> ())?
+
     internal private(set) var onTick = EventHandlerManager<Tick>()
 
     public init() {
 
         setupOnTick()
+    }
+
+    deinit {
+     
+        if let remove = removeOnTickMessageHandler {
+
+            remove()
+        }
     }
 
     public func appendChild(_ child: RenderObject) {

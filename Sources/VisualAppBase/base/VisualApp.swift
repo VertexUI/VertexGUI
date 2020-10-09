@@ -31,28 +31,25 @@ open class VisualApp<S: System, W: Window> {
         
         #elseif os(Linux)
         
-        DispatchQueue.main.async {
-            /*do {
-                try self.setup()
-            } catch {
-                print("Error in setup()", error)
-            }*/
+      //  DispatchQueue.main.async {
+        /*do {
+            try self.setup()
+        } catch {
+            print("Error in setup()", error)
+        }*/
 
-            do {
-                /*guard let system = self.system else {
-                    fatalError("system not initialized after setup() call in start()")
-                }*/
+            /*guard let system = self.system else {
+                fatalError("system not initialized after setup() call in start()")
+            }*/
+            
+            try self.system.mainLoop() // { (_ block: @escaping () -> ()) in
                 
-                try self.system.mainLoop() // { (_ block: @escaping () -> ()) in
-                    
-                //    DispatchQueue.main.async { block() }
-                //}
-            } catch {
-                print("Error in system.mainLoop()")
-            }
-        }
+            //    DispatchQueue.main.async { block() }
+            //}
+         //   print("Error in system.mainLoop()")
+       // }
         
-        dispatchMain()
+       // dispatchMain()
         
         #else
         

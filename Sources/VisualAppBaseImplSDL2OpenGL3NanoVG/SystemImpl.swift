@@ -265,6 +265,8 @@ open class SDL2OpenGL3NanoVGSystem: System {
                 
                 self.totalTime += deltaTime
 
+                self.onTick.invokeHandlers(Tick(deltaTime: Double(deltaTime) / 1000, totalTime: currentTime))
+
                 self.onFrame.invokeHandlers(Int(deltaTime))
 
                 let frameDuration = Int(SDL_GetTicks() - frameStartTime)

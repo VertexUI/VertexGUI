@@ -44,7 +44,7 @@ public class EventHandlerManager<Data> {
     public func invokeHandlers(_ data: Data) {
         // TODO: call handlers in same order as they were added
         for handler in handlers.values {
-            try handler(data)
+            handler(data)
         }
     }
 

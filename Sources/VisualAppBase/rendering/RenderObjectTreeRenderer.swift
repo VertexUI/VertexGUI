@@ -30,11 +30,11 @@ public class RenderObjectTreeRenderer {
 
         _ = self.tree.bus.onUpwardMessage { [unowned self] in
 
-            self.treeMessageBuffer.append($0)
+            treeMessageBuffer.append($0)
         }
     }
 
-    public func tick() {
+    public func tick(_ tick: Tick) {
 
         for message in treeMessageBuffer {
 
@@ -47,6 +47,8 @@ public class RenderObjectTreeRenderer {
 
             makeGroups()
         }
+
+        tree.bus.down(.Tick(tick: tick))
 
         for group in groups {
 

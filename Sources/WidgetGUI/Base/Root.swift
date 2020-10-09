@@ -169,7 +169,7 @@ open class Root: Parent {
         rerenderNeeded = true
     }
     
-    open func tick(_ timeStep: Double) {
+    open func tick(_ tick: Tick) {
 
         // TODO: might do boxConfig recalculations here also
         
@@ -185,7 +185,7 @@ open class Root: Parent {
             rerenderNeeded = true
         }
 
-        renderObjectTreeRenderer.tick()
+        renderObjectTreeRenderer.tick(tick)
     }
 
     // TODO: maybe this little piece of rendering logic belongs into the App as well? / Maybe return a render object tree as well???? 
