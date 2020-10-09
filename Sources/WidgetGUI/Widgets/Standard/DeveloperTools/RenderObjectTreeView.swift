@@ -11,14 +11,14 @@ public class RenderObjectTreeView: Widget {
         var groups: [Group] = []
     }
 
-    private var debuggingData: RenderObjectTreeRenderer.DebuggingData
+    private var debuggingData: OptimizingRenderObjectTreeRenderer.DebuggingData
     private var selectedObjectPath: TreePath?    
     private var onObjectSelected = ThrowingEventHandlerManager<(RenderObject, TreePath)>()
 
     private var groupedChildren: [Line] = []
 
     public init(
-        debuggingData: RenderObjectTreeRenderer.DebuggingData, 
+        debuggingData: OptimizingRenderObjectTreeRenderer.DebuggingData, 
         selectedObjectPath: TreePath?, 
         onObjectSelected objectSelectedHandler: ThrowingEventHandlerManager<(RenderObject, TreePath)>.Handler?) {
             self.debuggingData = debuggingData

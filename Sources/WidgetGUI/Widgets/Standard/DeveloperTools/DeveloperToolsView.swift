@@ -2,7 +2,7 @@ import VisualAppBase
 import CustomGraphicsMath
 
 public class DeveloperToolsView: SingleChildWidget, StatefulWidget {
-    public var debuggingData: RenderObjectTreeRenderer.DebuggingData? = nil {
+    public var debuggingData: OptimizingRenderObjectTreeRenderer.DebuggingData? = nil {
         didSet {
             handleDebuggingDataUpdated()
         }

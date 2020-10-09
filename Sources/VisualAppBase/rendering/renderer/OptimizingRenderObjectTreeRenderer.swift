@@ -4,12 +4,9 @@ import Path
 import Foundation
 
 // TODO: maybe give rendering an extra package outside of VisualAppBase
-// TODO: maybe rename to RenderObjectTreeRenderer?
-// TODO: maybe have a RenderObjectTreeGroupGenerator with efficientUpdate(identified: ...) etc. + a group renderer?
-// TODO: create a RenderState --> contains RenderObjectTree, Transitions and more depending on RenderStrategy, maybe
-public class RenderObjectTreeRenderer {
+public class OptimizingRenderObjectTreeRenderer: RenderObjectTreeRenderer {
 
-    private var tree: RenderObjectTree
+    public private(set) var tree: RenderObjectTree
 
     private var treeMessageBuffer: [RenderObject.UpwardMessage] = []
 
@@ -26,7 +23,7 @@ public class RenderObjectTreeRenderer {
     
     public private(set) var rerenderNeeded = true
     
-    public init(_ tree: RenderObjectTree) {
+    required public init(_ tree: RenderObjectTree) {
          
         self.tree = tree
 
@@ -499,7 +496,7 @@ public class RenderObjectTreeRenderer {
     }
 }
 
-extension RenderObjectTreeRenderer {
+extension OptimizingRenderObjectTreeRenderer {
 
     public class RenderGroup {
 

@@ -50,7 +50,7 @@ open class Root: Parent {
 
     public var rootWidget: Widget
 
-    private var renderObjectTreeRenderer: RenderObjectTreeRenderer
+    private var renderObjectTreeRenderer: OptimizingRenderObjectTreeRenderer
     
     internal var renderObjectTree: RenderObjectTree
     
@@ -81,7 +81,7 @@ open class Root: Parent {
         }
     }
 
-    public var onDebuggingDataAvailable = ThrowingEventHandlerManager<RenderObjectTreeRenderer.DebuggingData>()
+    public var onDebuggingDataAvailable = ThrowingEventHandlerManager<OptimizingRenderObjectTreeRenderer.DebuggingData>()
 
     public init(rootWidget contentRootWidget: Widget) {
 
@@ -89,7 +89,7 @@ open class Root: Parent {
         
         renderObjectTree = RenderObjectTree()
         
-        renderObjectTreeRenderer = RenderObjectTreeRenderer(renderObjectTree)
+        renderObjectTreeRenderer = OptimizingRenderObjectTreeRenderer(renderObjectTree)
         
         rootWidget.mount(parent: self)
 
