@@ -51,8 +51,12 @@ public extension ConfigurableWidget {
         let computedInheritedPartial = getConfig(ofType: PartialConfig.self)
 
         // TODO: if a config provider parent changes the Computed property has to be setup again!
+        
+        // store this variable here to avoid having to specify "unowned self" for the
+        // following closure as this crashes the swift compiler (5.3)
+        let localPartialConfig = self.localPartialConfig
 
-        return Computed({ [unowned self] in
+        return Computed({ //[unowned self] in
 
             let inheritedPartial = computedInheritedPartial.value
 

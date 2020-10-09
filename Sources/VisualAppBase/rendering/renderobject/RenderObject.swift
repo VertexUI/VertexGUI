@@ -73,6 +73,8 @@ open class RenderObject: CustomDebugStringConvertible, TreeNode {
 
         fatalError("debugDescription not implemented.")
     }
+    
+    public internal(set) var destroyed = false
 
     private var nextTickHandlers: [() -> ()] = []
 
@@ -88,6 +90,11 @@ open class RenderObject: CustomDebugStringConvertible, TreeNode {
     }
 
     deinit {
+        
+        if !destroyed {
+            
+            fatalError("deinit executed for RenderObject that has not yet been destroyed \(self)")
+        }
      
         if let remove = removeOnTickMessageHandler {
 
@@ -112,6 +119,11 @@ open class RenderObject: CustomDebugStringConvertible, TreeNode {
     }
 
     public func removeChildren() {
+        
+        for child in children {
+            
+            child.destroy()
+        }
         
         children = []
 
@@ -168,6 +180,22 @@ open class RenderObject: CustomDebugStringConvertible, TreeNode {
                 break
             }
         }
+    }
+    
+    public final func destroy() {
+        
+        for child in children {
+            
+            child.destroy()
+        }
+        
+        destroySelf()
+        
+        destroyed = true
+    }
+    
+    open func destroySelf() {
+        
     }
 
     /**
@@ -408,14 +436,6 @@ open class RenderStyleRenderObject: SubTreeRenderObject {
 
     deinit {
 
-        if let remove = removeTransitionEndListener {
-
-            remove()
-            
-            bus.up(UpwardMessage(
-
-                sender: self, content: .TransitionEnded))
-        }
     }
 
     public convenience init<FillRenderValue: RenderValue>(
@@ -482,6 +502,19 @@ open class RenderStyleRenderObject: SubTreeRenderObject {
                 strokeColor: Optional<FixedRenderValue<Color>>.none,
 
                 children: children)     
+    }
+    
+    override open func destroySelf() {
+        
+        if let remove = removeTransitionEndListener {
+
+            remove()
+                        
+                
+            bus.up(UpwardMessage(
+
+                sender: self, content: .TransitionEnded))
+        }
     }
 }
 
