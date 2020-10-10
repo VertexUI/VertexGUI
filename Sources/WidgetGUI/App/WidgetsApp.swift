@@ -16,13 +16,13 @@ open class WidgetsApp<S: System, W: Window, R: Renderer>: VisualApp<S, W> {
 
     private var windowConfigs = ObservableArray<WindowConfig>()
 
-    override public init(system: System) {
+    public init(system: System) {
         
-        super.init(system: system)
+        super.init(system: system, immediate: true)
 
-        _ = system.onTick(tick)
+        //_ = system.onTick(tick)
 
-        _ = system.onFrame(render)
+        //_ = system.onFrame(render)
 
         _ = windowConfigs.onChanged { [unowned self] _ in
             
@@ -132,7 +132,7 @@ open class WidgetsApp<S: System, W: Window, R: Renderer>: VisualApp<S, W> {
         return window
     }
 
-    public func tick(_ tick: Tick) {
+    override public func onTick(_ tick: Tick) {
 
         for windowConfig in windowConfigs {
 
@@ -140,7 +140,7 @@ open class WidgetsApp<S: System, W: Window, R: Renderer>: VisualApp<S, W> {
         }
     }
 
-    public func render(deltaTime: Int) {
+    override public func onFrame(_ deltaTime: Int) {
                       
         for windowConfig in windowConfigs {
                                
