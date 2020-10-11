@@ -1,6 +1,6 @@
 import CustomGraphicsMath
 
-public protocol RenderObjectTreeRenderer {
+public protocol RenderObjectTreeRenderer: class {
 
     var tree: RenderObjectTree { get }
 
