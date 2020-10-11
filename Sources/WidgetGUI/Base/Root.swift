@@ -153,16 +153,17 @@ open class Root: Parent {
             
             widget.layout(constraints: widget.previousConstraints!)
         }
-    }
 
-    open func render() -> RenderObject? {
-                
+        // TODO: is it good to put this here or better in render()?
         for widget in rerenderWidgets {
             
             widget.updateRenderState()
         }
 
         rerenderWidgets = []
+    }
+
+    open func render() -> RenderObject? {
 
         return rootWidget.render()
     }

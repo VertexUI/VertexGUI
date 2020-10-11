@@ -14,9 +14,9 @@ open class WidgetsApp<S: System, W: Window, R: Renderer>: VisualApp<S, W, R> {
 
     /// - Parameter guiRoot: is an autoclosure. This ensures, that the window
     /// has already been created when the guiRoot is evaluated and e.g. the OpenGL context was created.
-    public func createWindow(guiRoot guiRootBuilder: @autoclosure () -> Root, background: Color) -> Window {
+    public func createWindow(guiRoot guiRootBuilder: @autoclosure () -> Root, background: Color, immediate: Bool = false) -> Window {
         
-        let window = super.createWindow(background: background, size: DSize2(500, 500), immediate: false)
+        let window = super.createWindow(background: background, size: DSize2(500, 500), immediate: immediate)
 
         var context = windowContexts[ObjectIdentifier(window)]!
 
@@ -99,8 +99,6 @@ open class WidgetsApp<S: System, W: Window, R: Renderer>: VisualApp<S, W, R> {
         _ = window.onClose { [unowned self] in
             
             guiRoot.destroy()
-            
-            //windowContexts.removeAll(where: { $0.window === window })
         }
 
         if let rendering = guiRoot.render() {

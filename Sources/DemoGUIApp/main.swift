@@ -19,7 +19,7 @@ open class TodoApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGWindow,
 
         super.init(system: try! System())
 
-        _ = createWindow(guiRoot: guiRoot, background: .Grey)
+        _ = createWindow(guiRoot: guiRoot, background: .Grey, immediate: true)
     }
 
     override open func createRenderer(for window: Window) -> Renderer {
