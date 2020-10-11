@@ -471,7 +471,7 @@ open class SDL2OpenGL3NanoVGRenderer: Renderer {
         nvgResetTransform(window.nvg)
     }
 
-    /*open func flush() {
-        SDL_GL_SwapWindow(window.sdlWindow)
-    }*/
+    open func destroy() {
+        // TODO: cleanup
+    }
 }

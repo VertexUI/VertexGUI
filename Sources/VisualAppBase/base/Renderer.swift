@@ -92,6 +92,11 @@ public protocol Renderer {
     func scale(_ amount: DVec2)
     
     func resetTransform()
+
+    /**
+    use to clean up caches etc.
+    */
+    func destroy()
 }
 
 public extension Renderer {

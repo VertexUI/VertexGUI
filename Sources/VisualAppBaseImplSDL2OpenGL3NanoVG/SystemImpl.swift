@@ -291,7 +291,7 @@ open class SDL2OpenGL3NanoVGSystem: System {
         } / SDL2OpenGL3NanoVGSystem.fpsBufferCount
     }
 
-    override open func exit() throws {
+    override open func exit() {
 
         SDL2OpenGL3NanoVGSystem.isRunning = false
 

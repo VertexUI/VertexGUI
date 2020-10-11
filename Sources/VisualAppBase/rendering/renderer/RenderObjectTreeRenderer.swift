@@ -8,5 +8,9 @@ public protocol RenderObjectTreeRenderer {
 
     init(_ tree: RenderObjectTree)
 
+    func tick(_ tick: Tick)
+
     func render(with backendRenderer: Renderer, in bounds: DRect)
+
+    func destroy()
 }

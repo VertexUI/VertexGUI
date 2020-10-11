@@ -1,58 +1,34 @@
 import VisualAppBase
 import CustomGraphicsMath
 
-open class WidgetsApp<S: System, W: Window, R: Renderer>: VisualApp<S, W> {
-    
-    public struct WindowConfig {
-        
-        public var window: Window
-        
-        public var guiRoot: Root
-        
-        public var renderer: Renderer
-    }
+open class WidgetsApp<S: System, W: Window, R: Renderer>: VisualApp<S, W, R> {
     
     public typealias Renderer = R
 
-    private var windowConfigs = ObservableArray<WindowConfig>()
+    public private(set) var guiRoots: [ObjectIdentifier: Root] = [:]
 
     public init(system: System) {
         
         super.init(system: system, immediate: true)
-
-        //_ = system.onTick(tick)
-
-        //_ = system.onFrame(render)
-
-        _ = windowConfigs.onChanged { [unowned self] _ in
-            
-            if windowConfigs.count == 0 {
-                
-                exit()
-            }
-        }
-    }
-
-    open func createRenderer(for window: Window) -> Renderer {
-        
-        fatalError("createRenderer() not implemented.")
     }
 
     /// - Parameter guiRoot: is an autoclosure. This ensures, that the window
     /// has already been created when the guiRoot is evaluated and e.g. the OpenGL context was created.
-    public func newWindow(guiRoot guiRootBuilder: @autoclosure () -> Root, background: Color) -> Window {
+    public func createWindow(guiRoot guiRootBuilder: @autoclosure () -> Root, background: Color) -> Window {
         
-        let window = try! Window(background: background, size: DSize2(500, 500))
+        let window = super.createWindow(background: background, size: DSize2(500, 500), immediate: false)
 
-        let renderer = createRenderer(for: window)
+        var context = windowContexts[ObjectIdentifier(window)]!
 
         let guiRoot = guiRootBuilder()
+
+        guiRoots[ObjectIdentifier(window)] = guiRoot
 
         guiRoot.widgetContext = WidgetContext(
             
             window: window,
             
-            getTextBoundsSize: { renderer.getTextBoundsSize($0, fontConfig: $1, maxWidth: $2) },
+            getTextBoundsSize: { [unowned self] in windowContexts[ObjectIdentifier(window)]!.renderer.getTextBoundsSize($0, fontConfig: $1, maxWidth: $2) },
 
             getApplicationTime: { [unowned self] in system.currentTime },
             
@@ -101,12 +77,12 @@ open class WidgetsApp<S: System, W: Window, R: Renderer>: VisualApp<S, W> {
                     rootWidget: devToolsView
                 )
 
-                let removeDebuggingDataHandler = guiRoot.onDebuggingDataAvailable {
+                /*let removeDebuggingDataHandler = guiRoot.onDebuggingDataAvailable {
                     
                     devToolsView.debuggingData = $0
                 }
 
-                let devToolsWindow = newWindow(guiRoot: devToolsGuiRoot, background: .Grey)
+                let devToolsWindow = createWindow(guiRoot: devToolsGuiRoot, background: .Grey)
                
                 _ = devToolsWindow.onKey {
 
@@ -116,7 +92,7 @@ open class WidgetsApp<S: System, W: Window, R: Renderer>: VisualApp<S, W> {
                         
                         devToolsWindow.close()
                     }
-                }
+                }*/
             }
         }
 
@@ -124,23 +100,28 @@ open class WidgetsApp<S: System, W: Window, R: Renderer>: VisualApp<S, W> {
             
             guiRoot.destroy()
             
-            windowConfigs.removeAll(where: { $0.window === window })
+            //windowContexts.removeAll(where: { $0.window === window })
         }
 
-        windowConfigs.append(WindowConfig(window: window, guiRoot: guiRoot, renderer: renderer))
+        if let rendering = guiRoot.render() {
+
+            context.tree.appendChild(rendering)
+        }
 
         return window
     }
 
     override public func onTick(_ tick: Tick) {
 
-        for windowConfig in windowConfigs {
+        for guiRoot in guiRoots.values {
 
-            windowConfig.guiRoot.tick(tick)
+            guiRoot.tick(tick)
         }
+
+        super.onTick(tick)
     }
 
-    override public func onFrame(_ deltaTime: Int) {
+    /*override public func onFrame(_ deltaTime: Int) {
                       
         for windowConfig in windowConfigs {
                                
@@ -161,10 +142,5 @@ open class WidgetsApp<S: System, W: Window, R: Renderer>: VisualApp<S, W> {
                 windowConfig.window.updateContent()
             }
         }
-    }
-
-    override open func exit() {
-        
-        try! system.exit()
-    }
+    }*/
 }

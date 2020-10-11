@@ -11,8 +11,14 @@ public class ImmediateRenderObjectTreeRenderer: RenderObjectTreeRenderer {
         self.tree = tree
     }
 
+    public func tick(_ tick: Tick) {
+
+    }
+
     public func render(with backendRenderer: Renderer, in bounds: DRect) {
 
         print("RENDER!")
     }
+
+    public func destroy() {}
 }

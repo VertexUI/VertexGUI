@@ -45,7 +45,7 @@ open class System {
         fatalError("mainLoop() not implemented.")
     }
 
-    open func exit() throws {
+    open func exit() {
         fatalError("exit() not implemented.")
     }
 

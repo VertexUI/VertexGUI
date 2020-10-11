@@ -36,7 +36,7 @@ open class Root: Parent {
 
             layout()
 
-            updateRenderObjectTree()
+            //updateRenderObjectTree()
         }
     }
 
@@ -50,22 +50,10 @@ open class Root: Parent {
 
     public var rootWidget: Widget
 
-    private var renderObjectTreeRenderer: OptimizingRenderObjectTreeRenderer
-    
-    internal var renderObjectTree: RenderObjectTree
-    
     internal var layoutInvalidatedWidgets: [Widget] = []
 
-    private var rerenderWidgets: [Widget] = [] {
-        
-        didSet {
-            
-            rerenderNeeded = true
-        }
-    }
-    
-    public var rerenderNeeded: Bool = false
-    
+    private var rerenderWidgets: [Widget] = []
+
     private var mouseEventManager = WidgetTreeMouseEventManager()
 
     private var mouseMoveEventBurstLimiter = BurstLimiter(minDelay: 0.015)
@@ -81,15 +69,9 @@ open class Root: Parent {
         }
     }
 
-    public var onDebuggingDataAvailable = ThrowingEventHandlerManager<OptimizingRenderObjectTreeRenderer.DebuggingData>()
-
     public init(rootWidget contentRootWidget: Widget) {
 
         rootWidget = contentRootWidget
-        
-        renderObjectTree = RenderObjectTree()
-        
-        renderObjectTreeRenderer = OptimizingRenderObjectTreeRenderer(renderObjectTree)
         
         rootWidget.mount(parent: self)
 
@@ -147,7 +129,7 @@ open class Root: Parent {
         return false
     }
 
-    private func updateRenderObjectTree() {
+    /*private func updateRenderObjectTree() {
 
         if renderObjectTree.children.count == 0 {
 
@@ -160,14 +142,8 @@ open class Root: Parent {
             renderObjectTree.appendChild(rootWidget.render())
         }
         
-        /*if let context = renderObjectContext {
-                
-            renderObjectTree.context = context
-        }*/
         try! onDebuggingDataAvailable.invokeHandlers(renderObjectTreeRenderer.debuggingData)
-        
-        rerenderNeeded = true
-    }
+    }*/
     
     open func tick(_ tick: Tick) {
 
@@ -177,25 +153,9 @@ open class Root: Parent {
             
             widget.layout(constraints: widget.previousConstraints!)
         }
-
-        //renderObjectTree.tick(timeStep)
-
-        /*if renderObjectTree.state.activeTransitionCount > 0 {
-
-            rerenderNeeded = true
-        }*/
-
-        renderObjectTreeRenderer.tick(tick)
-        
-        if renderObjectTreeRenderer.rerenderNeeded {
-            
-            rerenderNeeded = true
-        }
     }
 
-    // TODO: maybe this little piece of rendering logic belongs into the App as well? / Maybe return a render object tree as well???? 
-    // TODO: --> A Game scene could also be a render object with custom logic which is redrawn on every frame by render strategy.
-    open func render(with renderer: Renderer, in bounds: DRect) {
+    open func render() -> RenderObject? {
                 
         for widget in rerenderWidgets {
             
@@ -204,9 +164,7 @@ open class Root: Parent {
 
         rerenderWidgets = []
 
-        try! renderObjectTreeRenderer.render(with: renderer, in: bounds)
-        
-        rerenderNeeded = false
+        return rootWidget.render()
     }
 
 
@@ -230,7 +188,7 @@ open class Root: Parent {
 
         var currentTargetPositions: [ObjectIdentifier: DPoint2] = [:]
 
-        let renderObjectsAtPoint = self.renderObjectTree.objectsAt(point: event.position)
+        let renderObjectsAtPoint = self.rootWidget.render().objectsAt(point: event.position)
 
         for renderObjectAtPoint in renderObjectsAtPoint {
 

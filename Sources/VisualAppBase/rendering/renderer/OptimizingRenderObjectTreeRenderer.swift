@@ -41,8 +41,6 @@ public class OptimizingRenderObjectTreeRenderer: RenderObjectTreeRenderer {
         }
 
         treeMessageBuffer = []
-
-        tree.bus.down(.Tick(tick: tick))
         
         // TODO: the processTreeMessage can also have lead to multiple
         // calls to makeGroups()
@@ -493,6 +491,10 @@ public class OptimizingRenderObjectTreeRenderer: RenderObjectTreeRenderer {
 
             break
         }
+    }
+
+    public func destroy() {
+        // TODO: cleanup
     }
 }
 

@@ -18,7 +18,8 @@ open class App<S: System, W: Window> {
     }*/
 
     open func exit() {
-        fatalError("exit not implemented.")
+        
+        system.exit()
     }
 
     /// Call setup() and other things necessary to run in the correct DispatchQueue.
