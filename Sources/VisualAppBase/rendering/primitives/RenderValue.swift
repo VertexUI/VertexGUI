@@ -51,16 +51,12 @@ public struct TimedRenderValue<V: Hashable>: RenderValue {
     /// - Parameter timestamp: must be relative
     /// to the same thing startTimestamp is relative to, in seconds
     public func getValue(at timestamp: Double) -> V {
-
         if duration == 0 || (repetitions > 0 && timestamp > endTimestamp) {
-
             return valueAt(1)
         }
 
         let repetition = Int((timestamp - startTimestamp) / duration)
-
-        if repetition >= repetitions {
-
+        if repetitions > 0 && repetition >= repetitions {
             return valueAt(1)
         }
 
