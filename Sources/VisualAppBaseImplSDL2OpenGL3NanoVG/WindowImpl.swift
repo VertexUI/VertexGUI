@@ -57,25 +57,7 @@ open class SDL2OpenGL3NanoVGWindow: Window {
         glContext = SDL_GL_CreateContext(sdlWindow)
         SDL_GL_MakeCurrent(sdlWindow, glContext)
 
-
-
-        
-        //shader = Shader(vertexSource: vertexSource!, fragmentSource: fragmentSource!)
-        //try shader.compile()
-        //SDL_GL_SetSwapInterval(1)
-
-        //GL.glGenBuffers(1, &VBO)
-        //GL.glBindBuffer(GLMap.ARRAY_BUFFER, VBO)
-        //GL.glBufferData(GLMap.ARRAY_BUFFER, MemoryLayout<GLMap.Float>.stride * vertices.count, vertices, GLMap.STATIC_DRAW)
-
-        //glVertexAttribPointer(0, 3, GLMap.FLOAT, false, Int32(3 * MemoryLayout<GLMap.Float>.stride), UnsafeRawPointer(bitPattern: 0))
-        //glEnableVertexAttribArray(0)
-
-
-        //print("NVG", nvgCreateGL3(Int32(NVG_DEBUG.rawValue)))
         nvg = nvgCreateGL3(Int32(NVG_ANTIALIAS.rawValue | NVG_STENCIL_STROKES.rawValue | NVG_DEBUG.rawValue))
-
-        print("ERROR?: ", GL.glGetError())
 
         try super.init(background: background, size: size)
 
@@ -98,14 +80,12 @@ open class SDL2OpenGL3NanoVGWindow: Window {
         SDL_GL_GetDrawableSize(sdlWindow, &newWidth, &newHeight)
         drawableSize.width = Double(newWidth)
         drawableSize.height = Double(newHeight)
-        //SDL_GL_MakeCurrent(sdlWindow, glContext)
-        //glViewport(x: 0, y: 0, width: GLMap.Size(drawableSize.width), height: GLMap.Size(drawableSize.height))
         try super.updateSize()
     }
 
     override open func updateContent() {
         SDL_GL_SwapWindow(sdlWindow)
-    } 
+    }
 
     override open func close() {
         nvgDeleteGL3(nvg)

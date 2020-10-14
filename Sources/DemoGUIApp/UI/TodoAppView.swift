@@ -19,10 +19,11 @@ public class TodoAppView: SingleChildWidget {
         Dependency(todoLists)
       ]) {
         Background(fill: appTheme.backgroundColor) { [unowned self] in
+          
           Column(spacing: 32) {
             Column.Item(grow: 1, crossAlignment: .Stretch) {
               Row {
-                Row.Item(crossAlignment: .Stretch) {
+                Row.Item(grow: 0, crossAlignment: .Stretch) {
                   buildMenu()
                 }
 
@@ -52,7 +53,7 @@ public class TodoAppView: SingleChildWidget {
           // TODO: implement Flex shrink
           Column.Item(grow: 0, crossAlignment: .Stretch) {
             ScrollArea {
-              Padding(all: 32) {
+              Padding(all: 0) {
                 Column(spacing: 24) {
                   Text("Lists", fontSize: 24, fontWeight: .Bold)
 
@@ -67,6 +68,9 @@ public class TodoAppView: SingleChildWidget {
                   }
                 }
               }
+            }.with {
+              $0.debugLayout = true
+              $0.layoutDebuggingColor = .White
             }
           }
         }
@@ -76,45 +80,42 @@ public class TodoAppView: SingleChildWidget {
 
   private func buildSearch() -> Widget {
     Background(fill: appTheme.backgroundColor) { [unowned self] in
-      Padding(all: 32) {
-        //ConstrainedSize(minSize: DSize2(300, 0), maxSize: DSize2(300, .infinity)) {
-          //Padding(all: 8) {
-            Row(spacing: 24) {
-              Row.Item(grow: 1) {
-                TextField {
-                  searchQuery = $0
-                }.onFocusChanged.chain {
-                  if $0 {
-                    mode = .Search
-                  }
-                }
-              }
-
-              Row.Item(crossAlignment: .Center) {
-                ObservingBuilder($mode) {
-                  if mode == .Search {
-                    return MouseArea {
-                      Button {
-                        Text("cancel")
-                      }
-                    } onClick: { _ in
-                      mode = .SelectedList
-                    }
-                  } else {
-                    return Space(.zero)
-                  }
-                }
+      //Padding(all: 32) {
+        Row(spacing: 0) {
+          Row.Item(grow: 1, margins: Margins(right: 24)) {
+            TextField {
+              searchQuery = $0
+            }.onFocusChanged.chain {
+              if $0 {
+                mode = .Search
               }
             }
           }
-        //}
+
+          Row.Item(crossAlignment: .Center) {
+            ObservingBuilder($mode) {
+              if mode == .Search {
+                  return Button {
+                    Text("cancel")
+                  } onClick: { _ in
+                    mode = .SelectedList
+                  }.with {
+                    $0.debugLayout = true
+                    $0.layoutDebuggingColor = .Blue
+                  }
+              } else {
+                return Space(.zero)
+              }
+            }
+          }
+        }
       //}
-    }.with { [unowned self] in
+    }/*.with { [unowned self] in
       _ = onDestroy(
         $0.onSizeChanged {
-          activeViewTopSpace.preferredSize = $0
+          //activeViewTopSpace.preferredSize = $0
         })
-    }
+    }*/
   }
 
   private func buildMenuListItem(for list: TodoList) -> Widget {
@@ -123,16 +124,16 @@ public class TodoAppView: SingleChildWidget {
         Border(bottom: 2, color: appTheme.backgroundColor.darkened(40)) {
           Background {
             Padding(all: 16) {
-              Row(spacing: 24) {
+              SimpleRow {
                 Background(fill: list.color) {
                   Padding(all: 8) {
                     MaterialIcon(.formatListBulletedSquare, color: .White)
                   }
                 }
 
-                Row.Item(crossAlignment: .Center) {
-                  Text(list.name)
-                }
+                Space(DSize2(16, 0))
+
+                Text(list.name)
               }
             }
           }

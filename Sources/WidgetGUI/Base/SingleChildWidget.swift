@@ -1,65 +1,52 @@
-import VisualAppBase
 import CustomGraphicsMath
+import VisualAppBase
 
 // TODO: maybe rename to BuildableSingleChildWidget and create another SingleChildWidget as Basis for button?... maybe can simply use Widget for this
 open class SingleChildWidget: Widget {
+  open lazy var child: Widget = buildChild()
 
-    open lazy var child: Widget = buildChild()
-    
-    override open func build() {
+  override open func build() {
+    children = [child]
+  }
 
-        children = [child]
+  open func buildChild() -> Widget {
+    fatalError("buildChild() not implemented.")
+  }
+
+  open func invalidateChild() {
+    if !mounted || destroyed {
+      return
     }
 
-    open func buildChild() -> Widget {
-        fatalError("buildChild() not implemented.")
-    }
+    child = buildChild()
+    replaceChildren(with: [child])
+    invalidateBoxConfig()
 
-    open func invalidateChild() {
+    // TODO: make sure layout is not performed twice shortly after another
+    // it is probably already called by invalidateBoxConfig
+    // have a flag to show that layout is up to date already
+    //layoutInvalid = true
 
-        if !mounted || destroyed {
+    //layout(constraints: previousConstraints!)
+    invalidateLayout()
+    invalidateRenderState()
+  }
 
-            return
-        }
+  open func withChildInvalidation(block: () -> Void) {
+    block()
+    invalidateChild()
+  }
 
-        child = buildChild()
+  override open func getBoxConfig() -> BoxConfig {
+    return child.boxConfig
+  }
 
-        replaceChildren(with: [child])
+  override open func performLayout(constraints: BoxConstraints) -> DSize2 {
+    child.layout(constraints: constraints)
+    return constraints.constrain(child.bounds.size)
+  }
 
-        invalidateBoxConfig()
-        
-        // TODO: make sure layout is not performed twice shortly after another
-        // it is probably already called by invalidateBoxConfig
-        // have a flag to show that layout is up to date already
-        //layoutInvalid = true
-
-        //layout(constraints: previousConstraints!)
-        invalidateLayout()
-
-        invalidateRenderState()
-    }
-
-    open func withChildInvalidation(block: () -> ()) {
-
-        block()
-
-        invalidateChild()
-    }
-
-    override open func getBoxConfig() -> BoxConfig {
-
-        return child.boxConfig
-    }
-
-    override open func performLayout(constraints: BoxConstraints) -> DSize2 {
-
-        child.layout(constraints: constraints)
-
-        return constraints.constrain(child.bounds.size)
-    }
-
-    override open func renderContent() -> RenderObject? {
-
-        return child.render()
-    }
+  override open func renderContent() -> RenderObject? {
+    return child.render()
+  }
 }

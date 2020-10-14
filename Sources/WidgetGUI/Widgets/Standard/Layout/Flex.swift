@@ -172,6 +172,17 @@ public class Flex: Widget {
         }
       }
 
+      if item.grow > 0 {
+        // this is currently a hack to avoid the child skipping layouting
+        // when the current constraints equal the past constraints
+        // if not doing this, the child will simply return it's current size
+        // since nothing has changed
+        // but since the child's size was grown, it should be recalculated because
+        // other items might have changed
+        // there is probably a more clever / optimized way to do this
+        content.previousConstraints = nil
+      }
+      
       content.layout(constraints: contentConstraints)
       content.position[mainAxisVectorIndex] = mainAxisPosition
       content.position[crossAxisVectorIndex] =
@@ -271,7 +282,7 @@ public class Flex: Widget {
             // let the content change it's size according to the real constraints
             // it obtained above,
             // TODO: might introduce a separate property on Widget like: parentConstraints / mainConstraints
-            // which can be used by the widget itself to determin how much it can grow on content change
+            // which can be used by the widget itself to determine how much it can grow on content change
             let previousConstraints = content.previousConstraints
             content.layout(constraints: newConstraints)
             content.previousConstraints = previousConstraints

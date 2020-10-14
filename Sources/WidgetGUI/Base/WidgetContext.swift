@@ -2,23 +2,14 @@ import VisualAppBase
 import CustomGraphicsMath
 
 public class WidgetContext {
-
     public internal(set) var window: Window
-
     private var _getTextBoundsSize: (_ text: String, _ fontConfig: FontConfig, _ maxWidth: Double?) -> DSize2
-
     private var _requestCursor: (_ cursor: Cursor) -> () -> Void
-
     public internal(set) var focus: Widget?
-
     private var unregisterOnFocusChanged: (() -> ())?
-
     public internal(set) var debugLayout: Bool = false
-
     private let _getApplicationTime: () -> Double
-
     public var applicationTime: Double {
-
         _getApplicationTime()
     }
 
