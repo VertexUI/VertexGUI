@@ -4,42 +4,30 @@ import VisualAppBase
 import ColorizeSwift
 
 open class Widget: Bounded, Parent, Child {
-
     public struct ReplacementContext {
-
         public var previousWidget: Widget?
-
         public var keyedWidgets: [String: Widget]
     }
 
     open var id: UInt = UInt.random(in: 0..<UInt.max)
-
     open var key: String?
-
     open var classes: [String] = []
 
     open var _context: WidgetContext?
-
     open var context: WidgetContext? {
-
         // TODO: might cache _context
         get {
-
             if let context = _context {
-
                 return context
             }
 
             if let parent = parent as? Widget {
-
                 return parent.context
             }
-
             return nil
         }
 
         set {
-
             _context = newValue
         }
     }
@@ -50,27 +38,18 @@ open class Widget: Bounded, Parent, Child {
     public lazy var children: [Widget] = []
 
     weak open var parent: Parent? = nil {
-
         willSet {
-
             if unregisterAnyParentChangedHandler != nil {
-
                 unregisterAnyParentChangedHandler!()
             }
         }
 
         didSet {
-
             onParentChanged.invokeHandlers(parent)
-
             onAnyParentChanged.invokeHandlers(parent)
-
             if parent != nil {
-
                 if let childParent: Child = parent as? Child {
-
                     unregisterAnyParentChangedHandler = childParent.onAnyParentChanged({ [unowned self] in
-
                         onAnyParentChanged.invokeHandlers($0)
                     })
                 }
@@ -82,30 +61,20 @@ open class Widget: Bounded, Parent, Child {
 
     /// bridge boxConfig for use in @inlinable functions
     @usableFromInline internal var _boxConfig: BoxConfig {
-
         get {
-
             boxConfig
         }
 
         set {
-
             boxConfig = newValue
         }
     }
 
- 
-    
     open private(set) var size = DSize2(0, 0) {
-
         didSet {
-
             if oldValue != size {
-
                 if mounted && layouted && !layouting && !destroyed {
-
                     onSizeChanged.invokeHandlers(size)
-
                     invalidateRenderState()
                 }
             }
@@ -113,45 +82,35 @@ open class Widget: Bounded, Parent, Child {
     }
 
     open var width: Double {
-
-        get {
-
-            size.width
-        }
+        size.width
     }
 
     open var height: Double {
-
-        get {
-
-            size.height
-        }
+        size.height
     }
     
-    open var position = DPoint2(0, 0)
+    open var position = DPoint2(0, 0) {
+        didSet {
+            invalidateRenderState(deep: true)
+        }
+    }
 
     @inlinable open var x: Double {
-
         get {
-
             position.x
         }
         
         set {
-            
             position.x = newValue
         }
     }
 
     @inlinable open var y: Double {
-
         get {
-            
             position.y
         }
         
         set {
-            
             position.y = newValue
         }
     }
@@ -159,161 +118,101 @@ open class Widget: Bounded, Parent, Child {
     // TODO: might need to create something like layoutBounds and renderBounds (area that is invalidated on rerender request --> could be more than layoutBounds and affect outside widgets (e.g. a drop shadow that is not included in layoutBounds))
     // TODO: make size unsettable from outside when new layout approach completed
     @inlinable open var bounds: DRect {
-        
-        get {
-            
-            DRect(min: position, size: size)
-        }
+        DRect(min: position, size: size)
     }
     
     @inlinable open var globalBounds: DRect {
-        
-        get {
-            
-            return DRect(min: globalPosition, size: bounds.size)
-        }
+        return DRect(min: globalPosition, size: bounds.size)
     }
     
     @inlinable open var globalPosition: DPoint2 {
-        
-        get {
-            
-            if parent != nil {
-                
-                return parent!.globalPosition + bounds.min
-            }
-            
-            return bounds.min
+        if parent != nil {
+            return parent!.globalPosition + bounds.min
         }
+        return bounds.min
     }
 
-
+    public internal(set) var previousConstraints: BoxConstraints?
  
     public internal(set) var focusable = false
-
-
-    
     public internal(set) var focused = false {
-        
         didSet {
-            
             onFocusChanged.invokeHandlers(focused)
         }
     }
-
     /// bridge focused property for use in @inlinable functions
     @usableFromInline internal var _focused: Bool {
-
         get {
-
             return focused
         }
 
         set {
-
             focused = newValue
         }
     }
 
     public private(set) var mounted = false
-
     // TODO: maybe something better
     public var layoutable: Bool {
-
         mounted/* && constraints != nil*/ && context != nil
     }
-
     public private(set) var layouting = false
-
     public private(set) var layouted = false
-
-    public internal(set) var previousConstraints: BoxConstraints?
-
     // TODO: maybe rename to boundsInvalid???
     public internal(set) var layoutInvalid = true
-
     public internal(set) var destroyed = false
 
 
 
     @usableFromInline internal var reference: ReferenceProtocol? {
-
         didSet {
-
             if var reference = reference {
-
                 reference.referenced = self
             }
         }
     }
 
-
     @usableFromInline internal var renderState = RenderState()
-
 
     /// Flag whether to show bounds and sizes for debugging purposes.
     private var _debugLayout: Bool?
-
     public var debugLayout: Bool {
-        
         get {
-            
             _debugLayout ?? context?.debugLayout ?? false
         }
 
         set {
-            
             _debugLayout = newValue
         }
     }
-
     public var layoutDebuggingColor = Color.Red
-
     private let layoutDebuggingTextFontConfig = FontConfig(family: defaultFontFamily, size: 16, weight: .Regular, style: .Normal)
 
     public var countCalls: Bool = true
-
     @usableFromInline lazy internal var callCounter = CallCounter(widget: self)
 
 
-
     public internal(set) var onParentChanged = EventHandlerManager<Parent?>()
-
     public internal(set) var onAnyParentChanged = EventHandlerManager<Parent?>()
-
     public internal(set) var onMounted = EventHandlerManager<Void>()
-
     public internal(set) var onBoxConfigChanged = EventHandlerManager<BoxConfig>()
-
     public internal(set) var onSizeChanged = EventHandlerManager<DSize2>()
-
     public internal(set) var onLayoutInvalidated = EventHandlerManager<Void>()
-    
     /// Forwards LayoutInvalidated Events up from children (recursive). Also emits own events.
     public internal(set) var onAnyLayoutInvalidated = EventHandlerManager<Widget>()
-    
     public internal(set) var onLayoutingStarted = EventHandlerManager<BoxConstraints>()
-
     public internal(set) var onLayoutingFinished = EventHandlerManager<DSize2>()
-    
     public internal(set) var onRenderStateInvalidated = EventHandlerManager<Widget>()
-
     public internal(set) var onAnyRenderStateInvalidated = EventHandlerManager<Widget>()
-    
     // TODO: this could lead to a strong reference cycle
     public internal(set) var onFocusChanged = WidgetEventHandlerManager<Bool>()
-
     public internal(set) var onDestroy = EventHandlerManager<Void>()
     
     private var unregisterAnyParentChangedHandler: EventHandlerManager<Parent?>.UnregisterCallback?
 
-
 			    
-
     public init(children: [Widget] = []) {
-        
         self.children = children
-        
         self.onFocusChanged.widget = self
     }
 
@@ -324,23 +223,17 @@ open class Widget: Bounded, Parent, Child {
     // TODO: maybe find better names for the following functions?
 
     @inlinable public final func with(key: String) -> Self {
-
         self.key = key
-
         return self
     }
 
     @inlinable public final func connect(ref reference: ReferenceProtocol) -> Self {
-
         self.reference = reference
-
         return self
     }    
 
     @inlinable public final func with(block: (Self) -> ()) -> Self {
-
         block(self)
-
         return self
     }
  
@@ -897,84 +790,55 @@ open class Widget: Bounded, Parent, Child {
     }
 
     /// This should trigger a rerender of the widget in the next frame.
-    @inlinable public final func invalidateRenderState() {
-
+    @inlinable public final func invalidateRenderState(deep: Bool = false) {
         if renderState.invalid {
-
             #if DEBUG
-
             Logger.warn("Called invalidateRenderState() when render state is already invalid on Widget: \(self)", context: .WidgetRendering)
-
             #endif
-
             return
         }
 
         if destroyed {
-
             #if DEBUG
-
             Logger.warn("Tried to call invalidateRenderState() on destroyed widget: \(self)", context: .WidgetRendering)
-           
             #endif
-
             return
         }
 
         if !mounted {
-
             #if DEBUG
-            
             Logger.warn("Called invalidateRenderState() on an unmounted Widget: \(self)", context: .WidgetRendering)
-
             #endif
-
             return
         }
 
-        _invalidateRenderState()
+        _invalidateRenderState(deep: deep)
     }
 
-    @inlinable public final func invalidateRenderState(after block: () -> ()) {
-
+    @inlinable public final func invalidateRenderState(deep: Bool = false, after block: () -> ()) {
         block()
-
-        invalidateRenderState()
+        invalidateRenderState(deep: deep)
     }
 
-    @usableFromInline internal final func _invalidateRenderState() {
- 
+    @usableFromInline internal final func _invalidateRenderState(deep: Bool) {
         #if (DEBUG)
-
         if countCalls {
-
             callCounter.count(.InvalidateRenderState)
         }
-
         #endif
-
+        if deep {
+            for child in children {
+                child.invalidateRenderState(deep: true)
+            }
+        }
         renderState.invalid = true
-
         onRenderStateInvalidated.invokeHandlers(self)
-
         onAnyRenderStateInvalidated.invokeHandlers(self)
     }
 
-    /*public static func == (lhs: Widget, rhs: Widget) -> Bool {
-
-        ObjectIdentifier(lhs) == ObjectIdentifier(rhs)
-    }
-
-    public func hash(into hasher: inout Hasher) {
-        
-        hasher.combine(ObjectIdentifier(self))
-    }*/
-
     // TODO: how to name this?
     public final func destroy() {
-
         for child in children {
-
             child.destroy()
         }
 
