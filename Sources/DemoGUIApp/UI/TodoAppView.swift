@@ -20,8 +20,6 @@ public class TodoAppView: SingleChildWidget {
       ]) {
         Background(fill: appTheme.backgroundColor) { [unowned self] in
           Column(spacing: 32) {
-            Text("TODO Application", fontSize: 24, fontWeight: .Bold)
-
             Column.Item(grow: 1, crossAlignment: .Stretch) {
               Row {
                 Row.Item(crossAlignment: .Stretch) {
@@ -77,10 +75,10 @@ public class TodoAppView: SingleChildWidget {
   }
 
   private func buildSearch() -> Widget {
-    Background(fill: .White) { [unowned self] in
+    Background(fill: appTheme.backgroundColor) { [unowned self] in
       Padding(all: 32) {
-        ConstrainedSize(minSize: DSize2(300, 0), maxSize: DSize2(300, .infinity)) {
-          Padding(all: 8) {
+        //ConstrainedSize(minSize: DSize2(300, 0), maxSize: DSize2(300, .infinity)) {
+          //Padding(all: 8) {
             Row(spacing: 24) {
               Row.Item(grow: 1) {
                 TextField {
@@ -109,8 +107,8 @@ public class TodoAppView: SingleChildWidget {
               }
             }
           }
-        }
-      }
+        //}
+      //}
     }.with { [unowned self] in
       _ = onDestroy(
         $0.onSizeChanged {
