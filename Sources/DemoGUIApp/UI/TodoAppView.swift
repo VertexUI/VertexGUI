@@ -80,7 +80,7 @@ public class TodoAppView: SingleChildWidget {
 
   private func buildSearch() -> Widget {
     Background(fill: appTheme.backgroundColor) { [unowned self] in
-      //Padding(all: 32) {
+      Padding(all: 32) {
         Row(spacing: 0) {
           Row.Item(grow: 1, margins: Margins(right: 24)) {
             TextField {
@@ -109,7 +109,7 @@ public class TodoAppView: SingleChildWidget {
             }
           }
         }
-      //}
+      }
     }/*.with { [unowned self] in
       _ = onDestroy(
         $0.onSizeChanged {

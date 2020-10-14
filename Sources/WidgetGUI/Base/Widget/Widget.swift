@@ -57,7 +57,15 @@ open class Widget: Bounded, Parent, Child {
         }
     }
 
-    lazy open internal(set) var boxConfig = getBoxConfig()
+    lazy open internal(set) var boxConfig = getBoxConfig() {
+        didSet {
+            // either the own preferred size or a position or size of a child
+            // or any other layout important value has changed, so the layout can't be valid anymore
+            // setting this flag will force a relayout, even if the passed constraints
+            // are the same on the next layout cycle
+            layoutInvalid = true
+        }
+    }
 
     /// bridge boxConfig for use in @inlinable functions
     @usableFromInline internal var _boxConfig: BoxConfig {
@@ -195,7 +203,7 @@ open class Widget: Bounded, Parent, Child {
     public internal(set) var onParentChanged = EventHandlerManager<Parent?>()
     public internal(set) var onAnyParentChanged = EventHandlerManager<Parent?>()
     public internal(set) var onMounted = EventHandlerManager<Void>()
-    public internal(set) var onBoxConfigChanged = EventHandlerManager<BoxConfig>()
+    public internal(set) var onBoxConfigChanged = EventHandlerManager<BoxConfigChangedEvent>()
     public internal(set) var onSizeChanged = EventHandlerManager<DSize2>()
     public internal(set) var onLayoutInvalidated = EventHandlerManager<Void>()
     /// Forwards LayoutInvalidated Events up from children (recursive). Also emits own events.
@@ -487,7 +495,7 @@ open class Widget: Bounded, Parent, Child {
 
             _boxConfig = newBoxConfig
 
-            onBoxConfigChanged.invokeHandlers(newBoxConfig)
+            onBoxConfigChanged.invokeHandlers(BoxConfigChangedEvent(old: currentBoxConfig, new: newBoxConfig))
         }
     }
 
@@ -889,4 +897,15 @@ open class Widget: Bounded, Parent, Child {
     }
 
     open func destroySelf() {}
+}
+
+extension Widget {
+    public struct BoxConfigChangedEvent {
+        public var old: BoxConfig
+        public var new: BoxConfig
+        public init(old: BoxConfig, new: BoxConfig) {
+            self.old = old
+            self.new = new
+        }
+    }
 }

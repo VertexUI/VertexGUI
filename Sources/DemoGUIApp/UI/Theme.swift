@@ -7,4 +7,4 @@ let appTheme = DefaultTheme(
 
     primaryColor: Color(90, 232, 183, 255),
 
-    backgroundColor: Color(49, 44, 56, 255))
+    backgroundColor: Color(10, 24, 36, 255))

@@ -76,7 +76,6 @@ open class Root: Parent {
         rootWidget.mount(parent: self)
 
         _ = rootWidget.onBoxConfigChanged { [unowned self] _ in
-
             layout()
         }
         
