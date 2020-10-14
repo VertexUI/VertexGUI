@@ -8,6 +8,8 @@ public class OptimizingRenderObjectTreeRenderer: RenderObjectTreeRenderer {
 
     public private(set) var tree: RenderObjectTree
 
+    private let context: ApplicationContext
+
     private var treeMessageBuffer: [RenderObject.UpwardMessage] = []
 
     public var debuggingData: DebuggingData {
@@ -21,13 +23,17 @@ public class OptimizingRenderObjectTreeRenderer: RenderObjectTreeRenderer {
     
     public private(set) var rerenderNeeded = true
 
-    private var sliceRenderer = RenderObjectTreeSliceRenderer()
+    private var sliceRenderer: RenderObjectTreeSliceRenderer
 
     private var destroyed = false
     
-    required public init(_ tree: RenderObjectTree) {
+    required public init(_ tree: RenderObjectTree, context: ApplicationContext) {
          
         self.tree = tree
+
+        self.context = context
+
+        self.sliceRenderer = RenderObjectTreeSliceRenderer(context: context)
 
         _ = self.tree.bus.onUpwardMessage { [unowned self] in
 

@@ -1,34 +1,25 @@
-import Foundation
-import XCTest
 import CustomGraphicsMath
+import Foundation
 @testable import VisualAppBase
+import XCTest
 
 final class RenderObjectTreeTests: XCTestCase {
-
     private func makeTestTree() -> RenderObjectTree {
-
         RenderObjectTree {
-
             ContainerRenderObject {
-
-                ContainerRenderObject {
-
-                }
+                ContainerRenderObject {}
             }
 
-            ContainerRenderObject {
-
-            }
+            ContainerRenderObject {}
         }
     }
 
     /**
-    When setting the bus object on the root node,
-    does it propagate to the children?
-    And do the message propagate properly?
-    */
+     When setting the bus object on the root node,
+     does it propagate to the children?
+     And do the message propagate properly?
+     */
     func testBusPropagation() {
-
         let tree = makeTestTree()
 
         let bus = RenderObject.Bus()
@@ -38,7 +29,6 @@ final class RenderObjectTreeTests: XCTestCase {
         var messageBuffer = [RenderObject.UpwardMessage]()
 
         _ = bus.onUpwardMessage {
-
             messageBuffer.append($0)
         }
 
@@ -50,12 +40,11 @@ final class RenderObjectTreeTests: XCTestCase {
     }
 
     /**
-    When a new node is inserted into the tree,
-    does it receive the bus instance from it's parents
-    and do messages propagate properly?
-    */
+     When a new node is inserted into the tree,
+     does it receive the bus instance from it's parents
+     and do messages propagate properly?
+     */
     func testBusRetention() {
-
         let tree = makeTestTree()
 
         let bus = RenderObject.Bus()
@@ -73,7 +62,6 @@ final class RenderObjectTreeTests: XCTestCase {
         var messageBuffer = [RenderObject.UpwardMessage]()
 
         _ = bus.onUpwardMessage {
-
             messageBuffer.append($0)
         }
 
@@ -83,11 +71,10 @@ final class RenderObjectTreeTests: XCTestCase {
     }
 
     /**
-    Does the tick message propagate to the RenderObjects properly and do
-    the onTick handlers inside of each RenderObject work?
-    */
+     Does the tick message propagate to the RenderObjects properly and do
+     the onTick handlers inside of each RenderObject work?
+     */
     func testRenderObjectOnTick() {
-
         let tree = makeTestTree()
 
         let bus = RenderObject.Bus()
@@ -101,7 +88,6 @@ final class RenderObjectTreeTests: XCTestCase {
         var propagatedTick: Tick?
 
         _ = testObject.onTick {
-            
             propagatedTick = $0
         }
 
@@ -113,10 +99,9 @@ final class RenderObjectTreeTests: XCTestCase {
     }
 
     /**
-    Do the transition messages of the RenderStyle RenderObject work correctly?
-    */
+     Do the transition messages of the RenderStyle RenderObject work correctly?
+     */
     func testRenderStyleTransitionMessages() {
-
         let tree = makeTestTree()
 
         let bus = RenderObject.Bus()
@@ -124,7 +109,6 @@ final class RenderObjectTreeTests: XCTestCase {
         tree.bus = bus
 
         let testedNode = RenderStyleRenderObject(fill: TimedRenderValue(
-
             id: 0,
 
             startTimestamp: 10,
@@ -133,7 +117,7 @@ final class RenderObjectTreeTests: XCTestCase {
 
         ) { _ in
 
-            return Fill.Color(Color.White)
+            Fill.Color(Color.White)
         }) {}
 
         tree.children[0].appendChild(testedNode)
@@ -143,15 +127,13 @@ final class RenderObjectTreeTests: XCTestCase {
         var transitionCount = 0
 
         _ = bus.onUpwardMessage {
-
             messageBuffer.append($0)
 
             switch $0.content {
-            
             case .TransitionStarted:
 
                 transitionCount += 1
-            
+
             case .TransitionEnded:
 
                 transitionCount -= 1
@@ -165,23 +147,20 @@ final class RenderObjectTreeTests: XCTestCase {
         bus.down(.Tick(tick: Tick(deltaTime: 5, totalTime: 10.5)))
 
         XCTAssertTrue(messageBuffer.contains {
-            
             $0.content == RenderObject.UpwardMessageContent.TransitionStarted
         })
 
         XCTAssertTrue(!messageBuffer.contains {
-            
             $0.content == RenderObject.UpwardMessageContent.TransitionEnded
         })
 
         XCTAssertEqual(transitionCount, 1)
-        
+
         bus.down(.Tick(tick: Tick(deltaTime: 5, totalTime: 11.1)))
 
         bus.down(.Tick(tick: Tick(deltaTime: 1, totalTime: 11.2)))
 
         XCTAssertTrue(messageBuffer.contains {
-            
             $0.content == RenderObject.UpwardMessageContent.TransitionEnded
         })
 
@@ -189,13 +168,11 @@ final class RenderObjectTreeTests: XCTestCase {
     }
 
     /**
-    Test whether the correct messages are output when a RenderStyle RenderObject
-    is deinitialized before a transition finishes.
-    */
+     Test whether the correct messages are output when a RenderStyle RenderObject
+     is deinitialized before a transition finishes.
+     */
     func testRenderStyleTransitionDeinit() {
-
         var testedNode: RenderObject? = RenderStyleRenderObject(fill: TimedRenderValue(
-
             id: 0,
 
             startTimestamp: 10,
@@ -203,20 +180,18 @@ final class RenderObjectTreeTests: XCTestCase {
             duration: 1
         ) { _ in
 
-            return .Color(.White)
-            
+            .Color(.White)
+
         }) {}
 
         var transitionCount = 0
 
         _ = testedNode!.bus.onUpwardMessage {
-
             switch $0.content {
-
             case .TransitionStarted:
 
                 transitionCount += 1
-            
+
             case .TransitionEnded:
 
                 transitionCount -= 1
@@ -237,11 +212,10 @@ final class RenderObjectTreeTests: XCTestCase {
     }
 
     static var allTests = [
-
         ("testBusPropagation", testBusPropagation),
         ("testBusRetention", testBusRetention),
         ("testRenderObjectOnTick", testRenderObjectOnTick),
         ("testRenderStyleTransitionMessages", testRenderStyleTransitionMessages),
-        ("testRenderStyleTransitionDeinit", testRenderStyleTransitionDeinit)
+        ("testRenderStyleTransitionDeinit", testRenderStyleTransitionDeinit),
     ]
 }

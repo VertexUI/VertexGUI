@@ -6,7 +6,7 @@ public protocol RenderObjectTreeRenderer: class {
 
     var rerenderNeeded: Bool { get }
 
-    init(_ tree: RenderObjectTree)
+    init(_ tree: RenderObjectTree, context: ApplicationContext)
 
     func tick(_ tick: Tick)
 

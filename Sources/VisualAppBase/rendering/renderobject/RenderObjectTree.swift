@@ -373,19 +373,13 @@ extension RenderObjectTree {
     }
 
     public struct TreeSlice {
-
         public let tree: RenderObjectTree
-
         public let startPath: TreePath
-
         public let endPath: TreePath
 
         public init(tree: RenderObjectTree, start: TreePath, end: TreePath) {
-
             self.tree = tree
-
             self.startPath = start
-
             self.endPath = end
         }
 
@@ -395,27 +389,20 @@ extension RenderObjectTree {
         }*/
 
         public func sequence() -> TreeSliceSequence {
-
             return TreeSliceSequence(self)
         }
 
         public subscript(_ path: TreePath) -> RenderObject? {
-
             tree[path]
         }
         
         public func contains(_ path: TreePath) -> Bool {
-
             var maxCompareCount = min(path.count, startPath.count)
 
             for i in 0..<maxCompareCount {
-
                 if path[i] > startPath[i] {
-
                     break
-
                 } else if path[i] < startPath[i] {
-
                     return false
                 }/* else if path[i] == start[i] && i == maxCompareCount - 1 && path.count > start.count {
                     return false
@@ -425,13 +412,9 @@ extension RenderObjectTree {
             maxCompareCount = min(path.count, endPath.count)
 
             for i in 0..<maxCompareCount {
-
                 if path[i] < endPath[i] {
-
                     break
-
                 } else if path[i] > endPath[i] {
-
                     return false
                 }/* else if path[i] == start[i] && i == maxCompareCount - 1 && path.count > end.count {
                     return false
@@ -443,98 +426,68 @@ extension RenderObjectTree {
     }
 
     public struct TreeSliceSequence: Sequence {
-        
         private let slice: TreeSlice
 
         public init(_ slice: TreeSlice) {
-
             self.slice = slice
         }
 
         public func makeIterator() -> DepthFirstTreeIterator {
-
             DepthFirstTreeIterator(slice.tree, start: slice.startPath, end: slice.endPath)
         }
     }
 
     public struct DepthFirstTreeSequence: Sequence {
-
         public let tree: RenderObjectTree
 
         public init(tree: RenderObjectTree) {
-            
             self.tree = tree
         }
 
         public func makeIterator() -> DepthFirstTreeIterator {
-            
             DepthFirstTreeIterator(tree, start: TreePath([]), end: TreePath([]))
         }
     }
 
     public struct DepthFirstTreeIterator: IteratorProtocol {
-
         public let tree: RenderObjectTree
-
         private var nextPath: TreePath
-
         private var ended = false
 
         public init(_ tree: RenderObjectTree, start: TreePath, end: TreePath) {
-
             self.tree = tree
-
             self.nextPath = start
         }
 
         mutating public func next() -> RenderObject? {
-
             // TODO: this algorithm can be optimized!!!
-
             if ended {
-
                 return nil
             }
 
             let node = tree[nextPath]
 
             if let node = node {
-
                 if node.children.count > 0 {
-
                     nextPath = nextPath/0
-
                 } else if let parent = node.parent, parent.children.count > nextPath.last! + 1 {
-                    
                     nextPath = nextPath + 1
-
                 } else if nextPath.count > 0 {
-
                     // until find a parent that has children that have not been visited dropLast
-
                     var currentChildPath = nextPath.dropLast()
-
                     var currentParent = node.parent?.parent
 
                     while true {
-
                         if currentParent == nil {
-
                             ended = true
-                            
                             break
                         }
 
                         if currentParent!.children.count > currentChildPath.last! + 1 {
-
                             currentChildPath = currentChildPath + 1
-
                             break
-
                         } else {
-                            
                             currentChildPath = currentChildPath.dropLast()
-
                             currentParent = currentParent!.parent
                         }
                     }
@@ -542,7 +495,6 @@ extension RenderObjectTree {
                     nextPath = currentChildPath
 
                 } else {
-                    
                     ended = true
                 }
             }

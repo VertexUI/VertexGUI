@@ -1,32 +1,30 @@
 import CustomGraphicsMath
 
 public class Center: SingleChildWidget {
+  private var childBuilder: () -> Widget
 
-    private var childBuilder: () -> Widget
-    
-    public init(@WidgetBuilder child childBuilder: @escaping () -> Widget) {
+  public init(@WidgetBuilder child childBuilder: @escaping () -> Widget) {
+    self.childBuilder = childBuilder
+  }
 
-        self.childBuilder = childBuilder
-    }
+  override open func buildChild() -> Widget {
 
-    override open func buildChild() -> Widget {
+    childBuilder()
+  }
 
-        childBuilder()
-    }
+  override public func getBoxConfig() -> BoxConfig {
 
-    override public func getBoxConfig() -> BoxConfig {
+    BoxConfig(preferredSize: child.boxConfig.preferredSize, minSize: .zero, maxSize: .infinity)
+  }
 
-        BoxConfig(preferredSize: child.boxConfig.preferredSize, minSize: .zero, maxSize: .infinity)
-    }
+  override open func performLayout(constraints: BoxConstraints) -> DSize2 {
 
-    override open func performLayout(constraints: BoxConstraints) -> DSize2 {
-        
-        child.layout(constraints: BoxConstraints(minSize: DSize2.zero, maxSize: constraints.maxSize))
+    child.layout(constraints: BoxConstraints(minSize: DSize2.zero, maxSize: constraints.maxSize))
 
-        let ownSize = constraints.constrain(child.bounds.size)
+    let ownSize = constraints.constrain(child.bounds.size)
 
-        child.position = DVec2(ownSize - child.bounds.size) / 2
+    child.position = DVec2(ownSize - child.bounds.size) / 2
 
-        return ownSize
-    }
+    return ownSize
+  }
 }
