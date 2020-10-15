@@ -41,10 +41,13 @@ public class EventHandlerManager<Data> {
     unregisterCallback = addHandler(wrapperHandler)
   }
 
-  public func invokeHandlers(_ data: Data) {
+  public func invokeHandlers(_ getData: @autoclosure () -> Data) {
     // TODO: call handlers in same order as they were added
-    for handler in handlers.values {
-      handler(data)
+    if handlers.count > 0 {
+      let data = getData()
+      for handler in handlers.values {
+        handler(data)
+      }
     }
   }
 
