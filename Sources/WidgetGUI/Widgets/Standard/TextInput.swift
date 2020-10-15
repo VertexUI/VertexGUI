@@ -39,8 +39,11 @@ public final class TextInput: SingleChildWidget, StatefulWidget, ConfigurableWid
     lazy public var config: Config = combineConfigs()
 
     public var state = State()
-    
+
     public internal(set) var text: String
+
+    @MutableProperty
+    private var displayedText: String
 
     private var caretPosition: Int = 0
     private var translation: DVec2 = .zero
@@ -58,6 +61,7 @@ public final class TextInput: SingleChildWidget, StatefulWidget, ConfigurableWid
 
     public init(_ initialText: String = "") {
         self.text = initialText
+        self.displayedText = initialText
         super.init()
         self.focusable = true
     }
@@ -68,7 +72,7 @@ public final class TextInput: SingleChildWidget, StatefulWidget, ConfigurableWid
     }
 
     override public func buildChild() -> Widget {
-        Text(text).with(config: config.textConfig)
+        Text(displayedText).with(config: config.textConfig)
     }
 
     override public func performLayout(constraints: BoxConstraints) -> DSize2 {
@@ -79,7 +83,7 @@ public final class TextInput: SingleChildWidget, StatefulWidget, ConfigurableWid
     }
 
     private func syncText() {
-        textWidget.text = text
+        displayedText = text
         onTextChanged.invokeHandlers(text)
     }
 

@@ -5,7 +5,7 @@ public class TextConfigProvider: ConfigProvider {
 
     public init(config: Text.PartialConfig, @WidgetBuilder child childBuilder: @escaping () -> Widget) {
    
-        super.init(ObservableArray([config]), child: childBuilder)
+        super.init(StaticProperty([config]), child: childBuilder)
     }
 
     public convenience init(

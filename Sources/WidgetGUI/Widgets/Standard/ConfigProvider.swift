@@ -2,13 +2,13 @@ import VisualAppBase
 
 public class ConfigProvider: SingleChildWidget {
 
-    @Observable public internal(set) var configs: [PartialConfigMarkerProtocol]
+    @ObservableProperty public var configs: [PartialConfigMarkerProtocol]
 
     private var childBuilder: () -> Widget
 
    // public internal(set) var onConfigsChanged = EventHandlerManager<Void>()
 
-    public init(_ configs: Observable<[PartialConfigMarkerProtocol]>, @WidgetBuilder child childBuilder: @escaping () -> Widget) {
+    public init(_ configs: ObservableProperty<[PartialConfigMarkerProtocol]>, @WidgetBuilder child childBuilder: @escaping () -> Widget) {
 
         self.childBuilder = childBuilder
 
@@ -24,7 +24,7 @@ public class ConfigProvider: SingleChildWidget {
 
     public convenience init(_ configs: [PartialConfigMarkerProtocol], @WidgetBuilder child childBuilder: @escaping () -> Widget) {
 
-        self.init(ObservableArray(configs), child: childBuilder)
+        self.init(StaticProperty(configs), child: childBuilder)
     }
 
     public convenience init(_ configs: PartialConfigMarkerProtocol..., @WidgetBuilder child childBuilder: @escaping () -> Widget) {

@@ -14,7 +14,7 @@ public final class Background: SingleChildWidget, ConfigurableWidget {
 
     private var currentFillRenderValue: AnyRenderValue<Fill>?
 
-    @Computed
+    @ComputedProperty
     public var computedConfig: Config
 
     private var inputChild: Widget

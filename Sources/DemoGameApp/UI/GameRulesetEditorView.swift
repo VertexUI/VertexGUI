@@ -1,7 +1,7 @@
 import WidgetGUI
 
 public class GameRulesetEditorView: SingleChildWidget {
-    @Inject private var gameRuleset: Observable<GameRuleset>
+    @Inject private var gameRuleset: ObservableProperty<GameRuleset>
 
     lazy private var bufferedRuleset = gameRuleset.value
 

@@ -6,8 +6,8 @@ open class TwoDWorldPage: SingleChildWidget {
     private var world: TwoDVoxelWorld = TwoDVoxelWorld(size: ISize2(40, 40))
     private var raycasts = ObservableArray<TwoDRaycast>()
 
-    private var selectedRaycast = Observable<TwoDRaycast?>(nil)
-    private var highlightedRaycast = Observable<TwoDRaycast?>(nil)
+    private var selectedRaycast = ObservableProperty<TwoDRaycast?>(nil)
+    private var highlightedRaycast = ObservableProperty<TwoDRaycast?>(nil)
 
     public init() {
         super.init()

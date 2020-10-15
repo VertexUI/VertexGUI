@@ -8,7 +8,7 @@ import VisualAppBase
 
 public final class Text: Widget, ConfigurableWidget {
 
-    @Observable public var text: String/* {
+    @ObservableProperty public var text: String/* {
 
         didSet {
 
@@ -46,7 +46,7 @@ public final class Text: Widget, ConfigurableWidget {
 
     lazy public var config: Config = combineConfigs()
 
-    public init(_ text: Observable<String>) {
+    public init(_ text: ObservableProperty<String>) {
 
         self._text = text
 
@@ -84,7 +84,7 @@ public final class Text: Widget, ConfigurableWidget {
 
         ) {
 
-            self.init(Observable(text))
+            self.init(StaticProperty(text))
 
             with(config: PartialConfig(
 
@@ -109,7 +109,7 @@ public final class Text: Widget, ConfigurableWidget {
 
     public convenience init(
 
-        _ text: Observable<String>,
+        _ text: ObservableProperty<String>,
 
         fontFamily: FontFamily? = nil,
 

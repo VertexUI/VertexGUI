@@ -15,14 +15,14 @@ open class TwoDWorldView: Widget, GUIMouseEventConsumer, StatefulWidget {
     private var newRaycastStart: DVec2?
     private var newRaycastEnd: DVec2?
 
-    public var highlightedRaycast: Observable<TwoDRaycast?>
+    public var highlightedRaycast: ObservableProperty<TwoDRaycast?>
 
     private var mouseThrottle = 0
 
     public init(
         world: TwoDVoxelWorld,
         raycasts: ObservableArray<TwoDRaycast>,
-        highlightedRaycast: Observable<TwoDRaycast?>
+        highlightedRaycast: ObservableProperty<TwoDRaycast?>
         /*onRaycastHover raycastHoverHandler: @escaping (_ raycast: TwoDRaycast?) -> Void*/) {
             self.world = world
             self.raycasts = raycasts

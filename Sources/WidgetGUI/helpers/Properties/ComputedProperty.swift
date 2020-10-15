@@ -1,5 +1,6 @@
 import VisualAppBase
 
+@propertyWrapper
 public class ComputedProperty<V>: ObservableProperty<V> {
   public typealias Value = V
 
@@ -11,25 +12,52 @@ public class ComputedProperty<V>: ObservableProperty<V> {
     return _value!
   }
 
-  private let compute: () -> Value
-  private let dependencies: [AnyObservableProperty]
+  override public var wrappedValue: Value {
+    value
+  }
+
+  override public var projectedValue: ObservableProperty<V> {
+    self
+  }
+
+  public var compute: () -> Value {
+    didSet {
+      _value = nil
+      onChanged.invokeHandlers(value)
+    }
+  }
+  public var dependencies: [AnyObservableProperty] {
+    didSet {
+      removeDependencyHandlers()
+      registerDependencyHandlers()
+    }
+  }
   private var dependencyChangedHandlerRemovers = [() -> ()]()
 
   public init(_ dependencies: [AnyObservableProperty], compute: @escaping () -> Value) {
     self.compute = compute
     self.dependencies = dependencies
     super.init()
-    self.dependencyChangedHandlerRemovers = dependencies.map { [unowned self] in
-      $0.onChanged {
-        _value = nil
-        onChanged.invokeHandlers(value)
-      }
-    }
+    registerDependencyHandlers()
+  }
+
+  override public init() {
+    self.compute = { fatalError("no compute function given") }
+    self.dependencies = []
   }
 
   deinit {
     removeDependencyHandlers()
     onChanged.removeAllHandlers()
+  }
+
+  private func registerDependencyHandlers() {
+    dependencyChangedHandlerRemovers = dependencies.map { [unowned self] in
+      $0.onChanged {
+        _value = nil
+        onChanged.invokeHandlers(value)
+      }
+    }
   }
 
   private func removeDependencyHandlers() {

@@ -61,14 +61,14 @@ let package = Package(
             dependencies: ["WidgetGUI", "CSDL2", "GL", "Swim", .product(name: "CnanovgGL3", package: "Cnanovg"), "CustomGraphicsMath", "GLGraphicsMath", .product(name: "Path", package: "Path.swift")],
             resources: [.process("Resources")]),
        
-        .target(
+        /*.target(
             name: "Demo2DRaycastingApp",
             dependencies: ["WidgetGUI", "VisualAppBase", "VisualAppBaseImplSDL2OpenGL3NanoVG"]),
        
         .target(
             name: "DemoGameApp",
             dependencies: ["WidgetGUI", "VisualAppBase", "VisualAppBaseImplSDL2OpenGL3NanoVG"],
-            resources: [.process("Resources")]),
+            resources: [.process("Resources")]),*/
        
         .target(
             name: "DemoGUIApp",
