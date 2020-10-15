@@ -9,9 +9,9 @@ public class TodoAppView: SingleChildWidget {
 
   private var todoLists = TodoList.mocks
   @Reference private var activeViewTopSpace: Space
-  @Observable private var selectedList: TodoList? = nil
-  @Observable private var mode: Mode = .SelectedList
-  @Observable private var searchQuery: String = ""
+  @MutableProperty private var selectedList: TodoList? = nil
+  @MutableProperty private var mode: Mode = .SelectedList
+  @MutableProperty private var searchQuery: String = ""
 
   override public func buildChild() -> Widget {
     ThemeProvider(appTheme) { [unowned self] in
@@ -81,41 +81,33 @@ public class TodoAppView: SingleChildWidget {
   private func buildSearch() -> Widget {
     Background(fill: appTheme.backgroundColor) { [unowned self] in
       Padding(all: 32) {
-        Row(spacing: 0) {
-          Row.Item(grow: 1, margins: Margins(right: 24)) {
-            TextField {
-              searchQuery = $0
-            }.onFocusChanged.chain {
-              if $0 {
-                mode = .Search
+        ConstrainedSize(minSize: DSize2(400, 0)) {
+          Row(spacing: 0) {
+            Row.Item(grow: 1, margins: Margins(right: 24)) {
+              TextField {
+                searchQuery = $0
+              }.onFocusChanged.chain {
+                if $0 {
+                  mode = .Search
+                }
               }
             }
-          }
 
-          Row.Item(crossAlignment: .Center) {
-            ObservingBuilder($mode) {
-              if mode == .Search {
-                  return Button {
-                    Text("cancel")
-                  } onClick: { _ in
-                    mode = .SelectedList
-                  }.with {
-                    $0.debugLayout = true
-                    $0.layoutDebuggingColor = .Blue
-                  }
-              } else {
-                return Space(.zero)
+            Row.Item(crossAlignment: .Center) {
+              Spaceholder(display: ComputedProperty<Bool>([$mode.any]) { [unowned self] in
+                return mode == .Search
+              }, dimension: .Vertical) {
+                Button {
+                  Text("cancel")
+                } onClick: { _ in
+                  mode = .SelectedList
+                }
               }
             }
           }
         }
       }
-    }/*.with { [unowned self] in
-      _ = onDestroy(
-        $0.onSizeChanged {
-          //activeViewTopSpace.preferredSize = $0
-        })
-    }*/
+    }
   }
 
   private func buildMenuListItem(for list: TodoList) -> Widget {
@@ -138,7 +130,6 @@ public class TodoAppView: SingleChildWidget {
             }
           }
         }
-
       }.with(
         config: MouseInteraction.PartialConfig {
           $0.stateConfigs = [

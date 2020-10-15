@@ -1,11 +1,11 @@
 import CustomGraphicsMath
 
 public class ObservingBuilder: SingleChildWidget {
-  private var observables: [AnyObservable]
+  private var observables: [AnyObservableProperty]
   private var childBuilder: () -> Widget
 
   public init(
-    _ observables: [AnyObservable], @WidgetBuilder child childBuilder: @escaping () -> Widget
+    _ observables: [AnyObservableProperty], @WidgetBuilder child childBuilder: @escaping () -> Widget
   ) {
     self.observables = observables
     self.childBuilder = childBuilder
@@ -21,16 +21,16 @@ public class ObservingBuilder: SingleChildWidget {
   }
 
   public convenience init<Value>(
-    _ observable: Observable<Value>, @WidgetBuilder child childBuilder: @escaping () -> Widget
+    _ observable: ObservableProperty<Value>, @WidgetBuilder child childBuilder: @escaping () -> Widget
   ) {
-    self.init([AnyObservable(observable)], child: childBuilder)
+    self.init([observable.any], child: childBuilder)
   }
 
   public convenience init<Value1, Value2>(
-    _ observable1: Observable<Value1>, _ observable2: Observable<Value2>,
+    _ observable1: ObservableProperty<Value1>, _ observable2: ObservableProperty<Value2>,
     @WidgetBuilder child childBuilder: @escaping () -> Widget
   ) {
-    self.init([AnyObservable(observable1), AnyObservable(observable2)], child: childBuilder)
+    self.init([observable1.any, observable2.any], child: childBuilder)
   }
 
   override open func buildChild() -> Widget {
