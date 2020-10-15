@@ -31,36 +31,34 @@ public final class TextField: SingleChildWidget, ConfigurableWidget {
   public var localConfig: Config?
   lazy public var config: Config = combineConfigs()
 
-  lazy private var textInput = TextInput()
+  private var initialText: String
 
   public internal(set) var onTextChanged = EventHandlerManager<String>()
 
   public init(
     _ initialText: String = "", onTextChanged textChangedHandler: ((String) -> Void)? = nil
   ) {
+    self.initialText = initialText
     super.init()
-    textInput.text = initialText
     if let handler = textChangedHandler {
       _ = onDestroy(onTextChanged(handler))
     }
   }
 
   override public func buildChild() -> Widget {
-    _ = onDestroy(
-      textInput.onTextChanged { [unowned self] in
-        onTextChanged.invokeHandlers($0)
-      })
-
-    textInput.with(config: config.textInputConfig)
-    return ConfigProvider([
-      self.config.backgroundConfig
-    ]) {
-
-      Border(bottom: 3, color: .Blue) { [unowned self] in
+    ConfigProvider([
+      config.backgroundConfig
+    ]) { [unowned self] in
+      Border(bottom: 3, color: .Blue) {
         Background {
           Clip {
             Padding(top: 8, right: 16, bottom: 8, left: 16) {
-              textInput
+              TextInput(initialText).with(config: config.textInputConfig).with { textInput in
+                // TODO: instead of doing it like this, provide a afterBuild hook in Widget and then use refs to access TextInput
+                _ = onDestroy((textInput as! TextInput).$text.onChanged {
+                  onTextChanged.invokeHandlers($0)
+                })
+              }
             }
           }
         }

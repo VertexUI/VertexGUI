@@ -17,7 +17,7 @@ public struct TodoList {
 
     public func filtered(by query: String) -> TodoList {
 
-        let filteredItems = items.filter { $0.description.contains(query) }
+        let filteredItems = items.filter { $0.description.lowercased().contains(query.lowercased()) }
 
         return TodoList(name: name, color: color, items: filteredItems)
     }

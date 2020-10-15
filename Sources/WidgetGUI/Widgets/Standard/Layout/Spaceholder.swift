@@ -12,7 +12,6 @@ public class Spaceholder: SingleChildWidget {
     self._display = display
     super.init()
     _ = onDestroy(self.$display.onChanged { [unowned self] _ in
-    print("DIPLSAY CHANGED")
       if dimension != .Both {
         invalidateLayout()
       }
