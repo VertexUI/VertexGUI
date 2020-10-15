@@ -1,199 +1,154 @@
 import VisualAppBase
 
 // TODO: maybe have Observable as base protocol with onChanged and then implement things like ObservableValue, ObservableArray on top of that
+// TODO: might rename to Observable and remove Observable class
+public protocol ObservableProtocol: class {
+  associatedtype Value
+  var value: Value { get }
+  var onChanged: EventHandlerManager<Value> { get }
+}
+
 @propertyWrapper
 public class Observable<Value> {
-
-    private var _value: Value
-
-    public var value: Value {
-
-        get {
-
-            return _value
-        }
-
-        set {
-
-            _value = newValue
-
-            onChanged.invokeHandlers(_value)
-        }
+  private var _value: Value
+  public var value: Value {
+    get {
+      return _value
     }
 
-    public var wrappedValue: Value {
+    set {
+      _value = newValue
+      onChanged.invokeHandlers(_value)
+    }
+  }
 
-        get {
-
-            return value
-        }
-
-        set {
-
-            value = newValue
-        }
+  public var wrappedValue: Value {
+    get {
+      return value
     }
 
-    public var projectedValue: Observable {
-
-        get {
-            
-            return self
-        }
+    set {
+      value = newValue
     }
+  }
 
-    public var any: AnyObservable {
+  public var projectedValue: Observable {
+    return self
+  }
 
-        get {
+  private var _any: AnyObservable?
 
-            return AnyObservable(self)
-        }
+  public var any: AnyObservable {
+    if _any == nil {
+      _any = AnyObservable(self)
     }
+    return _any!
+  }
 
-    public internal(set) var onChanged = EventHandlerManager<Value>()
-    
-    public init(_ initialValue: Value) {
+  public internal(set) var onChanged = EventHandlerManager<Value>()
 
-        _value = initialValue
-    }
+  public init(_ initialValue: Value) {
+    _value = initialValue
+  }
 
-    public init(wrappedValue: Value) {
-
-        _value = wrappedValue
-    }
+  public init(wrappedValue: Value) {
+    _value = wrappedValue
+  }
 }
 
 // TODO: implement ObservableArray of Observables --> emit changed event if one item changes
 @propertyWrapper
 public class ObservableArray<Value>: Observable<[Value]>, Collection {
+  public typealias Index = Int
+  public typealias Element = Value
+  public typealias Iterator = IndexingIterator<[Value]>
 
-    public typealias Index = Int
-
-    public typealias Element = Value
-
-    public typealias Iterator = IndexingIterator<[Value]>
-
-    //private var value: [Value]
-
-    //public internal(set) var onChanged = EventHandlerManager<[Value]>()
-
-    override public var wrappedValue: [Value] {
-
-        get {
-
-            value
-        }
-
-        set {
-
-            value = newValue
-        }
+  override public var wrappedValue: [Value] {
+    get {
+      value
     }
 
-    override public var projectedValue: ObservableArray<Value> {
+    set {
+      value = newValue
+    }
+  }
 
-        get {
-            
-            return self
-        }
+  override public var projectedValue: ObservableArray<Value> {
+    return self
+  }
+
+  override public init(_ initialValue: [Value] = []) {
+    super.init(initialValue)
+  }
+
+  private func invokeOnChangedHandlers() {
+    onChanged.invokeHandlers(value)
+  }
+
+  public var startIndex: Index {
+    value.startIndex
+  }
+
+  public var endIndex: Index {
+    value.endIndex
+  }
+
+  public func makeIterator() -> Iterator {
+    value.makeIterator()
+  }
+
+  public subscript(position: Index) -> Element {
+    get {
+      value[position]
     }
 
-    override public init(_ initialValue: [Value] = []) {
-
-        super.init(initialValue)
+    set {
+      value[position] = newValue
+      invokeOnChangedHandlers()
     }
+  }
 
-    private func invokeOnChangedHandlers() {
+  public var isEmpty: Bool {
+    value.isEmpty
+  }
 
-        onChanged.invokeHandlers(value)
-    }
+  public var count: Int {
+    value.count
+  }
 
-    public var startIndex: Index {
+  public func index(after i: Index) -> Index {
+    value.index(after: i)
+  }
 
-        value.startIndex
-    }
+  public func append(_ newValue: Value) {
+    value.append(newValue)
+    invokeOnChangedHandlers()
+  }
 
-    public var endIndex: Index {
+  public func append<S>(contentsOf newValues: S) where S: Sequence, Value == S.Element {
+    value.append(contentsOf: newValues)
+    invokeOnChangedHandlers()
+  }
 
-        value.endIndex
-    }
-
-    public func makeIterator() -> Iterator {
-
-        value.makeIterator()
-    }
-
-    public subscript(position: Index) -> Element {
-
-        get {
-
-            value[position]
-        }
-
-        set {
-            
-            value[position] = newValue
-
-            invokeOnChangedHandlers()
-        }
-    }
-
-    public var isEmpty: Bool {
-
-        value.isEmpty
-    }
-
-    public var count: Int {
-
-        value.count
-    }
-
-    public func index(after i: Index) -> Index {
-
-        value.index(after: i)
-    }
-
-    public func append(_ newValue: Value) {
-
-        value.append(newValue)
-
-        invokeOnChangedHandlers()
-    }
-
-    public func append<S>(contentsOf newValues: S) where S: Sequence, Value == S.Element {
-
-        value.append(contentsOf: newValues)
-
-        invokeOnChangedHandlers()
-    }
-
-    public func removeAll(where shouldBeRemoved: (Element) throws -> Bool) rethrows {
-
-        try value.removeAll(where: shouldBeRemoved)
-
-        invokeOnChangedHandlers()
-    }
+  public func removeAll(where shouldBeRemoved: (Element) throws -> Bool) rethrows {
+    try value.removeAll(where: shouldBeRemoved)
+    invokeOnChangedHandlers()
+  }
 }
 
 public class AnyObservable {
+  public internal(set) var onChanged = EventHandlerManager<Any>()
+  private var removeOnChangedHandler: (() -> Void)?
 
-    public internal(set) var onChanged = EventHandlerManager<Any>()
-
-    private var removeOnChangedHandler: (() -> ())?
-    
-    public init<Value>(_ observable: Observable<Value>) {
-
-        removeOnChangedHandler = observable.onChanged { [unowned self] value in
-
-            onChanged.invokeHandlers(value)
-        }
+  public init<Value>(_ observable: Observable<Value>) {
+    removeOnChangedHandler = observable.onChanged { [unowned self] value in
+      onChanged.invokeHandlers(value)
     }
+  }
 
-    deinit {
-
-        if let remove = removeOnChangedHandler {
-
-            remove()
-        }
+  deinit {
+    if let remove = removeOnChangedHandler {
+      remove()
     }
+  }
 }
