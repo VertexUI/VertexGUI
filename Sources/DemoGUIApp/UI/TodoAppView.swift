@@ -68,9 +68,6 @@ public class TodoAppView: SingleChildWidget {
                   }
                 }
               }
-            }.with {
-              $0.debugLayout = true
-              $0.layoutDebuggingColor = .White
             }
           }
         }
