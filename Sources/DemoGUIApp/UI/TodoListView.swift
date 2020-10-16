@@ -1,13 +1,17 @@
 import WidgetGUI
 
 public class TodoListView: SingleChildWidget {
-  // TODO: maybe do something with WidgetRef, as a variable inside a widget which will
-  // always contain the current child widget that received the ref object in build
-  private var list: TodoList
+  @Inject private var store: TodoStore
+  private var listId: String
+  private var list: TodoList {
+    store.state.lists.first {
+      $0.id == listId
+    }!
+  }
   private var expandedItemIndices: Set<Int> = []
 
-  public init(_ list: TodoList) {
-    self.list = list
+  public init(_ listId: String) {
+    self.listId = listId
   }
 
   override public func buildChild() -> Widget {
@@ -15,9 +19,17 @@ public class TodoListView: SingleChildWidget {
       Column(spacing: 16) {
         Text(list.name, fontSize: 32, fontWeight: .Bold, color: list.color)
 
-        Column {
-          list.items.enumerated().map { (index, todo) in
-            build(todo: todo, index: index)
+        Button {
+          Text("Add Todo")
+        } onClick: { [unowned self] _ in
+          handleAddTodoClick()
+        }
+
+        ObservingBuilder(store.$state) {
+          Column {
+            list.items.enumerated().map { (index, todo) in
+              build(todo: todo, index: index)
+            }
           }
         }
       }
@@ -57,5 +69,9 @@ public class TodoListView: SingleChildWidget {
         Divider(color: .Grey, axis: .Horizontal, thickness: 1)
       }
     }
+  }
+
+  private func handleAddTodoClick() {
+    store.dispatch(.AddItem(TodoItem(description: "New Todo Item"), listId: list.id))
   }
 }

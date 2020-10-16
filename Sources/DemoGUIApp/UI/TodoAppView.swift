@@ -7,7 +7,12 @@ public class TodoAppView: SingleChildWidget {
     case SelectedList, Search
   }
 
-  private var todoLists = TodoList.mocks
+  @Inject private var store: TodoStore
+
+  private var todoLists: [TodoList] {
+    store.state.lists
+  }
+
   @Reference private var activeViewTopSpace: Space
   @MutableProperty private var selectedList: TodoList? = nil
   @MutableProperty private var mode: Mode = .SelectedList
@@ -19,7 +24,6 @@ public class TodoAppView: SingleChildWidget {
         Dependency(todoLists)
       ]) {
         Background(fill: appTheme.backgroundColor) { [unowned self] in
-          
           Column(spacing: 32) {
             Column.Item(grow: 1, crossAlignment: .Stretch) {
               Row {
@@ -48,20 +52,26 @@ public class TodoAppView: SingleChildWidget {
 
           Button {
             Text("New List")
+          } onClick: { [unowned self] _ in
+            handleNewListClick()
           }
 
-          // TODO: implement Flex shrink
-          Column.Item(grow: 0, crossAlignment: .Stretch) {
-            ScrollArea {
-              Padding(all: 0) {
-                Column(spacing: 24) {
-                  Text("Lists", fontSize: 24, fontWeight: .Bold)
+          ObservingBuilder(store.$state) {
+            Column {
+            // TODO: implement Flex shrink
+              Column.Item(grow: 0, crossAlignment: .Stretch) {
+                ScrollArea {
+                  Padding(all: 0) {
+                    Column(spacing: 24) {
+                      Text("Lists", fontSize: 24, fontWeight: .Bold)
 
-                  Column.Item(crossAlignment: .Stretch) {
-                    Column {
-                      todoLists.map { list in
-                        Column.Item(crossAlignment: .Stretch) {
-                          buildMenuListItem(for: list)
+                      Column.Item(crossAlignment: .Stretch) {
+                        Column {
+                          todoLists.map { list in
+                            Column.Item(crossAlignment: .Stretch) {
+                              buildMenuListItem(for: list)
+                            }
+                          }
                         }
                       }
                     }
@@ -162,7 +172,7 @@ public class TodoAppView: SingleChildWidget {
               case .SelectedList:
                 ObservingBuilder($selectedList) {
                   if let selectedList = selectedList {
-                    return TodoListView(selectedList)
+                    return TodoListView(selectedList.id)
                   } else {
                     return Center {
                       Text("No list selected.", fontSize: 24, fontWeight: .Bold, color: .Grey)
@@ -178,5 +188,9 @@ public class TodoAppView: SingleChildWidget {
         }
       }
     }
+  }
+
+  private func handleNewListClick() {
+    store.dispatch(.AddList(TodoList(name: "New List", color: .Green, items: [])))
   }
 }
