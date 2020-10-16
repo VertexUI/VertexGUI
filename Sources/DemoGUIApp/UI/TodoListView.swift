@@ -2,30 +2,25 @@ import WidgetGUI
 
 public class TodoListView: SingleChildWidget {
   @Inject private var store: TodoStore
-  private var listId: String
-  private var list: TodoList {
-    store.state.lists.first {
-      $0.id == listId
-    }!
-  }
+  @ObservableProperty private var list: TodoList
   private var expandedItemIndices: Set<Int> = []
 
-  public init(_ listId: String) {
-    self.listId = listId
+  public init(_ observableList: ObservableProperty<TodoList>) {
+    self._list = observableList
   }
 
   override public func buildChild() -> Widget {
     ScrollArea(scrollX: .Never) { [unowned self] in
-      Column(spacing: 16) {
-        Text(list.name, fontSize: 32, fontWeight: .Bold, color: list.color)
+      ObservingBuilder($list) {
+        Column(spacing: 16) {
+          Text(list.name, fontSize: 32, fontWeight: .Bold, color: list.color)
 
-        Button {
-          Text("Add Todo")
-        } onClick: { [unowned self] _ in
-          handleAddTodoClick()
-        }
+          Button {
+            Text("Add Todo")
+          } onClick: { [unowned self] _ in
+            handleAddTodoClick()
+          }
 
-        ObservingBuilder(store.$state) {
           Column {
             list.items.enumerated().map { (index, todo) in
               build(todo: todo, index: index)

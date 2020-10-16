@@ -24,7 +24,7 @@ public class MutableProperty<V>: ObservableProperty<V> {
     }
   }
 
-  override public var projectedValue: MutableProperty<Value> {
+  override public var projectedValue: ObservableProperty<Value> {
     return self
   }
 

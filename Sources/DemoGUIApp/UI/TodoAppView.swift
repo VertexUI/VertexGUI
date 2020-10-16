@@ -14,7 +14,6 @@ public class TodoAppView: SingleChildWidget {
   }
 
   @Reference private var activeViewTopSpace: Space
-  @MutableProperty private var selectedList: TodoList? = nil
   @MutableProperty private var mode: Mode = .SelectedList
   @MutableProperty private var searchQuery: String = ""
 
@@ -58,7 +57,7 @@ public class TodoAppView: SingleChildWidget {
 
           ObservingBuilder(store.$state) {
             Column {
-            // TODO: implement Flex shrink
+              // TODO: implement Flex shrink
               Column.Item(grow: 0, crossAlignment: .Stretch) {
                 ScrollArea {
                   Padding(all: 0) {
@@ -155,7 +154,7 @@ public class TodoAppView: SingleChildWidget {
           ]
         })
     } onClick: { [unowned self] _ in
-      selectedList = list
+      store.dispatch(.SelectList(list.id))
       mode = .SelectedList
     }
   }
@@ -170,9 +169,9 @@ public class TodoAppView: SingleChildWidget {
             ObservingBuilder($mode) {
               switch mode {
               case .SelectedList:
-                ObservingBuilder($selectedList) {
-                  if let selectedList = selectedList {
-                    return TodoListView(selectedList.id)
+                ObservingBuilder(store.getters.$selectedList) {
+                  if let selectedList = store.getters.selectedList {
+                    return TodoListView(StaticProperty(selectedList))
                   } else {
                     return Center {
                       Text("No list selected.", fontSize: 24, fontWeight: .Bold, color: .Grey)

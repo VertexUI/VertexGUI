@@ -30,7 +30,7 @@ public class SearchResultsView: SingleChildWidget {
     Column(spacing: 48) {
       Text("Results for \"\(query)\"", fontSize: 48, fontWeight: .Bold)
       filteredLists.map { list in
-        TodoListView(list.id)
+        TodoListView(StaticProperty(list))
       }
     }
   }
