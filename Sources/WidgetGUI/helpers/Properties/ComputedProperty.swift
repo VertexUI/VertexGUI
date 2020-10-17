@@ -7,7 +7,7 @@ public class ComputedProperty<V>: ObservableProperty<V> {
   private var _value: Value?
   override public var value: Value {
     if _value == nil {
-      _value = compute()
+      updateValue(forceComputation: true)
     }
     return _value!
   }
@@ -22,8 +22,7 @@ public class ComputedProperty<V>: ObservableProperty<V> {
 
   public var compute: () -> Value {
     didSet {
-      _value = nil
-      onChanged.invokeHandlers(value)
+      updateValue()
     }
   }
   public var dependencies: [AnyObservableProperty] {
@@ -33,6 +32,8 @@ public class ComputedProperty<V>: ObservableProperty<V> {
     }
   }
   private var dependencyChangedHandlerRemovers = [() -> ()]()
+
+  public var onCompare = EventHandlerManager<Void>()
 
   // TODO: automatically track dependencies by registering through a static global variable in first call of compute
   public init(_ dependencies: [AnyObservableProperty], compute: @escaping () -> Value) {
@@ -55,8 +56,7 @@ public class ComputedProperty<V>: ObservableProperty<V> {
   private func registerDependencyHandlers() {
     dependencyChangedHandlerRemovers = dependencies.map { [unowned self] in
       $0.onChanged {
-        _value = nil
-        onChanged.invokeHandlers(value)
+        updateValue()
       }
     }
   }
@@ -64,6 +64,49 @@ public class ComputedProperty<V>: ObservableProperty<V> {
   private func removeDependencyHandlers() {
     for remove in dependencyChangedHandlerRemovers {
       remove()
+    }
+  }
+
+  public func runOnCompare(_ block: @escaping () -> ()) -> Self {
+    _ = onCompare(block)
+    return self
+  }
+
+  private func updateValue(forceComputation: Bool = false) {
+    if onChanged.handlers.count > 0 || forceComputation {
+      let previousValue = _value
+      _value = compute()
+
+      if let equatableSelf = self as? AnyEquatableComputedPropertyProtocol {
+
+        if !equatableSelf.valuesEqual(previousValue, _value) {
+        onCompare.invokeHandlers(Void())
+          onChanged.invokeHandlers(value)
+        }
+      } else {
+        onChanged.invokeHandlers(value)
+      }
+    } else {
+      _value = nil
+    }
+  }
+}
+internal protocol AnyEquatableComputedPropertyProtocol {
+  func valuesEqual(_ value1: Any?, _ value2: Any?) -> Bool
+}
+
+extension ComputedProperty: AnyEquatableComputedPropertyProtocol where V: Equatable {
+  func valuesEqual(_ value1: Any?, _ value2: Any?) -> Bool {
+    //print("CALL EQUAL", value1, value2)
+    if value1 == nil && value2 == nil {
+      //print("BOTH NIL")
+      return true
+    } else if let value1 = value1 as? Value, let value2 = value2 as? Value {
+      //print("COMP", value1, value2)
+      return value1 == value2
+    } else {
+      //print("NONE")
+      return false
     }
   }
 }

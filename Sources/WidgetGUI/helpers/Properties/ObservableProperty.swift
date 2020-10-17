@@ -28,26 +28,14 @@ public class ObservableProperty<V>: ObservableProtocol {
 
   public internal(set) var onChanged = EventHandlerManager<Value>()
 
-  /*private let otherObservable: AnyObject
-  private var removeOtherObservableChangedHandler: (() -> ())? = nil*/
-
-  /*public init<O: ObservableProtocol>(from otherObservable: O) where O.Value == Value {
-    self.otherObservable = otherObservable
-    self._value = otherObservable.value
-    self.removeOtherObservableChangedHandler = otherObservable.onChanged { [unowned self] in
-      self._value = otherObservable.value
-      onChanged.invokeHandlers($0)
-    }
-  }
-
-  deinit {
-    if let remove = removeOtherObservableChangedHandler {
-      remove()
-    }
-    onChanged.removeAllHandlers()
-  }*/
-
   public init() {}
+
+  public func compute<ComputedValue>(_ computeFunction: @escaping (_ parent: Value) -> ComputedValue) -> ComputedProperty<ComputedValue> {
+    ComputedProperty<ComputedValue>([any], compute: {
+      // possible retain cycle?
+      computeFunction(self.value)
+    })
+  }
 }
 
 // TODO: implement ObservableArray of Observables --> emit changed event if one item changes

@@ -1,26 +1,27 @@
-public class Generic<T> {
-    public var value: T
-    public init(_ value: T) {
-        self.value = value
+class Test<T> {
+    var myvar: T
+
+    public init(_ val: T) {
+        myvar = val
+
+        if self is TestMarker {
+            print("CAN RECOGNIZE IT!")
+        }
     }
 }
 
-protocol Printable {
-    var text: String { get }
+protocol TestMarker {
+
 }
 
-extension Generic: Printable where T == String {
-
-    var text: String {
-
-        return value
+extension Test: TestMarker where T: Equatable {
+    func printTheTestMarker() {
+        print("WOWOWO")
     }
 }
 
-func printPrintable(_ printable: Printable) {
-    print(printable.text)
+class OtherClass {
+
 }
 
-var testVar = Generic("Hello World")
-
-printPrintable(testVar)
+let test1 = Test(OtherClass())
