@@ -26,7 +26,7 @@ public class TodoListView: SingleChildWidget {
             Row {
               TextField(list.name).onTextChanged.chain {
                 updatedNameBuffer = $0
-              }
+              }.requestFocus()
 
               Button {
                 Text("done")
@@ -73,7 +73,7 @@ public class TodoListView: SingleChildWidget {
                   Row {
                     TextField(todo.description).onTextChanged.chain {
                       updatedItemDescription = $0
-                    }
+                    }.requestFocus()
 
                     Button {
                       Text("done")

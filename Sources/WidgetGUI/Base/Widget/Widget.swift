@@ -254,42 +254,27 @@ open class Widget: Bounded, Parent, Child {
     }
  
     public final func mount(parent: Parent, with context: ReplacementContext? = nil) {
-        
         var oldSelf: Widget? = context?.previousWidget
-      
-        if
-            
-            let context = context {
-              
-                if let newKey = self.key {
-             
-                    oldSelf = context.keyedWidgets[newKey]
-                }
+        if let context = context {
+            if let newKey = self.key {
+                oldSelf = context.keyedWidgets[newKey]
+            }
 
-                if let newSelf = self as? (Widget & AnyStatefulWidget), let oldSelf = oldSelf as? (Widget & AnyStatefulWidget) {
-                
-                    var attemptStateReplace = false
+            if let newSelf = self as? (Widget & AnyStatefulWidget), let oldSelf = oldSelf as? (Widget & AnyStatefulWidget) {
+                var attemptStateReplace = false
 
-                    if 
-                    
-                        let newKey = newSelf.key,
-                    
-                        let oldKey = oldSelf.key,
-                    
-                        oldKey == newKey {
-                    
-                            attemptStateReplace = true
-                   
-                    } else if newSelf.key == nil, oldSelf.key == nil {
-                   
+                if  let newKey = newSelf.key,
+                    let oldKey = oldSelf.key,
+                    oldKey == newKey {
                         attemptStateReplace = true
-                    }
-
-                    if attemptStateReplace && type(of: newSelf) == type(of: oldSelf) {
-                   
-                        newSelf.anyState = oldSelf.anyState
-                    }
+                } else if newSelf.key == nil, oldSelf.key == nil {
+                    attemptStateReplace = true
                 }
+
+                if attemptStateReplace && type(of: newSelf) == type(of: oldSelf) {
+                    newSelf.anyState = oldSelf.anyState
+                }
+            }
         }
     
         self.parent = parent
@@ -301,20 +286,14 @@ open class Widget: Bounded, Parent, Child {
         build()
  
         for i in 0..<children.count {
-
             let oldChild: Widget?
-
             if let oldSelf = oldSelf {
-
                 oldChild = oldSelf.children.count > i ? oldSelf.children[i] : nil
-         
             } else {
-
                 oldChild = nil
             }
 
             let childContext = oldChild == nil && context == nil ? nil : ReplacementContext(
-                
                 previousWidget: oldChild, keyedWidgets: context?.keyedWidgets ?? [:])
            
             mountChild(children[i], with: childContext)
@@ -660,72 +639,63 @@ open class Widget: Bounded, Parent, Child {
         _invalidateLayout()
     }
 
-    @usableFromInline internal final func _invalidateLayout() {
-    
+    @usableFromInline
+    internal final func _invalidateLayout() {
         #if (DEBUG)
-
         if countCalls {
-
             callCounter.count(.InvalidateLayout)
         }
-
         #endif
-
         layoutInvalid = true
-
         onLayoutInvalidated.invokeHandlers(Void())
-        
         onAnyLayoutInvalidated.invokeHandlers(self)
     }
 
     open func performLayout(constraints: BoxConstraints) -> DSize2 {
-
         fatalError("performLayout(constraints:) not implemented.")
     }
 
-    @inlinable public final func requestFocus() {
-
+    @discardableResult
+    open func requestFocus() -> Self {
         if focusable {
-
-            if context!.requestFocus(self) {
-
-                _focused = true
+            // TODO: maybe run requestfocus and let the context notify the focused widget of receiving focus?
+            if mounted {
+                if context!.requestFocus(self) {
+                    _focused = true
+                }
+            } else {
+                onMounted.once { [unowned self] in
+                    if context!.requestFocus(self) {
+                        _focused = true
+                    }
+                }
             }
         }
+        return self
     }
 
-    @inlinable public func dropFocus() {
-
+    @inlinable
+    public func dropFocus() {
         if focusable {
-
             _focused = false
         }
     }
 
     /// Returns the result of renderContent() wrapped in an IdentifiedSubTreeRenderObject
-    @inlinable public final func render() -> RenderObject.IdentifiedSubTree {
-
+    @inlinable
+    public final func render() -> RenderObject.IdentifiedSubTree {
         if renderState.invalid {
-
             #if (DEBUG)
-
             if countCalls {
-
                 callCounter.count(.Render)
             }
-
             Logger.log("Render state of Widget: \(self) invalid. Rerendering.".with(fg: .Yellow), level: .Message, context: .WidgetRendering)
-
             #endif
 
             updateRenderState()
-
         } else {
-
             #if DEBUG
-            
             Logger.log("Render state of Widget: \(self) valid. Using cached state.".with(fg: .Yellow), level: .Message, context: .WidgetRendering)
-
             #endif
         }
 

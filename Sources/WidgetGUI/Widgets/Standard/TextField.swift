@@ -31,6 +31,9 @@ public final class TextField: SingleChildWidget, ConfigurableWidget {
   public var localConfig: Config?
   lazy public var config: Config = combineConfigs()
 
+  @Reference
+  private var textInput: TextInput
+
   private var initialText: String
 
   public internal(set) var onTextChanged = WidgetEventHandlerManager<String>()
@@ -58,12 +61,26 @@ public final class TextField: SingleChildWidget, ConfigurableWidget {
                 _ = onDestroy((textInput as! TextInput).$text.onChanged {
                   onTextChanged.invokeHandlers($0)
                 })
-              }
+              }.connect(ref: $textInput)
             }
           }
         }
       }
     }
+  }
+
+  @discardableResult
+  override public func requestFocus() -> Self {
+    // TODO: maybe have a better way to request focus on this?
+    // TODO: maybe parent should get focus and only if parent has focus a child can have focus (focus context?)
+    if mounted {
+      textInput.requestFocus()
+    } else {
+      onMounted.once { [unowned self] in
+        textInput.requestFocus()
+      }
+    }
+    return self
   }
 
   override public func renderContent() -> RenderObject? {

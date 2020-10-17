@@ -1,4 +1,4 @@
-# Swift cross-platform GUI Application demo
+# Swift cross-platform GUI application demo
 
 This demo application runs on Linux and MacOS. A Swift version of at least 5.3 is required.
 
@@ -16,6 +16,10 @@ The target "VisualAppBaseImplSDL2OpenGL3NanoVG" provides an implementation that 
 The target "WidgetGUI" defines a system for describing a graphical user interface, rendering the elements, propagating and handling events. The idea is similar to [Flutter](https://flutter.dev/). Everything is a Widget. They handle layouting, events and output RenderObjects. The RenderObjects form a tree structure which is then rendered with the generic rendering API in an (hopefully at a later point) optimized way.
 
 Currently nothing is completed, everything is written very loosely, nothing is optimized and there are bugs all over the place.
+
+# Todo
+
+- better focus system, focus contexts
 
 # Dependencies
 

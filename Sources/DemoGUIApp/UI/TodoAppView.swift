@@ -96,13 +96,6 @@ public class TodoAppView: SingleChildWidget {
                 if $0 {
                   mode = .Search
                 }
-              }.with {
-                _ = $0.onLayoutingStarted {
-                  print("Search TextField layouting started", $0)
-                }
-                _ = $0.onLayoutingFinished {
-                  print("Search TextField layouting finished", $0)
-                }
               }
             }
 
