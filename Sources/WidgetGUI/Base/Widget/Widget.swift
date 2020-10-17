@@ -217,11 +217,19 @@ open class Widget: Bounded, Parent, Child {
     public internal(set) var onDestroy = EventHandlerManager<Void>()
     
     private var unregisterAnyParentChangedHandler: EventHandlerManager<Parent?>.UnregisterCallback?
-
 			    
     public init(children: [Widget] = []) {
         self.children = children
-        self.onFocusChanged.widget = self
+        setupWidgetEventHandlerManagers()
+    }
+
+    private func setupWidgetEventHandlerManagers() {
+        let mirror = Mirror(reflecting: self)
+        for child in mirror.allChildren {
+            if var manager = child.value as? AnyWidgetEventHandlerManager {
+                manager.widget = self
+            }
+        }
     }
 
     deinit {
