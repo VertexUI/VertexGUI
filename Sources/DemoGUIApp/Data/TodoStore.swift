@@ -12,10 +12,12 @@ public class TodoStore: ReduxStore<TodoState, TodoGetters, TodoAction> {
     case let .SelectList(listId):
       newState.selectedListId = listId
 
-    case let .AddList(list):
-      newState.lists.append(list)
+    case let .AddList:
+      newState.lists.append(TodoList(id: newState.nextListId, name: "New List", color: .Yellow, items: []))
+      newState.nextListId += 1
 
-    case let .AddItem(item, listId):
+    case let .AddItem(listId):
+      let item = TodoItem(description: "New Item")
       for (index, var list) in newState.lists.enumerated() {
         if list.id == listId {
           list.items.append(item)
@@ -37,8 +39,9 @@ public class TodoStore: ReduxStore<TodoState, TodoGetters, TodoAction> {
 }
 
 public struct TodoState {
+  public var nextListId: Int = 0
   public var lists: [TodoList] = []
-  public var selectedListId: String? = nil
+  public var selectedListId: Int? = nil
   public var searchResult: TodoSearchResult? = nil
 }
 
@@ -53,8 +56,8 @@ public class TodoGetters: ReduxGetters<TodoState> {
 }
 
 public enum TodoAction {
-  case SelectList(_ listId: String)
-  case AddList(_ list: TodoList)
-  case AddItem(_ item: TodoItem, listId: String)
+  case SelectList(_ listId: Int)
+  case AddList
+  case AddItem(listId: Int)
   case Search(_ query: String)
 }

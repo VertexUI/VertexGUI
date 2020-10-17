@@ -67,6 +67,6 @@ public class TodoListView: SingleChildWidget {
   }
 
   private func handleAddTodoClick() {
-    store.dispatch(.AddItem(TodoItem(description: "New Todo Item"), listId: list.id))
+    store.dispatch(.AddItem(listId: list.id))
   }
 }

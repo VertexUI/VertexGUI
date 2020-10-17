@@ -190,6 +190,6 @@ public class TodoAppView: SingleChildWidget {
   }
 
   private func handleNewListClick() {
-    store.dispatch(.AddList(TodoList(name: "New List", color: .Green, items: [])))
+    store.dispatch(.AddList)
   }
 }
