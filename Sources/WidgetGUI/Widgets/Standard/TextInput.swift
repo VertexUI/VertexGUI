@@ -45,6 +45,7 @@ public final class TextInput: SingleChildWidget, StatefulWidget, ConfigurableWid
     self._text = self._displayedText
     super.init()
     self.focusable = true
+    print("INITIALIZE TEXT INPUT with carent position", caretPosition)
   }
 
   public convenience init(_ initialText: String = "", caretColor: Color) {

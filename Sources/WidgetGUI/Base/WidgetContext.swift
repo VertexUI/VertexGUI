@@ -5,8 +5,18 @@ public class WidgetContext {
     public internal(set) var window: Window
     private var _getTextBoundsSize: (_ text: String, _ fontConfig: FontConfig, _ maxWidth: Double?) -> DSize2
     private var _requestCursor: (_ cursor: Cursor) -> () -> Void
-    public internal(set) var focus: Widget?
+    public internal(set) var focus: Widget? {
+        didSet {
+            if let unregister = unregisterOnFocusChanged {
+                unregister()
+            }
+            if let unregister = unregisterOnFocusDestroyed {
+                unregister()
+            }
+        }
+    }
     private var unregisterOnFocusChanged: (() -> ())?
+    private var unregisterOnFocusDestroyed: (() -> ())?
     public internal(set) var debugLayout: Bool = false
     private let _getApplicationTime: () -> Double
     public var applicationTime: Double {
@@ -38,12 +48,14 @@ public class WidgetContext {
             oldFocus.dropFocus()
         }
         focus = widget
+        unregisterOnFocusDestroyed = focus!.onDestroy { [unowned self] _ in
+            if let unwrappedFocus = focus, unwrappedFocus === widget {
+                focus = nil
+            }
+        }
         unregisterOnFocusChanged = focus!.onFocusChanged { [unowned self] _ in
             if !focus!.focused {
                 focus = nil
-                if let unregister = unregisterOnFocusChanged {
-                    unregister()
-                }
             }
         }
         return true
