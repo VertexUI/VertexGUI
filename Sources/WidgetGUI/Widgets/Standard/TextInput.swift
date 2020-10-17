@@ -164,13 +164,13 @@ public final class TextInput: SingleChildWidget, StatefulWidget, ConfigurableWid
     let preCaretBounds = textWidget.getSubBounds(to: caretPosition)
     let caretBounds = DRect(min: globalBounds.min + DVec2(preCaretBounds.max.x, 0), size: caretSize)
 
-    return ContainerRenderObject {
+    return ContainerRenderObject { [unowned self] in
       // to catch mouse events
       RenderStyleRenderObject(fillColor: .Transparent) {
         RectangleRenderObject(globalBounds)
       }
 
-      RenderObject.Translation(translation) { [unowned self] in
+      RenderObject.Translation(translation) { 
         if focused {
           RenderObject.RenderStyle(
             fill: TimedRenderValue<Fill>(

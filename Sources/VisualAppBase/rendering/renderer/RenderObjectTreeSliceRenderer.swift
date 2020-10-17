@@ -25,7 +25,7 @@ public class RenderObjectTreeSliceRenderer {
 
       if currentNode.isBranching, currentNode.children.count > 0 {
         renderOpen(node: currentNode, with: backendRenderer)
-        currentPath = currentPath / 0
+        currentPath = currentPath/0
       } else {
         if currentNode.isBranching {
           renderClose(node: currentNode, with: backendRenderer)
@@ -37,10 +37,11 @@ public class RenderObjectTreeSliceRenderer {
         var currentChildPath = currentPath
 
         while currentParent != nil {
-          renderClose(node: currentParent!, with: backendRenderer)
           if currentParent!.children.count > currentChildPath.last! + 1 {
             currentPath = currentChildPath + 1
             continue outer
+          } else {
+            renderClose(node: currentParent!, with: backendRenderer)
           }
 
           currentChildPath = currentChildPath.dropLast()

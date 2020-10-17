@@ -87,7 +87,7 @@ public class TodoAppView: SingleChildWidget {
   private func buildSearch() -> Widget {
     Background(fill: appTheme.backgroundColor) { [unowned self] in
       Padding(all: 32) {
-        ConstrainedSize(minSize: DSize2(400, 0)) {
+        ConstrainedSize(minSize: DSize2(400, 0), maxSize: DSize2(400, .infinity)) {
           Row(spacing: 0) {
             Row.Item(grow: 1, margins: Margins(right: 24)) {
               TextField {
@@ -95,6 +95,13 @@ public class TodoAppView: SingleChildWidget {
               }.onFocusChanged.chain {
                 if $0 {
                   mode = .Search
+                }
+              }.with {
+                _ = $0.onLayoutingStarted {
+                  print("Search TextField layouting started", $0)
+                }
+                _ = $0.onLayoutingFinished {
+                  print("Search TextField layouting finished", $0)
                 }
               }
             }
