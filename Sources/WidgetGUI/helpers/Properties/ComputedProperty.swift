@@ -33,8 +33,6 @@ public class ComputedProperty<V>: ObservableProperty<V> {
   }
   private var dependencyChangedHandlerRemovers = [() -> ()]()
 
-  public var onCompare = EventHandlerManager<Void>()
-
   // TODO: automatically track dependencies by registering through a static global variable in first call of compute
   public init(_ dependencies: [AnyObservableProperty], compute: @escaping () -> Value) {
     self.compute = compute
@@ -67,11 +65,6 @@ public class ComputedProperty<V>: ObservableProperty<V> {
     }
   }
 
-  public func runOnCompare(_ block: @escaping () -> ()) -> Self {
-    _ = onCompare(block)
-    return self
-  }
-
   private func updateValue(forceComputation: Bool = false) {
     if onChanged.handlers.count > 0 || forceComputation {
       let previousValue = _value
@@ -80,7 +73,6 @@ public class ComputedProperty<V>: ObservableProperty<V> {
       if let equatableSelf = self as? AnyEquatableComputedPropertyProtocol {
 
         if !equatableSelf.valuesEqual(previousValue, _value) {
-        onCompare.invokeHandlers(Void())
           onChanged.invokeHandlers(value)
         }
       } else {
@@ -97,15 +89,11 @@ internal protocol AnyEquatableComputedPropertyProtocol {
 
 extension ComputedProperty: AnyEquatableComputedPropertyProtocol where V: Equatable {
   func valuesEqual(_ value1: Any?, _ value2: Any?) -> Bool {
-    //print("CALL EQUAL", value1, value2)
     if value1 == nil && value2 == nil {
-      //print("BOTH NIL")
       return true
     } else if let value1 = value1 as? Value, let value2 = value2 as? Value {
-      //print("COMP", value1, value2)
       return value1 == value2
     } else {
-      //print("NONE")
       return false
     }
   }

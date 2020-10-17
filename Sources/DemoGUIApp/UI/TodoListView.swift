@@ -6,9 +6,12 @@ public class TodoListView: SingleChildWidget {
 
   private var expandedItemIndices: Set<Int> = []
   @MutableProperty
-  private var editMode: Bool = false
+  private var nameEditMode: Bool = false
+  private var updatedNameBuffer: String = ""
+  @MutableProperty
+  private var editingItemIndex: Int? = nil
+  private var updatedItemDescription: String = ""
 
-  private var updateListNameBuffer: String = ""
 
   public init(_ observableList: ObservableProperty<TodoList>) {
     self._list = observableList
@@ -18,26 +21,25 @@ public class TodoListView: SingleChildWidget {
   override public func buildChild() -> Widget {
     ScrollArea(scrollX: .Never) { [unowned self] in
       Column(spacing: 16) {
-        ObservingBuilder($editMode) {
-          if editMode {
+        ObservingBuilder($nameEditMode) {
+          if nameEditMode {
             Row {
               TextField(list.name).onTextChanged.chain {
-                updateListNameBuffer = $0
+                updatedNameBuffer = $0
               }
 
               Button {
                 Text("done")
               } onClick: { _ in
-                store.dispatch(.UpdateListName(updateListNameBuffer, listId: list.id))
-                editMode = false
+                store.dispatch(.UpdateListName(updatedNameBuffer, listId: list.id))
+                nameEditMode = false
               }
             }
           } else {
             MouseArea {
               Text(list.name, fontSize: 32, fontWeight: .Bold, color: list.color)
             } onClick: { _ in
-              print("SET EDIT MODE TRUE")
-              editMode = true
+              nameEditMode = true
             }
           }
         }
@@ -66,7 +68,28 @@ public class TodoListView: SingleChildWidget {
           Row(spacing: 48) {
             TaskCompletionButton(color: list.color)
             Row.Item(crossAlignment: .Center) {
-              Text(todo.description, wrap: true)
+              ObservingBuilder($editingItemIndex) {
+                if editingItemIndex == index {
+                  Row {
+                    TextField(todo.description).onTextChanged.chain {
+                      updatedItemDescription = $0
+                    }
+
+                    Button {
+                      Text("done")
+                    } onClick: { _ in
+                      store.dispatch(.UpdateTodoDescription(updatedItemDescription, index: index, listId: list.id))
+                      editingItemIndex = nil
+                    }
+                  }
+                } else {
+                  MouseArea {
+                    Text(todo.description, wrap: true)
+                  } onClick: { _ in
+                    editingItemIndex = index
+                  }
+                }
+              }
             }
           }
 

@@ -3,19 +3,13 @@ import CustomGraphicsMath
 import VisualAppBase
 
 public struct TodoList {
-
     public var id: Int
-
     public var name: String
-
     public var color: Color
-
     public var items: [TodoItem]
 
     public func filtered(by query: String) -> TodoList {
-
         let filteredItems = items.filter { $0.description.lowercased().contains(query.lowercased()) }
-
         return TodoList(id: id, name: name, color: color, items: filteredItems)
     }
 

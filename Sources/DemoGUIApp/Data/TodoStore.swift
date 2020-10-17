@@ -35,6 +35,15 @@ public class TodoStore: ReduxStore<TodoState, TodoGetters, TodoAction> {
         }
       }
 
+    case let .UpdateTodoDescription(newDescription, index, listId):
+      for (listIndex, var list) in newState.lists.enumerated() {
+        if list.id == listId {
+          list.items[index].description = newDescription
+          newState.lists[listIndex] = list
+          break
+        }
+      }
+
     case let .Search(query):
       newState.searchResult = getSearchResult(query)
     }
@@ -69,5 +78,6 @@ public enum TodoAction {
   case AddList
   case UpdateListName(_ newName: String, listId: Int)
   case AddItem(listId: Int)
+  case UpdateTodoDescription(_ newDescription: String, index: Int, listId: Int)
   case Search(_ query: String)
 }
