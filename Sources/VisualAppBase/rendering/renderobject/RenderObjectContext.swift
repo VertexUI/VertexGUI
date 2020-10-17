@@ -1,6 +1,6 @@
 import CustomGraphicsMath
 
-open class RenderContext {
+open class RenderObjectContext {
 
     private let _getTextBoundsSize: (_ text: String, _ fontConfig: FontConfig, _ maxWidth: Double?) -> DSize2
     

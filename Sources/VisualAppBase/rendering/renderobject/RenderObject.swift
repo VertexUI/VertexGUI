@@ -4,9 +4,8 @@ import VisualAppBase
 import CustomGraphicsMath
 
 // TODO: implement the RenderObjects in a way similar to SVG --> like defining an SVG graphic
-
-// TODO: implement function for checking whether render object has content at certain position (--> is not transparent) --> used for mouse events like click etc.
 // TODO: might split into SubTreeRenderObject and LeafRenderObject!!!
+// TODO: rename to drawable
 open class RenderObject: CustomDebugStringConvertible, TreeNode {
     // TODO: maybe remove these shorthands
     public typealias IdentifiedSubTree = VisualAppBase.IdentifiedSubTreeRenderObject
@@ -19,7 +18,6 @@ open class RenderObject: CustomDebugStringConvertible, TreeNode {
     public typealias Rectangle = VisualAppBase.RectangleRenderObject
     public typealias Ellipse = VisualAppBase.EllipsisRenderObject
     public typealias LineSegment = VisualAppBase.LineSegmentRenderObject
-   // public typealias Path = VisualAppBase.PathRenderObject
     public typealias Custom = VisualAppBase.CustomRenderObject
     public typealias Text = VisualAppBase.TextRenderObject
 
@@ -30,16 +28,12 @@ open class RenderObject: CustomDebugStringConvertible, TreeNode {
     weak public internal(set) var parent: RenderObject? = nil
 
     open var bus = Bus() {
-
         didSet {
-
             for child in children {
-
                 child.bus = bus
             }
 
             if let remove = removeOnTickMessageHandler {
-
                 remove()
             }
 
@@ -47,116 +41,98 @@ open class RenderObject: CustomDebugStringConvertible, TreeNode {
         }
     }
 
+    private var _context: RenderObjectContext?
+    open var context: RenderObjectContext {
+        get {
+            _context!
+        }
+        set {
+            _context = newValue
+            for child in children {
+                child.context = _context!
+            }
+        }
+    }
+
     open var treePath: TreePath = TreePath([]) {
-
         didSet {
-
             for (index, child) in children.enumerated() {
-
                 child.treePath = treePath/index
             }
         }
     }
 
     open var hasTimedRenderValue: Bool {
-        
         fatalError("hasTimedRenderValue not implemented.")
     }
 
     /// The hash for the objects properties. Excludes children.
     open var individualHash: Int {
-
         fatalError("individualHash not implemented.")
     }
 
     open var debugDescription: String {
-
         fatalError("debugDescription not implemented.")
     }
     
     public internal(set) var destroyed = false
 
     private var nextTickHandlers: [() -> ()] = []
-
     private var removeNextTickListener: (() -> ())?
-
     private var removeOnTickMessageHandler: (() -> ())?
-
     internal private(set) var onTick = EventHandlerManager<Tick>()
 
     public init() {
-
         setupOnTick()
     }
 
     deinit {
-        
         if !destroyed {
-            
             fatalError("deinit executed for RenderObject that has not yet been destroyed \(self)")
         }
      
         if let remove = removeOnTickMessageHandler {
-
             remove()
         }
     }
 
     public func appendChild(_ child: RenderObject) {
-
         child.parent = self
-
         child.bus = bus
-
+        if let context = _context {
+            child.context = context
+        }
         child.treePath = treePath/children.count
-        
         children.append(child)
-        
         bus.up(
-            
             UpwardMessage(sender: self, content: .ChildrenUpdated)
         )
     }
 
     public func removeChildren() {
-        
         for child in children {
-            
             child.destroy()
         }
-        
         children = []
 
         bus.up(
-
             UpwardMessage(sender: self, content: .ChildrenUpdated)
         )
     }
 
     internal func nextTick(_ execute: @escaping () -> ()) {
-
         if removeNextTickListener == nil {
-
             removeNextTickListener = bus.onDownwardMessage { [weak self] in
-
                 switch $0 {
-
                 case .Tick:
-
                     for handler in self?.nextTickHandlers ?? [] {
-
                         handler()
                     }
-
                     self?.nextTickHandlers = []
-
                     if let remove = self?.removeNextTickListener {
-
                         remove()
                     }
-
                 default:
-
                     break
                 }
             }
@@ -166,36 +142,25 @@ open class RenderObject: CustomDebugStringConvertible, TreeNode {
     }
 
     private func setupOnTick() {
-
         removeOnTickMessageHandler = bus.onDownwardMessage { [unowned self] in
-
             switch $0 {
-            
             case let .Tick(tick):
-
                 onTick.invokeHandlers(tick)
-
             default:
-
                 break
             }
         }
     }
     
     public final func destroy() {
-        
         for child in children {
-            
             child.destroy()
         }
-        
         destroySelf()
-        
         destroyed = true
     }
     
     open func destroySelf() {
-        
     }
 
     /**
@@ -203,14 +168,11 @@ open class RenderObject: CustomDebugStringConvertible, TreeNode {
     // TODO: might rename to raycast() --> RaycastResult
     */
     public func objectsAt(point: DPoint2) -> [ObjectAtPointResult] {
-
         fatalError("objectsAt(point:) not implemented for RenderObject \(self)")
     }
 
     public struct ObjectAtPointResult {
-
         public var object: RenderObject
-
         public var transformedPoint: DPoint2
     }
 }
@@ -899,7 +861,7 @@ open class TextRenderObject: RenderObject {
 
     override public func objectsAt(point: DPoint2) -> [ObjectAtPointResult] {
     
-        let size = DSize2(20, 20) // treeContext.getTextBoundsSize(text, fontConfig: fontConfig, maxWidth: maxWidth)
+        let size = context.getTextBoundsSize(text, fontConfig: fontConfig, maxWidth: maxWidth)
 
         if DRect(min: topLeft, size: size).contains(point: point) {
 

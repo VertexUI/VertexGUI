@@ -17,17 +17,6 @@ open class Root: Parent {
         }
     }
     
-    open var renderContext: RenderContext? {
-
-        didSet {
-
-            if let renderContext = renderContext {
-
-                //renderObjectTree.context = renderObjectContext
-            }
-        }
-    }
-
     open var bounds: DRect = DRect(min: DPoint2(0,0), size: DSize2(0,0)) {
 
         didSet {
@@ -35,8 +24,6 @@ open class Root: Parent {
             rootWidget.invalidateRenderState()
 
             layout()
-
-            //updateRenderObjectTree()
         }
     }
 

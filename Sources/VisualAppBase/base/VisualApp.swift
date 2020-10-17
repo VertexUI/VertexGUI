@@ -34,6 +34,11 @@ open class VisualApp<S: System, W: Window, R: Renderer>: App<S, W> {
 
         let renderer = createRenderer(for: window) 
 
+        let renderObjectContext = RenderObjectContext(getTextBoundsSize: {
+            renderer.getTextBoundsSize($0, fontConfig: $1, maxWidth: $2)
+        })
+        renderObjectTree.context = renderObjectContext
+
         let renderObjectTreeRenderer: RenderObjectTreeRenderer
         let applicationContext = ApplicationContext(system: system, window: window)
         if immediate {
