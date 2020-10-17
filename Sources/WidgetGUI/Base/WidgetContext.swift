@@ -5,7 +5,7 @@ public class WidgetContext {
     public internal(set) var window: Window
     private var _getTextBoundsSize: (_ text: String, _ fontConfig: FontConfig, _ maxWidth: Double?) -> DSize2
     private var _requestCursor: (_ cursor: Cursor) -> () -> Void
-    public internal(set) var focus: Widget? {
+    weak public internal(set) var focus: Widget? {
         didSet {
             if let unregister = unregisterOnFocusChanged {
                 unregister()
@@ -53,9 +53,11 @@ public class WidgetContext {
                 focus = nil
             }
         }
-        unregisterOnFocusChanged = focus!.onFocusChanged { [unowned self] _ in
-            if !focus!.focused {
-                focus = nil
+        unregisterOnFocusChanged = focus!.onFocusChanged { [unowned self] focused in
+            if let unwrappedFocus = focus {
+                if unwrappedFocus === widget && !focused {
+                    focus = nil
+                }
             }
         }
         return true

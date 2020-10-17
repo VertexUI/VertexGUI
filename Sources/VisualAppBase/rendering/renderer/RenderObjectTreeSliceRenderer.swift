@@ -153,7 +153,6 @@ public class RenderObjectTreeSliceRenderer {
       backendRenderer.beginPath()
       backendRenderer.lineSegment(from: node.start, to: node.end)
       backendRenderer.stroke()
-      backendRenderer.fill()
 
     case let node as PathRenderObject:
       backendRenderer.beginPath()

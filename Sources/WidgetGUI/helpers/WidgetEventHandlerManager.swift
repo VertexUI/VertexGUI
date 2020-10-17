@@ -1,5 +1,7 @@
 internal protocol AnyWidgetEventHandlerManager {
   var widget: Widget? { get set }
+
+  func removeAllHandlers()
 }
 
 public class WidgetEventHandlerManager<Data>: AnyWidgetEventHandlerManager {

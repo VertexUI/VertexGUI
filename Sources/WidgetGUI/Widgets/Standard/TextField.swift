@@ -6,18 +6,21 @@ public final class TextField: SingleChildWidget, ConfigurableWidget {
     public typealias PartialConfig = TextField.PartialConfig
     public var backgroundConfig: Background.PartialConfig
     public var textInputConfig: TextInput.PartialConfig
+    public var borderColor: Color
 
     public init(
-      backgroundConfig: Background.PartialConfig, textInputConfig: TextInput.PartialConfig
+      backgroundConfig: Background.PartialConfig, textInputConfig: TextInput.PartialConfig, borderColor: Color
     ) {
       self.backgroundConfig = backgroundConfig
       self.textInputConfig = textInputConfig
+      self.borderColor = borderColor
     }
   }
 
   public struct PartialConfig: PartialConfigProtocol {
     public var backgroundConfig = Background.PartialConfig()
     public var textInputConfig = TextInput.PartialConfig()
+    public var borderColor: Color? = nil
     public init() {}
   }
 
@@ -26,7 +29,8 @@ public final class TextField: SingleChildWidget, ConfigurableWidget {
       $0.fill = Color(230, 230, 230, 255)
       $0.shape = .Rectangle
     },
-    textInputConfig: TextInput.PartialConfig())
+    textInputConfig: TextInput.PartialConfig(),
+    borderColor: .Blue)
   public var localPartialConfig: PartialConfig?
   public var localConfig: Config?
   lazy public var config: Config = combineConfigs()
@@ -52,7 +56,7 @@ public final class TextField: SingleChildWidget, ConfigurableWidget {
     ConfigProvider([
       config.backgroundConfig
     ]) { [unowned self] in
-      Border(bottom: 3, color: .Blue) {
+      Border(bottom: 3, color: config.borderColor) {
         Background {
           Clip {
             Padding(top: 8, right: 16, bottom: 8, left: 16) {

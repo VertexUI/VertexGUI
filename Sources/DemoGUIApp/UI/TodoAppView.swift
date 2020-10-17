@@ -49,20 +49,26 @@ public class TodoAppView: SingleChildWidget {
             buildSearch()
           }
 
-          Button {
-            Text("New List")
-          } onClick: { [unowned self] _ in
-            handleNewListClick()
+          Padding(all: 32) {
+            Button {
+              Text("New List")
+            } onClick: { [unowned self] _ in
+              handleNewListClick()
+            }
           }
 
-          ObservingBuilder(store.$state) {
-            Column {
-              // TODO: implement Flex shrink
-              Column.Item(grow: 0, crossAlignment: .Stretch) {
-                ScrollArea {
-                  Padding(all: 0) {
+          Column.Item(crossAlignment: .Stretch) {
+            ObservingBuilder(store.$state) {
+              Column {
+                // TODO: implement Flex shrink
+                Column.Item(grow: 0, crossAlignment: .Stretch) {
+                  ScrollArea {
                     Column(spacing: 24) {
-                      Text("Lists", fontSize: 24, fontWeight: .Bold)
+                      Border(bottom: 1, color: appTheme.primaryColor) {
+                        Padding(top: 16, right: 32, bottom: 16, left: 32) {
+                          Text("Lists", fontSize: 24, fontWeight: .Bold)
+                        }
+                      }
 
                       Column.Item(crossAlignment: .Stretch) {
                         Column {
@@ -121,8 +127,8 @@ public class TodoAppView: SingleChildWidget {
       MouseInteraction {
         Border(bottom: 2, color: appTheme.backgroundColor.darkened(40)) {
           Background {
-            Padding(all: 16) {
-              SimpleRow {
+            Padding(top: 16, right: 32, bottom: 16, left: 32) {
+              Row {
                 Background(fill: list.color) {
                   Padding(all: 8) {
                     MaterialIcon(.formatListBulletedSquare, color: .White)
@@ -131,7 +137,9 @@ public class TodoAppView: SingleChildWidget {
 
                 Space(DSize2(16, 0))
 
-                Text(list.name)
+                Row.Item(crossAlignment: .Center) {
+                  Text(list.name)
+                }
               }
             }
           }
@@ -144,11 +152,11 @@ public class TodoAppView: SingleChildWidget {
               $0.fillTransition = Background.FillTransition(duration: 0.3)
             },
             .Hover: Background.PartialConfig {
-              $0.fill = appTheme.primaryColor
+              $0.fill = list.color
               $0.fillTransition = Background.FillTransition(duration: 0.3)
             },
             .Active: Background.PartialConfig {
-              $0.fill = appTheme.primaryColor.darkened(50)
+              $0.fill = list.color.darkened(50)
               $0.fillTransition = Background.FillTransition(duration: 0.3)
             },
           ]

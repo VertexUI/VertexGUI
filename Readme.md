@@ -20,6 +20,8 @@ Currently nothing is completed, everything is written very loosely, nothing is o
 # Todo
 
 - better focus system, focus contexts
+- instead of wrapping Widgets in special containers for layout properties, might add properties to the Widgets themselves
+- styles, style system, overwriting, inheriting
 
 # Dependencies
 

@@ -15,7 +15,6 @@ public class TodoListView: SingleChildWidget {
 
   public init(_ observableList: ObservableProperty<TodoList>) {
     self._list = observableList
-    print("INIT TODOLISTVIEW")
   }
 
   override public func buildChild() -> Widget {
@@ -23,7 +22,7 @@ public class TodoListView: SingleChildWidget {
       Column(spacing: 16) {
         ObservingBuilder($nameEditMode) {
           if nameEditMode {
-            Row {
+            Row(spacing: 16) {
               TextField(list.name).onTextChanged.chain {
                 updatedNameBuffer = $0
               }.requestFocus()
@@ -66,14 +65,24 @@ public class TodoListView: SingleChildWidget {
       Padding(all: 16) {
         Column(spacing: 24) {
           Row(spacing: 48) {
-            TaskCompletionButton(color: list.color)
+            Row.Item(crossAlignment: .Center) {
+              TaskCompletionButton(color: list.color)
+            }
+
             Row.Item(crossAlignment: .Center) {
               ObservingBuilder($editingItemIndex) {
                 if editingItemIndex == index {
-                  Row {
+                  Row(spacing: 16) {
                     TextField(todo.description).onTextChanged.chain {
                       updatedItemDescription = $0
-                    }.requestFocus()
+                    }.requestFocus().onFocusChanged.chain { focused in
+                      if !focused {
+                        if editingItemIndex == index {
+                          //editingItemIndex = nil
+                          print("WOUÖD SET NIL")
+                        }
+                      }
+                    }
 
                     Button {
                       Text("done")

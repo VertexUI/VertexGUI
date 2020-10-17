@@ -859,9 +859,13 @@ open class Widget: Bounded, Parent, Child {
 
         onAnyRenderStateInvalidated.removeAllHandlers()
         
-        onFocusChanged.removeAllHandlers()
-        
-        onFocusChanged.widget = nil
+        let mirror = Mirror(reflecting: self)
+        for child in mirror.allChildren {
+            if var manager = child.value as? AnyWidgetEventHandlerManager {
+                manager.removeAllHandlers()
+                manager.widget = nil
+            }
+        } 
 
         parent = nil
 
