@@ -88,7 +88,7 @@ public class ScrollArea: SingleChildWidget, GUIMouseEventConsumer {
 
   override public final func performLayout(constraints: BoxConstraints) -> DSize2 {
     var childConstraints = BoxConstraints(
-      minSize: .zero,
+      minSize: constraints.minSize,
       maxSize: .infinity
     )
 
