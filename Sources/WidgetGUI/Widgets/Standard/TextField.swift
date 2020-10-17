@@ -33,7 +33,7 @@ public final class TextField: SingleChildWidget, ConfigurableWidget {
 
   private var initialText: String
 
-  public internal(set) var onTextChanged = EventHandlerManager<String>()
+  public internal(set) var onTextChanged = WidgetEventHandlerManager<String>()
 
   public init(
     _ initialText: String = "", onTextChanged textChangedHandler: ((String) -> Void)? = nil

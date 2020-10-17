@@ -160,7 +160,7 @@ public class TodoAppView: SingleChildWidget {
   }
 
   private func buildActiveView() -> Widget {
-    Background(fill: appTheme.backgroundColor) { [unowned self] in
+    return Background(fill: appTheme.backgroundColor) { [unowned self] in
       Column {
         Space(DSize2(0, 0)).connect(ref: $activeViewTopSpace)
 
@@ -169,9 +169,9 @@ public class TodoAppView: SingleChildWidget {
             ObservingBuilder($mode) {
               switch mode {
               case .SelectedList:
-                ObservingBuilder(store.getters.$selectedList) {
-                  if let selectedList = store.getters.selectedList {
-                    return TodoListView(StaticProperty(selectedList))
+                ObservingBuilder(store.getters.$selectedList.compute { $0?.id }) {
+                  if let _ = store.getters.selectedList {
+                    return TodoListView(store.getters.$selectedList.compute { $0! })
                   } else {
                     return Center {
                       Text("No list selected.", fontSize: 24, fontWeight: .Bold, color: .Grey)

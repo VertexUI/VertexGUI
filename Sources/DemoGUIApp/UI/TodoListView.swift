@@ -3,24 +3,52 @@ import WidgetGUI
 public class TodoListView: SingleChildWidget {
   @Inject private var store: TodoStore
   @ObservableProperty private var list: TodoList
+
   private var expandedItemIndices: Set<Int> = []
+  @MutableProperty
+  private var editMode: Bool = false
+
+  private var updateListNameBuffer: String = ""
 
   public init(_ observableList: ObservableProperty<TodoList>) {
     self._list = observableList
+    print("INIT TODOLISTVIEW")
   }
 
   override public func buildChild() -> Widget {
     ScrollArea(scrollX: .Never) { [unowned self] in
-      ObservingBuilder($list) {
-        Column(spacing: 16) {
-          Text(list.name, fontSize: 32, fontWeight: .Bold, color: list.color)
+      Column(spacing: 16) {
+        ObservingBuilder($editMode) {
+          if editMode {
+            Row {
+              TextField(list.name).onTextChanged.chain {
+                updateListNameBuffer = $0
+              }
 
-          Button {
-            Text("Add Todo")
-          } onClick: { [unowned self] _ in
-            handleAddTodoClick()
+              Button {
+                Text("done")
+              } onClick: { _ in
+                store.dispatch(.UpdateListName(updateListNameBuffer, listId: list.id))
+                editMode = false
+              }
+            }
+          } else {
+            MouseArea {
+              Text(list.name, fontSize: 32, fontWeight: .Bold, color: list.color)
+            } onClick: { _ in
+              print("SET EDIT MODE TRUE")
+              editMode = true
+            }
           }
+        }
 
+        Button {
+          Text("Add Todo")
+        } onClick: { [unowned self] _ in
+          handleAddTodoClick()
+        }
+
+        ObservingBuilder($list) {
           Column {
             list.items.enumerated().map { (index, todo) in
               build(todo: todo, index: index)
@@ -32,7 +60,7 @@ public class TodoListView: SingleChildWidget {
   }
 
   @Flex.ItemBuilder private func build(todo: TodoItem, index: Int) -> [Flex.Item] {
-    MouseArea {
+    MouseArea { [unowned self] in
       Padding(all: 16) {
         Column(spacing: 24) {
           Row(spacing: 48) {

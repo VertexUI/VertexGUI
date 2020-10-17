@@ -27,7 +27,7 @@ public class SearchResultsView: SingleChildWidget {
   }
 
   override public func buildChild() -> Widget {
-    Column(spacing: 48) {
+    Column(spacing: 48) { [unowned self] in
       Text("Results for \"\(query)\"", fontSize: 48, fontWeight: .Bold)
       filteredLists.map { list in
         TodoListView(StaticProperty(list))
