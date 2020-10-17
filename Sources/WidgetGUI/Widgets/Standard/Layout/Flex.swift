@@ -10,13 +10,14 @@ public class Flex: Widget {
   private let spacing: Double
   private let wrap: Bool
 
-  private let items: [Item]
+  private let buildItems: () -> [Item]
+  private var items: [Item] = []
   private var lines: [Line] = []
 
   // TODO: default of crossAlignment = .Stretch slows down computation right now. optimize or change default
   public init(
     orientation: Orientation, crossAlignment: CrossAlignment = .Stretch, spacing: Double = 0,
-    wrap: Bool = false, items: [Item]
+    wrap: Bool = false, @Flex.ItemBuilder items buildItems: @escaping () -> [Item]
   ) {
     self.orientation = orientation
     self.crossAlignment = crossAlignment
@@ -31,18 +32,11 @@ public class Flex: Widget {
       crossAxisVectorIndex = 0
     }
 
-    self.items = items
+    self.buildItems = buildItems
     self.spacing = spacing
     self.wrap = wrap
 
     super.init()
-  }
-
-  public convenience init(
-    orientation: Orientation, spacing: Double = 0, wrap: Bool = false,
-    @Flex.ItemBuilder items buildItems: () -> [Item]
-  ) {
-    self.init(orientation: orientation, spacing: spacing, wrap: wrap, items: buildItems())
   }
 
   /*private func getMainAxisDimension<VectorProtocol: Vector2Protocol>(_ vector: VectorProtocol) -> Double where VectorProtocol.Element == Double {
@@ -56,6 +50,7 @@ public class Flex: Widget {
     }*/
 
   override public func build() {
+    items = buildItems()
     children = items.map {
       $0.content
     }
