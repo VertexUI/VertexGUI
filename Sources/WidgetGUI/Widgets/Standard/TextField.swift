@@ -73,6 +73,11 @@ public final class TextField: SingleChildWidget, ConfigurableWidget {
     }
   }
 
+  override public func getBoxConfig() -> BoxConfig {
+    let childConfig = child.boxConfig
+    return BoxConfig(preferredSize: childConfig.preferredSize, minSize: .zero, maxSize: .infinity)
+  }
+
   @discardableResult
   override public func requestFocus() -> Self {
     // TODO: maybe have a better way to request focus on this?

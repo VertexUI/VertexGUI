@@ -31,6 +31,7 @@ public final class Text: Widget, ConfigurableWidget {
     _ = onDestroy(
       self._text.onChanged { [unowned self] _ in
         // TODO: maybe check whether text size changed and then invalidate??
+        invalidateBoxConfig()
         invalidateLayout()
         invalidateRenderState()
       })
@@ -99,9 +100,11 @@ public final class Text: Widget, ConfigurableWidget {
 
   override public func performLayout(constraints: BoxConstraints) -> DSize2 {
     let boundedText = transformedText.isEmpty ? " " : transformedText
+
     var textBoundsSize = context!.getTextBoundsSize(
       boundedText, fontConfig: config.fontConfig, maxWidth: config.wrap ? constraints.maxWidth : nil
     )
+    
     if transformedText.isEmpty {
       textBoundsSize.width = 0
     }
