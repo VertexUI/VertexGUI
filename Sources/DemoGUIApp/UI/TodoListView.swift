@@ -32,6 +32,7 @@ public class TodoListView: SingleChildWidget {
               } onClick: { _ in
                 store.dispatch(.UpdateListName(updatedNameBuffer, listId: list.id))
                 nameEditMode = false
+                updatedNameBuffer = list.name
               }
             }
           } else {
@@ -79,7 +80,7 @@ public class TodoListView: SingleChildWidget {
                       if !focused {
                         if editingItemIndex == index {
                           //editingItemIndex = nil
-                          print("WOUÖD SET NIL")
+                          print("WOULD SET NIL")
                         }
                       }
                     }
@@ -96,6 +97,7 @@ public class TodoListView: SingleChildWidget {
                     Text(todo.description, wrap: true)
                   } onClick: { _ in
                     editingItemIndex = index
+                    updatedItemDescription = todo.description
                   }
                 }
               }

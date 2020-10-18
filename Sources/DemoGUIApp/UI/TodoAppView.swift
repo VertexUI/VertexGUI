@@ -43,38 +43,40 @@ public class TodoAppView: SingleChildWidget {
 
   private func buildMenu() -> Widget {
     RenderGroup {
-      Border(right: 1, color: appTheme.backgroundColor.darkened(40)) {
-        Column { [unowned self] in
-          Column.Item(crossAlignment: .Stretch) {
-            buildSearch()
-          }
-
-          Padding(all: 32) {
-            Button {
-              Text("New List")
-            } onClick: { [unowned self] _ in
-              handleNewListClick()
+      ConstrainedSize(minSize: DSize2(400, 0), maxSize: DSize2(400, .infinity)) {
+        Border(right: 1, color: appTheme.backgroundColor.darkened(40)) {
+          Column { [unowned self] in
+            Column.Item(crossAlignment: .Stretch) {
+              buildSearch()
             }
-          }
 
-          Column.Item(crossAlignment: .Stretch) {
-            ObservingBuilder(store.$state) {
-              Column {
-                // TODO: implement Flex shrink
-                Column.Item(grow: 0, crossAlignment: .Stretch) {
-                  ScrollArea {
-                    Column(spacing: 24) {
-                      Border(bottom: 1, color: appTheme.primaryColor) {
-                        Padding(top: 16, right: 32, bottom: 16, left: 32) {
-                          Text("Lists", fontSize: 24, fontWeight: .Bold)
+            Padding(all: 32) {
+              Button {
+                Text("New List")
+              } onClick: { [unowned self] _ in
+                handleNewListClick()
+              }
+            }
+
+            Column.Item(crossAlignment: .Stretch) {
+              ObservingBuilder(store.$state) {
+                Column {
+                  // TODO: implement Flex shrink
+                  Column.Item(grow: 0, crossAlignment: .Stretch) {
+                    ScrollArea(scrollX: .Never) {
+                      Column(spacing: 24) {
+                        Border(bottom: 1, color: appTheme.primaryColor) {
+                          Padding(top: 16, right: 32, bottom: 16, left: 32) {
+                            Text("Lists", fontSize: 24, fontWeight: .Bold)
+                          }
                         }
-                      }
 
-                      Column.Item(crossAlignment: .Stretch) {
-                        Column {
-                          todoLists.map { list in
-                            Column.Item(crossAlignment: .Stretch) {
-                              buildMenuListItem(for: list)
+                        Column.Item(crossAlignment: .Stretch) {
+                          Column {
+                            todoLists.map { list in
+                              Column.Item(crossAlignment: .Stretch) {
+                                buildMenuListItem(for: list)
+                              }
                             }
                           }
                         }
@@ -93,27 +95,25 @@ public class TodoAppView: SingleChildWidget {
   private func buildSearch() -> Widget {
     Background(fill: appTheme.backgroundColor) { [unowned self] in
       Padding(all: 32) {
-        ConstrainedSize(minSize: DSize2(400, 0), maxSize: DSize2(400, .infinity)) {
-          Row(spacing: 0) {
-            Row.Item(grow: 1, margins: Margins(right: 24)) {
-              TextField {
-                searchQuery = $0
-              }.onFocusChanged.chain {
-                if $0 {
-                  mode = .Search
-                }
+        Row(spacing: 0) {
+          Row.Item(grow: 1, margins: Margins(right: 24)) {
+            TextField {
+              searchQuery = $0
+            }.onFocusChanged.chain {
+              if $0 {
+                mode = .Search
               }
             }
+          }
 
-            Row.Item(crossAlignment: .Center) {
-              Spaceholder(display: ComputedProperty<Bool>([$mode.any]) { [unowned self] in
-                return mode == .Search
-              }, dimension: .Vertical) {
-                Button {
-                  Text("cancel")
-                } onClick: { _ in
-                  mode = .SelectedList
-                }
+          Row.Item(crossAlignment: .Center) {
+            Spaceholder(display: ComputedProperty<Bool>([$mode.any]) { [unowned self] in
+              return mode == .Search
+            }, dimension: .Vertical) {
+              Button {
+                Text("cancel")
+              } onClick: { _ in
+                mode = .SelectedList
               }
             }
           }
@@ -129,9 +129,11 @@ public class TodoAppView: SingleChildWidget {
           Background {
             Padding(top: 16, right: 32, bottom: 16, left: 32) {
               Row {
-                Background(fill: list.color) {
-                  Padding(all: 8) {
-                    MaterialIcon(.formatListBulletedSquare, color: .White)
+                Row.Item(crossAlignment: .Center) {
+                  Background(fill: list.color) {
+                    Padding(all: 8) {
+                      MaterialIcon(.formatListBulletedSquare, color: .White)
+                    }
                   }
                 }
 
