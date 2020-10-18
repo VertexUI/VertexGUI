@@ -125,6 +125,7 @@ public class Flex: Widget {
       }
 
       var preferredMainAxisSize = contentBoxConfig.preferredSize[mainAxisVectorIndex]
+      var minMainAxisSize = contentBoxConfig.minSize[mainAxisVectorIndex]
 
       var explicitMainAxisSizeValue: Double? = nil
       if let explicitMainAxisSize = item.getMainAxisSize(orientation) {
@@ -161,10 +162,16 @@ public class Flex: Widget {
           contentConstraints.maxSize[crossAxisVectorIndex] =
             constraints.maxSize[crossAxisVectorIndex] - lines.last!.crossAxisStart
             - lines.last!.size[crossAxisVectorIndex]
+
           lines.append(
             Line(
               crossAxisStart: lines.last!.crossAxisStart + lines.last!.size[crossAxisVectorIndex]))
         }
+      } else if !wrap && contentConstraints.maxSize[mainAxisVectorIndex] < minMainAxisSize {
+        contentConstraints.maxSize[mainAxisVectorIndex] = minMainAxisSize
+        // need a second pass now because the current line can now be bigger than the Flex can be
+        // so in second pass whether some items can be shrunk again
+        needSecondsPass = true
       }
 
       if item.grow > 0 {
@@ -186,7 +193,8 @@ public class Flex: Widget {
       mainAxisPosition +=
         content.bounds.size[mainAxisVectorIndex] + item.getMainAxisEndMargin(orientation)
 
-      lines[lines.count - 1].totalGrow += Double(item.grow)
+      lines[lines.count - 1].totalGrow += item.grow
+      lines[lines.count - 1].totalShrink += item.shrink
       lines[lines.count - 1].items.append(item)
       lines[lines.count - 1].size[mainAxisVectorIndex] = mainAxisPosition
 
@@ -210,47 +218,34 @@ public class Flex: Widget {
       }
     }
 
-    // TODO: maybe split up the min size over all lines when there is more than one line
-    if lines.count == 1 {
-      if lines[0].size[crossAxisVectorIndex] < constraints.minSize[crossAxisVectorIndex] {
-        lines[0].size[crossAxisVectorIndex] = constraints.minSize[crossAxisVectorIndex]
-      }
-    }
+    // some lines might overflow the constraints, which is taken care of in the second pass
+    // however limit the overall mainAxisSize to the constraints' size
+    mainAxisSize = min(constraints.maxSize[mainAxisVectorIndex], mainAxisSize)
 
     if needSecondsPass {
       // second pass through all lines
-      for index in 0..<lines.count {
-        var line = lines[index]
-        var mainAxisPosition = 0.0
-
-        let mainAxisGrowSpace = mainAxisSize - line.size[mainAxisVectorIndex]
-
-        if index > 0 {
-          line.crossAxisStart =
-            lines[index - 1].crossAxisStart + lines[index - 1].size[crossAxisVectorIndex]
+      for (lineIndex, var line) in lines.enumerated() {
+        // if the flex got a min size constraints in cross direction,
+        // every line should have that size
+        if line.size[crossAxisVectorIndex] < constraints.minSize[crossAxisVectorIndex] {
+          line.size[crossAxisVectorIndex] = constraints.minSize[crossAxisVectorIndex]
         }
 
-        // pass through items in line, grow rest free space, apply CrossAlignment
-        for item in line.items {
+        // based on the line size, the flex constraints and the items
+        // properties such as grow, shrink, stretch update the constraints for each item
+        var updatedItemConstraints: [BoxConstraints] = []
+        // the indices of the items that need to be layouted with updated constraints again
+        var relayoutItemIndices: Set<Int> = []
+
+        // first update the items in the cross axis direction
+        for (index, item) in line.items.enumerated() {
           let content = item.content
+          
           var newConstraints = BoxConstraints(
             minSize: content.bounds.size,
             maxSize: content.bounds.size
           )
-
           var relayout = false
-
-          mainAxisPosition += item.getMainAxisStartMargin(orientation)
-          content.position[mainAxisVectorIndex] = mainAxisPosition
-
-          if item.grow > 0 {
-            let itemGrow = mainAxisGrowSpace * (item.grow / line.totalGrow)
-            newConstraints.minSize[mainAxisVectorIndex] =
-              content.bounds.size[mainAxisVectorIndex] + itemGrow
-            newConstraints.maxSize[mainAxisVectorIndex] =
-              content.bounds.size[mainAxisVectorIndex] + itemGrow
-            relayout = true
-          }
 
           let crossAlignment = item.crossAlignment ?? self.crossAlignment
 
@@ -272,35 +267,176 @@ public class Flex: Widget {
             break
           }
 
+          updatedItemConstraints.append(newConstraints)
+
           if relayout {
-            // saving and storing the previousConstraints is a hack currently to
-            // let the content change it's size according to the real constraints
-            // it obtained above,
-            // TODO: might introduce a separate property on Widget like: parentConstraints / mainConstraints
-            // which can be used by the widget itself to determine how much it can grow on content change
-            let previousConstraints = content.previousConstraints
-            content.layout(constraints: newConstraints)
-            content.previousConstraints = previousConstraints
+            relayoutItemIndices.insert(index)
+          }
+        }
+
+
+        // now update the items in the main axis direction
+        var mainAxisPosition = 0.0
+        
+        if line.size[mainAxisVectorIndex] > constraints.maxSize[mainAxisVectorIndex] {
+          // if the line is bigger in main axis than the whole flex can be
+
+          var mainAxisShrinkSpace = line.size[mainAxisVectorIndex] - constraints.maxSize[mainAxisVectorIndex]
+          var mainAxisTotalShrink = line.totalShrink
+          // space that needs to be additionally shrunk by items that have not yet hit their box config min size
+          var tmpMainAxisShrinkSpace = 0.0
+          var tmpTotalShrink = 0.0
+
+          var maximallyShrunkItemIndices: Set<Int> = []
+
+          var itemIndex = 0
+          var needAnotherShrinkPass = false
+          var shrinkPassIndex = 0
+          while itemIndex < line.items.count {
+            let item = line.items[itemIndex]
+            let content = item.content
+
+            mainAxisPosition += item.getMainAxisStartMargin(orientation)
+            content.position[mainAxisVectorIndex] = mainAxisPosition
+            
+            var newConstraints = updatedItemConstraints[itemIndex]
+            var relayout = relayoutItemIndices.contains(itemIndex)
+
+            if item.shrink > 0 && !maximallyShrunkItemIndices.contains(itemIndex) {
+              var itemShrinkSpace = mainAxisShrinkSpace * (item.shrink / mainAxisTotalShrink)
+         
+              var shrunkenItemSize = content.bounds.size[mainAxisVectorIndex] - itemShrinkSpace
+
+              var constrainedShrunkenItemSize = max(shrunkenItemSize, content.boxConfig.minSize[mainAxisVectorIndex])
+
+              if constrainedShrunkenItemSize > shrunkenItemSize {
+                tmpMainAxisShrinkSpace += constrainedShrunkenItemSize - shrunkenItemSize
+                maximallyShrunkItemIndices.insert(itemIndex)
+                needAnotherShrinkPass = true
+              } else {
+                tmpTotalShrink += item.shrink
+              }
+
+              newConstraints.minSize[mainAxisVectorIndex] = constrainedShrunkenItemSize
+              newConstraints.maxSize[mainAxisVectorIndex] = constrainedShrunkenItemSize
+
+              relayout = true
+            }
+
+            if relayout {
+              // hack to preserve previous constraints on the child 
+              // (the new constraints are only constraining to one exact size
+              // and do not reflect the real min/max width/height)
+              let previousConstraints = content.previousConstraints
+              content.layout(constraints: newConstraints)
+              content.previousConstraints = previousConstraints
+              relayoutItemIndices.remove(itemIndex)
+            }
+
+            mainAxisPosition +=
+              content.bounds.size[mainAxisVectorIndex] + item.getMainAxisEndMargin(orientation)
+
+            if content.bounds.size[crossAxisVectorIndex] > line.size[crossAxisVectorIndex] {
+              line.size[crossAxisVectorIndex] = content.bounds.size[crossAxisVectorIndex]
+            }
+
+            mainAxisPosition += spacing
+
+            itemIndex += 1
+
+            if itemIndex == line.items.count && shrinkPassIndex < 5 {
+              if needAnotherShrinkPass {
+                itemIndex = 0
+                shrinkPassIndex += 1
+                mainAxisPosition = 0
+                mainAxisShrinkSpace = tmpMainAxisShrinkSpace
+                mainAxisTotalShrink = tmpTotalShrink
+                tmpMainAxisShrinkSpace = 0
+                tmpTotalShrink = 0
+                needAnotherShrinkPass = false
+              }
+            }
+          }
+        } else if (line.size[mainAxisVectorIndex] < mainAxisSize) {
+          // if the line's main axis is shorter than the whole flex, can grow some items
+          
+          let mainAxisGrowSpace = mainAxisSize - line.size[mainAxisVectorIndex]
+
+          if lineIndex > 0 {
+            line.crossAxisStart =
+              lines[lineIndex - 1].crossAxisStart + lines[lineIndex - 1].size[crossAxisVectorIndex]
           }
 
-          mainAxisPosition +=
-            content.bounds.size[mainAxisVectorIndex] + item.getMainAxisEndMargin(orientation)
+          // pass through items in line, grow rest free space, apply CrossAlignment
+          for (index, item) in line.items.enumerated() {
+            let content = item.content
 
+            var newConstraints = updatedItemConstraints[index]
+            
+            var relayout = relayoutItemIndices.contains(index)
+
+            mainAxisPosition += item.getMainAxisStartMargin(orientation)
+            content.position[mainAxisVectorIndex] = mainAxisPosition
+
+            if item.grow > 0 {
+              let itemGrow = mainAxisGrowSpace * (item.grow / line.totalGrow)
+              newConstraints.minSize[mainAxisVectorIndex] =
+                content.bounds.size[mainAxisVectorIndex] + itemGrow
+              newConstraints.maxSize[mainAxisVectorIndex] =
+                content.bounds.size[mainAxisVectorIndex] + itemGrow
+              relayout = true
+            }
+
+            if relayout {
+              // saving and storing the previousConstraints is a hack currently to
+              // let the content change it's size according to the real constraints
+              // it obtained above,
+              // TODO: might introduce a separate property on Widget like: parentConstraints / mainConstraints
+              // which can be used by the widget itself to determine how much it can grow on content change
+              let previousConstraints = content.previousConstraints
+              content.layout(constraints: newConstraints)
+              content.previousConstraints = previousConstraints
+              relayoutItemIndices.remove(index)
+            }
+
+            mainAxisPosition +=
+              content.bounds.size[mainAxisVectorIndex] + item.getMainAxisEndMargin(orientation)
+
+            if content.bounds.size[crossAxisVectorIndex] > line.size[crossAxisVectorIndex] {
+              line.size[crossAxisVectorIndex] = content.bounds.size[crossAxisVectorIndex]
+            }
+
+            if mainAxisPosition > line.size[mainAxisVectorIndex] {
+              line.size[mainAxisVectorIndex] = mainAxisPosition
+            }
+
+            /*if mainAxisPosition > mainAxisSize {
+              mainAxisSize = mainAxisPosition
+            }*/
+
+            mainAxisPosition += spacing
+          }
+        }
+
+        // if the items were not relayouted because no change in the main axis was necessary
+        // (this might for example happen for the longest line)
+        // need to run this, to make sure the cross axis is updated
+        for index in relayoutItemIndices {
+          let content = items[index].content
+          let newConstraints = updatedItemConstraints[index]
+
+          let previousConstraints = content.previousConstraints
+          content.layout(constraints: newConstraints)
+          content.previousConstraints = previousConstraints
+  
           if content.bounds.size[crossAxisVectorIndex] > line.size[crossAxisVectorIndex] {
             line.size[crossAxisVectorIndex] = content.bounds.size[crossAxisVectorIndex]
           }
 
-          if mainAxisPosition > line.size[mainAxisVectorIndex] {
-            line.size[mainAxisVectorIndex] = mainAxisPosition
-          }
-
-          if mainAxisPosition > mainAxisSize {
-            mainAxisSize = mainAxisPosition
-          }
-
-          mainAxisPosition += spacing
+          relayoutItemIndices.remove(index)
         }
-        lines[index] = line
+        
+        lines[lineIndex] = line
       }
     }
 
@@ -316,7 +452,6 @@ public class Flex: Widget {
 }
 
 extension Flex {
-
   public enum Orientation {
     case Row, Column
   }
@@ -330,6 +465,7 @@ extension Flex {
     public var size: DSize2 = .zero
     public var items: [Item] = []
     public var totalGrow: Double = 0
+    public var totalShrink: Double = 0
   }
 
   public struct Item {
@@ -339,6 +475,7 @@ extension Flex {
     }
 
     var grow: Double
+    var shrink: Double
     var crossAlignment: CrossAlignment?
     var content: Widget
     var width: FlexValue?
@@ -347,6 +484,7 @@ extension Flex {
 
     public init(
       grow: Double = 0,
+      shrink: Double = 1,
       crossAlignment: CrossAlignment? = nil,
       width: FlexValue? = nil,
       height: FlexValue? = nil,
@@ -354,6 +492,7 @@ extension Flex {
       @WidgetBuilder content contentBuilder: @escaping () -> Widget
     ) {
       self.grow = grow
+      self.shrink = shrink
       self.crossAlignment = crossAlignment
       self.width = width
       self.height = height
