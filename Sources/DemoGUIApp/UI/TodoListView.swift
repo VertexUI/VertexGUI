@@ -62,67 +62,8 @@ public class TodoListView: SingleChildWidget {
   }
 
   @Flex.ItemBuilder private func build(todo: TodoItem, index: Int) -> [Flex.Item] {
-    MouseArea { [unowned self] in
-      Padding(all: 16) {
-        Column(spacing: 24) {
-          Row(spacing: 48) {
-            Row.Item(crossAlignment: .Center) {
-              TaskCompletionButton(StaticProperty(todo.completed), color: list.color) { _ in
-                var updatedItem = todo
-                updatedItem.completed = !updatedItem.completed
-                store.dispatch(.UpdateTodoItem(updatedItem, index: index, listId: list.id))
-              }
-            }
-
-            Row.Item(crossAlignment: .Center) {
-              ObservingBuilder($editingItemIndex) {
-                if editingItemIndex == index {
-                  Row(spacing: 16) {
-                    TextField(todo.description).onTextChanged.chain {
-                      updatedItemDescription = $0
-                    }.requestFocus().onFocusChanged.chain { focused in
-                      if !focused {
-                        if editingItemIndex == index {
-                          //editingItemIndex = nil
-                          print("WOULD SET NIL")
-                        }
-                      }
-                    }
-
-                    Button {
-                      Text("done")
-                    } onClick: { _ in
-                      store.dispatch(.UpdateTodoDescription(updatedItemDescription, index: index, listId: list.id))
-                      editingItemIndex = nil
-                    }
-                  }
-                } else {
-                  MouseArea {
-                    Text(todo.description, wrap: true)
-                  } onClick: { _ in
-                    editingItemIndex = index
-                    updatedItemDescription = todo.description
-                  }
-                }
-              }
-            }
-          }
-
-          if expandedItemIndices.contains(index) {
-            Row {
-              todo.images.map {
-                ImageView(image: $0)
-              }
-            }
-          }
-        }
-      }
-    } onClick: { [unowned self] _ in
-      if todo.images.count > 0 {
-        withChildInvalidation {
-          expandedItemIndices.insert(index)
-        }
-      }
+    TodoListItemView(todo, editable: true) { [unowned self] in
+      store.dispatch(.UpdateTodoItem($0, index: index, listId: list.id))
     }
 
     Column.Item(crossAlignment: .Stretch) {
