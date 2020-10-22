@@ -581,6 +581,14 @@ extension Flex {
       return items ?? []
     }
 
+    public static func buildEither(first: [Flex.Item]) -> [Flex.Item] {
+      return first
+    }
+
+    public static func buildEither(second: [Flex.Item]) -> [Flex.Item] {
+      return second
+    }
+
     public static func buildBlock(_ items: [Flex.Item]...) -> [Flex.Item] {
       items.flatMap { $0 }
     }
