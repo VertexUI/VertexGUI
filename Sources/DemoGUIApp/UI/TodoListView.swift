@@ -63,7 +63,7 @@ public class TodoListView: SingleChildWidget {
 
   @Flex.ItemBuilder private func build(todo: TodoItem, index: Int) -> [Flex.Item] {
     TodoListItemView(todo, editable: true) { [unowned self] in
-      store.dispatch(.UpdateTodoItem($0, index: index, listId: list.id))
+      store.dispatch(.UpdateTodoItem($0))
     }
 
     Column.Item(crossAlignment: .Stretch) {

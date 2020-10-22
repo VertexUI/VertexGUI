@@ -8,7 +8,7 @@ public class TodoStore: ReduxStore<TodoState, TodoGetters, TodoAction> {
   override public func reduce(_ action: TodoAction) -> TodoState {
     var newState = state
     
-    switch action {
+    outer: switch action {
     case let .SelectList(listId):
       newState.selectedListId = listId
 
@@ -35,23 +35,18 @@ public class TodoStore: ReduxStore<TodoState, TodoGetters, TodoAction> {
         }
       }
 
-    case let .UpdateTodoDescription(newDescription, index, listId):
+    case let .UpdateTodoItem(updatedItem):
       for (listIndex, var list) in newState.lists.enumerated() {
-        if list.id == listId {
-          list.items[index].description = newDescription
-          newState.lists[listIndex] = list
-          break
+        for (itemIndex, var item) in list.items.enumerated() {
+          if item.id == updatedItem.id {
+            list.items[itemIndex] = updatedItem
+            newState.lists[listIndex] = list
+            break outer
+          }
         }
       }
 
-    case let .UpdateTodoItem(updatedItem, index, listId):
-      for (listIndex, var list) in newState.lists.enumerated() {
-        if list.id == listId {
-          list.items[index] = updatedItem
-          newState.lists[listIndex] = list
-          break
-        }
-      }
+      fatalError("tried to update todo item that does not exist")
 
     case let .Search(query):
       newState.searchResult = getSearchResult(query)
@@ -61,7 +56,23 @@ public class TodoStore: ReduxStore<TodoState, TodoGetters, TodoAction> {
   }
 
   private func getSearchResult(_ query: String) -> TodoSearchResult {
-    TodoSearchResult(query: query, filteredLists: [])
+    if let previousSearchResult = state.searchResult {
+
+    }
+
+    var newSearchResult = TodoSearchResult(query: query, filteredLists: [])
+
+    for list in state.lists {
+      var filteredList = FilteredTodoList(baseList: list, filteredIndices: [])
+      for (index, item) in list.items.enumerated() {
+          if item.description.contains(query) {
+            filteredList.filteredIndices.append(index)
+          }
+      }
+      newSearchResult.filteredLists.append(filteredList)
+    }
+
+    return newSearchResult
   }
 }
 
@@ -87,7 +98,6 @@ public enum TodoAction {
   case AddList
   case UpdateListName(_ newName: String, listId: Int)
   case AddItem(listId: Int)
-  case UpdateTodoDescription(_ newDescription: String, index: Int, listId: Int)
-  case UpdateTodoItem(_ updatedItem: TodoItem, index: Int, listId: Int)
+  case UpdateTodoItem(_ updatedItem: TodoItem)
   case Search(_ query: String)
 }
