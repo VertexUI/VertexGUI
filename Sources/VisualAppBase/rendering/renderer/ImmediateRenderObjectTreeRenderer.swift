@@ -47,7 +47,6 @@ public class ImmediateRenderObjectTreeRenderer: RenderObjectTreeRenderer {
 
     public func render(with backendRenderer: Renderer, in bounds: DRect) {
         sliceRenderer.render(RenderObjectTree.TreeSlice(tree: tree, start: TreePath(), end: TreePath()), with: backendRenderer)
-        print("render")
         rerenderNeeded = false
     }
 

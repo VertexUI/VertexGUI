@@ -12,6 +12,8 @@ public class WidgetEventHandlerManager<Data>: AnyWidgetEventHandlerManager {
   private var nextHandlerId = 0
   internal var widget: Widget? = nil
 
+  public init() {}
+
   public func callAsFunction(_ handler: @escaping Handler) -> UnregisterCallback {
     addHandler(handler)
   }

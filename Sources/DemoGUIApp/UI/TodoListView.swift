@@ -67,7 +67,11 @@ public class TodoListView: SingleChildWidget {
         Column(spacing: 24) {
           Row(spacing: 48) {
             Row.Item(crossAlignment: .Center) {
-              TaskCompletionButton(color: list.color)
+              TaskCompletionButton(StaticProperty(todo.completed), color: list.color) { _ in
+                var updatedItem = todo
+                updatedItem.completed = !updatedItem.completed
+                store.dispatch(.UpdateTodoItem(updatedItem, index: index, listId: list.id))
+              }
             }
 
             Row.Item(crossAlignment: .Center) {
