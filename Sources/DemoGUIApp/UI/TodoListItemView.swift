@@ -1,16 +1,20 @@
 import WidgetGUI
 
 public class TodoListItemView: SingleChildWidget {
+  @Inject
+  private var store: TodoStore
   private var item: TodoItem
   private var editable: Bool
+  private var checkable: Bool
   public private(set) var onItemUpdated = WidgetEventHandlerManager<TodoItem>()
   @MutableProperty
   private var editing: Bool = false
   private var updatedDescriptionBuffer: String = ""
 
-  public init(_ item: TodoItem, editable: Bool = false, onItemUpdated onItemUpdatedHandler: ((TodoItem) -> ())? = nil) {
+  public init(_ item: TodoItem, editable: Bool = false, checkable: Bool = true, onItemUpdated onItemUpdatedHandler: ((TodoItem) -> ())? = nil) {
     self.item = item
     self.editable = editable
+    self.checkable = checkable
     if let handler = onItemUpdatedHandler {
       _ = onItemUpdated.addHandler(handler)
     }
@@ -23,9 +27,11 @@ public class TodoListItemView: SingleChildWidget {
           Row(spacing: 48) {
             Row.Item(crossAlignment: .Center) {
               TaskCompletionButton(StaticProperty(item.completed), color: .Yellow) { _ in
-                var updatedItem = item
-                updatedItem.completed = !updatedItem.completed
-                onItemUpdated.invokeHandlers(updatedItem)
+                if checkable {
+                  var updatedItem = item
+                  updatedItem.completed = !updatedItem.completed
+                  store.dispatch(.UpdateTodoItem(updatedItem))
+                }
               }
             }
 
@@ -50,7 +56,7 @@ public class TodoListItemView: SingleChildWidget {
                       var updatedItem = item
                       updatedItem.description = updatedDescriptionBuffer
                       editing = false
-                      onItemUpdated.invokeHandlers(updatedItem)
+                      store.dispatch(.UpdateTodoItem(updatedItem))
                     }
                   }
                 } else {

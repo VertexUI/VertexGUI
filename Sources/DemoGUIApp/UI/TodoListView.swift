@@ -2,8 +2,9 @@ import WidgetGUI
 
 public class TodoListView: SingleChildWidget {
   @Inject private var store: TodoStore
-  @ObservableProperty private var list: TodoList
-
+  @ObservableProperty private var list: TodoListProtocol
+  private var editable: Bool
+  private var checkable: Bool
   private var expandedItemIndices: Set<Int> = []
   @MutableProperty
   private var nameEditMode: Bool = false
@@ -13,8 +14,10 @@ public class TodoListView: SingleChildWidget {
   private var updatedItemDescription: String = ""
 
 
-  public init(_ observableList: ObservableProperty<TodoList>) {
+  public init(_ observableList: ObservableProperty<TodoListProtocol>, editable: Bool = true, checkable: Bool = true) {
     self._list = observableList
+    self.editable = editable
+    self.checkable = checkable
   }
 
   override public func buildChild() -> Widget {
@@ -39,15 +42,17 @@ public class TodoListView: SingleChildWidget {
             MouseArea {
               Text(list.name, fontSize: 32, fontWeight: .Bold, color: list.color)
             } onClick: { _ in
-              nameEditMode = true
+              nameEditMode = editable && true
             }
           }
         }
 
-        Button {
-          Text("Add Todo")
-        } onClick: { [unowned self] _ in
-          handleAddTodoClick()
+        if editable {
+          Button {
+            Text("Add Todo")
+          } onClick: { [unowned self] _ in
+            handleAddTodoClick()
+          }
         }
 
         ObservingBuilder($list) {
@@ -62,9 +67,7 @@ public class TodoListView: SingleChildWidget {
   }
 
   @Flex.ItemBuilder private func build(todo: TodoItem, index: Int) -> [Flex.Item] {
-    TodoListItemView(todo, editable: true) { [unowned self] in
-      store.dispatch(.UpdateTodoItem($0))
-    }
+    TodoListItemView(todo, editable: editable, checkable: checkable)
 
     Column.Item(crossAlignment: .Stretch) {
       Padding(left: 40 + 48) {
