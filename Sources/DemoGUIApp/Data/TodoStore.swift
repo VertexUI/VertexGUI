@@ -5,7 +5,7 @@ public class TodoStore: ReduxStore<TodoState, TodoGetters, TodoAction> {
     super.init(initialState: TodoState())
   }
 
-  override public func reduce(_ action: TodoAction) -> TodoState {
+  override public func reduce(_ action: TodoAction, next: (@escaping () -> ()) -> ()) -> TodoState {
     var newState = state
     
     outer: switch action {
@@ -41,6 +41,9 @@ public class TodoStore: ReduxStore<TodoState, TodoGetters, TodoAction> {
           if item.id == updatedItem.id {
             list.items[itemIndex] = updatedItem
             newState.lists[listIndex] = list
+            next { [unowned self] in
+              dispatch(.UpdateCurrentSearch)
+            }
             break outer
           }
         }
@@ -50,6 +53,15 @@ public class TodoStore: ReduxStore<TodoState, TodoGetters, TodoAction> {
 
     case let .Search(query):
       newState.searchResult = getSearchResult(query)
+
+    case .UpdateCurrentSearch:
+      if let searchResult = state.searchResult {
+        next { [unowned self] in
+          dispatch(.Search(searchResult.query))
+        }
+      } else {
+        fatalError("dispatched UpdateCurrentSearch when there is no current search")
+      }
     }
 
     return newState
@@ -65,9 +77,9 @@ public class TodoStore: ReduxStore<TodoState, TodoGetters, TodoAction> {
     for list in state.lists {
       var filteredList = FilteredTodoList(baseList: list, filteredIndices: [])
       for (index, item) in list.items.enumerated() {
-          if item.description.contains(query) {
-            filteredList.filteredIndices.append(index)
-          }
+        if item.description.lowercased().contains(query.lowercased()) {
+          filteredList.filteredIndices.append(index)
+        }
       }
       newSearchResult.filteredLists.append(filteredList)
     }
@@ -100,4 +112,5 @@ public enum TodoAction {
   case AddItem(listId: Int)
   case UpdateTodoItem(_ updatedItem: TodoItem)
   case Search(_ query: String)
+  case UpdateCurrentSearch
 }

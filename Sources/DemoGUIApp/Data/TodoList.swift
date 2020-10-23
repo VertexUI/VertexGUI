@@ -2,7 +2,14 @@ import Foundation
 import CustomGraphicsMath
 import VisualAppBase
 
-public struct TodoList {
+public protocol TodoListProtocol {
+    var id: Int { get }
+    var name: String { get }
+    var color: Color { get }
+    var items: [TodoItem] { get }
+}
+
+public struct TodoList: TodoListProtocol {
     public var id: Int
     public var name: String
     public var color: Color

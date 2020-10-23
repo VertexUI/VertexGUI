@@ -13,16 +13,22 @@ open class ReduxStore<S, G: ReduxGetters<S>, A> {
     self._state = mutableObservableState
   }
 
-  private func _reduce(_ action: A) -> State {
-    reduce(action)
+  private func _reduce(_ action: A, next: (@escaping () -> ()) -> ()) -> State {
+    reduce(action, next: next)
   }
 
-  open func reduce(_ action: A) -> State {
+  open func reduce(_ action: A, next: (@escaping () -> ()) -> ()) -> State {
     fatalError("reduce(action:) not implemented")
   }
 
   public func dispatch(_ action: A) {
-    self.mutableObservableState.value = _reduce(action)
+    var nextBlocks = [() -> ()]()
+    self.mutableObservableState.value = _reduce(action) {
+      nextBlocks.append($0)
+    }
+    for block in nextBlocks {
+      block()
+    }
   }
 }
 

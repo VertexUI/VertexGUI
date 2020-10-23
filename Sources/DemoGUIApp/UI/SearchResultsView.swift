@@ -13,6 +13,9 @@ public class SearchResultsView: SingleChildWidget {
     _searchResult.compute = { [unowned self] in
       store.state.searchResult
     }
+    _ = onDestroy(_searchResult.onChanged {
+      print("SEARH RESULT CHANGED?", $0)
+    })
   }
 
   override public func buildChild() -> Widget {
@@ -21,9 +24,9 @@ public class SearchResultsView: SingleChildWidget {
 
         if let searchResult = searchResult {
           Text("Results for \"\(searchResult.query)\"", fontSize: 48, fontWeight: .Bold)
-          /*store.state.searchResult.filteredLists.map { list in
-            TodoListView(StaticProperty(list))
-          }*/
+          searchResult.filteredLists.map { list in
+            TodoListView(StaticProperty(list), editable: false, checkable: true)
+          }
         } else {
           Text("No query")
         }

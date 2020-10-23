@@ -6,18 +6,14 @@ public class TodoListItemView: SingleChildWidget {
   private var item: TodoItem
   private var editable: Bool
   private var checkable: Bool
-  public private(set) var onItemUpdated = WidgetEventHandlerManager<TodoItem>()
   @MutableProperty
   private var editing: Bool = false
   private var updatedDescriptionBuffer: String = ""
 
-  public init(_ item: TodoItem, editable: Bool = false, checkable: Bool = true, onItemUpdated onItemUpdatedHandler: ((TodoItem) -> ())? = nil) {
+  public init(_ item: TodoItem, editable: Bool = false, checkable: Bool = true) {
     self.item = item
     self.editable = editable
     self.checkable = checkable
-    if let handler = onItemUpdatedHandler {
-      _ = onItemUpdated.addHandler(handler)
-    }
   }
 
   override public func buildChild() -> Widget {
