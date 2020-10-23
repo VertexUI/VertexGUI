@@ -97,8 +97,8 @@ public class TodoAppView: SingleChildWidget {
       Padding(all: 32) {
         Row(spacing: 0) {
           Row.Item(grow: 1, margins: Margins(right: 24)) {
-            TextField {
-              searchQuery = $0
+            TextField(store.state.searchResult?.query ?? "").onTextChanged.chain {
+              store.dispatch(.Search($0))
             }.onFocusChanged.chain {
               if $0 {
                 mode = .Search
@@ -190,7 +190,7 @@ public class TodoAppView: SingleChildWidget {
                 }
 
               case .Search:
-                SearchResultsView(query: $searchQuery)
+                SearchResultsView()
               }
             }
           }

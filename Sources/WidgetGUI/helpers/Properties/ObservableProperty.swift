@@ -18,17 +18,25 @@ public class ObservableProperty<V>: ObservableProtocol {
     return self
   }
 
-  private var _any: AnyObservableProperty?
+  private weak var _any: AnyObservableProperty?
   public var any: AnyObservableProperty  {
-    if _any == nil {
-      _any = AnyObservableProperty(self)
+    let returnedAny: AnyObservableProperty
+    if let storedAny = _any {
+      returnedAny = storedAny
+    } else {
+      returnedAny = AnyObservableProperty(self)
     }
-    return _any!
+    //_any = returnedAny
+    return returnedAny
   }
 
   public internal(set) var onChanged = EventHandlerManager<Value>()
 
   public init() {}
+
+  deinit {
+    onChanged.removeAllHandlers()
+  }
 
   public func compute<ComputedValue>(_ computeFunction: @escaping (_ parent: Value) -> ComputedValue) -> ComputedProperty<ComputedValue> {
     ComputedProperty<ComputedValue>([any], compute: {
