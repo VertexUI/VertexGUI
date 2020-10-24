@@ -32,6 +32,21 @@ open class Widget: Bounded, Parent, Child {
         }
     }
 
+
+    private var _focusContext: FocusContext?
+    open var focusContext: FocusContext {
+        get {
+            _focusContext!
+        }
+
+        set {
+            _focusContext = newValue
+            for child in children {
+                child.focusContext = newValue
+            }
+        }
+    }
+
     @available(*, deprecated, message: "Constraints is now passed as a parameter to layout(constraints:)")
     open var constraints: BoxConstraints? = nil
 
@@ -345,67 +360,50 @@ open class Widget: Bounded, Parent, Child {
     }
 
     open func addedToParent() {
-
     }
 
     /// Called automatically during mount(). Can be used to fill self.children.
     // TODO: maybe rename to inMount or something like that
     open func build() {
-
     }
 
-    public final func mountChild(_ child: Widget, with context: ReplacementContext? = nil) {
-
+    public func mountChild(_ child: Widget, with context: ReplacementContext? = nil) {
         child.mount(parent: self, with: context)
 
         _ = child.onBoxConfigChanged { [unowned self, unowned child] _ in
-            
             handleChildBoxConfigChanged(child: child)
         }
 
         _ = child.onSizeChanged { [unowned self, unowned child] _ in
             // TODO: maybe need special relayout flag / function
-
             Logger.log("Size of child \(child) of parent \(self) changed.".with(fg: .Blue, style: .Bold), level: .Message, context: .WidgetLayouting)
-
             if layouted && !layouting {
-
                 Logger.log("Performing layout on parent parent.", level: .Message, context: .WidgetLayouting)
-                
                 invalidateLayout()
             }
         }
         
         _ = child.onAnyLayoutInvalidated { [unowned self] in
-            
             onAnyLayoutInvalidated.invokeHandlers($0)
         }
         
         _ = child.onAnyRenderStateInvalidated { [unowned self] in
-
             onAnyRenderStateInvalidated.invokeHandlers($0)
         }
 
         _ = child.onFocusChanged { [unowned self] in
-
             focused = $0
         }
     }
 
     private final func handleChildBoxConfigChanged(child: Widget) {
-
         Logger.log("Box config of child: \(child) of parent \(self) changed.".with(fg: .Blue, style: .Bold), level: .Message, context: .WidgetLayouting)
 
         if layouted && !layouting {
-
             Logger.log("Invalidating own box config.", level: .Message, context: .WidgetLayouting)
-
             let oldBoxConfig = boxConfig
-
             invalidateBoxConfig()
-
             let newBoxConfig = boxConfig
-
             // This prevents unnecessary calls to layout.
             // Only if this Widgets box config isn't changed, trigger a relayout.
             // For all children with changed box configs (also deeply nested ones)
@@ -416,9 +414,7 @@ open class Widget: Bounded, Parent, Child {
             // relayout will be triggered in Root for the whole UI.
             // TODO: maybe there is a better solution
             if oldBoxConfig == newBoxConfig {
-
                 Logger.log("Own box config is changed. Perform layout with previous constraints: \(String(describing: previousConstraints))".with(fg: .Yellow), level: .Message, context: .WidgetLayouting)
-                
                 invalidateLayout()
             }
         }
@@ -426,17 +422,12 @@ open class Widget: Bounded, Parent, Child {
 
     // TODO: this function might be better suited to parent
     public final func replaceChildren(with newChildren: [Widget]) {
-
         let oldChildren = children
-
         var keyedChildren: [String: Widget] = [:]
-
         var checkChildren: [Widget] = oldChildren
 
         while let child = checkChildren.popLast() {
-
             if let key = child.key {
-
                 keyedChildren[key] = child
             }
 
@@ -444,30 +435,22 @@ open class Widget: Bounded, Parent, Child {
         }
 
         children = newChildren
-        
         for i in 0..<children.count {
-
             let newChild = children[i]
-
             let oldChild: Widget? = oldChildren.count > i ? oldChildren[i] : nil
-
             let childContext = ReplacementContext(previousWidget: oldChild, keyedWidgets: keyedChildren)
-
             mountChild(newChild, with: childContext)
         }
 
         for child in oldChildren {
-
             child.destroy()
         }
 
         invalidateLayout()
-
         invalidateRenderState()
     }
 
     open func getBoxConfig() -> BoxConfig {
-
         fatalError("getBoxConfig() not implemented for Widget \(self).")
     }
 
@@ -660,14 +643,10 @@ open class Widget: Bounded, Parent, Child {
         if focusable {
             // TODO: maybe run requestfocus and let the context notify the focused widget of receiving focus?
             if mounted {
-                if context!.requestFocus(self) {
-                    _focused = true
-                }
+                focusContext.requestFocus(self)
             } else {
                 onMounted.once { [unowned self] in
-                    if context!.requestFocus(self) {
-                        _focused = true
-                    }
+                    focusContext.requestFocus(self)
                 }
             }
         }

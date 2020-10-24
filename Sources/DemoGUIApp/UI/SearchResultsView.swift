@@ -13,9 +13,6 @@ public class SearchResultsView: SingleChildWidget {
     _searchResult.compute = { [unowned self] in
       store.state.searchResult
     }
-    _ = onDestroy(_searchResult.onChanged {
-      print("SEARH RESULT CHANGED?", $0)
-    })
   }
 
   override public func buildChild() -> Widget {

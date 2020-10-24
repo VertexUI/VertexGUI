@@ -59,8 +59,6 @@ public class TodoStore: ReduxStore<TodoState, TodoGetters, TodoAction> {
         next { [unowned self] in
           dispatch(.Search(searchResult.query))
         }
-      } else {
-        fatalError("dispatched UpdateCurrentSearch when there is no current search")
       }
     }
 

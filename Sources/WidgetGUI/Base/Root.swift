@@ -3,15 +3,6 @@ import Dispatch
 import VisualAppBase
 
 open class Root: Parent {
-  open var widgetContext: WidgetContext? {
-    didSet {
-      if let widgetContext = widgetContext {
-        widgetContext.debugLayout = debugLayout
-      }
-      rootWidget.context = widgetContext
-    }
-  }
-
   open var bounds: DRect = DRect(min: DPoint2(0, 0), size: DSize2(0, 0)) {
     didSet {
       rootWidget.invalidateRenderState()
@@ -24,6 +15,15 @@ open class Root: Parent {
   }
 
   public var rootWidget: Widget
+  open var widgetContext: WidgetContext? {
+    didSet {
+      if let widgetContext = widgetContext {
+        widgetContext.debugLayout = debugLayout
+      }
+      rootWidget.context = widgetContext
+    }
+  }
+  private var focusContext = FocusContext()
   internal var layoutInvalidatedWidgets: [Widget] = []
   private var rerenderWidgets: [Widget] = []
 
@@ -41,6 +41,7 @@ open class Root: Parent {
   public init(rootWidget contentRootWidget: Widget) {
     rootWidget = contentRootWidget
     rootWidget.mount(parent: self)
+    rootWidget.focusContext = focusContext
 
     _ = rootWidget.onBoxConfigChanged { [unowned self] _ in
       layout()
