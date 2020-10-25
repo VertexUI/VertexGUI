@@ -1,27 +1,38 @@
-# Swift cross-platform GUI application demo
+# Write cross platform GUI applications in Swift
 
-This demo application runs on Linux and MacOS. A Swift version of at least 5.3 is required.
+With [NAME] I'm trying to build a framework for creating complex and stylable GUI applications that support all platforms Swift can be compiled for. For now, only MacOS and Linux are actually implemented and your system needs to be capable of OpenGL 3.3.
 
-[SDL2 needs to be installed](https://wiki.libsdl.org/Installation) on your system. On ubuntu you can install it with `sudo apt-get install libsdl2-dev` and on MacOS `brew install sdl2` (Homebrew required).
+# Demo
 
-To run the app execute `swift run DemoGUIApp` in the root directory of the package.
+To run a demo application, you need a Swift 5.3 toolchain and [SDL2 needs to be installed](https://wiki.libsdl.org/Installation) on your system. On Ubuntu you can install it with `sudo apt-get install libsdl2-dev` and on MacOS `brew install sdl2` (Homebrew required). 
+When the requirements are met, clone this repo and from the root directory of the downloaded repo run:
 
-# Architecture
+  swift run DemoGUIApp
 
-The target "VisualAppBase" defines a generic API for creating windows and rendering graphics primitives. 
-To support a specific configuration of OS and graphics API (OpenGL, DirectX, Metal, ...) an implementation of the generic application API has to be written.
+You should see something similar to this:
 
-The target "VisualAppBaseImplSDL2OpenGL3NanoVG" provides an implementation that uses [SDL2](https://www.libsdl.org/index.php) for cross-platform window and event management, OpenGL 3 as the graphical backend and [NanoVG](https://github.com/memononen/nanovg) as a simplification layer over OpenGL that provides an API similar to the HTML canvas.
+![screenshot of demo app](https://github.com/UnGast/swift-cross-platform-gui-example/tree/master/docs/demo.png)
 
-The target "WidgetGUI" defines a system for describing a graphical user interface, rendering the elements, propagating and handling events. The idea is similar to [Flutter](https://flutter.dev/). Everything is a Widget. They handle layouting, events and output RenderObjects. The RenderObjects form a tree structure which is then rendered with the generic rendering API in an (hopefully at a later point) optimized way.
+# Concepts
 
-Currently nothing is completed, everything is written very loosely, nothing is optimized and there are bugs all over the place.
+- RenderObject: organized as a tree structure
+  - leaf RenderObjects: e.g. Text, Rectangle, Path, describes a specific drawable thing
+  - branch RenderObjects: e.g. Cachable, RenderStyle, Translation, provides information (also meta information) about multiple children
+- Widget: organized as a tree strucure, UI components that handle layout, interaction and output a RenderObject tree, a Widget can ouput actually paintable RenderObjects or wrap it's children's RenderObjects and e.g. Translate them or discard them or whatever
 
-# Todo
+# Current capabilities
 
-- better focus system, focus contexts
-- instead of wrapping Widgets in special containers for layout properties, might add properties to the Widgets themselves
-- styles, style system, overwriting, inheriting
+# Roadmap
+
+- styling, maybe in the form of selector based stylesheets, theming, different themes in different parts of application, switchable themes, styles must be reactive
+
+# Use
+
+I do not recommend using the library for actual applications as of now. There is a lot to be improved and optimized which will lead to api changes breaking your application again and again.
+
+# Contribute
+
+You can contribute e.g. by suggesting features, api styles or implementing demo apps for specific use cases, reporting bugs and creating pull requests for the features you want to see.
 
 # Dependencies
 
