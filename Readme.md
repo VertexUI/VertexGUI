@@ -21,7 +21,7 @@ When the requirements are met, clone this repo and from the root directory of th
 
 You should see something similar to this:
 
-![screenshot of demo app](https://github.com/UnGast/swift-cross-platform-gui-example/tree/master/Docs/demo.png)
+![screenshot of demo app](/Docs/demo.png?raw=true)
 
 # Concepts
 
