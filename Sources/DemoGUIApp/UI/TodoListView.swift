@@ -28,7 +28,11 @@ public class TodoListView: SingleChildWidget {
             Row(spacing: 16) {
               TextField(list.name).onTextChanged.chain {
                 updatedNameBuffer = $0
-              }.requestFocus()
+              }.requestFocus().onFocusChanged.chain { [unowned self] in
+                if !$0 {
+                  nameEditMode = false
+                }
+              }
 
               Button {
                 Text("done")

@@ -23,7 +23,7 @@ open class Root: Parent {
       rootWidget.context = widgetContext
     }
   }
-  private var focusContext = FocusContext()
+  //private var focusContext = FocusContext()
   internal var layoutInvalidatedWidgets: [Widget] = []
   private var rerenderWidgets: [Widget] = []
 
@@ -41,7 +41,7 @@ open class Root: Parent {
   public init(rootWidget contentRootWidget: Widget) {
     rootWidget = contentRootWidget
     rootWidget.mount(parent: self)
-    rootWidget.focusContext = focusContext
+    //rootWidget.focusContext = focusContext
 
     _ = rootWidget.onBoxConfigChanged { [unowned self] _ in
       layout()
@@ -203,7 +203,7 @@ open class Root: Parent {
   }
 
   internal func propagate(_ rawKeyEvent: KeyEvent) {
-    if let focus = widgetContext?.focus as? GUIKeyEventConsumer {
+    if let focus = widgetContext?.focusedWidget as? GUIKeyEventConsumer {
       if let keyDownEvent = rawKeyEvent as? KeyDownEvent {
         focus.consume(
           GUIKeyDownEvent(
@@ -223,7 +223,7 @@ open class Root: Parent {
   }
 
   internal func propagate(_ event: TextEvent) {
-    if let focused = widgetContext?.focus as? GUITextEventConsumer {
+    if let focused = widgetContext?.focusedWidget as? GUITextEventConsumer {
       if let event = event as? TextInputEvent {
         focused.consume(GUITextInputEvent(event.text))
       }

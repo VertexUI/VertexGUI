@@ -5,7 +5,7 @@ public class WidgetContext {
     public internal(set) var window: Window
     private var _getTextBoundsSize: (_ text: String, _ fontConfig: FontConfig, _ maxWidth: Double?) -> DSize2
     private var _requestCursor: (_ cursor: Cursor) -> () -> Void
-    weak public internal(set) var focus: Widget? {
+    weak public internal(set) var focusedWidget: Widget? {
         didSet {
             if let unregister = unregisterOnFocusChanged {
                 unregister()
@@ -42,21 +42,22 @@ public class WidgetContext {
         return _requestCursor(cursor)
     }
 
-    // TODO: maybe need an extra focus context for specific areas / child trees
+    // TODO: maybe need an extra focusedWidget context for specific areas / child trees
     public func requestFocus(_ widget: Widget) -> Bool {
-        if let oldFocus = focus {
-            oldFocus.dropFocus()
+        if let previousFocusedWidget = focusedWidget {
+            previousFocusedWidget.dropFocus()
         }
-        focus = widget
-        unregisterOnFocusDestroyed = focus!.onDestroy { [unowned self] _ in
-            if let unwrappedFocus = focus, unwrappedFocus === widget {
-                focus = nil
+        focusedWidget = widget
+        focusedWidget!.focused = true
+        unregisterOnFocusDestroyed = focusedWidget!.onDestroy { [unowned self] _ in
+            if let focusedWidget = focusedWidget, focusedWidget === widget {
+                self.focusedWidget = nil
             }
         }
-        unregisterOnFocusChanged = focus!.onFocusChanged { [unowned self] focused in
-            if let unwrappedFocus = focus {
-                if unwrappedFocus === widget && !focused {
-                    focus = nil
+        unregisterOnFocusChanged = focusedWidget!.onFocusChanged { [unowned self] focused in
+            if let focusedWidget = focusedWidget {
+                if focusedWidget === widget && !focused {
+                    self.focusedWidget = nil
                 }
             }
         }

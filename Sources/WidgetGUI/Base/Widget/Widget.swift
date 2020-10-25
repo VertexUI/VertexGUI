@@ -33,7 +33,7 @@ open class Widget: Bounded, Parent, Child {
     }
 
 
-    private var _focusContext: FocusContext?
+    /*private var _focusContext: FocusContext?
     open var focusContext: FocusContext {
         get {
             _focusContext!
@@ -45,7 +45,7 @@ open class Widget: Bounded, Parent, Child {
                 child.focusContext = newValue
             }
         }
-    }
+    }*/
 
     @available(*, deprecated, message: "Constraints is now passed as a parameter to layout(constraints:)")
     open var constraints: BoxConstraints? = nil
@@ -391,8 +391,10 @@ open class Widget: Bounded, Parent, Child {
             onAnyRenderStateInvalidated.invokeHandlers($0)
         }
 
-        _ = child.onFocusChanged { [unowned self] in
-            focused = $0
+        _ = child.onFocusChanged { [weak self] in
+            if let self = self {
+                self.focused = $0
+            }
         }
     }
 
@@ -643,10 +645,11 @@ open class Widget: Bounded, Parent, Child {
         if focusable {
             // TODO: maybe run requestfocus and let the context notify the focused widget of receiving focus?
             if mounted {
-                focusContext.requestFocus(self)
+                //focusContext.requestFocus(self)
+                context!.requestFocus(self)
             } else {
                 onMounted.once { [unowned self] in
-                    focusContext.requestFocus(self)
+                    context!.requestFocus(self)
                 }
             }
         }

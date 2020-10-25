@@ -39,10 +39,7 @@ public class TodoListItemView: SingleChildWidget {
                       updatedDescriptionBuffer = $0
                     }.requestFocus().onFocusChanged.chain { focused in
                       if !focused {
-                        //if editingItemIndex == index {
-                          //editingItemIndex = nil
-                          //print("WOULD SET NIL")
-                        //}
+                        editing = false
                       }
                     }
 
