@@ -75,6 +75,11 @@ let package = Package(
             dependencies: ["WidgetGUI", "VisualAppBase", "ColorizeSwift", "VisualAppBaseImplSDL2OpenGL3NanoVG", "Swim"],
             resources: [.copy("Resources")]),
 
+        .target(
+            name: "MinimalDemo",
+            dependencies: ["WidgetGUI", "VisualAppBase", "VisualAppBaseImplSDL2OpenGL3NanoVG"]
+        ),
+
         .testTarget(name: "VisualAppBaseTests", dependencies: ["VisualAppBase"]),
         
         .testTarget(name: "WidgetGUITests", dependencies: ["WidgetGUI"])

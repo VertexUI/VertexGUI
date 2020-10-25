@@ -13,6 +13,38 @@ You should see something similar to this:
 
 ![screenshot of demo app](/Docs/demo.png?raw=true)
 
+# Use
+
+I do not recommend using the library for actual applications as of now. There is a lot to be improved and optimized which will lead to api changes breaking your application again and again.
+
+To get a sense for the syntax, here is a minimal example to create the following GUI:
+
+![screenshot of minimal demo app](/Docs/minimal_demo.png?raw=true)
+
+    import WidgetGUI
+
+    public class MainView: SingleChildWidget {
+      @MutableProperty
+      private var counter = 0
+
+      override public func buildChild() -> Widget {
+        ObservingBuilder($counter) { [unowned self] in
+          Center {
+            Button {
+              Text("Hello world \(counter)")
+            } onClick: { _ in
+              counter += 1
+            }
+          }
+        }
+      }
+    }
+
+Press the button to increment the counter after the "Hello world".
+There is some more wrapper code involved in displaying the GUI. You can find all of it in Sources/MinimalDemo
+
+A more detailed example in the form of a simple task organizer app can be found in Sources/DemoGUIApp
+
 # Why?
 
 Swift is a great language I enjoy to write because it seems like I get work done. It is useful for creating GUIs as shown by it's use on Apple's systems. However Apple's UI frameworks like SwiftUI are proprietary and not available on other platforms. An open-source solution is needed. Additionally there seem to be some interesting opportunities with [Swift for Tensorflow](https://github.com/tensorflow/swift). Maybe deep learning techniques can be implemented into end user applications in an effective way with Swift.
@@ -40,6 +72,7 @@ Swift is a great language I enjoy to write because it seems like I get work done
 
 # Roadmap
 
+- find better names for all the components of the framework
 - platforms:
   - add windows support, SDL2 supports windows, so it should be possible with a managable amount of work
   - work on other platforms after the API is somewhat more stable
@@ -52,10 +85,7 @@ Swift is a great language I enjoy to write because it seems like I get work done
   - support different types of fills for RenderObjects, such as pure color, gradients, images, patterns
   - implement optimized rendering, only render if something changed and only the area that changed, need an algorithm to split the RenderObject tree into different chunks for balance between frequency of rerendering and amount of rerendering that needs to be done
   - find some solution to support environments without OpenGL 3.3, maybe switch the rendering backend to something other than NanoVG in order to get software rendering
-
-# Use
-
-I do not recommend using the library for actual applications as of now. There is a lot to be improved and optimized which will lead to api changes breaking your application again and again.
+  - support loading fonts dynamically from the host system by their specified name
 
 # Contribute
 
