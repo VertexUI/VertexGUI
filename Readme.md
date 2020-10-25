@@ -2,16 +2,6 @@
 
 With [NAME] I'm trying to build a framework for creating complex and stylable GUI applications that support all platforms Swift can be compiled for. For now, only MacOS and Linux are actually implemented and your system needs to be capable of OpenGL 3.3.
 
-# Why?
-
-Swift is a great language I enjoy to write because it seems like I get work done. It is useful for creating GUIs as shown by it's use on Apple's systems. However Apple's UI frameworks like SwiftUI are proprietary and not available on other platforms. An open-source solution is needed. Additionally there seem to be some interesting opportunities with [Swift for Tensorflow](https://github.com/tensorflow/swift). Maybe deep learning techniques can be implemented into end user applications in an effective way with Swift.
-
-# Comparison with other frameworks
-
-- [NAME] provides a declarative way of defining the user interface like SwiftUI, Flutter, Qt's QML and VueJS do
-- in comparison with SwiftUI, [Name]'s components are heavier and provide more flexibility to the developer to create custom components
-- Qt uses two languages, C++ and QML (with Javascript), with Swift this is not necessary since there are ways to represent tree structures that define the UI in a concise way with function builders
-
 # Demo
 
 To run a demo application, you need a Swift 5.3 toolchain and [SDL2 needs to be installed](https://wiki.libsdl.org/Installation) on your system. On Ubuntu you can install it with `sudo apt-get install libsdl2-dev` and on MacOS `brew install sdl2` (Homebrew required). 
@@ -22,6 +12,16 @@ When the requirements are met, clone this repo and from the root directory of th
 You should see something similar to this:
 
 ![screenshot of demo app](/Docs/demo.png?raw=true)
+
+# Why?
+
+Swift is a great language I enjoy to write because it seems like I get work done. It is useful for creating GUIs as shown by it's use on Apple's systems. However Apple's UI frameworks like SwiftUI are proprietary and not available on other platforms. An open-source solution is needed. Additionally there seem to be some interesting opportunities with [Swift for Tensorflow](https://github.com/tensorflow/swift). Maybe deep learning techniques can be implemented into end user applications in an effective way with Swift.
+
+# Comparison with other frameworks
+
+- [NAME] provides a declarative way of defining the user interface like SwiftUI, Flutter, Qt's QML and VueJS do
+- in comparison with SwiftUI, [Name]'s components are heavier and provide more flexibility to the developer to create custom components
+- Qt uses two languages, C++ and QML (with Javascript), with Swift this is not necessary since there are ways to represent tree structures that define the UI in a concise way with function builders
 
 # Concepts
 
