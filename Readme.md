@@ -89,6 +89,7 @@ Additionally there could be some interesting applications of [Swift for Tensorfl
 
 ## Roadmap
 
+- might find a better name for the framework
 - find better names for all the components of the framework
 - platforms:
   - add windows support, SDL2 supports windows, so it should be possible with a managable amount of work
@@ -103,10 +104,11 @@ Additionally there could be some interesting applications of [Swift for Tensorfl
   - implement optimized rendering, only render if something changed and only the area that changed, need an algorithm to split the RenderObject tree into different chunks to balance the frequency of rerendering and the amount of rerendering that needs to be done
   - find some solution to support environments without OpenGL 3.3, maybe switch the rendering backend to something other than NanoVG in order to get software rendering
   - support loading fonts dynamically from the host system by their specified name
+  - replace the custom Vector types with Swift's SIMD types
 
 ## Contribute
 
-You can contribute e.g. by suggesting features, api styles or implementing demo apps for specific use cases, reporting bugs and creating pull requests for the features you want to see.
+You can contribute by suggesting features, implementing demo apps which show where improvements are necessary, reporting bugs and creating pull requests for the features you want to see.
 
 ## Dependencies
 
