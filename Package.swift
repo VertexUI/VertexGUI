@@ -13,7 +13,7 @@ let package = Package(
     products: [
         .library(
             name: "SwiftGUI",
-            targets: ["VisualAppBase", "VisualAppBaseImplSDL2OpenGL3NanoVG", "WidgetGUI", "CustomGraphicsMath"]
+            targets: ["SwiftGUI"]
         ),
 
         .executable(name: "MinimalDemo", targets: ["MinimalDemo"]),
@@ -79,7 +79,12 @@ let package = Package(
 
         .target(
             name: "MinimalDemo",
-            dependencies: ["WidgetGUI", "VisualAppBase", "VisualAppBaseImplSDL2OpenGL3NanoVG"]
+            dependencies: ["SwiftGUI"]
+        ),
+
+        .target(
+            name: "SwiftGUI",
+            dependencies: ["VisualAppBase", "VisualAppBaseImplSDL2OpenGL3NanoVG", "WidgetGUI", "CustomGraphicsMath"]
         ),
 
         .testTarget(name: "VisualAppBaseTests", dependencies: ["VisualAppBase"]),

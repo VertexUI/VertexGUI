@@ -1,6 +1,4 @@
-import VisualAppBaseImplSDL2OpenGL3NanoVG
-import CustomGraphicsMath
-import WidgetGUI
+import SwiftGUI
 
 public class MinmalDemoApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGWindow, SDL2OpenGL3NanoVGRenderer> {
   public init() {

@@ -20,6 +20,8 @@ When the requirements are met, clone this repo and from it's root directory run:
  
     swift run TaskOrganizerDemo
 
+The application might be really slow. This is mainly due to inefficient rendering and will be fixed.
+
 ## Use
 
 I do not recommend using the library for applications that need to be useful for now. There is a lot to be improved and optimized which will lead to API changes breaking your application.
@@ -105,6 +107,7 @@ Additionally there could be some interesting applications of [Swift for Tensorfl
   - find some solution to support environments without OpenGL 3.3, maybe switch the rendering backend to something other than NanoVG in order to get software rendering
   - support loading fonts dynamically from the host system by their specified name
   - replace the custom Vector types with Swift's SIMD types
+  - write tests
 
 ## Contribute
 
