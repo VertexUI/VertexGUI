@@ -16,9 +16,11 @@ let package = Package(
             targets: ["VisualAppBase", "VisualAppBaseImplSDL2OpenGL3NanoVG", "WidgetGUI", "CustomGraphicsMath"]
         ),
 
+        .executable(name: "MinimalDemo", targets: ["MinimalDemo"]),
+
         .executable(
-            name: "DemoGUIApp",
-            targets: ["DemoGUIApp"]),
+            name: "TaskOrganizerDemo",
+            targets: ["TaskOrganizerDemo"]),
     ],
 
     dependencies: [
@@ -71,7 +73,7 @@ let package = Package(
             resources: [.process("Resources")]),*/
        
         .target(
-            name: "DemoGUIApp",
+            name: "TaskOrganizerDemo",
             dependencies: ["WidgetGUI", "VisualAppBase", "ColorizeSwift", "VisualAppBaseImplSDL2OpenGL3NanoVG", "Swim"],
             resources: [.copy("Resources")]),
 
