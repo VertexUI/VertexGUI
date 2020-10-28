@@ -1,17 +1,28 @@
-# Write cross platform GUI applications in Swift
+# [name]
+
+[name] is a Swift framework for writing cross-platform GUI applications.
 
 ## Demo
 
 <img alt="screenshot of demo app" src="Docs/demo.png?raw=true"/>
 
-Currently Linux and MacOS are supported. To run the demo application, you need a Swift 5.3 toolchain and [SDL2 needs to be installed](https://wiki.libsdl.org/Installation) on your system. On Ubuntu you can install it with `sudo apt-get install libsdl2-dev` and on MacOS `brew install sdl2` (Homebrew required). 
-When the requirements are met, clone this repo and from the root directory of the downloaded repo run:
+Currently Linux and MacOS are supported. To run the demo application, you need a [Swift 5.3 toolchain](https://swift.org/download/#releases), [the SDL2 library](https://wiki.libsdl.org/Installation) and OpenGL 3 headers must be present on your system.
+
+Installing SDL2 on Ubuntu:
+
+    sudo apt-get install libsdl2-dev
+
+Installing SDL2 on MacOS ([Homebrew](https://brew.sh/) required):
+
+    brew install sdl2 
+
+When the requirements are met, clone this repo and from it's root directory run:
  
-    swift run DemoGUIApp
+    swift run TaskOrganizerDemo
 
 ## Use
 
-I do not recommend using the library for actual applications as of now. There is a lot to be improved and optimized which will lead to api changes breaking your application again and again.
+I do not recommend using the library for applications that need to be useful for now. There is a lot to be improved and optimized which will lead to API changes breaking your application.
 
 To get a sense for the syntax, here is a minimal example to create the following GUI:
 
@@ -36,35 +47,45 @@ To get a sense for the syntax, here is a minimal example to create the following
       }
     }
 
-Press the button to increment the counter after the "Hello world".
-There is some more wrapper code involved in displaying the GUI. You can find all of it in Sources/MinimalDemo
+When the button is pressed, the counter after "hello world" should be incremented.
+There is some more wrapper code involved in displaying the GUI. You can find all of it in [Sources/MinimalDemo](Sources/MinimalDemo)
 
-A more detailed example in the form of a simple task organizer app can be found in Sources/DemoGUIApp
+A more detailed example in the form of a simple task organizer app can be found in [Sources/TaskOrganizerDemo](Sources/TaskOrganizerDemo)
 
 ## Why?
 
-Swift is a great language I enjoy to write because it seems like I get work done. It is useful for creating GUIs as shown by it's use on Apple's systems. However Apple's UI frameworks like SwiftUI are proprietary and not available on other platforms. An open-source solution is needed. Additionally there seem to be some interesting opportunities with [Swift for Tensorflow](https://github.com/tensorflow/swift). Maybe deep learning techniques can be implemented into end user applications in an effective way with Swift.
+Swift is a great language I enjoy to write because it is quite concise and clear. It seems to facilitate getting work done. The use of libraries like SwiftUI is however limited to Apple platforms. Enabling GUI development on other platforms could be an important addition to the Swift ecosystem.
+
+<br>
+
+Additionally there could be some interesting applications of [Swift for Tensorflow](https://github.com/tensorflow/swift) in the future. Maybe deep learning techniques can be included in applications to automate workflows by learning from the user.
 
 ## Comparison with other frameworks
 
-- [NAME] provides a declarative way of defining the user interface like SwiftUI, Flutter, Qt's QML and VueJS do
-- in comparison with SwiftUI, [Name]'s components are heavier and provide more flexibility to the developer to create custom components
-- Qt uses two languages, C++ and QML (with Javascript), with Swift this is not necessary since there are ways to represent tree structures that define the UI in a concise way with function builders
+- [name] provides a declarative way for defining user interfaces like SwiftUI, Flutter, Qt's QML and VueJS do
+- in comparison with SwiftUI, [names]'s components are heavier and provide more flexibility to the developer to adjust the functionality, style and rendering output
+- Qt uses two languages, C++ and QML (with Javascript), with Swift this is not necessary since there are ways to represent tree structures that define the UI in a concise way with [result builders](https://github.com/apple/swift-evolution/blob/main/proposals/0289-result-builders.md)
 
 ## Concepts
 
-- RenderObject: organized as a tree structure
-  - leaf RenderObjects: e.g. Text, Rectangle, Path, describes a specific drawable thing
-  - branch RenderObjects: e.g. Cachable, RenderStyle, Translation, provides information (also meta information) about multiple children
-  - RenderObjects are rendered by a rendering backend, which can be swapped out to support different environments the application needs to run in, e.g. an OpenGL capable environment and an environment where the rendering needs to be done in software
-- Widget: organized as a tree strucure, UI components that handle layout, interaction and output a RenderObject tree, a Widget can ouput actually paintable RenderObjects or wrap it's children's RenderObjects and e.g. Translate them or discard them or whatever
+- RenderObject
+  - organized as a tree structure
+  - leaf RenderObjects: e.g. Text, Rectangle, Path, describe a specific drawable thing
+  - branch RenderObjects: e.g. Cachable, RenderStyle, Translation, provide information (also meta information) about multiple children
+  - RenderObjects are rendered by a rendering backend, which can be swapped out to support different environments the application needs to run in, for example an OpenGL capable environment and an environment where the rendering needs to be done in software
+- Widget
+  - organized as a tree strucure
+  - are UI components that handle layout, interaction and output a RenderObject tree
+  - a Widget can ouput actually paintable RenderObjects or wrap it's children's RenderObjects and translate them or discard them or whatever
 
 ## Current state
 
 - runs on Linux (tested on Ubuntu 20.04) and MacOS (tested on MacOS 10.15)
 - depends on SDL2 for handling cross platform window management
-- depends on NanoVG for rendering graphics primitives, specifically on the OpenGL 3.3 implementation of NanoVG
+- depends on NanoVG (specifically on the OpenGL 3.3 implementation of NanoVG) for rendering graphics primitives
 - rendering happens when something in the application changes or a transition is active, the application is rendered as a whole which is not optimal for performance
+- animations, transitions are not yet well supported
+- state mangement was only taken as far as necessary to make the organizer demo app possible
 
 ## Roadmap
 
@@ -73,13 +94,13 @@ Swift is a great language I enjoy to write because it seems like I get work done
   - add windows support, SDL2 supports windows, so it should be possible with a managable amount of work
   - work on other platforms after the API is somewhat more stable
 - Widgets:
-  - styling, maybe in the form of selector based stylesheets, theming, different themes in different parts of application, switchable themes, styles must be reactive
+  - styling, maybe in the form of selector based stylesheets, theming, different themes in different parts of application, switchable themes, reactive styles
   - support complex animations, moving widgets around, fading them in and out, find out which kinds of properties need to and can be animated and how to do it in a performant manner
 - rendering:
   - improve the rendering backend api, provide a clear and concise api for rendering graphics primitives by calling functions, similar to HTML canvas and NanoVG
-  - improve the RenderObject api, which types of RenderObjects are necessary
+  - improve the RenderObject api, which types of RenderObjects are necessary?
   - support different types of fills for RenderObjects, such as pure color, gradients, images, patterns
-  - implement optimized rendering, only render if something changed and only the area that changed, need an algorithm to split the RenderObject tree into different chunks for balance between frequency of rerendering and amount of rerendering that needs to be done
+  - implement optimized rendering, only render if something changed and only the area that changed, need an algorithm to split the RenderObject tree into different chunks to balance the frequency of rerendering and the amount of rerendering that needs to be done
   - find some solution to support environments without OpenGL 3.3, maybe switch the rendering backend to something other than NanoVG in order to get software rendering
   - support loading fonts dynamically from the host system by their specified name
 
@@ -93,12 +114,12 @@ This package depends on:
 
 [SDL2](https://www.libsdl.org/index.php)
 
-[Path: github.com/mxcl/Path.swift.git](https://github.com/mxcl/Path.swift.git)
+[NanoVG: github.com/memononen/nanovg](https://github.com/memononen/nanovg)
 
 [GL (OpenGL loader written in Swift): github.com/kelvin13/swift-opengl](https://github.com/kelvin13/swift-opengl)
 
-[Swim (Image handling): github.com/t-ae/swim.git](https://github.com/t-ae/swim.git)
+[Path: github.com/mxcl/Path.swift.git](https://github.com/mxcl/Path.swift.git)
 
-[NanoVG: github.com/memononen/nanovg](https://github.com/memononen/nanovg)
+[Swim (Image handling): github.com/t-ae/swim.git](https://github.com/t-ae/swim.git)
 
 [Cnanovg (NanoVG wrapper in Swift): github.com/UnGast/Cnanovg.git](https://github.com/UnGast/Cnanovg.git)
