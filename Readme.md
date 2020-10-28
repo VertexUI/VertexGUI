@@ -1,6 +1,6 @@
-# [name]
+# SwiftGUI
 
-[name] is a Swift framework for writing cross-platform GUI applications.
+SwiftGUI is a Swift framework for writing cross-platform GUI applications.
 
 ## Demo
 
@@ -28,7 +28,7 @@ To get a sense for the syntax, here is a minimal example to create the following
 
 <img alt="screenshot of minimal demo app" src="Docs/minimal_demo.png?raw=true" width="200"/>
 
-    import WidgetGUI
+    import SwiftGUI
 
     public class MainView: SingleChildWidget {
       @MutableProperty
@@ -62,8 +62,8 @@ Additionally there could be some interesting applications of [Swift for Tensorfl
 
 ## Comparison with other frameworks
 
-- [name] provides a declarative way for defining user interfaces like SwiftUI, Flutter, Qt's QML and VueJS do
-- in comparison with SwiftUI, [names]'s components are heavier and provide more flexibility to the developer to adjust the functionality, style and rendering output
+- SwiftGUI provides a declarative way for defining user interfaces like SwiftUI, Flutter, Qt's QML and VueJS do
+- in comparison with SwiftUI, SwiftGUI's components are heavier and provide more flexibility to the developer to adjust the functionality, style and rendering output
 - Qt uses two languages, C++ and QML (with Javascript), with Swift this is not necessary since there are ways to represent tree structures that define the UI in a concise way with [result builders](https://github.com/apple/swift-evolution/blob/main/proposals/0289-result-builders.md)
 
 ## Concepts

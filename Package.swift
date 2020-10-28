@@ -4,7 +4,7 @@ import PackageDescription
 
 let package = Package(
     
-    name: "GraphicalSwift",
+    name: "SwiftGUI",
     
     platforms: [
         .macOS(.v10_13)
@@ -12,7 +12,7 @@ let package = Package(
     
     products: [
         .library(
-            name: "GraphicalSwift",
+            name: "SwiftGUI",
             targets: ["VisualAppBase", "VisualAppBaseImplSDL2OpenGL3NanoVG", "WidgetGUI", "CustomGraphicsMath"]
         ),
 
