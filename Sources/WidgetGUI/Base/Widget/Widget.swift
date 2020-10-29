@@ -738,7 +738,7 @@ open class Widget: Bounded, Parent, Child {
                 //focusContext.requestFocus(self)
                 context!.requestFocus(self)
             } else {
-                onMounted.once { [unowned self] in
+                _ = onMounted.once { [unowned self] in
                     context!.requestFocus(self)
                 }
             }
@@ -753,15 +753,19 @@ open class Widget: Bounded, Parent, Child {
         }
     }
 
+    var nextTickHandlerRemovers: [() -> ()] = []
+
     /**
     Run something on the next tick.
     */
     public func nextTick(_ block: @escaping (Tick) -> ()) {
         if mounted {
-            _ = context!.onTick.once(block)
+            let remove = context!.onTick.once(block)
+            nextTickHandlerRemovers.append(remove)
         } else {
-            onMounted.once { [unowned self] in
-                _ = context!.onTick.once(block)
+            _ = onMounted.once { [unowned self] in
+                let remove = context!.onTick.once(block)
+                nextTickHandlerRemovers.append(remove)
             }
         }
     }
@@ -775,10 +779,12 @@ open class Widget: Bounded, Parent, Child {
         #if DEBUG
         highlighted = true
         invalidateRenderState()
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [unowned self] in
-            nextTick() { _ in
-                highlighted = false
-                invalidateRenderState()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+            if let self = self {
+                self.nextTick() { _ in
+                    self.highlighted = false
+                    self.invalidateRenderState()
+                }
             }
         }
         #else
@@ -811,6 +817,10 @@ open class Widget: Bounded, Parent, Child {
         onLayoutingFinished.removeAllHandlers()
         onRenderStateInvalidated.removeAllHandlers()
         onAnyRenderStateInvalidated.removeAllHandlers()
+
+        for remove in nextTickHandlerRemovers {
+            remove()
+        }
         
         let mirror = Mirror(reflecting: self)
         for child in mirror.allChildren {

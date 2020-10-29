@@ -15,35 +15,25 @@ public class ImageView: Widget {
     private let onImageResized = EventHandlerManager<Void>()
     
     public init(image: Image) {
-
         self.image = image
-
         super.init()
 
         _ = onDestroy(onSizeChanged { [unowned self] _ in
-
             print("IMAGE BOUNDS CHANGED!".onWhite(), bounds.size)
 
             if resizingImage {
-
-                onImageResized.once {
-
+                _ = onImageResized.once {
                     resizedImage = nil
-
                     invalidateRenderState()
                 }
-
             } else {
-            
                 resizedImage = nil
-
                 invalidateRenderState()
             }
        })
     }
 
     override public func getBoxConfig() -> BoxConfig {
-
         BoxConfig(preferredSize: DSize2(Double(image.width), Double(image.height)))
     }
 

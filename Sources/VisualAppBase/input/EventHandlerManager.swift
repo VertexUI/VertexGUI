@@ -16,6 +16,7 @@ public class EventHandlerManager<Data> {
   }
 
   // TODO: implement function to add to start of handler list
+  @discardableResult
   public func addHandler(_ handler: @escaping Handler) -> UnregisterCallback {
     let currentHandlerId = nextHandlerId
     handlers[currentHandlerId] = handler
@@ -25,20 +26,19 @@ public class EventHandlerManager<Data> {
     }
   }
 
-  public func once(_ handler: @escaping Handler) {
+  public func once(_ handler: @escaping Handler) -> UnregisterCallback {
     var unregisterCallback: UnregisterCallback? = nil
 
     let wrapperHandler = { (data: Data) in
-
       handler(data)
-
       if let unregister = unregisterCallback {
-
         unregister()
       }
     }
 
     unregisterCallback = addHandler(wrapperHandler)
+
+    return unregisterCallback!
   }
 
   public func invokeHandlers(_ getData: @autoclosure () -> Data) {

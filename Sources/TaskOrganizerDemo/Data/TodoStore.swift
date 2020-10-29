@@ -1,3 +1,5 @@
+import Foundation
+import Dispatch
 import WidgetGUI
 
 public class TodoStore: ReduxStore<TodoState, TodoGetters, TodoAction> {
@@ -52,7 +54,17 @@ public class TodoStore: ReduxStore<TodoState, TodoGetters, TodoAction> {
       fatalError("tried to update todo item that does not exist")
 
     case let .Search(query):
-      newState.searchResult = getSearchResult(query)
+      let tmpState = newState
+      DispatchQueue.global().async { [unowned self] in
+        let searchResult = getSearchResult(query, state: tmpState)
+        DispatchQueue.main.async {
+          let startTime = Date.timeIntervalSinceReferenceDate
+          dispatch(.UpdateSearchResult(searchResult))
+        }
+      }
+
+    case let .UpdateSearchResult(searchResult):
+      newState.searchResult = searchResult
 
     case .UpdateCurrentSearch:
       if let searchResult = state.searchResult {
@@ -65,7 +77,7 @@ public class TodoStore: ReduxStore<TodoState, TodoGetters, TodoAction> {
     return newState
   }
 
-  private func getSearchResult(_ query: String) -> TodoSearchResult {
+  private func getSearchResult(_ query: String, state: State) -> TodoSearchResult {
     if let previousSearchResult = state.searchResult {
 
     }
@@ -110,5 +122,6 @@ public enum TodoAction {
   case AddItem(listId: Int)
   case UpdateTodoItem(_ updatedItem: TodoItem)
   case Search(_ query: String)
+  case UpdateSearchResult(_ searchResult: TodoSearchResult)
   case UpdateCurrentSearch
 }

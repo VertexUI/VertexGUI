@@ -85,7 +85,7 @@ public final class TextField: SingleChildWidget, ConfigurableWidget {
     if mounted {
       textInput.requestFocus()
     } else {
-      onMounted.once { [unowned self] in
+      _ = onMounted.once { [unowned self] in
         textInput.requestFocus()
       }
     }
