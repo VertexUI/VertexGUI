@@ -25,39 +25,14 @@ open class App<S: System, W: Window> {
     /// Call setup() and other things necessary to run in the correct DispatchQueue.
     /// Will block until exit is executed.
     open func start() throws {
-    
         #if os(macOS)
-            
         try self.system.mainLoop() // { $0() }
-        
-        dispatchMain()
-        
+        RunLoop.main.run()
         #elseif os(Linux)
-        
-      //  DispatchQueue.main.async {
-        /*do {
-            try self.setup()
-        } catch {
-            print("Error in setup()", error)
-        }*/
-
-            /*guard let system = self.system else {
-                fatalError("system not initialized after setup() call in start()")
-            }*/
-            
-            try self.system.mainLoop() // { (_ block: @escaping () -> ()) in
-                
-            //    DispatchQueue.main.async { block() }
-            //}
-         //   print("Error in system.mainLoop()")
-       // }
-        
+        try self.system.mainLoop() // { (_ block: @escaping () -> ()) in
         dispatchMain()
-        
         #else
-        
         fatalError("Unsupported os.")
-        
         #endif
     }
 }
