@@ -210,6 +210,10 @@ open class Widget: Bounded, Parent, Child {
     }
     public var layoutDebuggingColor = Color.Red
     private let layoutDebuggingTextFontConfig = FontConfig(family: defaultFontFamily, size: 16, weight: .Regular, style: .Normal)
+    // if true, highlight the Widget when bursts of calls to functions such as layout or render occur
+    public var burstHighlightEnabled = true
+    @usableFromInline
+    internal var highlighted = false
 
     public var countCalls: Bool = true
     @usableFromInline lazy internal var callCounter = CallCounter(widget: self)
@@ -508,7 +512,9 @@ open class Widget: Bounded, Parent, Child {
 
         #if (DEBUG)
         if countCalls {
-            callCounter.count(.Layout)
+            if callCounter.count(.Layout) && burstHighlightEnabled {
+                flashHighlight()
+            }
         }
         Logger.log("Layouting Widget: \(self)".with(fg: .Blue, style: .Bold), level: .Message, context: .WidgetLayouting)
         Logger.log("Constraints: \(constraints)", level: .Message, context: .WidgetLayouting)
@@ -566,15 +572,10 @@ open class Widget: Bounded, Parent, Child {
     }
 
     @inlinable public final func invalidateLayout() {
- 
         if layoutInvalid {
-            
             #if DEBUG
-
             Logger.warn("Called invalidateLayout() on a Widget where layout is already invalid: \(self)", context: .WidgetLayouting)
-
             #endif
-
             return
         }
 
@@ -595,6 +596,138 @@ open class Widget: Bounded, Parent, Child {
 
     open func performLayout(constraints: BoxConstraints) -> DSize2 {
         fatalError("performLayout(constraints:) not implemented.")
+    }
+
+    /// Returns the result of renderContent() wrapped in an IdentifiedSubTreeRenderObject
+    @inlinable
+    public final func render() -> RenderObject.IdentifiedSubTree {
+        if renderState.invalid {
+            #if (DEBUG)
+            if countCalls {
+                callCounter.count(.Render)
+            }
+            Logger.log("Render state of Widget: \(self) invalid. Rerendering.".with(fg: .Yellow), level: .Message, context: .WidgetRendering)
+            #endif
+
+            updateRenderState()
+        } else {
+            #if DEBUG
+            Logger.log("Render state of Widget: \(self) valid. Using cached state.".with(fg: .Yellow), level: .Message, context: .WidgetRendering)
+            #endif
+        }
+
+        return renderState.content!
+    }
+
+    @usableFromInline internal final func updateRenderState() {
+        if !renderState.invalid {
+            #if DEBUG
+            Logger.warn("Called updateRenderState on Widget where renderState is not invalid.".with(fg: .White, bg: .Red), context: .WidgetRendering)
+            #endif
+            return
+        }
+
+        let subTree = renderState.content ?? IdentifiedSubTreeRenderObject(id, [])
+
+        if mounted && layouted && !layouting {
+            subTree.removeChildren()
+
+            if let content = renderContent() {
+                subTree.appendChild(content)
+            }
+            
+            #if DEBUG
+            if debugLayout {
+                subTree.appendChild(renderLayoutDebuggingInformation())
+            }
+
+            if highlighted {
+                subTree.appendChild(
+                    RenderStyleRenderObject(fillColor: .Red) {
+                        RectangleRenderObject(globalBounds)
+                    }
+                )
+            }
+            #endif
+        } else {
+            #if DEBUG
+            Logger.warn("Called updateRenderState on Widget that cannot be rendered in it's current state.".with(fg: .White, bg: .Red), context: .WidgetRendering)
+            #endif
+        }
+
+        renderState.content = subTree
+        renderState.invalid = false
+    }
+
+    /// Invoked by render(), if Widget has children, should use child.render() to render them.
+    open func renderContent() -> RenderObject? {
+        .Container {
+            children.map { $0.render() }
+        }
+    }
+
+    private final func renderLayoutDebuggingInformation() -> RenderObject {
+        RenderObject.Container {
+            RenderObject.RenderStyle(strokeWidth: 1, strokeColor: FixedRenderValue(layoutDebuggingColor)) {
+                RenderObject.Rectangle(globalBounds)
+            }
+
+            RenderObject.Text(
+                "\(bounds.size.width) x \(bounds.size.height)",
+                fontConfig: layoutDebuggingTextFontConfig,
+                color: layoutDebuggingColor,
+                topLeft: globalBounds.min)
+        }
+    }
+
+    /// This should trigger a rerender of the widget in the next frame.
+    @inlinable
+    public final func invalidateRenderState(deep: Bool = false) {
+        if renderState.invalid {
+            #if DEBUG
+            Logger.warn("Called invalidateRenderState() when render state is already invalid on Widget: \(self)", context: .WidgetRendering)
+            #endif
+            return
+        }
+
+        if destroyed {
+            #if DEBUG
+            Logger.warn("Tried to call invalidateRenderState() on destroyed widget: \(self)", context: .WidgetRendering)
+            #endif
+            return
+        }
+
+        if !mounted {
+            #if DEBUG
+            Logger.warn("Called invalidateRenderState() on an unmounted Widget: \(self)", context: .WidgetRendering)
+            #endif
+            return
+        }
+
+        _invalidateRenderState(deep: deep)
+    }
+
+    @inlinable
+    public final func invalidateRenderState(deep: Bool = false, after block: () -> ()) {
+        block()
+        invalidateRenderState(deep: deep)
+    }
+
+    @usableFromInline
+    internal final func _invalidateRenderState(deep: Bool) {
+        #if (DEBUG)
+        if countCalls {
+            callCounter.count(.InvalidateRenderState)
+        }
+        #endif
+        if deep {
+            for child in children {
+                child.invalidateRenderState(deep: true)
+            }
+        }
+        renderState.invalid = true
+        onRenderStateInvalidated.invokeHandlers(self)
+        onAnyRenderStateInvalidated.invokeHandlers(self)
     }
 
     @discardableResult
@@ -620,145 +753,37 @@ open class Widget: Bounded, Parent, Child {
         }
     }
 
-    /// Returns the result of renderContent() wrapped in an IdentifiedSubTreeRenderObject
-    @inlinable
-    public final func render() -> RenderObject.IdentifiedSubTree {
-        if renderState.invalid {
-            #if (DEBUG)
-            if countCalls {
-                callCounter.count(.Render)
-            }
-            Logger.log("Render state of Widget: \(self) invalid. Rerendering.".with(fg: .Yellow), level: .Message, context: .WidgetRendering)
-            #endif
-
-            updateRenderState()
+    /**
+    Run something on the next tick.
+    */
+    public func nextTick(_ block: @escaping (Tick) -> ()) {
+        if mounted {
+            _ = context!.onTick.once(block)
         } else {
-            #if DEBUG
-            Logger.log("Render state of Widget: \(self) valid. Using cached state.".with(fg: .Yellow), level: .Message, context: .WidgetRendering)
-            #endif
-        }
-
-        return renderState.content!
-    }
-
-    @usableFromInline internal final func updateRenderState() {
-
-        if !renderState.invalid {
-
-            #if DEBUG
-
-            Logger.warn("Called updateRenderState on Widget where renderState is not invalid.".with(fg: .White, bg: .Red), context: .WidgetRendering)
-
-            #endif
-
-            return
-        }
-
-        let subTree = renderState.content ?? IdentifiedSubTreeRenderObject(id, [])
-
-        if mounted && layouted && !layouting {
-
-            subTree.removeChildren()
-
-            if let content = renderContent() {
-
-                subTree.appendChild(content)
+            onMounted.once { [unowned self] in
+                _ = context!.onTick.once(block)
             }
+        }
+    }
 
-            if debugLayout {
-
-                subTree.appendChild(renderLayoutDebuggingInformation())
+    /**
+    Can be used for debugging purposes to highlight a specific Widget, helping to identify it on the screen.
+    Only available in debug builds.
+    */
+    @usableFromInline
+    internal func flashHighlight() {
+        #if DEBUG
+        highlighted = true
+        invalidateRenderState()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [unowned self] in
+            nextTick() { _ in
+                highlighted = false
+                invalidateRenderState()
             }
-
-        } else {
-
-            #if DEBUG
-            
-            Logger.warn("Called updateRenderState on Widget that cannot be rendered in it's current state.".with(fg: .White, bg: .Red), context: .WidgetRendering)
-
-            #endif            
         }
-
-        renderState.content = subTree
-
-        renderState.invalid = false
-    }
-
-    /// Invoked by render(), if Widget has children, should use child.render() to render them.
-    open func renderContent() -> RenderObject? {
-        
-        .Container {
-
-            children.map { $0.render() }
-        }
-    }
-
-    private final func renderLayoutDebuggingInformation() -> RenderObject {
-
-        RenderObject.Container {
-
-            RenderObject.RenderStyle(strokeWidth: 1, strokeColor: FixedRenderValue(layoutDebuggingColor)) {
-
-                RenderObject.Rectangle(globalBounds)
-            }
-
-            RenderObject.Text(
-
-                "\(bounds.size.width) x \(bounds.size.height)",
-
-                fontConfig: layoutDebuggingTextFontConfig,
-
-                color: layoutDebuggingColor,
-
-                topLeft: globalBounds.min)
-        }
-    }
-
-    /// This should trigger a rerender of the widget in the next frame.
-    @inlinable public final func invalidateRenderState(deep: Bool = false) {
-        if renderState.invalid {
-            #if DEBUG
-            Logger.warn("Called invalidateRenderState() when render state is already invalid on Widget: \(self)", context: .WidgetRendering)
-            #endif
-            return
-        }
-
-        if destroyed {
-            #if DEBUG
-            Logger.warn("Tried to call invalidateRenderState() on destroyed widget: \(self)", context: .WidgetRendering)
-            #endif
-            return
-        }
-
-        if !mounted {
-            #if DEBUG
-            Logger.warn("Called invalidateRenderState() on an unmounted Widget: \(self)", context: .WidgetRendering)
-            #endif
-            return
-        }
-
-        _invalidateRenderState(deep: deep)
-    }
-
-    @inlinable public final func invalidateRenderState(deep: Bool = false, after block: () -> ()) {
-        block()
-        invalidateRenderState(deep: deep)
-    }
-
-    @usableFromInline internal final func _invalidateRenderState(deep: Bool) {
-        #if (DEBUG)
-        if countCalls {
-            callCounter.count(.InvalidateRenderState)
-        }
+        #else
+        fatalError("flashHighlight() is only available in debug builds")
         #endif
-        if deep {
-            for child in children {
-                child.invalidateRenderState(deep: true)
-            }
-        }
-        renderState.invalid = true
-        onRenderStateInvalidated.invokeHandlers(self)
-        onAnyRenderStateInvalidated.invokeHandlers(self)
     }
 
     // TODO: how to name this?

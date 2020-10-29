@@ -30,6 +30,8 @@ open class App<S: System, W: Window> {
             
         try self.system.mainLoop() // { $0() }
         
+        dispatchMain()
+        
         #elseif os(Linux)
         
       //  DispatchQueue.main.async {
@@ -50,7 +52,7 @@ open class App<S: System, W: Window> {
          //   print("Error in system.mainLoop()")
        // }
         
-       // dispatchMain()
+        dispatchMain()
         
         #else
         

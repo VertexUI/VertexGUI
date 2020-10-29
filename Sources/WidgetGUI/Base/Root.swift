@@ -84,6 +84,8 @@ open class Root: Parent {
   }
 
   open func tick(_ tick: Tick) {
+    widgetContext!.onTick.invokeHandlers(tick)
+
     // TODO: might do boxConfig recalculations here also
     for widget in layoutInvalidatedWidgets {
       widget.layout(constraints: widget.previousConstraints!)

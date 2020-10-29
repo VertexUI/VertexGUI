@@ -23,6 +23,8 @@ public class WidgetContext {
         _getApplicationTime()
     }
 
+    public private(set) var onTick = EventHandlerManager<Tick>()
+
     public init(
         window: Window,
         getTextBoundsSize: @escaping (_ text: String, _ fontConfig: FontConfig, _ maxWidth: Double?) -> DSize2,
