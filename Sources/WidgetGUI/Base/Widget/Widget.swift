@@ -472,69 +472,47 @@ open class Widget: Bounded, Parent, Child {
     }
 
     @inlinable public final func layout(constraints: BoxConstraints) {
-
         #if DEBUG
-        
         Logger.log("Attempting layout".with(fg: .Yellow), "on Widget: \(self).", level: .Message, context: .WidgetLayouting)
-
         #endif
 
         if !layoutInvalid, let previousConstraints = previousConstraints, constraints == previousConstraints {
-            
             #if DEBUG
-
             Logger.log("Constraints equal pervious constraints and layout is not invalid.", "Not performing layout.".with(fg: .Yellow), level: .Message, context: .WidgetLayouting)
-            
             #endif
-
             return
         }
         
         if !layoutable {
-
             #if DEBUG
-            
             Logger.warn("Called layout() on Widget that is not layoutable: \(self)", context: .WidgetLayouting)
-
             #endif
-
             return
         }
 
         if layouting {
-
             #if DEBUG
-            
             Logger.warn("Called layout() on Widget while that Widget was still layouting: \(self)", context: .WidgetLayouting)
-
             #endif
-
             return
         }
 
         _layout(constraints: constraints)
     }
 
-    @usableFromInline internal final func _layout(constraints: BoxConstraints) {
-
+    @usableFromInline
+    internal final func _layout(constraints: BoxConstraints) {
         if constraints.minWidth.isInfinite || constraints.minHeight.isInfinite {
-
             fatalError("Widget received constraints that contain infinite value in min size: \(self)")
         }
 
         #if (DEBUG)
-
         if countCalls {
-
             callCounter.count(.Layout)
         }
-
         Logger.log("Layouting Widget: \(self)".with(fg: .Blue, style: .Bold), level: .Message, context: .WidgetLayouting)
-
         Logger.log("Constraints: \(constraints)", level: .Message, context: .WidgetLayouting)
-        
         Logger.log("Current size: \(bounds.size)", level: .Message, context: .WidgetLayouting)
-
         #endif
 
         layouting = true
@@ -542,66 +520,45 @@ open class Widget: Bounded, Parent, Child {
         onLayoutingStarted.invokeHandlers(constraints)
 
         let previousSize = size
-
         let isFirstRound = !layouted
-
         let startTimestamp = Date.timeIntervalSinceReferenceDate
-
         let newUnconstrainedSize = performLayout(constraints: constraints)
-
         let layoutDuration = Date.timeIntervalSinceReferenceDate - startTimestamp
 
         #if DEBUG
-
         Logger.log("Layout of Widget: \(self) took time:", (layoutDuration.description + " s").with(style: .Bold), level: .Message, context: .WidgetLayouting)
-
         Logger.log("Layout of Widget: \(self) produced result.".with(fg: .Green, style: .Bold), level: .Message, context: .WidgetLayouting)
-
         Logger.log("New self size: \(newUnconstrainedSize)", level: .Message, context: .WidgetLayouting)
-
         #endif
 
         let constrainedSize = constraints.constrain(newUnconstrainedSize)
 
         #if DEBUG
-
         if newUnconstrainedSize != constrainedSize {
-
             Logger.warn("New size does not respect constraints. Size: \(newUnconstrainedSize), Constraints: \(constraints)", context: .WidgetLayouting)
         }
-
         #endif
 
         let boxConfigConstrainedSize = BoxConstraints(
-
             minSize: boxConfig.minSize,
-
             maxSize: boxConfig.maxSize)
-
                 .constrain(newUnconstrainedSize)
         
         if newUnconstrainedSize != boxConfigConstrainedSize {
-
             Logger.warn("New size does not respect own box config. Size: \(newUnconstrainedSize), BoxConfig: \(boxConfig)")
         }
 
         size = constrainedSize
-
         layouting = false
-
         layouted = true
-
         layoutInvalid = false
 
         // TODO: where to call this? after setting bounds or before?
         onLayoutingFinished.invokeHandlers(bounds.size)
 
         if previousSize != size && !isFirstRound {
-
             Logger.log("Size changed and is not first round.".with(fg: .Yellow), level: .Message, context: .WidgetLayouting)
-
             onSizeChanged.invokeHandlers(size)
-
             invalidateRenderState()
         }
 
@@ -813,32 +770,21 @@ open class Widget: Bounded, Parent, Child {
         mounted = false
 
         if var reference = reference {
-
             reference.referenced = nil
         }
 
         // TODO: maybe automatically clear all EventHandlerManagers / WidgetEventHandlerManagers by using reflection?
 
         onParentChanged.removeAllHandlers()
-
         onAnyParentChanged.removeAllHandlers()
-
         onMounted.removeAllHandlers()
-
         onBoxConfigChanged.removeAllHandlers()
-                
         onSizeChanged.removeAllHandlers()
-        
         onLayoutInvalidated.removeAllHandlers()
-        
         onAnyLayoutInvalidated.removeAllHandlers()
-        
         onLayoutingStarted.removeAllHandlers()
-
         onLayoutingFinished.removeAllHandlers()
-
         onRenderStateInvalidated.removeAllHandlers()
-
         onAnyRenderStateInvalidated.removeAllHandlers()
         
         let mirror = Mirror(reflecting: self)
@@ -850,13 +796,9 @@ open class Widget: Bounded, Parent, Child {
         } 
 
         parent = nil
-
         destroySelf()
-
         onDestroy.invokeHandlers(Void())
-
         destroyed = true
-
         Logger.log("Destroyed Widget: \(self), \(id)", level: .Message, context: .Default)
     }
 

@@ -53,6 +53,7 @@ public class RenderObjectTreeSliceRenderer {
     }
   }
 
+  @inline(__always)
   private func renderOpen(node: RenderObject, with backendRenderer: Renderer) {
     let timestamp = context.system.currentTime
 
@@ -110,6 +111,7 @@ public class RenderObjectTreeSliceRenderer {
     }
   }
 
+  @inline(__always)
   private func renderClose(node: RenderObject, with backendRenderer: Renderer) {
     switch node {
     case let node as RenderStyleRenderObject:
@@ -125,6 +127,7 @@ public class RenderObjectTreeSliceRenderer {
     }
   }
 
+  @inline(__always)
   private func renderLeaf(node: RenderObject, with backendRenderer: Renderer) {
     switch node {
     case let node as RectangleRenderObject:

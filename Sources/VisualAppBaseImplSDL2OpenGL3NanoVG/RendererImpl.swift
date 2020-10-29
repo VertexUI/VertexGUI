@@ -7,41 +7,25 @@ import VisualAppBase
 import Path
 import Foundation
 
-// TODO: maybe put into another file
-/*public protocol SDL2OpenGL3NanoVGVirtualScreen: VirtualScreen {
-    var framebuffer: GLMap.UInt { get set }
-    var texture: GLMap.UInt { get set }
-}*/
-
 public class SDL2OpenGL3NanoVGVirtualScreen: VirtualScreen {
-
     public var size: DSize2
-
     public var framebuffer = GLMap.UInt()
-
     public var texture = GLMap.UInt()
-
     public var depthStencilBuffer = GLMap.UInt()
 
     public init(_ size: DSize2) {
-
         self.size = size
     }
 
     deinit {
-
         delete()
     }
 
     public func delete() {
-       
         // TODO: handle delete in renderer / attach to renderer and track whether should be deleted
         print("Warning: delete function of screen called and due to current implementation called outside of parent renderer.")
-        
         glDeleteFramebuffers(1, [framebuffer])
-       
         glDeleteTextures(1, [texture])
-       
         glDeleteRenderbuffers(1, [depthStencilBuffer])
     }
 }
@@ -65,10 +49,10 @@ open class SDL2OpenGL3NanoVGRenderer: Renderer {
     // TODO: maybe this has to be put into System? or does NanoVG load it into the current gl state???
     //public typealias VirtualScreen = SDL2OpenGL3NanoVGVirtualScreen
     public internal(set) var virtualScreenStack = [VirtualScreen]()
-
-    private var fontIds = [String: Int32]()
-
-    private var window: SDL2OpenGL3NanoVGWindow
+    @usableFromInline
+    internal var fontIds = [String: Int32]()
+    @usableFromInline
+    internal var window: SDL2OpenGL3NanoVGWindow
     
     private var compositionShader = Shader(
         vertex: try! String(contentsOf: Bundle.module.url(forResource: "compositionVertex", withExtension: "glsl")!),// Path.cwd/"Sources/VisualAppBaseImplSDL2OpenGL3NanoVG/shaders/compositionVertex.glsl"),
@@ -83,7 +67,6 @@ open class SDL2OpenGL3NanoVGRenderer: Renderer {
 
     deinit {
         // TODO: implement full deinit
-
     }
 
     public func setup() {
@@ -120,7 +103,8 @@ open class SDL2OpenGL3NanoVGRenderer: Renderer {
         }
     }
 
-    private func loadFont(_ path: String) -> Bool {
+    @usableFromInline
+    internal func loadFont(_ path: String) -> Bool {
         let id = nvgCreateFont(window.nvg, path, path)
         if id > -1 {
             fontIds[path] = id
@@ -265,62 +249,57 @@ open class SDL2OpenGL3NanoVGRenderer: Renderer {
         glBindVertexArray(0)
     }
 
+    @inlinable
     open func beginPath() {
-
         nvgBeginPath(window.nvg)
     }
 
+    @inlinable
     open func move(to point: DPoint2) {
-
         nvgMoveTo(window.nvg, Float(point.x), Float(point.y))
     }
-
+    
+    @inlinable
     open func line(to point: DPoint2) {
-
         nvgLineTo(window.nvg, Float(point.x), Float(point.y))
     }
 
+    @inlinable
     open func arc(center: DPoint2, radius: Double, startAngle: Double, endAngle: Double, direction: VisualAppBase.Path.Segment.ArcDirection) {
-
         let nvgDirection = direction == .Clockwise ? Int32(NVG_CW.rawValue) : Int32(NVG_CCW.rawValue)
-
         nvgArc(window.nvg, Float(center.x), Float(center.y), Float(radius), Float(startAngle), Float(endAngle), nvgDirection)
     }
 
+    @inlinable
     open func pathSegment(_ segment: VisualAppBase.Path.Segment) {
-
         switch segment {
-
         case let .Start(position):
-
             move(to: position)
-
         case let .Line(position):
-
             line(to: position)
-
         case let .Arc(center, radius, startAngle, endAngle, direction):
-
             arc(center: center, radius: radius, startAngle: startAngle, endAngle: endAngle, direction: direction)
         }
     }
 
+    @inlinable
     open func path(_ path: VisualAppBase.Path) {
-
         for segment in path.segments {
-
             pathSegment(segment)
         }
     }
 
+    @inlinable
     open func closePath() {
         nvgClosePath(window.nvg)
     }
 
+    @inlinable
     open func fillColor(_ color: Color) {
         nvgFillColor(window.nvg, color.toNVG())
     }
 
+    @inlinable
     open func fillImage(_ image: Image, position: DVec2) -> LoadedFill {
         var data = image.getData()
 
@@ -337,6 +316,7 @@ open class SDL2OpenGL3NanoVGRenderer: Renderer {
         }
     }
 
+    @inlinable
     open func applyFill(_ fill: LoadedFill) {
         guard let unwrappedFill = fill as? SpecificLoadedFill else {
             fatalError("Tried to apply a LoadedFill of a type that is not supported by the renderer: \(fill).")
@@ -345,22 +325,27 @@ open class SDL2OpenGL3NanoVGRenderer: Renderer {
         nvgFillPaint(window.nvg, unwrappedFill.paint)
     }
 
+    @inlinable
     open func fill() {
         nvgFill(window.nvg)
     }
 
+    @inlinable
     open func strokeWidth(_ width: Double) {
         nvgStrokeWidth(window.nvg, Float(width))
     }
 
+    @inlinable
     open func strokeColor(_ color: Color) {
         nvgStrokeColor(window.nvg, color.toNVG())
     }
 
+    @inlinable
     open func stroke() {
         nvgStroke(window.nvg)
     }
 
+    @inlinable
     open func rectangle(_ rect: DRect) {
         //nvgBeginPath(window.nvg)
         nvgRect(
@@ -375,6 +360,7 @@ open class SDL2OpenGL3NanoVGRenderer: Renderer {
         //}
     }
 
+    @inlinable
     open func roundedRectangle(_ rect: DRect, cornerRadii: CornerRadii) {
         nvgRoundedRectVarying(
             window.nvg,
@@ -388,21 +374,25 @@ open class SDL2OpenGL3NanoVGRenderer: Renderer {
             Float(cornerRadii.bottomRight))
     }
 
+    @inlinable
     open func lineSegment(from: DPoint2, to: DPoint2) {
         nvgBeginPath(window.nvg)
         nvgMoveTo(window.nvg, Float(from.x), Float(from.y))
         nvgLineTo(window.nvg, Float(to.x), Float(to.y))
     }
 
+    @inlinable
     open func circle(center: DPoint2, radius: Double) {
         nvgCircle(window.nvg, Float(center.x), Float(center.y), Float(radius))
     }
 
+    @inlinable
     public func ellipse(_ bounds: DRect) {
         nvgEllipse(window.nvg, Float(bounds.center.x), Float(bounds.center.y), Float(bounds.size.x / 2), Float(bounds.size.y / 2))
     }
 
-    private func applyFontConfig(_ config: FontConfig) {
+    @usableFromInline
+    internal func applyFontConfig(_ config: FontConfig) {
         if fontIds[config.face.path] == nil {
             _ = loadFont(config.face.path)
         }
@@ -411,62 +401,60 @@ open class SDL2OpenGL3NanoVGRenderer: Renderer {
         nvgTextAlign(window.nvg, Int32(NVG_ALIGN_LEFT.rawValue | NVG_ALIGN_TOP.rawValue))
     }
 
+    @inlinable
     open func text(_ text: String, fontConfig: FontConfig, color: Color, topLeft: DPoint2, maxWidth: Double? = nil) {
-
         nvgBeginPath(window.nvg)
-
         applyFontConfig(fontConfig)
-
         nvgFillColor(window.nvg, color.toNVG())
 
         if let maxWidth = maxWidth {
-
             nvgTextBox(window.nvg, Float(topLeft.x), Float(topLeft.y), Float(maxWidth), text, nil)
-
         } else {
-
             nvgText(window.nvg, Float(topLeft.x), Float(topLeft.y), text, nil)
         }
     }
 
+    @inlinable
     open func getTextBoundsSize(_ text: String, fontConfig: FontConfig, maxWidth: Double? = nil) -> DSize2 {
-
         applyFontConfig(fontConfig)
 
         var bounds = [Float](repeating: 0, count: 4)
 
         if let maxWidth = maxWidth {
-
             nvgTextBoxBounds(window.nvg, 0, 0, Float(maxWidth), text, nil, &bounds)
-
         } else {
-
             nvgTextBounds(window.nvg, 0, 0, text, nil, &bounds)
         }
 
         return DSize2(Double(bounds[2]), Double(bounds[3]))
     }
- 
+    
+    @inlinable
     open func globalOpacity(_ opacity: Float) {
         nvgGlobalAlpha(window.nvg, opacity)
     }
 
+    @inlinable
     open func clipArea(bounds: DRect) {
         nvgScissor(window.nvg, Float(bounds.min.x), Float(bounds.min.y), Float(bounds.size.width), Float(bounds.size.height))
     }
 
+    @inlinable
     open func releaseClipArea() {
         nvgResetScissor(window.nvg)
     }
 
+    @inlinable
     open func scale(_ amount: DVec2) {
         nvgScale(window.nvg, Float(amount.x), Float(amount.y))
     }
 
+    @inlinable
     open func translate(_ translation: DVec2) {
         nvgTranslate(window.nvg, Float(translation.x), Float(translation.y))
     }
 
+    @inlinable
     open func resetTransform() {
         nvgResetTransform(window.nvg)
     }

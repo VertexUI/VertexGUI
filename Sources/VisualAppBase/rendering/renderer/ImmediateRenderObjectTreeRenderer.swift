@@ -30,9 +30,11 @@ public class ImmediateRenderObjectTreeRenderer: RenderObjectTreeRenderer {
         for message in treeMessageBuffer {
             switch message.content {
             case .TransitionStarted:
-                activeTransitionCount += 1
+                //activeTransitionCount += 1
+                break
             case .TransitionEnded:
-                activeTransitionCount -= 1
+                //activeTransitionCount -= 1
+                break
             case .ChildrenUpdated:
                 rerenderNeeded = true
             default:

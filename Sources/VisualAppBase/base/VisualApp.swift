@@ -72,13 +72,17 @@ open class VisualApp<S: System, W: Window, R: Renderer>: App<S, W> {
     open func onFrame(_ deltaTime: Int) {
         for context in windowContexts.values {
             if context.treeRenderer.rerenderNeeded {
-                context.renderer.beginFrame()
-                context.renderer.clear(context.window.background)
-                context.treeRenderer.render(with: context.renderer, in: DRect(min: .zero, size: context.window.drawableSize))
-                context.renderer.endFrame()
-                context.window.updateContent()
+                renderWindow(context)
             }
         }
+    }
+
+    open func renderWindow(_ context: WindowContext) {
+        context.renderer.beginFrame()
+        context.renderer.clear(context.window.background)
+        context.treeRenderer.render(with: context.renderer, in: DRect(min: .zero, size: context.window.drawableSize))
+        context.renderer.endFrame()
+        context.window.updateContent()
     }
 
     public struct WindowContext {

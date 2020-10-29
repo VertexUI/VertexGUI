@@ -1,3 +1,4 @@
+import Foundation
 import CustomGraphicsMath
 import Dispatch
 import VisualAppBase
@@ -110,6 +111,10 @@ open class Root: Parent {
   ]
 
   internal func propagate(_ event: RawMouseEvent) {
+    #if DEBUG
+    let startTime = Date.timeIntervalSinceReferenceDate
+    #endif
+
     // first get the current target widgets by performing a raycast over the render object tree
     var currentTargets = [Widget & GUIMouseEventConsumer]()
     var currentTargetPositions: [ObjectIdentifier: DPoint2] = [:]
@@ -200,6 +205,13 @@ open class Root: Parent {
     default:
       print("Could not forward MouseEvent \(event), not supported.")
     }
+
+    #if DEBUG
+    let deltaTime = Date.timeIntervalSinceReferenceDate - startTime
+    Logger.log(
+      "Took \(deltaTime) seconds for propagating a mouse event.",
+      level: .Message, context: .Performance)
+    #endif
   }
 
   internal func propagate(_ rawKeyEvent: KeyEvent) {
