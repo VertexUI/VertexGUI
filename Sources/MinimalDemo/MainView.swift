@@ -5,13 +5,13 @@ public class MainView: SingleChildWidget {
   private var counter = 0
 
   override public func buildChild() -> Widget {
-    ObservingBuilder($counter) { [unowned self] in
-      Center {
-        Button {
+    Center { [unowned self] in
+      Button {
+        ObservingBuilder($counter) {
           Text("Hello world \(counter)")
-        } onClick: { _ in
-          counter += 1
         }
+      } onClick: { _ in
+        counter += 1
       }
     }
   }
