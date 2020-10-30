@@ -128,7 +128,7 @@ public class TodoAppView: SingleChildWidget {
         Border(bottom: 2, color: appTheme.backgroundColor.darkened(40)) {
           Background {
             Padding(top: 16, right: 32, bottom: 16, left: 32) {
-              Row {
+              Row(spacing: 16) {
                 Row.Item(crossAlignment: .Center) {
                   Background(fill: list.color) {
                     Padding(all: 8) {
@@ -136,8 +136,6 @@ public class TodoAppView: SingleChildWidget {
                     }
                   }
                 }
-
-                Space(DSize2(16, 0))
 
                 Row.Item(crossAlignment: .Center) {
                   Text(list.name)

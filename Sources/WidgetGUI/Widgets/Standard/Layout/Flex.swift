@@ -8,10 +8,10 @@ public class Flex: Widget {
   private let mainAxisVectorIndex: Int
   private let crossAxisVectorIndex: Int
   private let spacing: Double
-  private let wrap: Bool
+  internal let wrap: Bool
 
   private let buildItems: () -> [Item]
-  private var items: [Item] = []
+  internal var items: [Item] = []
 
   lazy private var layoutStrategy: LayoutStrategy = chooseLayoutStrategy()
 
@@ -58,6 +58,9 @@ public class Flex: Widget {
   }
 
   private func chooseLayoutStrategy() -> LayoutStrategy {
+    if TwoItemStrategy.test(self) {
+      return TwoItemStrategy(self)
+    }
     return UniversalStrategy(self)
   }
 

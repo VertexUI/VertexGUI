@@ -19,68 +19,52 @@ public class TodoListItemView: SingleChildWidget {
   override public func buildChild() -> Widget {
     MouseArea { [unowned self] in
       Padding(all: 16) {
-        Column(spacing: 24) {
-          Row(spacing: 48) {
-            Row.Item(crossAlignment: .Center) {
-              TaskCompletionButton(StaticProperty(item.completed), color: .Yellow) { _ in
-                if checkable {
-                  var updatedItem = item
-                  updatedItem.completed = !updatedItem.completed
-                  store.dispatch(.UpdateTodoItem(updatedItem))
-                }
+        Row(spacing: 48) {
+          Row.Item(crossAlignment: .Center) {
+            TaskCompletionButton(StaticProperty(item.completed), color: .Yellow) { _ in
+              if checkable {
+                var updatedItem = item
+                updatedItem.completed = !updatedItem.completed
+                store.dispatch(.UpdateTodoItem(updatedItem))
               }
             }
+          }
 
-            Row.Item(crossAlignment: .Center) {
-              ObservingBuilder($editing) {
-                if editing {
-                  Row(spacing: 16) {
-                    TextField(item.description).onTextChanged.chain {
-                      updatedDescriptionBuffer = $0
-                    }.requestFocus().onFocusChanged.chain { focused in
-                      if !focused {
-                        editing = false
-                      }
-                    }
-
-                    Button {
-                      Text("done")
-                    } onClick: { _ in
-                      var updatedItem = item
-                      updatedItem.description = updatedDescriptionBuffer
+          Row.Item(crossAlignment: .Center) {
+            ObservingBuilder($editing) {
+              if editing {
+                Row(spacing: 16) {
+                  TextField(item.description).onTextChanged.chain {
+                    updatedDescriptionBuffer = $0
+                  }.requestFocus().onFocusChanged.chain { focused in
+                    if !focused {
                       editing = false
-                      store.dispatch(.UpdateTodoItem(updatedItem))
                     }
                   }
-                } else {
-                  MouseArea {
-                    Text(item.description, wrap: true)
+
+                  Button {
+                    Text("done")
                   } onClick: { _ in
-                    if editable {
-                      editing = true
-                      updatedDescriptionBuffer = item.description
-                    }
+                    var updatedItem = item
+                    updatedItem.description = updatedDescriptionBuffer
+                    editing = false
+                    store.dispatch(.UpdateTodoItem(updatedItem))
+                  }
+                }
+              } else {
+                MouseArea {
+                  Text(item.description, wrap: true)
+                } onClick: { _ in
+                  if editable {
+                    editing = true
+                    updatedDescriptionBuffer = item.description
                   }
                 }
               }
             }
           }
-
-          /*if expandedItemIndices.contains(index) {
-            Row {
-              todo.images.map {
-                ImageView(image: $0)
-              }
-            }
-          }*/
         }
       }
-    }/* onClick: { [unowned self] _ in
-      if item.images.count > 0 {
-        withChildInvalidation {
-          expandedItemIndices.insert(index)
-        }
-      }
-    }*/
+    }
   }
 }
