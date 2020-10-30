@@ -101,7 +101,7 @@ public final class TextInput: SingleChildWidget, StatefulWidget, ConfigurableWid
         invalidateRenderState()
       }
     } else if event is GUIMouseEnterEvent {
-      dropCursorRequest = context!.requestCursor(.Text)
+      dropCursorRequest = context.requestCursor(.Text)
     } else if event is GUIMouseLeaveEvent {
       if let drop = dropCursorRequest {
         drop()
@@ -175,7 +175,7 @@ public final class TextInput: SingleChildWidget, StatefulWidget, ConfigurableWid
           RenderObject.RenderStyle(
             fill: TimedRenderValue<Fill>(
               id: 0,
-              startTimestamp: context!.applicationTime,
+              startTimestamp: context.applicationTime,
               duration: 1,
               repetitions: 0
             ) {

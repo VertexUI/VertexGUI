@@ -75,7 +75,7 @@ public final class Background: SingleChildWidget, ConfigurableWidget {
                         
                         id: 0,
                         
-                        startTimestamp: context!.applicationTime,
+                        startTimestamp: context.applicationTime,
                         
                         duration: fillTransition.duration,
                         

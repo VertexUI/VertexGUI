@@ -22,6 +22,10 @@ public class WidgetContext {
     public var applicationTime: Double {
         _getApplicationTime()
     }
+    
+    #if DEBUG
+    public let inspectionBus = WidgetBus<WidgetInspectionMessage>()
+    #endif
 
     public private(set) var onTick = EventHandlerManager<Tick>()
 

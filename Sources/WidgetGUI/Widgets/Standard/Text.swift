@@ -89,7 +89,7 @@ public final class Text: Widget, ConfigurableWidget {
 
   override public func getBoxConfig() -> BoxConfig {
     var boxConfig = BoxConfig(
-      preferredSize: context!.getTextBoundsSize(transformedText, fontConfig: config.fontConfig))
+      preferredSize: context.getTextBoundsSize(transformedText, fontConfig: config.fontConfig))
 
     if !config.wrap {
       boxConfig.minSize = boxConfig.preferredSize
@@ -101,7 +101,7 @@ public final class Text: Widget, ConfigurableWidget {
   override public func performLayout(constraints: BoxConstraints) -> DSize2 {
     let boundedText = transformedText.isEmpty ? " " : transformedText
 
-    var textBoundsSize = context!.getTextBoundsSize(
+    var textBoundsSize = context.getTextBoundsSize(
       boundedText, fontConfig: config.fontConfig, maxWidth: config.wrap ? constraints.maxWidth : nil
     )
     
@@ -152,13 +152,13 @@ public final class Text: Widget, ConfigurableWidget {
     let transformedText = config.transform.apply(to: partialText)
 
     if transformedText.isEmpty {
-      preferredSize.height = context!.getTextBoundsSize(" ", fontConfig: config.fontConfig).height
+      preferredSize.height = context.getTextBoundsSize(" ", fontConfig: config.fontConfig).height
     } else {
       if config.wrap {
-        preferredSize = context!.getTextBoundsSize(
+        preferredSize = context.getTextBoundsSize(
           transformedText, fontConfig: config.fontConfig, maxWidth: previousConstraints!.maxWidth)
       } else {
-        preferredSize = context!.getTextBoundsSize(transformedText, fontConfig: config.fontConfig)
+        preferredSize = context.getTextBoundsSize(transformedText, fontConfig: config.fontConfig)
       }
     }
 

@@ -14,7 +14,7 @@ open class Widget: Bounded, Parent, Child {
     open var classes: [String] = []
 
     open var _context: WidgetContext?
-    open var context: WidgetContext? {
+    open var context: WidgetContext {
         // TODO: might cache _context
         get {
             if let context = _context {
@@ -24,7 +24,8 @@ open class Widget: Bounded, Parent, Child {
             if let parent = parent as? Widget {
                 return parent.context
             }
-            return nil
+            
+            fatalError("tried to access context when it was not yet available")
         }
 
         set {
@@ -201,7 +202,7 @@ open class Widget: Bounded, Parent, Child {
     private var _debugLayout: Bool?
     public var debugLayout: Bool {
         get {
-            _debugLayout ?? context?.debugLayout ?? false
+            _debugLayout ?? context.debugLayout
         }
 
         set {
@@ -217,7 +218,6 @@ open class Widget: Bounded, Parent, Child {
 
     public var countCalls: Bool = true
     @usableFromInline lazy internal var callCounter = CallCounter(widget: self)
-
 
     public internal(set) var onParentChanged = EventHandlerManager<Parent?>()
     public internal(set) var onAnyParentChanged = EventHandlerManager<Parent?>()
@@ -462,15 +462,10 @@ open class Widget: Bounded, Parent, Child {
 
     // TODO: maybe call this updateBoxConfig / or queueBoxConfigUpdate??? --> on next tick?
     @inlinable public final func invalidateBoxConfig() {
-        
         let currentBoxConfig = boxConfig
-
         let newBoxConfig = getBoxConfig()
-
         if currentBoxConfig != newBoxConfig {
-
             _boxConfig = newBoxConfig
-
             onBoxConfigChanged.invokeHandlers(BoxConfigChangedEvent(old: currentBoxConfig, new: newBoxConfig))
         }
     }
@@ -511,9 +506,12 @@ open class Widget: Bounded, Parent, Child {
         }
 
         #if (DEBUG)
+        context.inspectionBus.publish(WidgetInspectionMessage(sender: self, content: .LayoutingStarted(constraints: constraints)))
+        
         if countCalls {
             if callCounter.count(.Layout) && burstHighlightEnabled {
                 flashHighlight()
+                context.inspectionBus.publish(WidgetInspectionMessage(sender: self, content: .LayoutBurstThresholdExceeded))
             }
         }
         Logger.log("Layouting Widget: \(self)".with(fg: .Blue, style: .Bold), level: .Message, context: .WidgetLayouting)
@@ -527,9 +525,13 @@ open class Widget: Bounded, Parent, Child {
 
         let previousSize = size
         let isFirstRound = !layouted
+        #if DEBUG
         let startTimestamp = Date.timeIntervalSinceReferenceDate
+        #endif
         let newUnconstrainedSize = performLayout(constraints: constraints)
+        #if DEBUG
         let layoutDuration = Date.timeIntervalSinceReferenceDate - startTimestamp
+        #endif
 
         #if DEBUG
         Logger.log("Layout of Widget: \(self) took time:", (layoutDuration.description + " s").with(style: .Bold), level: .Message, context: .WidgetLayouting)
@@ -558,6 +560,13 @@ open class Widget: Bounded, Parent, Child {
         layouting = false
         layouted = true
         layoutInvalid = false
+        
+        #if DEBUG
+        context.inspectionBus.publish(WidgetInspectionMessage(
+            sender: self,
+            content: .LayoutingFinished(
+                unconstrainedSize: newUnconstrainedSize, constrainedSize: constrainedSize, duration: layoutDuration)))
+        #endif
 
         // TODO: where to call this? after setting bounds or before?
         onLayoutingFinished.invokeHandlers(bounds.size)
@@ -588,6 +597,7 @@ open class Widget: Bounded, Parent, Child {
         if countCalls {
             callCounter.count(.InvalidateLayout)
         }
+        context.inspectionBus.publish(WidgetInspectionMessage(sender: self, content: .LayoutInvalidated))
         #endif
         layoutInvalid = true
         onLayoutInvalidated.invokeHandlers(Void())
@@ -602,10 +612,14 @@ open class Widget: Bounded, Parent, Child {
     @inlinable
     public final func render() -> RenderObject.IdentifiedSubTree {
         if renderState.invalid {
-            #if (DEBUG)
+            #if DEBUG
             if countCalls {
-                callCounter.count(.Render)
+                if callCounter.count(.Render) {
+                    context.inspectionBus.publish(WidgetInspectionMessage(
+                        sender: self, content: .RenderBurstThresholdExceeded))
+                }
             }
+
             Logger.log("Render state of Widget: \(self) invalid. Rerendering.".with(fg: .Yellow), level: .Message, context: .WidgetRendering)
             #endif
 
@@ -619,13 +633,20 @@ open class Widget: Bounded, Parent, Child {
         return renderState.content!
     }
 
-    @usableFromInline internal final func updateRenderState() {
+    @usableFromInline
+    internal final func updateRenderState() {
         if !renderState.invalid {
             #if DEBUG
             Logger.warn("Called updateRenderState on Widget where renderState is not invalid.".with(fg: .White, bg: .Red), context: .WidgetRendering)
             #endif
             return
         }
+
+        #if DEBUG
+        let startTime = Date.timeIntervalSinceReferenceDate
+        context.inspectionBus.publish(WidgetInspectionMessage(
+            sender: self, content: .RenderingStarted))
+        #endif
 
         let subTree = renderState.content ?? IdentifiedSubTreeRenderObject(id, [])
 
@@ -657,6 +678,12 @@ open class Widget: Bounded, Parent, Child {
 
         renderState.content = subTree
         renderState.invalid = false
+
+        #if DEBUG
+        let duration = Date.timeIntervalSinceReferenceDate - startTime
+        context.inspectionBus.publish(WidgetInspectionMessage(
+            sender: self, content: .RenderingFinished(duration: duration)))
+        #endif
     }
 
     /// Invoked by render(), if Widget has children, should use child.render() to render them.
@@ -736,10 +763,10 @@ open class Widget: Bounded, Parent, Child {
             // TODO: maybe run requestfocus and let the context notify the focused widget of receiving focus?
             if mounted {
                 //focusContext.requestFocus(self)
-                context!.requestFocus(self)
+                context.requestFocus(self)
             } else {
                 _ = onMounted.once { [unowned self] in
-                    context!.requestFocus(self)
+                    context.requestFocus(self)
                 }
             }
         }
@@ -760,11 +787,11 @@ open class Widget: Bounded, Parent, Child {
     */
     public func nextTick(_ block: @escaping (Tick) -> ()) {
         if mounted {
-            let remove = context!.onTick.once(block)
+            let remove = context.onTick.once(block)
             nextTickHandlerRemovers.append(remove)
         } else {
             _ = onMounted.once { [unowned self] in
-                let remove = context!.onTick.once(block)
+                let remove = context.onTick.once(block)
                 nextTickHandlerRemovers.append(remove)
             }
         }

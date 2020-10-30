@@ -21,7 +21,7 @@ open class Root: Parent {
       if let widgetContext = widgetContext {
         widgetContext.debugLayout = debugLayout
       }
-      rootWidget.context = widgetContext
+      rootWidget.context = widgetContext!
     }
   }
   //private var focusContext = FocusContext()

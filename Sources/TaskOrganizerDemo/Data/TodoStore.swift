@@ -59,9 +59,7 @@ public class TodoStore: ReduxStore<TodoState, TodoGetters, TodoAction> {
       DispatchQueue.global().async { [unowned self] in
         let searchResult = getSearchResult(query, state: tmpState)
         DispatchQueue.main.async {
-          let startTime = Date.timeIntervalSinceReferenceDate
           dispatch(.UpdateSearchResult(searchResult))
-          print("DISPATCH TOOK ", Date.timeIntervalSinceReferenceDate - startTime)
         }
       }
 
