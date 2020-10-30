@@ -8,24 +8,32 @@ public class SearchResultsView: SingleChildWidget {
   @ComputedProperty
   private var searchResult: TodoSearchResult?
 
+  @ComputedProperty
+  private var searchQuery: String?
+
   override public func addedToParent() {
     _searchResult.dependencies = [store.$state.any]
     _searchResult.compute = { [unowned self] in
       store.state.searchResult
     }
+    _searchQuery.dependencies = [store.$state.any]
+    _searchQuery.compute = { [unowned self] in
+      store.state.searchQuery
+    }
   }
 
   override public func buildChild() -> Widget {
-    ObservingBuilder($searchResult) { [unowned self] in
+    ObservingBuilder([$searchResult.any, $searchQuery.any]) { [unowned self] in
       Column(spacing: 48) {
 
-        if let searchResult = searchResult {
-          Text("Results for \"\(searchResult.query)\"", fontSize: 48, fontWeight: .Bold)
-          searchResult.filteredLists.map { list in
-            TodoListView(StaticProperty(list), editable: false, checkable: true)
+        if let searchQuery = searchQuery {
+          Text("Results for \"\(searchQuery)\"", fontSize: 48, fontWeight: .Bold)
+
+          if let searchResult = searchResult {
+            searchResult.filteredLists.map { list in
+              TodoListView(StaticProperty(list), editable: false, checkable: true)
+            }
           }
-        } else {
-          Text("No query")
         }
       }
     }
