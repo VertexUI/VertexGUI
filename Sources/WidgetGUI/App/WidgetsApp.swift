@@ -46,10 +46,11 @@ open class WidgetsApp<S: System, W: Window, R: Renderer>: VisualApp<S, W, R> {
 
         _ = window.onKey { [unowned self] in
             if let event = $0 as? KeyUpEvent, event.key == Key.F12 {
-                let devToolsView = DeveloperToolsView()
+                let devToolsView = DeveloperToolsView(guiRoot)
                 let devToolsGuiRoot = WidgetGUI.Root(
                     rootWidget: devToolsView
                 )
+                createWindow(guiRoot: devToolsGuiRoot, background: .Grey, immediate: true)
             }
         }
 

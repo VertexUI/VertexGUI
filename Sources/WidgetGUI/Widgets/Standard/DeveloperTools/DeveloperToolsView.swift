@@ -1,86 +1,13 @@
 import VisualAppBase
-import CustomGraphicsMath
 
-public class DeveloperToolsView: SingleChildWidget, StatefulWidget {
-    public var debuggingData: OptimizingRenderObjectTreeRenderer.DebuggingData? = nil {
-        didSet {
-            handleDebuggingDataUpdated()
-        }
-    }
+public class DeveloperToolsView: SingleChildWidget {
+  private let inspectedRoot: Root
+  
+  public init(_ inspectedRoot: Root) {
+    self.inspectedRoot = inspectedRoot
+  }
 
-    public struct State {
-        public var selectedObjectPath: TreePath?
-    }
-    
-    public var state: State = State()
-
-    private func handleDebuggingDataUpdated() {
-        /*if let debuggingData = debuggingData {
-            expandedGroupIndices = Set(0..<debuggingData.groups.count)
-        }
-        selectedObjectPath = nil*/
-        invalidateChild()
-        //self.invalidateRenderState()
-    }
-
-    override open func buildChild() -> Widget {
-        if let debuggingData = debuggingData {
-             return Background(fill:.White) { [unowned self] in
-                Column { [unowned self] in
-                    ScrollArea {
-                        RenderObjectTreeView(debuggingData: debuggingData, selectedObjectPath: state.selectedObjectPath) {
-                            state.selectedObjectPath = $1
-                            invalidateChild()
-                        }
-                    }
-                    buildSelectedObjectDetail()
-                    //RenderGroupsListView(debuggingData: debuggingData)
-                }
-            }
-        }
-        return Column {}
-    }
-
-    private func buildSelectedObjectDetail() -> Widget {
-        var children = [Widget]()
-        if let selectedObjectPath = state.selectedObjectPath {
-            let selectedObject = debuggingData!.tree[selectedObjectPath]!
-            var properties = [Widget]()
-            let mirror = Mirror(reflecting: selectedObject)
-            for child in mirror.children {
-                if let label = child.label {
-                    properties.append(Text("\(label): \(child.value)"))
-                }
-            }
-            children.append(contentsOf: properties)
-        
-            return Column {
-                Text("Detail View for \(String(describing: selectedObject))")
-                children
-            }
-        } else {
-            return Column {}
-        }
-    }
-/*
-    private func onObjectClick(_ object: RenderObject, at path: TreePath) {
-        self.selectedObjectPath = path 
-        self.updateChild()
-        self.invalidateRenderState()
-    }
-
-    override open func performLayout() {
-        print("DEBUGGER CALLED LAYOUT", bounds.size, constraints, self.child.bounds.size)
-        child.constraints = constraints 
-        try child.layout()
-        //child.bounds.size = DSize2(100, 100)
-        bounds.size = child.bounds.size
-        print("DEBUGGER LAYOUT FINISHED", bounds.size)
-    }*/
-
-    override open func renderContent() -> RenderObject? {
-        return RenderObject.Uncachable {
-            child.render()
-        }
-    }
+  override public func buildChild() -> Widget {
+    InspectorView(inspectedRoot)
+  }
 }
