@@ -45,6 +45,8 @@ extension Flex {
       totalSize[crossAxisVectorIndex] = max(
         child1.size[crossAxisVectorIndex], child2.size[crossAxisVectorIndex])
 
+      // TODO: cross axis center and end alignments not yet implemented for both children
+
       return totalSize
     }
   }
