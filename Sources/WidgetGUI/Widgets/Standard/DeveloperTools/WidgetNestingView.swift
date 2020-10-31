@@ -9,6 +9,9 @@ public class WidgetNestingView: SingleChildWidget {
   public init(_ inspectedWidget: Widget, depth: Int = 0) {
     self.inspectedWidget = inspectedWidget
     self.depth = depth
+    if depth < 10 {
+      self.expanded = true
+    }
   }
 
   override public func buildChild() -> Widget {
@@ -24,7 +27,7 @@ public class WidgetNestingView: SingleChildWidget {
       }
 
       ObservingBuilder($expanded) {
-        if expanded && inspectedWidget.children.count > 0 && depth < 10 {
+        if expanded && inspectedWidget.children.count > 0 {
           Padding(left: 16) {
             Column {
               inspectedWidget.children.map { WidgetNestingView($0, depth: depth + 1) }
