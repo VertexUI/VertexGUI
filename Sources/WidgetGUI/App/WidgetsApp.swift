@@ -12,8 +12,13 @@ open class WidgetsApp<S: System, W: Window, R: Renderer>: VisualApp<S, W, R> {
 
     /// - Parameter guiRoot: is an autoclosure. This ensures, that the window
     /// has already been created when the guiRoot is evaluated and e.g. the OpenGL context was created.
-    public func createWindow(guiRoot guiRootBuilder: @autoclosure () -> Root, background: Color, immediate: Bool = false) -> Window {
-        let window = super.createWindow(background: background, size: DSize2(800, 600), immediate: immediate)
+    public func createWindow(
+        guiRoot guiRootBuilder: @autoclosure () -> Root,
+        options: Window.Options,
+        immediate: Bool = false) -> Window {
+        let window = super.createWindow(
+            options: options,
+            immediate: immediate)
         var context = windowContexts[ObjectIdentifier(window)]!
         let guiRoot = guiRootBuilder()
 
@@ -22,6 +27,7 @@ open class WidgetsApp<S: System, W: Window, R: Renderer>: VisualApp<S, W, R> {
             window: window,
             getTextBoundsSize: { [unowned self] in windowContexts[ObjectIdentifier(window)]!.renderer.getTextBoundsSize($0, fontConfig: $1, maxWidth: $2) },
             getApplicationTime: { [unowned self] in system.currentTime },
+            createWindow: { [unowned self] in createWindow(guiRoot: $0(), options: $1, immediate: true) },
             requestCursor: {
                 self.system.requestCursor($0)
             })
@@ -51,7 +57,7 @@ open class WidgetsApp<S: System, W: Window, R: Renderer>: VisualApp<S, W, R> {
                 let devToolsGuiRoot = WidgetGUI.Root(
                     rootWidget: devToolsView
                 )
-                createWindow(guiRoot: devToolsGuiRoot, background: .Grey, immediate: true)
+                createWindow(guiRoot: devToolsGuiRoot, options: Window.Options(), immediate: true)
             }
         }
         #endif

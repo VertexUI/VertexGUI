@@ -21,7 +21,7 @@ open class TodoApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGWindow,
                 TodoAppView().with { $0.debugLayout = false }
             })
         super.init(system: try! System())
-        _ = createWindow(guiRoot: guiRoot, background: .Grey, immediate: true)
+        _ = createWindow(guiRoot: guiRoot, options: Window.Options(), immediate: true)
     }
 
     override open func createRenderer(for window: Window) -> Renderer {

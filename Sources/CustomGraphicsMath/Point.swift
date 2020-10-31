@@ -14,6 +14,7 @@ public typealias Point2<E: Numeric & Hashable> = Vector2<E>
 public typealias Point3<E: Numeric & Hashable> = Vector3<E>
 
 public typealias DPoint2 = Point2<Double>
+public typealias IPoint2 = Point2<Int>
 
 public typealias DPoint3 = Point3<Double>
 

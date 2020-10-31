@@ -5,6 +5,7 @@ public class WidgetContext {
     public internal(set) var window: Window
     private var _getTextBoundsSize: (_ text: String, _ fontConfig: FontConfig, _ maxWidth: Double?) -> DSize2
     private var _requestCursor: (_ cursor: Cursor) -> () -> Void
+    private var _createWindow: (_ guiRootBuilder: @autoclosure () -> Root, _ options: Window.Options) -> Window
     weak public internal(set) var focusedWidget: Widget? {
         didSet {
             if let unregister = unregisterOnFocusChanged {
@@ -33,10 +34,12 @@ public class WidgetContext {
         window: Window,
         getTextBoundsSize: @escaping (_ text: String, _ fontConfig: FontConfig, _ maxWidth: Double?) -> DSize2,
         getApplicationTime: @escaping () -> Double,
+        createWindow: @escaping (_ guiRootBuilder: @autoclosure () -> Root, _ options: Window.Options) -> Window,
         requestCursor: @escaping (_ cursor: Cursor) -> () -> Void) {
             self.window = window
             self._getTextBoundsSize = getTextBoundsSize
             self._getApplicationTime = getApplicationTime
+            self._createWindow = createWindow
             self._requestCursor = requestCursor
     }
 
@@ -45,7 +48,11 @@ public class WidgetContext {
     }
 
     public func requestCursor(_ cursor: Cursor) -> () -> Void {
-        return _requestCursor(cursor)
+        _requestCursor(cursor)
+    }
+
+    public func createWindow(guiRoot guiRootBuilder: @autoclosure () -> Root, options: Window.Options) -> Window {
+        _createWindow(guiRootBuilder(), options)
     }
 
     // TODO: maybe need an extra focusedWidget context for specific areas / child trees

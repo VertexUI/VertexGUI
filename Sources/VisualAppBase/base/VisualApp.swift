@@ -21,10 +21,10 @@ open class VisualApp<S: System, W: Window, R: Renderer>: App<S, W> {
         _ = system.onFrame(onFrame)
     }
 
-    open func createWindow(background: Color, size: DSize2, immediate: Bool = false) -> Window {
+    open func createWindow(options: Window.Options, immediate: Bool = false) -> Window {
         let renderObjectTree = RenderObjectTree()
 
-        let window = try! Window(background: background, size: size)
+        let window = try! Window(options: options)
 
         _ = window.onClose { [unowned self] in
             let context = windowContexts[ObjectIdentifier(window)]!
@@ -79,7 +79,7 @@ open class VisualApp<S: System, W: Window, R: Renderer>: App<S, W> {
 
     open func renderWindow(_ context: WindowContext) {
         context.renderer.beginFrame()
-        context.renderer.clear(context.window.background)
+        context.renderer.clear(context.window.options.background)
         context.treeRenderer.render(with: context.renderer, in: DRect(min: .zero, size: context.window.drawableSize))
         context.renderer.endFrame()
         context.window.updateContent()
