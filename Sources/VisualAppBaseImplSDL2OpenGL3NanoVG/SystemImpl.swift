@@ -90,30 +90,23 @@ open class SDL2OpenGL3NanoVGSystem: System {
   }
 
   open func setCursorShown(_ shown: Bool) {
-
     SDL_ShowCursor(shown ? SDL_ENABLE : SDL_DISABLE)
   }
 
   open func forward(_ event: RawMouseEvent, windowId: Int) {
-
     if let window = SDL2OpenGL3NanoVGSystem.windows[windowId] {
-
       window.onMouse.invokeHandlers(event)
     }
   }
 
   open func forward(_ event: KeyEvent, windowId: Int) {
-
     if let window = SDL2OpenGL3NanoVGSystem.windows[windowId] {
-
       window.onKey.invokeHandlers(event)
     }
   }
 
   open func forward(_ event: TextEvent, windowId: Int) {
-
     if let window = SDL2OpenGL3NanoVGSystem.windows[windowId] {
-
       window.onText.invokeHandlers(event)
     }
   }
@@ -173,24 +166,41 @@ open class SDL2OpenGL3NanoVGSystem: System {
             }
 
           case SDL_MOUSEBUTTONDOWN:
-            pressedMouseButtons[.Left] =
-              pressedMouseButtons[.Left]! || event.button.button == UInt8(SDL_BUTTON_LEFT)
+            let pressedButton: MouseButton
+            
             if event.button.button == UInt8(SDL_BUTTON_LEFT) {
-              forward(
-                RawMouseButtonDownEvent(
-                  button: .Left, position: DPoint2(Double(event.button.x), Double(event.button.y))),
-                windowId: Int(event.button.windowID))
+              pressedButton = .Left
+            } else if event.button.button == UInt8(SDL_BUTTON_RIGHT) {
+              pressedButton = .Right
+            } else {
+              print("sdl mouse button not mapped", event.button.button)
+              break
             }
+            
+            pressedMouseButtons[pressedButton] = true
+
+            forward(
+              RawMouseButtonDownEvent(
+                button: pressedButton, position: DPoint2(Double(event.button.x), Double(event.button.y))),
+              windowId: Int(event.button.windowID))
 
           case SDL_MOUSEBUTTONUP:
-            self.pressedMouseButtons[.Left] =
-              event.button.button == UInt8(SDL_BUTTON_LEFT) ? false : pressedMouseButtons[.Left]
+            let pressedButton: MouseButton
+            
             if event.button.button == UInt8(SDL_BUTTON_LEFT) {
-              forward(
-                RawMouseButtonUpEvent(
-                  button: .Left, position: DPoint2(Double(event.button.x), Double(event.button.y))),
-                windowId: Int(event.button.windowID))
+              pressedButton = .Left
+            } else if event.button.button == UInt8(SDL_BUTTON_RIGHT) {
+              pressedButton = .Right
+            } else {
+              print("sdl mouse button not mapped", event.button.button)
+              break
             }
+
+            pressedMouseButtons[pressedButton] = false
+            forward(
+              RawMouseButtonUpEvent(
+                button: pressedButton, position: DPoint2(Double(event.button.x), Double(event.button.y))),
+              windowId: Int(event.button.windowID))
 
           case SDL_MOUSEWHEEL:
             forward(
