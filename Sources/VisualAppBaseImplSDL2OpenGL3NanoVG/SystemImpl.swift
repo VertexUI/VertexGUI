@@ -143,6 +143,16 @@ open class SDL2OpenGL3NanoVGSystem: System {
                 window.close()
               }
 
+            case UInt8(SDL_WINDOWEVENT_FOCUS_GAINED.rawValue):
+              if let window = SDL2OpenGL3NanoVGSystem.windows[Int(event.window.windowID)] {
+                window.invalidateInputFocus()
+              }
+            
+            case UInt8(SDL_WINDOWEVENT_FOCUS_LOST.rawValue):
+              if let window = SDL2OpenGL3NanoVGSystem.windows[Int(event.window.windowID)] {
+                window.invalidateInputFocus()
+              }
+
             default:
               break
             }

@@ -73,15 +73,21 @@ open class Window {
   }
   private var visibilityInvalid = false
 
-  open var focused = false {
-    didSet {
-      do {
-        try onFocusChange.invokeHandlers(focused)
-      } catch {
-        print("Error while calling onFocusChange handlers.")
+  private var _inputFocus = false
+  open var inputFocus: Bool {
+    get {
+      if inputFocusInvalid {
+        _inputFocus = readInputFocus()
+        inputFocusInvalid = false
       }
+      return _inputFocus
+    }
+    set {
+      applyInputFocus(newValue)
+      invalidateInputFocus()
     }
   }
+  private var inputFocusInvalid = false
 
   public var onMouse = EventHandlerManager<RawMouseEvent>()
   public var onKey = EventHandlerManager<KeyEvent>()
@@ -89,8 +95,8 @@ open class Window {
   public var onSizeChanged = EventHandlerManager<DSize2>()
   public var onPositionChanged = EventHandlerManager<DPoint2>()
   public var onVisibilityChanged = EventHandlerManager<Visibility>()
-  public var onFocusChange = EventHandlerManager<Bool>()
-  public var onClose = EventHandlerManager<Void>()
+  public var onInputFocusChanged = EventHandlerManager<Bool>()
+  public var onBeforeClose = EventHandlerManager<Void>()
 
   // TODO: maybe can remove background color
   public required init(options: Options) throws {
@@ -113,6 +119,11 @@ open class Window {
     onVisibilityChanged.invokeHandlers(visibility)
   }
 
+  public func invalidateInputFocus() {
+    inputFocusInvalid = true
+    onInputFocusChanged.invokeHandlers(inputFocus)
+  }
+
   open func readSize() -> DSize2 {
     fatalError("readSize() not implemented")
   }
@@ -129,6 +140,14 @@ open class Window {
     fatalError("readVisibility() not implemented")
   }
 
+  open func readInputFocus() -> Bool {
+    fatalError("readInputFocus() not implemented")
+  }
+
+  open func readMouseFocus() -> Bool {
+    fatalError("readMouseFocus() not implemented")
+  }
+
   open func applySize(_ newSize: DSize2) {
     fatalError("applySize(:) not implemented")
   }
@@ -141,12 +160,24 @@ open class Window {
     fatalError("applyVisibility(:) not implemented")
   }
 
+  open func applyInputFocus(_ newFocus: Bool) {
+    fatalError("applyInputFocus(:) not implemented")
+  }
+
+  open func makeCurrent() {
+  }
+
   open func updateContent() {
     fatalError("updateContent() not implemented.")
   }
 
   open func close() {
-    fatalError("close() not implemented.")
+    onBeforeClose.invokeHandlers(Void())
+    destroy()
+  }
+
+  open func destroy() {
+
   }
 }
 

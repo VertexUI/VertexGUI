@@ -26,7 +26,7 @@ open class VisualApp<S: System, W: Window, R: Renderer>: App<S, W> {
 
         let window = try! Window(options: options)
 
-        _ = window.onClose { [unowned self] in
+        _ = window.onBeforeClose { [unowned self] in
             let context = windowContexts[ObjectIdentifier(window)]!
             context.treeRenderer.destroy()
             context.renderer.destroy()
@@ -78,6 +78,7 @@ open class VisualApp<S: System, W: Window, R: Renderer>: App<S, W> {
     }
 
     open func renderWindow(_ context: WindowContext) {
+        //context.window.makeCurrent()
         context.renderer.beginFrame()
         context.renderer.clear(context.window.options.background)
         context.treeRenderer.render(with: context.renderer, in: DRect(min: .zero, size: context.window.drawableSize))

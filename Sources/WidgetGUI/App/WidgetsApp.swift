@@ -62,7 +62,7 @@ open class WidgetsApp<S: System, W: Window, R: Renderer>: VisualApp<S, W, R> {
         }
         #endif
 
-        _ = window.onClose {
+        _ = window.onBeforeClose {
             guiRoot.destroy()
         }
 

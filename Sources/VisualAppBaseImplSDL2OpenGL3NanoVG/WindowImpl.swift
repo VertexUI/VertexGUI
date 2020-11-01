@@ -75,7 +75,8 @@ open class SDL2OpenGL3NanoVGWindow: Window {
 
     invalidateSize()
     invalidatePosition()
-
+    invalidateInputFocus()
+    
     SDL2OpenGL3NanoVGSystem.windows[id] = self
   }
 
@@ -116,6 +117,11 @@ open class SDL2OpenGL3NanoVGWindow: Window {
     }
   }
 
+  override open func readInputFocus() -> Bool {
+    let flags = SDL_GetWindowFlags(sdlWindow)
+    return flags & SDL_WINDOW_INPUT_FOCUS.rawValue == SDL_WINDOW_INPUT_FOCUS.rawValue
+  }
+
   override open func applySize(_ newSize: DSize2) {
     SDL_SetWindowSize(sdlWindow, Int32(newSize.width), Int32(newSize.height))
   }
@@ -133,18 +139,23 @@ open class SDL2OpenGL3NanoVGWindow: Window {
     }
   }
 
+  override open func applyInputFocus(_ newFocus: Bool) {
+    if newFocus {
+      SDL_SetWindowInputFocus(sdlWindow)
+    }
+  }
+
+  override open func makeCurrent() {
+    SDL_GL_MakeCurrent(sdlWindow, glContext)
+  }
+
   override open func updateContent() {
     SDL_GL_SwapWindow(sdlWindow)
   }
 
-  override open func close() {
-    nvgDeleteGL3(nvg)
+  override open func destroy() {
     SDL_GL_DeleteContext(glContext)
+    nvgDeleteGL3(nvg)
     SDL_DestroyWindow(sdlWindow)
-    onClose.invokeHandlers(Void())
-  }
-
-  open func makeCurrent() {
-    SDL_GL_MakeCurrent(sdlWindow, glContext)
   }
 }
