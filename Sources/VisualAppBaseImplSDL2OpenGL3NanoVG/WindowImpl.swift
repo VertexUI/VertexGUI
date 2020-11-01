@@ -69,7 +69,8 @@ open class SDL2OpenGL3NanoVGWindow: Window {
 
     try super.init(options: options)
 
-    try updateSize()
+    invalidateSize()
+    invalidatePosition()
 
     SDL2OpenGL3NanoVGSystem.windows[id] = self
   }
@@ -79,16 +80,33 @@ open class SDL2OpenGL3NanoVGWindow: Window {
     SDL_DestroyWindow(sdlWindow)
   }
 
-  override open func updateSize() throws {
-    var newWidth: Int32 = 0
-    var newHeight: Int32 = 0
-    SDL_GetWindowSize(sdlWindow, &newWidth, &newHeight)
-    size.width = Double(newWidth)
-    size.height = Double(newHeight)
-    SDL_GL_GetDrawableSize(sdlWindow, &newWidth, &newHeight)
-    drawableSize.width = Double(newWidth)
-    drawableSize.height = Double(newHeight)
-    try super.updateSize()
+  override open func readSize() -> DSize2 {
+    var width: Int32 = 0
+    var height: Int32 = 0
+    SDL_GetWindowSize(sdlWindow, &width, &height)
+    return DSize2(Double(width), Double(height))
+  }
+
+  override open func readDrawableSize() -> DSize2 {
+    var width: Int32 = 0
+    var height: Int32 = 0
+    SDL_GL_GetDrawableSize(sdlWindow, &width, &height)
+    return DSize2(Double(width), Double(height))
+  }
+
+  override open func readPosition() -> DPoint2 {
+    var x: Int32 = 0
+    var y: Int32 = 0
+    SDL_GetWindowPosition(sdlWindow, &x, &y)
+    return DPoint2(Double(x), Double(y))
+  }
+
+  override open func applySize(_ newSize: DSize2) {
+    SDL_SetWindowSize(sdlWindow, Int32(newSize.width), Int32(newSize.height))
+  }
+
+  override open func applyPosition(_ newPosition: DPoint2) {
+    SDL_SetWindowPosition(sdlWindow, Int32(newPosition.x), Int32(newPosition.y))
   }
 
   override open func updateContent() {

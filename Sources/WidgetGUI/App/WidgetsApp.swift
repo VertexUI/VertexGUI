@@ -46,7 +46,7 @@ open class WidgetsApp<S: System, W: Window, R: Renderer>: VisualApp<S, W, R> {
             guiRoot.consume($0)
         }
 
-        _ = window.onResize {
+        _ = window.onSizeChanged {
             guiRoot.bounds.size = $0
         }
 

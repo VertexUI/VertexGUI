@@ -127,16 +127,25 @@ open class SDL2OpenGL3NanoVGSystem: System {
 
           case SDL_WINDOWEVENT:
             // TODO: implement focus change
-            if event.window.event == UInt8(SDL_WINDOWEVENT_SIZE_CHANGED.rawValue) {
+            switch event.window.event {
+            case UInt8(SDL_WINDOWEVENT_SIZE_CHANGED.rawValue):
               if let window = SDL2OpenGL3NanoVGSystem.windows[Int(event.window.windowID)] {
-                try window.updateSize()
+                window.invalidateSize()
               }
-            } else if event.window.event == UInt8(SDL_WINDOWEVENT_CLOSE.rawValue) {
+            
+            case UInt8(SDL_WINDOWEVENT_MOVED.rawValue):
+              if let window = SDL2OpenGL3NanoVGSystem.windows[Int(event.window.windowID)] {
+                window.invalidatePosition()
+              }
+
+            case UInt8(SDL_WINDOWEVENT_CLOSE.rawValue):
               if let window = SDL2OpenGL3NanoVGSystem.windows[Int(event.window.windowID)] {
                 window.close()
               }
+
+            default:
+              break
             }
-            break
 
           case SDL_KEYDOWN:
             if let key = Key(sdlKeycode: event.key.keysym.sym) {
