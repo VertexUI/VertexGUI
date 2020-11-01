@@ -611,7 +611,7 @@ open class Widget: Bounded, Parent, Child {
     /// Returns the result of renderContent() wrapped in an IdentifiedSubTreeRenderObject
     @inlinable
     public final func render() -> RenderObject.IdentifiedSubTree {
-        if renderState.invalid {
+        if renderState.invalid && mounted && !destroyed {
             #if DEBUG
             if countCalls {
                 if callCounter.count(.Render) {
@@ -624,6 +624,10 @@ open class Widget: Bounded, Parent, Child {
             #endif
 
             updateRenderState()
+        } else if !mounted || destroyed {
+            #if DEBUG
+            Logger.log("Widget: \(self) is not mounted or already destroyed. Skip rendering.".with(fg: .Yellow), level: .Message, context: .WidgetRendering)
+            #endif
         } else {
             #if DEBUG
             Logger.log("Render state of Widget: \(self) valid. Using cached state.".with(fg: .Yellow), level: .Message, context: .WidgetRendering)
@@ -638,6 +642,11 @@ open class Widget: Bounded, Parent, Child {
         if !renderState.invalid {
             #if DEBUG
             Logger.warn("Called updateRenderState on Widget where renderState is not invalid.".with(fg: .White, bg: .Red), context: .WidgetRendering)
+            #endif
+            return
+        } else if !mounted || destroyed {
+            #if DEBUG
+            Logger.warn("Called updateRenderState on Widget that is not yet mounted or was destroyed.".with(fg: .White, bg: .Red), context: .WidgetRendering)
             #endif
             return
         }
