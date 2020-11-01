@@ -79,13 +79,15 @@ open class VisualApp<S: System, W: Window, R: Renderer>: App<S, W> {
 
     open func renderWindow(_ context: WindowContext) {
         //context.window.makeCurrent()
-        context.renderer.beginFrame()
-        context.renderer.clear(context.window.options.background)
-        context.treeRenderer.render(with: context.renderer, in: DRect(min: .zero, size: context.window.drawableSize))
-        context.renderer.endFrame()
-        context.window.updateContent()
+        if !context.window.destroyed {
+            context.renderer.beginFrame()
+            context.renderer.clear(context.window.options.background)
+            context.treeRenderer.render(with: context.renderer, in: DRect(min: .zero, size: context.window.drawableSize))
+            context.renderer.endFrame()
+            context.window.updateContent()
+        }
     }
-
+  
     public struct WindowContext {
         public var window: Window
         public var renderer: Renderer

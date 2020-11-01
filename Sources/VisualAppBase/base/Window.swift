@@ -89,6 +89,8 @@ open class Window {
   }
   private var inputFocusInvalid = false
 
+  public private(set) var destroyed = false
+
   public var onMouse = EventHandlerManager<RawMouseEvent>()
   public var onKey = EventHandlerManager<KeyEvent>()
   public var onText = EventHandlerManager<TextEvent>()
@@ -174,6 +176,7 @@ open class Window {
   open func close() {
     onBeforeClose.invokeHandlers(Void())
     destroy()
+    destroyed = true
   }
 
   open func destroy() {

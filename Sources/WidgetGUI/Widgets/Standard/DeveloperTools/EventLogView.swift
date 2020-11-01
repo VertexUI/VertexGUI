@@ -1,4 +1,5 @@
 import CustomGraphicsMath
+import VisualAppBase
 
 public class EventLogView: SingleChildWidget {
   private let inspectedRoot: Root
@@ -32,8 +33,59 @@ public class EventLogView: SingleChildWidget {
           }
         }
       }
+    } onClick: { [unowned self] in
+      if $0.button == .Left {
+        message.sender.flashHighlight()
+      } else if $0.button == .Right {
+        createContextMenu(for: message.sender, at: $0.position)        
+      }
+    }
+  }
+
+  private func createContextMenu(for widget: Widget, at position: DPoint2) {
+    let screenPosition = context.window.position + position
+    var window: Window? = nil
+    let guiRoot = Root(rootWidget: Column { [unowned self] in
+      buildContextMenuItem {
+        Row(spacing: 8) {
+          if widget.debugLayout {
+            MaterialIcon(.check)
+          }
+
+          Text("debug layout")
+        }
+      } action: {
+        widget.debugLayout = !widget.debugLayout
+        widget.invalidateRenderState()
+        window!.close()
+      }
+    })
+    window = context.createWindow(
+      guiRoot: guiRoot,
+      options: Window.Options(
+        initialPosition: .Defined(screenPosition),
+        initialVisibility: .Hidden,
+        borderless: true))
+    window!.size = guiRoot.rootWidget.boxConfig.preferredSize
+    _ = window!.onInputFocusChanged {
+      if !$0 {
+        window!.close()
+      }
+    }
+    nextTick { _ in
+      window!.visibility = .Shown
+    }
+  }
+
+  private func buildContextMenuItem(@WidgetBuilder content: () -> Widget, action: @escaping () -> ()) -> Widget {
+    MouseArea {
+      Background(fill: .White) {
+        Padding(all: 16) {
+          content()
+        }
+      }
     } onClick: { _ in
-      message.sender.flashHighlight()
+      action()
     }
   }
 }
