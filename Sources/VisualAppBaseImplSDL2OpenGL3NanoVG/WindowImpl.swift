@@ -52,6 +52,10 @@ open class SDL2OpenGL3NanoVGWindow: Window {
       flags |= SDL_WINDOW_BORDERLESS.rawValue
     }
 
+    if options.initialVisibility == .Hidden {
+      flags |= SDL_WINDOW_HIDDEN.rawValue
+    }
+
     sdlWindow = SDL_CreateWindow(
       options.title ?? "",
       x,
@@ -101,12 +105,32 @@ open class SDL2OpenGL3NanoVGWindow: Window {
     return DPoint2(Double(x), Double(y))
   }
 
+  override open func readVisibility() -> Window.Visibility {
+    let flags = SDL_GetWindowFlags(sdlWindow)
+    if flags & SDL_WINDOW_SHOWN.rawValue == SDL_WINDOW_SHOWN.rawValue {
+      return .Shown
+    } else if flags & SDL_WINDOW_HIDDEN.rawValue == SDL_WINDOW_HIDDEN.rawValue {
+      return .Hidden
+    } else {
+      fatalError("sdl flag shown nor sdl flag hidden are present in window flags")
+    }
+  }
+
   override open func applySize(_ newSize: DSize2) {
     SDL_SetWindowSize(sdlWindow, Int32(newSize.width), Int32(newSize.height))
   }
 
   override open func applyPosition(_ newPosition: DPoint2) {
     SDL_SetWindowPosition(sdlWindow, Int32(newPosition.x), Int32(newPosition.y))
+  }
+
+  override open func applyVisibility(_ newVisibility: Window.Visibility) {
+    switch newVisibility {
+    case .Shown:
+      SDL_ShowWindow(sdlWindow)
+    case .Hidden:
+      SDL_HideWindow(sdlWindow)
+    }
   }
 
   override open func updateContent() {

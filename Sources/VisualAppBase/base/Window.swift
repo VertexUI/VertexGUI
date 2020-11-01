@@ -24,6 +24,7 @@ open class Window {
     set {
       applySize(newValue)
       _size = newValue
+      onSizeChanged.invokeHandlers(newValue)
     }
   }
   public private(set) var sizeInvalid = false
@@ -50,9 +51,27 @@ open class Window {
     set {
       applyPosition(newValue)
       _position = newValue
+      onPositionChanged.invokeHandlers(newValue)
     }
   }
   public private(set) var positionInvalid = false
+
+  private var _visibility: Visibility = .Shown
+  open var visibility: Visibility {
+    get {
+      if visibilityInvalid {
+        _visibility = readVisibility()
+        visibilityInvalid = false
+      }
+      return _visibility
+    }
+    set {
+      applyVisibility(newValue)
+      _visibility = newValue
+      onVisibilityChanged.invokeHandlers(newValue)
+    }
+  }
+  private var visibilityInvalid = false
 
   open var focused = false {
     didSet {
@@ -69,6 +88,7 @@ open class Window {
   public var onText = EventHandlerManager<TextEvent>()
   public var onSizeChanged = EventHandlerManager<DSize2>()
   public var onPositionChanged = EventHandlerManager<DPoint2>()
+  public var onVisibilityChanged = EventHandlerManager<Visibility>()
   public var onFocusChange = EventHandlerManager<Bool>()
   public var onClose = EventHandlerManager<Void>()
 
@@ -88,6 +108,11 @@ open class Window {
     onPositionChanged.invokeHandlers(position)
   }
 
+  public func invalidateVisibility() {
+    visibilityInvalid = true
+    onVisibilityChanged.invokeHandlers(visibility)
+  }
+
   open func readSize() -> DSize2 {
     fatalError("readSize() not implemented")
   }
@@ -100,12 +125,20 @@ open class Window {
     fatalError("readPosition() not implemented")
   }
 
+  open func readVisibility() -> Visibility {
+    fatalError("readVisibility() not implemented")
+  }
+
   open func applySize(_ newSize: DSize2) {
     fatalError("applySize(:) not implemented")
   }
   
   open func applyPosition(_ newPosition: DPoint2) {
     fatalError("applyPosition(:) not implemented")
+  }
+
+  open func applyVisibility(_ newVisibility: Visibility) {
+    fatalError("applyVisibility(:) not implemented")
   }
 
   open func updateContent() {
@@ -118,6 +151,11 @@ open class Window {
 }
 
 extension Window {
+  public enum Visibility {
+    case Shown
+    case Hidden
+  }
+
   public enum InitialPosition {
     case Centered
     case Defined(_ point: DPoint2)
@@ -127,23 +165,23 @@ extension Window {
     public var title: String?
     public var initialSize: DSize2
     public var initialPosition: InitialPosition
+    public var initialVisibility: Visibility
     public var background: Color
     public var borderless: Bool
-    public var initialShown: Bool
 
     public init(
       title: String? = nil,
       initialSize: DSize2 = DSize2(800, 600),
       initialPosition: InitialPosition = .Centered,
+      initialVisibility: Visibility = .Shown,
       background: Color = .Grey,
-      borderless: Bool = false,
-      initialShown: Bool = true) {
+      borderless: Bool = false) {
         self.title = title
         self.initialSize = initialSize
         self.initialPosition = initialPosition
+        self.initialVisibility = initialVisibility
         self.background = background
         self.borderless = borderless
-        self.initialShown = initialShown
     }
   }
 }
