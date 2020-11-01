@@ -185,7 +185,6 @@ open class SDL2OpenGL3NanoVGSystem: System {
             }
 
           case SDL_MOUSEBUTTONDOWN:
-            print("MOUES BUTTON DOWN EVENT")
             let pressedButton: MouseButton
             
             if event.button.button == UInt8(SDL_BUTTON_LEFT) {

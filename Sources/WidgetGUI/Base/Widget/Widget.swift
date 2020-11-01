@@ -12,6 +12,7 @@ open class Widget: Bounded, Parent, Child {
     open var id: UInt = UInt.random(in: 0..<UInt.max)
     open var key: String?
     open var classes: [String] = []
+    open var visibility: Visibility = .Visible
 
     open var _context: WidgetContext?
     open var context: WidgetContext {
@@ -659,7 +660,7 @@ open class Widget: Bounded, Parent, Child {
 
         let subTree = renderState.content ?? IdentifiedSubTreeRenderObject(id, [])
 
-        if mounted && layouted && !layouting {
+        if visibility == .Visible, mounted && layouted && !layouting {
             subTree.removeChildren()
 
             if let content = renderContent() {
@@ -877,6 +878,10 @@ open class Widget: Bounded, Parent, Child {
 }
 
 extension Widget {
+    public enum Visibility {
+        case Visible, Hidden
+    }
+
     public struct BoxConfigChangedEvent {
         public var old: BoxConfig
         public var new: BoxConfig
