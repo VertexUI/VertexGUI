@@ -72,12 +72,12 @@ open class SDL2OpenGL3NanoVGWindow: Window {
       Int32(NVG_ANTIALIAS.rawValue | NVG_STENCIL_STROKES.rawValue | NVG_DEBUG.rawValue))
 
     try super.init(options: options)
+    
+    SDL2OpenGL3NanoVGSystem.windows[id] = self
 
     invalidateSize()
     invalidatePosition()
     invalidateInputFocus()
-    
-    SDL2OpenGL3NanoVGSystem.windows[id] = self
   }
 
   deinit {

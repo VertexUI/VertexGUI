@@ -200,8 +200,10 @@ open class Widget: Bounded, Parent, Child {
     @usableFromInline internal var renderState = RenderState()
 
     /// Flag whether to show bounds and sizes for debugging purposes.
-    private var _debugLayout: Bool?
-    public var debugLayout: Bool {
+    //@MutableProperty
+    ////internal var _debugLayout: Bool?
+    @MutableProperty
+    public var debugLayout: Bool = false/* {
         get {
             _debugLayout ?? context.debugLayout
         }
@@ -209,7 +211,7 @@ open class Widget: Bounded, Parent, Child {
         set {
             _debugLayout = newValue
         }
-    }
+    }*/
     public var layoutDebuggingColor = Color.Red
     private let layoutDebuggingTextFontConfig = FontConfig(family: defaultFontFamily, size: 16, weight: .Regular, style: .Normal)
     // if true, highlight the Widget when bursts of calls to functions such as layout or render occur
@@ -241,6 +243,9 @@ open class Widget: Bounded, Parent, Child {
     public init(children: [Widget] = []) {
         self.children = children
         setupWidgetEventHandlerManagers()
+        _ = onDestroy(_debugLayout.onChanged { [unowned self] _ in
+            invalidateRenderState()
+        })
     }
 
     private func setupWidgetEventHandlerManagers() {

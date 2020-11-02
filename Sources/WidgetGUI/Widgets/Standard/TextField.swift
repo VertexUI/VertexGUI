@@ -2,28 +2,6 @@ import CustomGraphicsMath
 import VisualAppBase
 
 public final class TextField: SingleChildWidget, ConfigurableWidget {
-  public struct Config: ConfigProtocol {
-    public typealias PartialConfig = TextField.PartialConfig
-    public var backgroundConfig: Background.PartialConfig
-    public var textInputConfig: TextInput.PartialConfig
-    public var borderColor: Color
-
-    public init(
-      backgroundConfig: Background.PartialConfig, textInputConfig: TextInput.PartialConfig, borderColor: Color
-    ) {
-      self.backgroundConfig = backgroundConfig
-      self.textInputConfig = textInputConfig
-      self.borderColor = borderColor
-    }
-  }
-
-  public struct PartialConfig: PartialConfigProtocol {
-    public var backgroundConfig = Background.PartialConfig()
-    public var textInputConfig = TextInput.PartialConfig()
-    public var borderColor: Color? = nil
-    public init() {}
-  }
-
   public static let defaultConfig = Config(
     backgroundConfig: Background.PartialConfig {
       $0.fill = Color(230, 230, 230, 255)
@@ -97,5 +75,29 @@ public final class TextField: SingleChildWidget, ConfigurableWidget {
     RenderObject.Clip(globalBounds) {
       child.render()
     }
+  }
+}
+
+extension TextField {
+  public struct Config: ConfigProtocol {
+    public typealias PartialConfig = TextField.PartialConfig
+    public var backgroundConfig: Background.PartialConfig
+    public var textInputConfig: TextInput.PartialConfig
+    public var borderColor: Color
+
+    public init(
+      backgroundConfig: Background.PartialConfig, textInputConfig: TextInput.PartialConfig, borderColor: Color
+    ) {
+      self.backgroundConfig = backgroundConfig
+      self.textInputConfig = textInputConfig
+      self.borderColor = borderColor
+    }
+  }
+
+  public struct PartialConfig: PartialConfigProtocol {
+    public var backgroundConfig = Background.PartialConfig()
+    public var textInputConfig = TextInput.PartialConfig()
+    public var borderColor: Color? = nil
+    public init() {}
   }
 }

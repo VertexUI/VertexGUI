@@ -5,6 +5,9 @@
 import Foundation
 import CustomGraphicsMath
 
+// ------
+// UNUSED
+// --------
 public struct RenderStyle {
     public var fillColor: Color?
     public var strokeWidth: Double?

@@ -9,6 +9,9 @@ public class DeveloperToolsView: SingleChildWidget {
   @MutableProperty
   private var bufferedMessages: [WidgetInspectionMessage] = []
 
+  @MutableProperty
+  private var inspectedWidget: Widget?
+
   public init(_ inspectedRoot: Root) {
     self.inspectedRoot = inspectedRoot
     super.init()
@@ -18,35 +21,46 @@ public class DeveloperToolsView: SingleChildWidget {
   }
 
   override public func buildChild() -> Widget {
-    Column(spacing: 16) { [unowned self] in
-      Row {
-        Button {
-          Text("Inspector")
-        } onClick: { _ in
-          activeTab = .Inspector
+    Row { [unowned self] in
+      Column(spacing: 16) {
+        Row {
+          Button {
+            Text("Inspector")
+          } onClick: { _ in
+            activeTab = .Inspector
+          }
+
+          Button {
+            Text("Event Roll")
+          } onClick: { _ in
+            activeTab = .EventRoll
+          }
+
+          Button {
+            Text("Event Log")
+          } onClick: { _ in
+            activeTab = .EventLog
+          }
         }
 
-        Button {
-          Text("Event Roll")
-        } onClick: { _ in
-          activeTab = .EventRoll
+        ObservingBuilder($activeTab) {
+          switch activeTab {
+          case .Inspector:
+            InspectorView(inspectedRoot)
+          case .EventRoll:
+            EventRollView(inspectedRoot)
+          case .EventLog:
+            EventLogView(inspectedRoot, messages: $bufferedMessages) {
+              inspectedWidget = $0
+            }
+          }
         }
-
-        Button {
-          Text("Event Log")
-        } onClick: { _ in
-          activeTab = .EventLog
-        }
-      }
-
-      ObservingBuilder($activeTab) {
-        switch activeTab {
-        case .Inspector:
-          InspectorView(inspectedRoot)
-        case .EventRoll:
-          EventRollView(inspectedRoot)
-        case .EventLog:
-          EventLogView(inspectedRoot, messages: $bufferedMessages)
+      } 
+      ObservingBuilder($inspectedWidget) {
+        if let inspectedWidget = inspectedWidget {
+          WidgetDetailView(inspectedWidget)
+        } else {
+          Space(.zero)
         }
       }
     }

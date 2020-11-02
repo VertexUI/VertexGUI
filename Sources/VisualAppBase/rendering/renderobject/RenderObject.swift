@@ -285,107 +285,74 @@ open class ContainerRenderObject: SubTreeRenderObject {
 // TODO: maybe add something layer BlendMode
 // TODO: is this even needed or should the colors etc. all be added to the individual leaf RenderObjects?
 open class RenderStyleRenderObject: SubTreeRenderObject {
-
     public var fill: AnyRenderValue<Fill>?
-
     public var strokeWidth: Double?
-
     public var strokeColor: AnyRenderValue<Color>?
 
     override open var hasTimedRenderValue: Bool {
-
         return fill?.isTimed ?? false || strokeColor?.isTimed ?? false
     }
 
     override open var debugDescription: String {
-
         "RenderStyleRenderObject"
     }
 
     private var removeTransitionEndListener: (() -> ())? = nil
 
     override open var individualHash: Int {
-
         var hasher = Hasher()
-
         hasher.combine(fill)
-
         hasher.combine(strokeWidth)
-
         hasher.combine(strokeColor)
-
         return hasher.finalize()
     }
 
     public init<FillRenderValue: RenderValue, StrokeRenderValue: RenderValue>(
-
         fill: FillRenderValue? = nil, 
-
         strokeWidth: Double? = nil, 
-
         strokeColor: StrokeRenderValue? = nil,
-
         @RenderObjectBuilder children: () -> [RenderObject]) where 
-
             FillRenderValue.Value == Fill, StrokeRenderValue.Value == Color  {
-
                 if let fill = fill {
-
                     self.fill = AnyRenderValue<Fill>(fill) 
                 }
 
                 self.strokeWidth = strokeWidth
 
                 if let strokeColor = strokeColor {
-
                     self.strokeColor = AnyRenderValue<Color>(strokeColor) 
                 }
 
                 super.init(children: children())
 
                 if let fill = self.fill {
-
                     if let timedValue = fill.timedBase {
-
                         var removeOnTickHandler: (() -> ())? = nil
-
                         removeOnTickHandler = onTick { [unowned self] tick in
-
                             if timedValue.startTimestamp <= tick.totalTime {
-
                                 bus.up(UpwardMessage(
-                                    
                                     sender: self, content: .TransitionStarted))
 
                                 if let remove = removeTransitionEndListener {
-
                                     bus.up(UpwardMessage(
-
                                         sender: self, content: .TransitionEnded
                                     ))
 
                                     removeTransitionEndListener = nil
-
                                     remove()
                                 }
 
                                 removeOnTickHandler!()
 
                                 removeTransitionEndListener = onTick { [weak self] tick in
-
                                     if timedValue.endTimestamp <= tick.totalTime {
-                                        
                                         self?.nextTick {
-                                            
                                             self?.bus.up(UpwardMessage(
-
                                                 sender: self!, content: .TransitionEnded))
                                         }
 
                                         if let remove = self?.removeTransitionEndListener {
-
                                             remove()
-
                                             self?.removeTransitionEndListener = nil
                                         }
                                     }
@@ -647,25 +614,19 @@ open class RectangleRenderObject: RenderObject {
 }
 
 open class EllipsisRenderObject: RenderObject {
-
     public var bounds: DRect
 
     override open var hasTimedRenderValue: Bool {
-
         return false
     }
     
     override open var debugDescription: String {
-
         "EllipsisRenderObject"
     }
     
     override open var individualHash: Int {
-
         var hasher = Hasher()
-
         hasher.combine(bounds)
-        
         return hasher.finalize()
     }
 
@@ -674,11 +635,8 @@ open class EllipsisRenderObject: RenderObject {
     }
 
     override public func objectsAt(point: DPoint2) -> [ObjectAtPointResult] {
-        
         // TODO: check whether point is inside the filled area
-
         if bounds.contains(point: point) {
-
             return [ObjectAtPointResult(object: self, transformedPoint: point)]
         }
 
@@ -687,79 +645,59 @@ open class EllipsisRenderObject: RenderObject {
 }
 
 open class LineSegmentRenderObject: RenderObject {
-
     public var start: DPoint2
-
     public var end: DPoint2
 
     override open var hasTimedRenderValue: Bool {
-
         return false
     }
     
     override open var debugDescription: String {
-
         "LineSegmentRenderObject"
     }
 
     override open var individualHash: Int {
-
         var hasher = Hasher()
-
         hasher.combine(start)
-
         hasher.combine(end)
-
         return hasher.finalize()
     }
 
     public init(from start: DPoint2, to end: DPoint2) {
-
         self.start = start
-
         self.end = end
     }
 
     override public func objectsAt(point: DPoint2) -> [ObjectAtPointResult] {
-    
         return []
     }
 }
 
 // TODO: maybe Rectangle, Ellipsis, LineSegment RenderObjects should inherit from PathRenderObject
 open class PathRenderObject: RenderObject {
-
     public let path: Path
     
     override open var hasTimedRenderValue: Bool {
-
         return false
     }
     
 
     override open var debugDescription: String {
-
         "PathRenderObject"
     }
 
     override open var individualHash: Int {
-
         var hasher = Hasher()
-
         hasher.combine(path)
-
         return hasher.finalize()
     }
 
     public init(_ path: Path) {
-
         self.path = path
     }
 
     override public func objectsAt(point: DPoint2) -> [ObjectAtPointResult] {
-    
         // TODO: get path bounds and check simply first
-
         return []
     }
 }

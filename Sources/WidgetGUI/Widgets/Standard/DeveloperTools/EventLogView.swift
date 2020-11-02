@@ -7,9 +7,17 @@ public class EventLogView: SingleChildWidget {
   @ObservableProperty
   private var messages: [WidgetInspectionMessage]
 
-  public init(_ inspectedRoot: Root, messages: ObservableProperty<[WidgetInspectionMessage]>) {
-    self.inspectedRoot = inspectedRoot
-    self._messages = messages
+  public let onInspectWidgetRequest = EventHandlerManager<Widget>()
+
+  public init(
+    _ inspectedRoot: Root,
+    messages: ObservableProperty<[WidgetInspectionMessage]>,
+    onInspectWidgetRequest inspectWidgetRequestHandler: ((Widget) -> ())? = nil) {
+      self.inspectedRoot = inspectedRoot
+      self._messages = messages
+      if let handler = inspectWidgetRequestHandler {
+        onInspectWidgetRequest.addHandler(handler)
+      }
   }
 
   override public func buildChild() -> Widget {
@@ -36,6 +44,7 @@ public class EventLogView: SingleChildWidget {
     } onClick: { [unowned self] in
       if $0.button == .Left {
         message.sender.flashHighlight()
+        onInspectWidgetRequest.invokeHandlers(message.sender)
       } else if $0.button == .Right {
         createContextMenu(for: message.sender, at: $0.position)        
       }

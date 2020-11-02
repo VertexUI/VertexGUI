@@ -47,6 +47,11 @@ public final class TextInput: SingleChildWidget, StatefulWidget, ConfigurableWid
     self.focusable = true
   }
 
+  /*public init(bind mutableText: MutableProperty<String>) {
+    self._text = mutableText
+    self.displayedText = text
+  }*/
+
   public convenience init(_ initialText: String = "", caretColor: Color) {
     self.init(initialText)
     with(config: PartialConfig { $0.caretColor = caretColor })

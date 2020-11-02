@@ -17,8 +17,11 @@ public class Flex: Widget {
 
   // TODO: default of crossAlignment = .Stretch slows down computation right now. optimize or change default
   public init(
-    orientation: Orientation, crossAlignment: CrossAlignment = .Stretch, spacing: Double = 0,
-    wrap: Bool = false, @Flex.ItemBuilder items buildItems: @escaping () -> [Item]
+    orientation: Orientation,
+    crossAlignment: CrossAlignment = .Stretch,
+    spacing: Double = 0,
+    wrap: Bool = false,
+    @Flex.ItemBuilder items buildItems: @escaping () -> [Item]
   ) {
     self.orientation = orientation
     self.crossAlignment = crossAlignment
