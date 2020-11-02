@@ -53,12 +53,8 @@ open class WidgetsApp<S: System, W: Window, R: Renderer>: VisualApp<S, W, R> {
         #if DEBUG
         _ = window.onKey { [unowned self] in
             if let event = $0 as? KeyUpEvent, event.key == Key.F12 {
-                let devToolsView = DeveloperToolsView(guiRoot)
-                let devToolsGuiRoot = WidgetGUI.Root(
-                    rootWidget: devToolsView
-                )
-                createWindow(guiRoot: devToolsGuiRoot, options: Window.Options(), immediate: true)
-            }
+                openDevTools(for: window)
+           }
         }
         #endif
 
@@ -71,6 +67,16 @@ open class WidgetsApp<S: System, W: Window, R: Renderer>: VisualApp<S, W, R> {
         }
 
         return window
+    }
+
+    public func openDevTools(for window: Window) {
+        let devToolsView = DeveloperToolsView(guiRoots[ObjectIdentifier(window)]!)
+        let devToolsGuiRoot = WidgetGUI.Root(
+            rootWidget: devToolsView
+        )
+        createWindow(guiRoot: devToolsGuiRoot, options: Window.Options(
+            initialPosition: .Defined(window.position + DVec2(window.size))
+        ), immediate: true)
     }
 
     override public func onTick(_ tick: Tick) {
