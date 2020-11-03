@@ -15,12 +15,23 @@ public class MutableProperty<V>: ObservableProperty<V>, MutableProtocol {
       }
     }
     set {
+      let oldValue: Value? = _value
       _value = newValue
-      if let value = _value {
-        onChanged.invokeHandlers(value)
+
+      let invokeHandlers: Bool
+      if let self = self as? AnyEquatableObservablePropertyProtocol {
+        invokeHandlers = !self.valuesEqual(oldValue, _value)
       } else {
-        // assuming that Value itself is an optional
-        onChanged.invokeHandlers(_value as! Value)
+        invokeHandlers = true
+      }
+      
+      if invokeHandlers {
+        if let value = _value {
+          onChanged.invokeHandlers(value)
+        } else {
+          // assuming that Value itself is an optional
+          onChanged.invokeHandlers(_value as! Value)
+        }
       }
     }
   }
@@ -58,6 +69,9 @@ public class MutableProperty<V>: ObservableProperty<V>, MutableProtocol {
     _value = wrappedValue
   }
 }
+
+extension MutableProperty: EquatableObservablePropertyProtocol where Value: Equatable {}
+extension MutableProperty: AnyEquatableObservablePropertyProtocol where Value: Equatable {}
 
 public class MutablePropertyBinding<V>: MutableProperty<V> {
   override public var value: Value {

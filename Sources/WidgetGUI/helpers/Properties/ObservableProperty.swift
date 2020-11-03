@@ -46,6 +46,26 @@ public class ObservableProperty<V>: ObservableProtocol {
   }
 }
 
+internal protocol EquatableObservablePropertyProtocol: AnyEquatableObservablePropertyProtocol {
+  associatedtype Value: Equatable
+}
+
+extension EquatableObservablePropertyProtocol {
+  func valuesEqual(_ value1: Any?, _ value2: Any?) -> Bool {
+    if value1 == nil && value2 == nil {
+      return true
+    } else if let value1 = value1 as? Value, let value2 = value2 as? Value {
+      return value1 == value2
+    } else {
+      return false
+    }
+  }
+}
+
+internal protocol AnyEquatableObservablePropertyProtocol {
+  func valuesEqual(_ value1: Any?, _ value2: Any?) -> Bool
+}
+
 // TODO: implement ObservableArray of Observables --> emit changed event if one item changes
 /*@propertyWrapper
 public class ObservableArrayProperty<Value>: ObservableProperty<[Value]>, Collection {
