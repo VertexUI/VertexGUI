@@ -212,6 +212,7 @@ open class Widget: Bounded, Parent, Child {
             _debugLayout = newValue
         }
     }*/
+    @MutableProperty
     public var layoutDebuggingColor = Color.Red
     private let layoutDebuggingTextFontConfig = FontConfig(family: defaultFontFamily, size: 16, weight: .Regular, style: .Normal)
     // if true, highlight the Widget when bursts of calls to functions such as layout or render occur
@@ -244,6 +245,9 @@ open class Widget: Bounded, Parent, Child {
         self.children = children
         setupWidgetEventHandlerManagers()
         _ = onDestroy(_debugLayout.onChanged { [unowned self] _ in
+            invalidateRenderState()
+        })
+        _ = onDestroy(_layoutDebuggingColor.onChanged { [unowned self] _ in
             invalidateRenderState()
         })
     }

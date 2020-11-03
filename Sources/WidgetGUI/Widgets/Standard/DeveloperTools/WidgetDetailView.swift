@@ -18,7 +18,7 @@ public class WidgetDetailView: SingleChildWidget {
       Row(crossAlignment: .Center, spacing: 16) {
         Text("layout debugging color")
 
-        //TextInput()
+        ColorPicker(bind: inspectedWidget.$layoutDebuggingColor.binding)
       }
     }
   }

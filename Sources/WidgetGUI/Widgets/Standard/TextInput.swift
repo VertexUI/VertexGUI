@@ -21,10 +21,8 @@ public final class TextInput: SingleChildWidget, StatefulWidget, ConfigurableWid
 
   public var state = State()
 
-  @ObservableProperty
-  public var text: String
   @MutableProperty
-  private var displayedText: String
+  public var text: String
   private var textBuffer: String
 
   private var caretPosition: Int = 0
@@ -41,24 +39,20 @@ public final class TextInput: SingleChildWidget, StatefulWidget, ConfigurableWid
 
   public init(_ initialText: String = "") {
     self.textBuffer = initialText
-    self.displayedText = initialText
-    self._text = self._displayedText
+    self.text = initialText
     super.init()
     self.focusable = true
   }
 
-  /*public init(bind mutableText: MutableProperty<String>) {
+  public init(bind mutableText: MutableProperty<String>) {
     self._text = mutableText
-    self.displayedText = text
-  }*/
-
-  public convenience init(_ initialText: String = "", caretColor: Color) {
-    self.init(initialText)
-    with(config: PartialConfig { $0.caretColor = caretColor })
+    self.textBuffer = mutableText.value
+    super.init()
+    self.focusable = true
   }
 
   override public func buildChild() -> Widget {
-    Text($displayedText).with(config: config.textConfig)
+    Text($text).with(config: config.textConfig)
   }
 
   override public func performLayout(constraints: BoxConstraints) -> DSize2 {
@@ -70,7 +64,7 @@ public final class TextInput: SingleChildWidget, StatefulWidget, ConfigurableWid
   }
 
   private func syncText() {
-    displayedText = textBuffer
+    text = textBuffer
   }
 
   private func updateTranslation() {

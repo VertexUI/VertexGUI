@@ -13,21 +13,33 @@ public final class TextField: SingleChildWidget, ConfigurableWidget {
   public var localConfig: Config?
   lazy public var config: Config = combineConfigs()
 
+  @MutableProperty
+  public var text: String
+
   @Reference
   private var textInput: TextInput
-
-  private var initialText: String
 
   public internal(set) var onTextChanged = WidgetEventHandlerManager<String>()
 
   public init(
     _ initialText: String = "", onTextChanged textChangedHandler: ((String) -> Void)? = nil
   ) {
-    self.initialText = initialText
+    self.text = initialText
     super.init()
     if let handler = textChangedHandler {
       _ = onDestroy(onTextChanged(handler))
     }
+    _ = onDestroy(_text.onChanged { [unowned self] in
+      onTextChanged.invokeHandlers($0)
+    })
+  }
+
+  public init(bind mutableText: MutableProperty<String>) {
+    self._text = mutableText
+    super.init()
+    _ = onDestroy(_text.onChanged { [unowned self] in
+      onTextChanged.invokeHandlers($0)
+    })
   }
 
   override public func buildChild() -> Widget {
@@ -38,12 +50,7 @@ public final class TextField: SingleChildWidget, ConfigurableWidget {
         Background {
           Clip {
             Padding(top: 8, right: 16, bottom: 8, left: 16) {
-              TextInput(initialText).with(config: config.textInputConfig).with { textInput in
-                // TODO: instead of doing it like this, provide a afterBuild hook in Widget and then use refs to access TextInput
-                _ = onDestroy((textInput as! TextInput).$text.onChanged {
-                  onTextChanged.invokeHandlers($0)
-                })
-              }.connect(ref: $textInput)
+              TextInput(bind: $text).with(config: config.textInputConfig).connect(ref: $textInput)
             }
           }
         }

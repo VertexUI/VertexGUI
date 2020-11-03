@@ -11,6 +11,10 @@ public class EventHandlerManager<Data> {
   public init() {
   }
 
+  deinit {
+    removeAllHandlers()
+  }
+
   public func callAsFunction(_ handler: @escaping Handler) -> UnregisterCallback {
     addHandler(handler)
   }

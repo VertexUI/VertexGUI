@@ -14,6 +14,10 @@ public class WidgetEventHandlerManager<Data>: AnyWidgetEventHandlerManager {
 
   public init() {}
 
+  deinit {
+    removeAllHandlers()
+  }
+
   public func callAsFunction(_ handler: @escaping Handler) -> UnregisterCallback {
     addHandler(handler)
   }

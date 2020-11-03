@@ -7,9 +7,10 @@ final class FlexTests: XCTestCase {
   func makeRoot(_ rootWidget: Widget) -> Root {
     let root = Root(rootWidget: rootWidget)
     root.widgetContext = WidgetContext(
-      window: try! Window(background: .Transparent, size: DSize2(800, 600)),
+        window: try! Window(options: Window.Options()),
       getTextBoundsSize: { _, _, _ in DSize2.zero },
-      getApplicationTime: { 0 },
+        getApplicationTime: { 0 },
+        createWindow: { _, _ in try! Window(options: Window.Options()) },
       requestCursor: { _ in {} } )
     return root
   }
