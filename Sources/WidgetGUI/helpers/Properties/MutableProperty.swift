@@ -4,7 +4,7 @@ import VisualAppBase
 public class MutableProperty<V>: ObservableProperty<V>, MutableProtocol {
   //public typealias Value = V
 
-  private var _value: Value?
+  private var _value: Value? = nil
   override public var value: Value {
     get {
       if let value = _value {
@@ -38,13 +38,16 @@ public class MutableProperty<V>: ObservableProperty<V>, MutableProtocol {
     self
   }
 
-  public var observe: ObservableProperty<Value> {
+  public var observable: ObservableProperty<Value> {
     self
   }
 
-  override public init() {
-    _value = nil
-    super.init()
+  public var binding: MutablePropertyBinding<Value> {
+    MutablePropertyBinding(parent: self)
+  }
+
+  public init(storedValue: Value?) {
+    _value = storedValue
   }
 
   public init(_ initialValue: Value) {
@@ -53,5 +56,34 @@ public class MutableProperty<V>: ObservableProperty<V>, MutableProtocol {
 
   public init(wrappedValue: Value) {
     _value = wrappedValue
+  }
+}
+
+public class MutablePropertyBinding<V>: MutableProperty<V> {
+  override public var value: Value {
+    get {
+      parent.value
+    }
+    set {
+      parent.value = newValue
+    }
+  }
+
+  private let parent: MutableProperty<V>
+
+  private var removeParentChangedHandler: (() -> ())? = nil
+
+  public init(parent: MutableProperty<V>) {
+    self.parent = parent
+    super.init(storedValue: nil)
+    self.removeParentChangedHandler = parent.onChanged { [unowned self] in
+      self.onChanged.invokeHandlers($0)
+    }
+  }
+
+  deinit {
+    if let remove = removeParentChangedHandler {
+      remove()
+    }
   }
 }

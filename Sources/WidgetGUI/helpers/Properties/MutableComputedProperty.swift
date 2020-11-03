@@ -42,7 +42,7 @@ public class MutableComputedProperty<V>: MutableProperty<V> {
       self.apply = apply
       self.compute = compute
       self.dependencies = dependencies
-      super.init()
+      super.init(storedValue: nil)
       registerDependencyHandlers()
   }
 
