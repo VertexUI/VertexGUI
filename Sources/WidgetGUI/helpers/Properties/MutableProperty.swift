@@ -1,17 +1,27 @@
 import VisualAppBase
 
 @propertyWrapper
-public class MutableProperty<V>: ObservableProperty<V> {
+public class MutableProperty<V>: ObservableProperty<V>, MutableProtocol {
   //public typealias Value = V
 
-  private var _value: Value
+  private var _value: Value?
   override public var value: Value {
     get {
-      return _value
+      if let value = _value {
+        return value
+      } else {
+        // assuming that Value itself is an optional
+        return _value as! Value
+      }
     }
     set {
       _value = newValue
-      onChanged.invokeHandlers(_value)
+      if let value = _value {
+        onChanged.invokeHandlers(value)
+      } else {
+        // assuming that Value itself is an optional
+        onChanged.invokeHandlers(_value as! Value)
+      }
     }
   }
 
@@ -30,6 +40,11 @@ public class MutableProperty<V>: ObservableProperty<V> {
 
   public var observe: ObservableProperty<Value> {
     self
+  }
+
+  override public init() {
+    _value = nil
+    super.init()
   }
 
   public init(_ initialValue: Value) {

@@ -1,30 +1,32 @@
-import VisualAppBase
-
 @propertyWrapper
-public class ComputedProperty<V>: ObservableProperty<V>, ComputedPropertyProtocol {
-  public typealias Value = V
-
-  internal var _value: Value?
+public class MutableComputedProperty<V>: MutableProperty<V> {
+  private var _value: Value?
   override public var value: Value {
-    if _value == nil {
-      performComputation(force: true)
+    get {
+      if _value == nil {
+        performComputation(force: true)
+      }
+      return _value!
     }
-    return _value!
+    set {
+      setValue(newValue)
+    }
   }
 
   override public var wrappedValue: Value {
-    value
+    get {
+      value
+    }
+    set {
+      value = newValue
+    }
   }
-
-  override public var projectedValue: ObservableProperty<V> {
-    self
-  }
-
   public var compute: () -> Value {
     didSet {
       performComputation()
     }
   }
+  public var apply: (Value) -> ()
   public var dependencies: [AnyObservableProperty] {
     didSet {
       removeDependencyHandlers()
@@ -33,24 +35,22 @@ public class ComputedProperty<V>: ObservableProperty<V>, ComputedPropertyProtoco
   }
   private var dependencyChangedHandlerRemovers = [() -> ()]()
 
-  // TODO: automatically track dependencies by registering through a static global variable in first call of compute
-  public init(_ dependencies: [AnyObservableProperty], compute: @escaping () -> Value) {
-    self.compute = compute
-    self.dependencies = dependencies
-    super.init()
-    registerDependencyHandlers()
-  }
-
-  override public init() {
-    self.compute = { fatalError("no compute function given") }
-    self.dependencies = []
+  public init(
+    _ dependencies: [AnyObservableProperty],
+    compute: @escaping () -> Value,
+    apply: @escaping (Value) -> ()) {
+      self.apply = apply
+      self.compute = compute
+      self.dependencies = dependencies
+      super.init()
+      registerDependencyHandlers()
   }
 
   deinit {
     removeDependencyHandlers()
     onChanged.removeAllHandlers()
   }
- 
+
   private func registerDependencyHandlers() {
     dependencyChangedHandlerRemovers = dependencies.map { [unowned self] in
       $0.onChanged {
@@ -71,7 +71,6 @@ public class ComputedProperty<V>: ObservableProperty<V>, ComputedPropertyProtoco
       _value = compute()
 
       if let equatableSelf = self as? AnyEquatableComputedPropertyProtocol {
-
         if !equatableSelf.valuesEqual(previousValue, _value) {
           onChanged.invokeHandlers(value)
         }
@@ -82,9 +81,14 @@ public class ComputedProperty<V>: ObservableProperty<V>, ComputedPropertyProtoco
       _value = nil
     }
   }
+
+  internal func setValue(_ newValue: Value) {
+    apply(newValue)
+    performComputation(force: true)
+  }
 }
 
-extension ComputedProperty: AnyEquatableComputedPropertyProtocol where V: Equatable {
+extension MutableComputedProperty: AnyEquatableComputedPropertyProtocol where Value: Equatable {
   func valuesEqual(_ value1: Any?, _ value2: Any?) -> Bool {
     if value1 == nil && value2 == nil {
       return true
