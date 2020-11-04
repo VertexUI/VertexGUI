@@ -100,6 +100,7 @@ Additionally there could be some interesting applications of [Swift for Tensorfl
   - styling, maybe in the form of selector based stylesheets, theming, different themes in different parts of application, switchable themes, reactive styles
   - support complex animations, moving widgets around, fading them in and out, find out which kinds of properties need to and can be animated and how to do it in a performant manner
   - improve performance by running build, layout, render first for top level parents and then go down the tree
+  - reimplement retaining state
 - rendering:
   - improve the rendering backend api, provide a clear and concise api for rendering graphics primitives by calling functions, similar to HTML canvas and NanoVG
   - improve the RenderObject api, which types of RenderObjects are necessary?

@@ -188,7 +188,6 @@ open class Widget: Bounded, Parent, Child {
     public var layoutable: Bool {
         mounted/* && constraints != nil*/ && context != nil
     }
-    public var firstBuild = true
     public var buildInvalid = true
     public private(set) var layouting = false
     public private(set) var layouted = false
@@ -356,46 +355,9 @@ open class Widget: Bounded, Parent, Child {
 
                 build()
         
-                for i in 0..<children.count {
-                    let oldChild: Widget?
-                    if let oldSelf = oldSelf {
-                        oldChild = oldSelf.children.count > i ? oldSelf.children[i] : nil
-                    } else {
-                        oldChild = nil
-                    }
-
-                    let childContext = oldChild == nil && context == nil ? nil : ReplacementContext(
-                        previousWidget: oldChild, keyedWidgets: replacementContext?.keyedWidgets ?? [:])
-                
-                    mountChild(children[i], with: childContext)
-                }
-
                 mounted = true
 
                 onMounted.invokeHandlers(Void())
-    }
-
-    public func mountChild(_ child: Widget, with replacementContext: ReplacementContext? = nil) {
-      child.mount(parent: self, context: context, lifecycleBus: lifecycleBus, with: replacementContext)
-
-        _ = child.onBoxConfigChanged { [unowned self, unowned child] _ in
-            handleChildBoxConfigChanged(child: child)
-        }
-
-        _ = child.onSizeChanged { [unowned self, unowned child] _ in
-            // TODO: maybe need special relayout flag / function
-            Logger.log("Size of child \(child) of parent \(self) changed.".with(fg: .Blue, style: .Bold), level: .Message, context: .WidgetLayouting)
-            if layouted && !layouting {
-                Logger.log("Performing layout on parent parent.", level: .Message, context: .WidgetLayouting)
-                invalidateLayout()
-            }
-        }
-        
-        _ = child.onFocusChanged { [weak self] in
-            if let self = self {
-                self.focused = $0
-            }
-        }
     }
 
     private final func resolveDependencies() {
@@ -431,7 +393,7 @@ open class Widget: Bounded, Parent, Child {
 
     /// Called automatically during mount(). Can be used to fill self.children.
     // TODO: maybe rename to inMount or something like that
-    public func build() {
+    public final func build() {
         // TODO: check for invalid build
         // TODO: preserve state when it is the second build / n > 0 th build
 
@@ -443,24 +405,31 @@ open class Widget: Bounded, Parent, Child {
         inspectionBus.publish(WidgetInspectionMessage(sender: self, content: .BuildStarted))
         #endif
 
+        let oldChildren = children
+
         performBuild()
 
+        mountChildren(oldChildren: oldChildren)
+
         buildInvalid = false
-        firstBuild = false
 
         #if DEBUG
         inspectionBus.publish(WidgetInspectionMessage(sender: self, content: .BuildFinished))
         #endif
+
+        invalidateBoxConfig()
+        invalidateLayout()
+        invalidateRenderState()
     }
 
     open func performBuild() {
         
     }
 
-    // TODO: this function might be better suited to parent
-    public final func replaceChildren(with newChildren: [Widget]) {
-        // TODO: might put this logic into rebuild
-        let oldChildren = children
+    /**
+    Checks whether the state of the old children can be transferred to the new children and if yes, applies it.
+    */
+    private final func mountChildren(oldChildren: [Widget]) {
         var keyedChildren: [String: Widget] = [:]
         var checkChildren: [Widget] = oldChildren
 
@@ -472,7 +441,23 @@ open class Widget: Bounded, Parent, Child {
             checkChildren.append(contentsOf: child.children)
         }
 
-        children = newChildren
+        /* OLD CODE TAKEN OUT OF MOUNT
+        // TODO: reimplement state retaining
+        for i in 0..<children.count {
+            let oldChild: Widget?
+            if let oldSelf = oldSelf {
+                oldChild = oldSelf.children.count > i ? oldSelf.children[i] : nil
+            } else {
+                oldChild = nil
+            }
+
+            let childContext = oldChild == nil && context == nil ? nil : ReplacementContext(
+                previousWidget: oldChild, keyedWidgets: replacementContext?.keyedWidgets ?? [:])
+        
+            mountChild(children[i], with: childContext)
+        }
+        */
+
         for i in 0..<children.count {
             let newChild = children[i]
             let oldChild: Widget? = oldChildren.count > i ? oldChildren[i] : nil
@@ -483,16 +468,43 @@ open class Widget: Bounded, Parent, Child {
         for child in oldChildren {
             child.destroy()
         }
+    }
 
-        invalidateLayout()
-        invalidateRenderState()
+    public func mountChild(_ child: Widget, with replacementContext: ReplacementContext? = nil) {
+        child.mount(parent: self, context: context, lifecycleBus: lifecycleBus, with: replacementContext)
+
+        _ = child.onBoxConfigChanged { [unowned self, unowned child] _ in
+            handleChildBoxConfigChanged(child: child)
+        }
+
+        _ = child.onSizeChanged { [unowned self, unowned child] _ in
+            // TODO: maybe need special relayout flag / function
+            Logger.log("Size of child \(child) of parent \(self) changed.".with(fg: .Blue, style: .Bold), level: .Message, context: .WidgetLayouting)
+            if layouted && !layouting {
+                Logger.log("Performing layout on parent parent.", level: .Message, context: .WidgetLayouting)
+                invalidateLayout()
+            }
+        }
+        
+        _ = child.onFocusChanged { [weak self] in
+            if let self = self {
+                self.focused = $0
+            }
+        }
     }
 
     @inlinable
     public final func invalidateBuild() {
         if buildInvalid {
             #if DEBUG
-            Logger.warn("Called invalidateLayout() on a Widget where layout is already invalid: \(self)", context: .WidgetLayouting)
+            Logger.warn("Called invalidateBuild() on a Widget where build is already invalid: \(self)", context: .WidgetBuilding)
+            #endif
+            return
+        }
+
+        if !mounted || destroyed {
+            #if DEBUG
+            Logger.warn("Called invalidateBuild() on a Widget that has not yet been mounted or is already destroyed: \(self)", context: .WidgetBuilding)
             #endif
             return
         }
@@ -506,6 +518,10 @@ open class Widget: Bounded, Parent, Child {
         #if DEBUG
         inspectionBus.publish(WidgetInspectionMessage(sender: self, content: .BuildInvalidated))
         #endif
+
+        buildInvalid = true
+
+        lifecycleBus.publish(WidgetLifecycleMessage(sender: self, content: .BuildInvalidated))
     }
 
     private final func handleChildBoxConfigChanged(child: Widget) {

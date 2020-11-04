@@ -44,7 +44,7 @@ public class Logger {
     }
 
     public enum Context: CaseIterable {
-        case Default, WidgetLayouting, WidgetRendering, Performance
+        case Default, WidgetBuilding, WidgetLayouting, WidgetRendering, Performance
     }
 }
 

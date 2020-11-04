@@ -26,8 +26,9 @@ open class Root: Parent {
   }
   private let widgetLifecycleBus = WidgetBus<WidgetLifecycleMessage>()
   //private var focusContext = FocusContext()
+  internal var rebuildWidgets: [Widget] = []
   internal var relayoutWidgets: [Widget] = []
-  private var rerenderWidgets: [Widget] = []
+  internal var rerenderWidgets: [Widget] = []
 
   private var mouseEventManager = WidgetTreeMouseEventManager()
   private var mouseMoveEventBurstLimiter = BurstLimiter(minDelay: 0.015)
@@ -46,7 +47,7 @@ open class Root: Parent {
     _ = widgetLifecycleBus.onMessage { [unowned self] in
       switch $0.content {
       case .BuildInvalidated:
-        break
+        rebuildWidgets.append($0.sender)
       case .BoxConfigInvalidated:
         break
       case .LayoutInvalidated:
@@ -102,16 +103,21 @@ open class Root: Parent {
   open func tick(_ tick: Tick) {
     widgetContext!.onTick.invokeHandlers(tick)
 
+    for widget in rebuildWidgets {
+      widget.build()
+    }
+    rebuildWidgets = []
+
     // TODO: might do boxConfig recalculations here also
     for widget in relayoutWidgets {
       widget.layout(constraints: widget.previousConstraints!)
     }
+    relayoutWidgets = []
 
     // TODO: is it good to put this here or better in render()?
     for widget in rerenderWidgets {
       widget.updateRenderState()
     }
-
     rerenderWidgets = []
   }
 

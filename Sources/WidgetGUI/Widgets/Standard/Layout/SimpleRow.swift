@@ -7,7 +7,7 @@ public class SimpleRow: Widget {
     self.childrenBuilder = childrenBuilder
   }
 
-  override public func build() {
+  override public func performBuild() {
     self.children = childrenBuilder()
   }
 

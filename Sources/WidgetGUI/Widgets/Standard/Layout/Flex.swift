@@ -53,7 +53,7 @@ public class Flex: Widget {
         return vector.y
     }*/
 
-  override public func build() {
+  override open func performBuild() {
     items = buildItems()
     children = items.map {
       $0.content

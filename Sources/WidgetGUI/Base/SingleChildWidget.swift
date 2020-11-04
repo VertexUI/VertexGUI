@@ -3,12 +3,14 @@ import VisualAppBase
 
 // TODO: maybe rename to BuildableSingleChildWidget and create another SingleChildWidget as Basis for button?... maybe can simply use Widget for this
 open class SingleChildWidget: Widget {
-  open lazy var child: Widget = buildChild()
+  open var child: Widget {
+    children[0]
+  }
 
   private var nextTickRebuiltScheduled: Bool = false
 
   override open func performBuild() {
-    children = [child]
+    children = [buildChild()]
   }
 
   open func buildChild() -> Widget {
@@ -16,7 +18,8 @@ open class SingleChildWidget: Widget {
   }
 
   open func invalidateChild() {
-    if !mounted || destroyed {
+    invalidateBuild()
+    /*if !mounted || destroyed {
       return
     }
 
@@ -37,7 +40,7 @@ open class SingleChildWidget: Widget {
 
     invalidateBoxConfig()
     invalidateLayout()
-    invalidateRenderState()
+    invalidateRenderState()*/
   }
 
   open func withChildInvalidation(block: () -> Void) {
