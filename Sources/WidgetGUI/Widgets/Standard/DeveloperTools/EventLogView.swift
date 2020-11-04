@@ -11,10 +11,10 @@ public class EventLogView: SingleChildWidget {
 
   public init(
     _ inspectedRoot: Root,
-    messages: ObservableProperty<[WidgetInspectionMessage]>,
+    messages observableMessages: ObservableProperty<[WidgetInspectionMessage]>,
     onInspectWidgetRequest inspectWidgetRequestHandler: ((Widget) -> ())? = nil) {
       self.inspectedRoot = inspectedRoot
-      self._messages = messages
+      self._messages = observableMessages
       if let handler = inspectWidgetRequestHandler {
         onInspectWidgetRequest.addHandler(handler)
       }

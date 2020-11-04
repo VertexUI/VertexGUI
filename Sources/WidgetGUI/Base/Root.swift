@@ -40,10 +40,12 @@ open class Root: Parent {
   }
 
   public init(rootWidget contentRootWidget: Widget) {
-    rootWidget = contentRootWidget
-    rootWidget.mount(parent: self)
-    //rootWidget.focusContext = focusContext
-
+    self.rootWidget = contentRootWidget
+  }
+  
+  open func setup(widgetContext: WidgetContext) {
+    self.widgetContext = widgetContext
+    
     _ = rootWidget.onBoxConfigChanged { [unowned self] _ in
       layout()
     }
@@ -55,8 +57,11 @@ open class Root: Parent {
     _ = rootWidget.onAnyRenderStateInvalidated { [unowned self] in
       rerenderWidgets.append($0)
     }
+    
+    rootWidget.mount(parent: self, context: widgetContext)
+    //rootWidget.focusContext = focusContext
   }
-
+  
   open func layout() {
     rootWidget.layout(constraints: BoxConstraints(minSize: bounds.size, maxSize: bounds.size))
   }

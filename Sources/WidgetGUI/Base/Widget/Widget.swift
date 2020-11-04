@@ -33,6 +33,7 @@ open class Widget: Bounded, Parent, Child {
             _context = newValue
         }
     }
+    private var contextOnTickHandlerRemover: (() -> ())? = nil
 
 
     /*private var _focusContext: FocusContext?
@@ -226,6 +227,7 @@ open class Widget: Bounded, Parent, Child {
     public internal(set) var onParentChanged = EventHandlerManager<Parent?>()
     public internal(set) var onAnyParentChanged = EventHandlerManager<Parent?>()
     public internal(set) var onMounted = EventHandlerManager<Void>()
+    public internal(set) var onTick = WidgetEventHandlerManager<Tick>()
     public internal(set) var onBoxConfigChanged = EventHandlerManager<BoxConfigChangedEvent>()
     public internal(set) var onSizeChanged = EventHandlerManager<DSize2>()
     public internal(set) var onLayoutInvalidated = EventHandlerManager<Void>()
@@ -262,31 +264,60 @@ open class Widget: Bounded, Parent, Child {
     }
 
     deinit {
-        Logger.log("Deinitialized Widget: \(id) \(self)", level: .Message, context: .Default)
+      if !destroyed {
+        fatalError("Deinitialized Widget without calling destroy() first")
+      }
+      Logger.log("Deinitialized Widget: \(id) \(self)", level: .Message, context: .Default)
     }
 
     // TODO: maybe find better names for the following functions?
 
-    @inlinable public final func with(key: String) -> Self {
+    @inlinable
+    public final func with(key: String) -> Self {
         self.key = key
         return self
     }
 
-    @inlinable public final func connect(ref reference: ReferenceProtocol) -> Self {
+    @inlinable
+    public final func connect(ref reference: ReferenceProtocol) -> Self {
         self.reference = reference
         return self
     }    
 
-    @inlinable public final func with(block: (Self) -> ()) -> Self {
+    @inlinable
+    public final func with(block: (Self) -> ()) -> Self {
         block(self)
         return self
     }
  
-    public final func mount(parent: Parent, with context: ReplacementContext? = nil) {
-        var oldSelf: Widget? = context?.previousWidget
-        if let context = context {
+    private final func setupContext() {
+        contextOnTickHandlerRemover = context.onTick({ [weak self] in
+          if let self = self {
+            self.onTick.invokeHandlers($0)
+          } else {
+            print("THERE IS NO SELF IN ON TICK!")
+          }
+        })
+    }
+    
+    private final func undoContextSetup() {
+      if contextOnTickHandlerRemover == nil {
+        fatalError("CALLED UNDOCONTEXTSETUP when remove handler is nil")
+      }
+      if let remove = contextOnTickHandlerRemover {
+        remove()
+        print("CALLED REMOVE ON TICK")
+      }
+    }
+    
+    public final func mount(parent: Parent, context: WidgetContext, with replacementContext: ReplacementContext? = nil) {
+      self.context = context
+      self.setupContext()
+      
+        var oldSelf: Widget? = replacementContext?.previousWidget
+        if let replacementContext = replacementContext {
             if let newKey = self.key {
-                oldSelf = context.keyedWidgets[newKey]
+                oldSelf = replacementContext.keyedWidgets[newKey]
             }
 
             if let newSelf = self as? (Widget & AnyStatefulWidget), let oldSelf = oldSelf as? (Widget & AnyStatefulWidget) {
@@ -323,7 +354,7 @@ open class Widget: Bounded, Parent, Child {
             }
 
             let childContext = oldChild == nil && context == nil ? nil : ReplacementContext(
-                previousWidget: oldChild, keyedWidgets: context?.keyedWidgets ?? [:])
+                previousWidget: oldChild, keyedWidgets: replacementContext?.keyedWidgets ?? [:])
            
             mountChild(children[i], with: childContext)
         }
@@ -334,37 +365,25 @@ open class Widget: Bounded, Parent, Child {
     }
 
     private final func resolveDependencies() {
-
         var injectables = [AnyInject]()
         
         let mirror = Mirror(reflecting: self)
-        
         for child in mirror.children {
-            
             // TODO: this type of value needs to be caught specifically for some reason or there will be a crash
             if child.value is [AnyObject] {
-
                 continue
             }
-
             if child.value is AnyInject {
-
                 injectables.append(child.value as! AnyInject)
             }
         }
 
         if injectables.count > 0 {
-            
             let providers = getParents(ofType: DependencyProvider.self)
-
             for provider in providers {
-                
                 for injectable in injectables {
-
                     if injectable.anyValue == nil {
-                        
                         if let dependency = provider.getDependency(ofType: injectable.anyType) {
-
                             injectable.anyValue = dependency.value
                         }
                     }
@@ -381,8 +400,8 @@ open class Widget: Bounded, Parent, Child {
     open func build() {
     }
 
-    public func mountChild(_ child: Widget, with context: ReplacementContext? = nil) {
-        child.mount(parent: self, with: context)
+    public func mountChild(_ child: Widget, with replacementContext: ReplacementContext? = nil) {
+      child.mount(parent: self, context: context, with: replacementContext)
 
         _ = child.onBoxConfigChanged { [unowned self, unowned child] _ in
             handleChildBoxConfigChanged(child: child)
@@ -815,7 +834,7 @@ open class Widget: Bounded, Parent, Child {
             }
         }
     }
-
+    
     /**
     Can be used for debugging purposes to highlight a specific Widget, helping to identify it on the screen.
     Only available in debug builds.
@@ -843,9 +862,11 @@ open class Widget: Bounded, Parent, Child {
         for child in children {
             child.destroy()
         }
-
+        
         mounted = false
-
+        
+        undoContextSetup()
+        
         if var reference = reference {
             reference.referenced = nil
         }

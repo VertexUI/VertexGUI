@@ -178,7 +178,7 @@ public class TodoAppView: SingleChildWidget {
               switch mode {
               case .SelectedList:
                 ObservingBuilder(store.getters.$selectedList.compute { $0?.id }) {
-                  if let _ = store.getters.selectedList {
+                  if let list = store.getters.selectedList {
                     return TodoListView(store.getters.$selectedList.compute { $0! })
                   } else {
                     return Center {

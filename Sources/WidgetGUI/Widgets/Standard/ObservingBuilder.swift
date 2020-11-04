@@ -3,6 +3,8 @@ import CustomGraphicsMath
 public class ObservingBuilder: SingleChildWidget {
   private var observables: [AnyObservableProperty]
   private var childBuilder: () -> Widget
+    
+  private var anyObservableChanged: Bool = false
 
   public init(
     _ observables: [AnyObservableProperty], @WidgetBuilder child childBuilder: @escaping () -> Widget
@@ -14,8 +16,15 @@ public class ObservingBuilder: SingleChildWidget {
 
     for observable in observables {
       _ = onDestroy(observable.onChanged { [unowned self] _ in
-        invalidateChild()
+        anyObservableChanged = true
       })
+    }
+    
+    _ = self.onTick { [unowned self] _ in
+      if anyObservableChanged {
+        invalidateChild()
+        anyObservableChanged = false
+      }
     }
   }
 

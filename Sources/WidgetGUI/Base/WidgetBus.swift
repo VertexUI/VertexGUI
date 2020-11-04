@@ -9,7 +9,6 @@ public class WidgetBus<Message> {
   }
 }
 
-#if DEBUG
 public struct WidgetInspectionMessage {
   public let sender: Widget
   public let content: MessageContent
@@ -31,4 +30,3 @@ public struct WidgetInspectionMessage {
     case RenderingFinished(duration: Double)
   }
 }
-#endif

@@ -50,7 +50,7 @@ public class DeveloperToolsView: SingleChildWidget {
           case .EventRoll:
             EventRollView(inspectedRoot)
           case .EventLog:
-            EventLogView(inspectedRoot, messages: $bufferedMessages) {
+            EventLogView(inspectedRoot, messages: $bufferedMessages.observable) {
               inspectedWidget = $0
             }
           }

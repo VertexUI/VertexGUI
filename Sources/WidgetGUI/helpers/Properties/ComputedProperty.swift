@@ -71,7 +71,6 @@ public class ComputedProperty<V>: ObservableProperty<V>, ComputedPropertyProtoco
       _value = compute()
 
       if let equatableSelf = self as? AnyEquatableComputedPropertyProtocol {
-
         if !equatableSelf.valuesEqual(previousValue, _value) {
           onChanged.invokeHandlers(value)
         }
@@ -84,14 +83,4 @@ public class ComputedProperty<V>: ObservableProperty<V>, ComputedPropertyProtoco
   }
 }
 
-extension ComputedProperty: AnyEquatableComputedPropertyProtocol where V: Equatable {
-  func valuesEqual(_ value1: Any?, _ value2: Any?) -> Bool {
-    if value1 == nil && value2 == nil {
-      return true
-    } else if let value1 = value1 as? Value, let value2 = value2 as? Value {
-      return value1 == value2
-    } else {
-      return false
-    }
-  }
-}
+extension ComputedProperty: EquatableObservablePropertyProtocol, AnyEquatableObservablePropertyProtocol where V: Equatable {}

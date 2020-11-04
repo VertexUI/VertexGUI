@@ -19,18 +19,19 @@ open class WidgetsApp<S: System, W: Window, R: Renderer>: VisualApp<S, W, R> {
         let window = super.createWindow(
             options: options,
             immediate: immediate)
-        var context = windowContexts[ObjectIdentifier(window)]!
+        let context = windowContexts[ObjectIdentifier(window)]!
         let guiRoot = guiRootBuilder()
 
+        guiRoot.setup(widgetContext: WidgetContext(
+                      window: window,
+                      getTextBoundsSize: { [unowned self] in windowContexts[ObjectIdentifier(window)]!.renderer.getTextBoundsSize($0, fontConfig: $1, maxWidth: $2) },
+                      getApplicationTime: { [unowned self] in system.currentTime },
+                      createWindow: { [unowned self] in createWindow(guiRoot: $0(), options: $1, immediate: true) },
+                      requestCursor: {
+                          self.system.requestCursor($0)
+                      }))
+      
         guiRoots[ObjectIdentifier(window)] = guiRoot
-        guiRoot.widgetContext = WidgetContext(
-            window: window,
-            getTextBoundsSize: { [unowned self] in windowContexts[ObjectIdentifier(window)]!.renderer.getTextBoundsSize($0, fontConfig: $1, maxWidth: $2) },
-            getApplicationTime: { [unowned self] in system.currentTime },
-            createWindow: { [unowned self] in createWindow(guiRoot: $0(), options: $1, immediate: true) },
-            requestCursor: {
-                self.system.requestCursor($0)
-            })
 
         guiRoot.bounds.size = window.size
         
