@@ -81,15 +81,7 @@ open class Widget: Bounded, Parent, Child {
         }*/
     }
 
-    lazy open internal(set) var boxConfig = getBoxConfig() {
-        didSet {
-            // either the own preferred size or a position or size of a child
-            // or any other layout important value has changed, so the layout can't be valid anymore
-            // setting this flag will force a relayout, even if the passed constraints
-            // are the same on the next layout cycle
-            layoutInvalid = true
-        }
-    }
+    lazy open internal(set) var boxConfig = getBoxConfig()
 
     /// bridge boxConfig for use in @inlinable functions
     @usableFromInline internal var _boxConfig: BoxConfig {
@@ -189,6 +181,7 @@ open class Widget: Bounded, Parent, Child {
         mounted/* && constraints != nil*/ && context != nil
     }
     public var buildInvalid = true
+    public var boxConfigInvalid = true
     public private(set) var layouting = false
     public private(set) var layouted = false
     // TODO: maybe rename to boundsInvalid???
@@ -548,6 +541,17 @@ open class Widget: Bounded, Parent, Child {
         }
     }
 
+    public final func updateBoxConfig() {
+        // TODO: implement inspection messages
+        let currentBoxConfig = boxConfig
+        let newBoxConfig = getBoxConfig()
+        if currentBoxConfig != newBoxConfig {
+            _boxConfig = newBoxConfig
+            onBoxConfigChanged.invokeHandlers(BoxConfigChangedEvent(old: currentBoxConfig, new: newBoxConfig))
+            invalidateLayout()
+        }
+    }
+
     open func getBoxConfig() -> BoxConfig {
         fatalError("getBoxConfig() not implemented for Widget \(self).")
     }
@@ -555,12 +559,13 @@ open class Widget: Bounded, Parent, Child {
     // TODO: maybe call this updateBoxConfig / or queueBoxConfigUpdate??? --> on next tick?
     @inlinable
     public final func invalidateBoxConfig() {
-        let currentBoxConfig = boxConfig
-        let newBoxConfig = getBoxConfig()
-        if currentBoxConfig != newBoxConfig {
-            _boxConfig = newBoxConfig
-            onBoxConfigChanged.invokeHandlers(BoxConfigChangedEvent(old: currentBoxConfig, new: newBoxConfig))
+        if boxConfigInvalid {
+            #if DEBUG
+            Logger.warn("Called invalidateBoxConfig() on a Widget where box config is already invalid", context: .WidgetLayouting)
+            #endif
+            return
         }
+        lifecycleBus.publish(WidgetLifecycleMessage(sender: self, content: .BoxConfigInvalidated))
     }
 
     @inlinable public final func layout(constraints: BoxConstraints) {

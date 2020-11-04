@@ -27,6 +27,7 @@ open class Root: Parent {
   private let widgetLifecycleBus = WidgetBus<WidgetLifecycleMessage>()
   //private var focusContext = FocusContext()
   internal var rebuildWidgets: [Widget] = []
+  internal var reboxConfigWidgets: [Widget] = []
   internal var relayoutWidgets: [Widget] = []
   internal var rerenderWidgets: [Widget] = []
 
@@ -49,7 +50,7 @@ open class Root: Parent {
       case .BuildInvalidated:
         rebuildWidgets.append($0.sender)
       case .BoxConfigInvalidated:
-        break
+        reboxConfigWidgets.append($0.sender)
       case .LayoutInvalidated:
         relayoutWidgets.append($0.sender)
       case .RenderStateInvalidated:
@@ -108,7 +109,11 @@ open class Root: Parent {
     }
     rebuildWidgets = []
 
-    // TODO: might do boxConfig recalculations here also
+    for widget in reboxConfigWidgets {
+      widget.updateBoxConfig()
+    }
+    reboxConfigWidgets = []
+    
     for widget in relayoutWidgets {
       widget.layout(constraints: widget.previousConstraints!)
     }
