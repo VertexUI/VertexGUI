@@ -14,15 +14,19 @@ public class List<Item>: SingleChildWidget {
     @WidgetBuilder child childBuilder: @escaping (Item) -> Widget) {
       self._items = items
       self.childBuilder = childBuilder
+      super.init()
+      _ = self.onDestroy(self.$items.onChanged { [unowned self] _ in
+        invalidateChild()
+      })
   }
 
   override public func buildChild() -> Widget {
     itemWidgets = items.map(childBuilder)
-    return ScrollArea { [unowned self] in
+    return ScrollArea(scrollX: .Never) { [unowned self] in
       Column {
         itemWidgets.map {
           $0.with {
-            $0.visibility = .Hidden
+            $0.visibility = .Visible
           }
         }
       }

@@ -7,7 +7,7 @@ open class SingleChildWidget: Widget {
 
   private var nextTickRebuiltScheduled: Bool = false
 
-  override open func build() {
+  override open func performBuild() {
     children = [child]
   }
 

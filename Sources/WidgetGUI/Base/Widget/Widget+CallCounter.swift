@@ -49,7 +49,7 @@ extension Widget {
     }
 
     @usableFromInline internal enum CallType: CaseIterable {
-        case Layout, Render, InvalidateRenderState, InvalidateLayout
+        case Build, Layout, Render, InvalidateRenderState, InvalidateLayout
     }
 }
 

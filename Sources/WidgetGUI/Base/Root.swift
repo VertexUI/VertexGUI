@@ -24,8 +24,9 @@ open class Root: Parent {
       rootWidget.context = widgetContext!
     }
   }
+  private let widgetLifecycleBus = WidgetBus<WidgetLifecycleMessage>()
   //private var focusContext = FocusContext()
-  internal var layoutInvalidatedWidgets: [Widget] = []
+  internal var relayoutWidgets: [Widget] = []
   private var rerenderWidgets: [Widget] = []
 
   private var mouseEventManager = WidgetTreeMouseEventManager()
@@ -41,8 +42,23 @@ open class Root: Parent {
 
   public init(rootWidget contentRootWidget: Widget) {
     self.rootWidget = contentRootWidget
+
+    _ = widgetLifecycleBus.onMessage { [unowned self] in
+      switch $0.content {
+      case .BuildInvalidated:
+        break
+      case .BoxConfigInvalidated:
+        break
+      case .LayoutInvalidated:
+        relayoutWidgets.append($0.sender)
+      case .RenderStateInvalidated:
+        rerenderWidgets.append($0.sender)
+      }
+    }
   }
   
+  // TODO: instead of receiving a widgetcontext directly, receive an application and a rendercontext
+  // and then build the widget context here
   open func setup(widgetContext: WidgetContext) {
     self.widgetContext = widgetContext
     
@@ -50,15 +66,7 @@ open class Root: Parent {
       layout()
     }
 
-    _ = rootWidget.onAnyLayoutInvalidated { [unowned self] in
-      layoutInvalidatedWidgets.append($0)
-    }
-
-    _ = rootWidget.onAnyRenderStateInvalidated { [unowned self] in
-      rerenderWidgets.append($0)
-    }
-    
-    rootWidget.mount(parent: self, context: widgetContext)
+    rootWidget.mount(parent: self, context: widgetContext, lifecycleBus: widgetLifecycleBus)
     //rootWidget.focusContext = focusContext
   }
   
@@ -66,7 +74,8 @@ open class Root: Parent {
     rootWidget.layout(constraints: BoxConstraints(minSize: bounds.size, maxSize: bounds.size))
   }
 
-  @discardableResult open func consume(_ rawMouseEvent: RawMouseEvent) -> Bool {
+  @discardableResult
+  open func consume(_ rawMouseEvent: RawMouseEvent) -> Bool {
     if let event = rawMouseEvent as? RawMouseMoveEvent {
       mouseMoveEventBurstLimiter.limit { [weak self] in
         self?.propagate(rawMouseEvent)
@@ -78,12 +87,14 @@ open class Root: Parent {
     return false
   }
 
-  @discardableResult open func consume(_ rawKeyEvent: KeyEvent) -> Bool {
+  @discardableResult
+  open func consume(_ rawKeyEvent: KeyEvent) -> Bool {
     propagate(rawKeyEvent)
     return false
   }
 
-  @discardableResult open func consume(_ rawTextEvent: TextEvent) -> Bool {
+  @discardableResult
+  open func consume(_ rawTextEvent: TextEvent) -> Bool {
     propagate(rawTextEvent)
     return false
   }
@@ -92,7 +103,7 @@ open class Root: Parent {
     widgetContext!.onTick.invokeHandlers(tick)
 
     // TODO: might do boxConfig recalculations here also
-    for widget in layoutInvalidatedWidgets {
+    for widget in relayoutWidgets {
       widget.layout(constraints: widget.previousConstraints!)
     }
 

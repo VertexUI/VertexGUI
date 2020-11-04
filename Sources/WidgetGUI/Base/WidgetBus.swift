@@ -19,6 +19,10 @@ public struct WidgetInspectionMessage {
   }
 
   public enum MessageContent {
+    case BuildInvalidated
+    case BuildStarted
+    case BuildFinished
+    
     case LayoutInvalidated
 
     case LayoutBurstThresholdExceeded
@@ -28,5 +32,22 @@ public struct WidgetInspectionMessage {
     case RenderBurstThresholdExceeded
     case RenderingStarted
     case RenderingFinished(duration: Double)
+  }
+}
+
+public struct WidgetLifecycleMessage {
+  public let sender: Widget
+  public let content: MessageContent
+
+  public init(sender: Widget, content: MessageContent) {
+    self.sender = sender
+    self.content = content
+  }
+
+  public enum MessageContent {
+    case BuildInvalidated
+    case BoxConfigInvalidated
+    case LayoutInvalidated
+    case RenderStateInvalidated
   }
 }

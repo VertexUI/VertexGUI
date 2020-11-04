@@ -35,6 +35,12 @@ open class Widget: Bounded, Parent, Child {
     }
     private var contextOnTickHandlerRemover: (() -> ())? = nil
 
+    @usableFromInline
+    internal var inspectionBus: WidgetBus<WidgetInspectionMessage> {
+        context.inspectionBus
+    }
+
+    public internal(set) var lifecycleBus = WidgetBus<WidgetLifecycleMessage>()
 
     /*private var _focusContext: FocusContext?
     open var focusContext: FocusContext {
@@ -62,7 +68,7 @@ open class Widget: Bounded, Parent, Child {
             }
         }
 
-        didSet {
+        /*didSet {
             onParentChanged.invokeHandlers(parent)
             onAnyParentChanged.invokeHandlers(parent)
             if parent != nil {
@@ -72,7 +78,7 @@ open class Widget: Bounded, Parent, Child {
                     })
                 }
             }
-        }
+        }*/
     }
 
     lazy open internal(set) var boxConfig = getBoxConfig() {
@@ -182,6 +188,8 @@ open class Widget: Bounded, Parent, Child {
     public var layoutable: Bool {
         mounted/* && constraints != nil*/ && context != nil
     }
+    public var firstBuild = true
+    public var buildInvalid = true
     public private(set) var layouting = false
     public private(set) var layouted = false
     // TODO: maybe rename to boundsInvalid???
@@ -225,18 +233,16 @@ open class Widget: Bounded, Parent, Child {
     @usableFromInline lazy internal var callCounter = CallCounter(widget: self)
 
     public internal(set) var onParentChanged = EventHandlerManager<Parent?>()
-    public internal(set) var onAnyParentChanged = EventHandlerManager<Parent?>()
+    //public internal(set) var onAnyParentChanged = EventHandlerManager<Parent?>()
     public internal(set) var onMounted = EventHandlerManager<Void>()
     public internal(set) var onTick = WidgetEventHandlerManager<Tick>()
     public internal(set) var onBoxConfigChanged = EventHandlerManager<BoxConfigChangedEvent>()
     public internal(set) var onSizeChanged = EventHandlerManager<DSize2>()
     public internal(set) var onLayoutInvalidated = EventHandlerManager<Void>()
     /// Forwards LayoutInvalidated Events up from children (recursive). Also emits own events.
-    public internal(set) var onAnyLayoutInvalidated = EventHandlerManager<Widget>()
     public internal(set) var onLayoutingStarted = EventHandlerManager<BoxConstraints>()
     public internal(set) var onLayoutingFinished = EventHandlerManager<DSize2>()
     public internal(set) var onRenderStateInvalidated = EventHandlerManager<Widget>()
-    public internal(set) var onAnyRenderStateInvalidated = EventHandlerManager<Widget>()
     // TODO: this could lead to a strong reference cycle
     public internal(set) var onFocusChanged = WidgetEventHandlerManager<Bool>()
     public internal(set) var onDestroy = EventHandlerManager<Void>()
@@ -282,7 +288,7 @@ open class Widget: Bounded, Parent, Child {
     public final func connect(ref reference: ReferenceProtocol) -> Self {
         self.reference = reference
         return self
-    }    
+    }
 
     @inlinable
     public final func with(block: (Self) -> ()) -> Self {
@@ -310,58 +316,86 @@ open class Widget: Bounded, Parent, Child {
       }
     }
     
-    public final func mount(parent: Parent, context: WidgetContext, with replacementContext: ReplacementContext? = nil) {
-      self.context = context
-      self.setupContext()
-      
-        var oldSelf: Widget? = replacementContext?.previousWidget
-        if let replacementContext = replacementContext {
-            if let newKey = self.key {
-                oldSelf = replacementContext.keyedWidgets[newKey]
-            }
+    public final func mount(
+        parent: Parent,
+        context: WidgetContext,
+        lifecycleBus: WidgetBus<WidgetLifecycleMessage>,
+        with replacementContext: ReplacementContext? = nil) {
+            self.context = context
+            self.setupContext()
+            self.lifecycleBus = lifecycleBus
+            
+                var oldSelf: Widget? = replacementContext?.previousWidget
+                if let replacementContext = replacementContext {
+                    if let newKey = self.key {
+                        oldSelf = replacementContext.keyedWidgets[newKey]
+                    }
 
-            if let newSelf = self as? (Widget & AnyStatefulWidget), let oldSelf = oldSelf as? (Widget & AnyStatefulWidget) {
-                var attemptStateReplace = false
+                    if let newSelf = self as? (Widget & AnyStatefulWidget), let oldSelf = oldSelf as? (Widget & AnyStatefulWidget) {
+                        var attemptStateReplace = false
 
-                if  let newKey = newSelf.key,
-                    let oldKey = oldSelf.key,
-                    oldKey == newKey {
-                        attemptStateReplace = true
-                } else if newSelf.key == nil, oldSelf.key == nil {
-                    attemptStateReplace = true
+                        if  let newKey = newSelf.key,
+                            let oldKey = oldSelf.key,
+                            oldKey == newKey {
+                                attemptStateReplace = true
+                        } else if newSelf.key == nil, oldSelf.key == nil {
+                            attemptStateReplace = true
+                        }
+
+                        if attemptStateReplace && type(of: newSelf) == type(of: oldSelf) {
+                            newSelf.anyState = oldSelf.anyState
+                        }
+                    }
+                }
+            
+                self.parent = parent
+
+                resolveDependencies()
+
+                addedToParent()
+
+                build()
+        
+                for i in 0..<children.count {
+                    let oldChild: Widget?
+                    if let oldSelf = oldSelf {
+                        oldChild = oldSelf.children.count > i ? oldSelf.children[i] : nil
+                    } else {
+                        oldChild = nil
+                    }
+
+                    let childContext = oldChild == nil && context == nil ? nil : ReplacementContext(
+                        previousWidget: oldChild, keyedWidgets: replacementContext?.keyedWidgets ?? [:])
+                
+                    mountChild(children[i], with: childContext)
                 }
 
-                if attemptStateReplace && type(of: newSelf) == type(of: oldSelf) {
-                    newSelf.anyState = oldSelf.anyState
-                }
-            }
-        }
-    
-        self.parent = parent
+                mounted = true
 
-        resolveDependencies()
+                onMounted.invokeHandlers(Void())
+    }
 
-        addedToParent()
+    public func mountChild(_ child: Widget, with replacementContext: ReplacementContext? = nil) {
+      child.mount(parent: self, context: context, lifecycleBus: lifecycleBus, with: replacementContext)
 
-        build()
- 
-        for i in 0..<children.count {
-            let oldChild: Widget?
-            if let oldSelf = oldSelf {
-                oldChild = oldSelf.children.count > i ? oldSelf.children[i] : nil
-            } else {
-                oldChild = nil
-            }
-
-            let childContext = oldChild == nil && context == nil ? nil : ReplacementContext(
-                previousWidget: oldChild, keyedWidgets: replacementContext?.keyedWidgets ?? [:])
-           
-            mountChild(children[i], with: childContext)
+        _ = child.onBoxConfigChanged { [unowned self, unowned child] _ in
+            handleChildBoxConfigChanged(child: child)
         }
 
-        mounted = true
-
-        onMounted.invokeHandlers(Void())
+        _ = child.onSizeChanged { [unowned self, unowned child] _ in
+            // TODO: maybe need special relayout flag / function
+            Logger.log("Size of child \(child) of parent \(self) changed.".with(fg: .Blue, style: .Bold), level: .Message, context: .WidgetLayouting)
+            if layouted && !layouting {
+                Logger.log("Performing layout on parent parent.", level: .Message, context: .WidgetLayouting)
+                invalidateLayout()
+            }
+        }
+        
+        _ = child.onFocusChanged { [weak self] in
+            if let self = self {
+                self.focused = $0
+            }
+        }
     }
 
     private final func resolveDependencies() {
@@ -397,66 +431,35 @@ open class Widget: Bounded, Parent, Child {
 
     /// Called automatically during mount(). Can be used to fill self.children.
     // TODO: maybe rename to inMount or something like that
-    open func build() {
-    }
+    public func build() {
+        // TODO: check for invalid build
+        // TODO: preserve state when it is the second build / n > 0 th build
 
-    public func mountChild(_ child: Widget, with replacementContext: ReplacementContext? = nil) {
-      child.mount(parent: self, context: context, with: replacementContext)
-
-        _ = child.onBoxConfigChanged { [unowned self, unowned child] _ in
-            handleChildBoxConfigChanged(child: child)
-        }
-
-        _ = child.onSizeChanged { [unowned self, unowned child] _ in
-            // TODO: maybe need special relayout flag / function
-            Logger.log("Size of child \(child) of parent \(self) changed.".with(fg: .Blue, style: .Bold), level: .Message, context: .WidgetLayouting)
-            if layouted && !layouting {
-                Logger.log("Performing layout on parent parent.", level: .Message, context: .WidgetLayouting)
-                invalidateLayout()
-            }
+        #if DEBUG
+        if countCalls {
+            callCounter.count(.Build)
         }
         
-        _ = child.onAnyLayoutInvalidated { [unowned self] in
-            onAnyLayoutInvalidated.invokeHandlers($0)
-        }
-        
-        _ = child.onAnyRenderStateInvalidated { [unowned self] in
-            onAnyRenderStateInvalidated.invokeHandlers($0)
-        }
+        inspectionBus.publish(WidgetInspectionMessage(sender: self, content: .BuildStarted))
+        #endif
 
-        _ = child.onFocusChanged { [weak self] in
-            if let self = self {
-                self.focused = $0
-            }
-        }
+        performBuild()
+
+        buildInvalid = false
+        firstBuild = false
+
+        #if DEBUG
+        inspectionBus.publish(WidgetInspectionMessage(sender: self, content: .BuildFinished))
+        #endif
     }
 
-    private final func handleChildBoxConfigChanged(child: Widget) {
-        Logger.log("Box config of child: \(child) of parent \(self) changed.".with(fg: .Blue, style: .Bold), level: .Message, context: .WidgetLayouting)
-
-        if layouted && !layouting {
-            Logger.log("Invalidating own box config.", level: .Message, context: .WidgetLayouting)
-            let oldBoxConfig = boxConfig
-            invalidateBoxConfig()
-            let newBoxConfig = boxConfig
-            // This prevents unnecessary calls to layout.
-            // Only if this Widgets box config isn't changed, trigger a relayout.
-            // For all children with changed box configs (also deeply nested ones)
-            // layout will not have been called because of this comparison.
-            // The first parent without a changed box config will trigger
-            // a relayout for the whole subtree.
-            // In case no Widget has no changed box config, the
-            // relayout will be triggered in Root for the whole UI.
-            // TODO: maybe there is a better solution
-            if oldBoxConfig == newBoxConfig {
-                Logger.log("Own box config is changed. Perform layout with previous constraints: \(String(describing: previousConstraints))".with(fg: .Yellow), level: .Message, context: .WidgetLayouting)
-                invalidateLayout()
-            }
-        }
+    open func performBuild() {
+        
     }
 
     // TODO: this function might be better suited to parent
     public final func replaceChildren(with newChildren: [Widget]) {
+        // TODO: might put this logic into rebuild
         let oldChildren = children
         var keyedChildren: [String: Widget] = [:]
         var checkChildren: [Widget] = oldChildren
@@ -485,12 +488,57 @@ open class Widget: Bounded, Parent, Child {
         invalidateRenderState()
     }
 
+    @inlinable
+    public final func invalidateBuild() {
+        if buildInvalid {
+            #if DEBUG
+            Logger.warn("Called invalidateLayout() on a Widget where layout is already invalid: \(self)", context: .WidgetLayouting)
+            #endif
+            return
+        }
+
+        _invalidateBuild()
+    }
+
+    @usableFromInline
+    @inlinable
+    internal final func _invalidateBuild() {
+        #if DEBUG
+        inspectionBus.publish(WidgetInspectionMessage(sender: self, content: .BuildInvalidated))
+        #endif
+    }
+
+    private final func handleChildBoxConfigChanged(child: Widget) {
+        Logger.log("Box config of child: \(child) of parent \(self) changed.".with(fg: .Blue, style: .Bold), level: .Message, context: .WidgetLayouting)
+
+        if layouted && !layouting {
+            Logger.log("Invalidating own box config.", level: .Message, context: .WidgetLayouting)
+            let oldBoxConfig = boxConfig
+            invalidateBoxConfig()
+            let newBoxConfig = boxConfig
+            // This prevents unnecessary calls to layout.
+            // Only if this Widgets box config isn't changed, trigger a relayout.
+            // For all children with changed box configs (also deeply nested ones)
+            // layout will not have been called because of this comparison.
+            // The first parent without a changed box config will trigger
+            // a relayout for the whole subtree.
+            // In case no Widget has no changed box config, the
+            // relayout will be triggered in Root for the whole UI.
+            // TODO: maybe there is a better solution
+            if oldBoxConfig == newBoxConfig {
+                Logger.log("Own box config is changed. Perform layout with previous constraints: \(String(describing: previousConstraints))".with(fg: .Yellow), level: .Message, context: .WidgetLayouting)
+                invalidateLayout()
+            }
+        }
+    }
+
     open func getBoxConfig() -> BoxConfig {
         fatalError("getBoxConfig() not implemented for Widget \(self).")
     }
 
     // TODO: maybe call this updateBoxConfig / or queueBoxConfigUpdate??? --> on next tick?
-    @inlinable public final func invalidateBoxConfig() {
+    @inlinable
+    public final func invalidateBoxConfig() {
         let currentBoxConfig = boxConfig
         let newBoxConfig = getBoxConfig()
         if currentBoxConfig != newBoxConfig {
@@ -609,7 +657,8 @@ open class Widget: Bounded, Parent, Child {
         self.previousConstraints = constraints
     }
 
-    @inlinable public final func invalidateLayout() {
+    @inlinable
+    public final func invalidateLayout() {
         if layoutInvalid {
             #if DEBUG
             Logger.warn("Called invalidateLayout() on a Widget where layout is already invalid: \(self)", context: .WidgetLayouting)
@@ -630,7 +679,7 @@ open class Widget: Bounded, Parent, Child {
         #endif
         layoutInvalid = true
         onLayoutInvalidated.invokeHandlers(Void())
-        onAnyLayoutInvalidated.invokeHandlers(self)
+        lifecycleBus.publish(WidgetLifecycleMessage(sender: self, content: .LayoutInvalidated))
     }
 
     open func performLayout(constraints: BoxConstraints) -> DSize2 {
@@ -792,7 +841,7 @@ open class Widget: Bounded, Parent, Child {
         }
         renderState.invalid = true
         onRenderStateInvalidated.invokeHandlers(self)
-        onAnyRenderStateInvalidated.invokeHandlers(self)
+        lifecycleBus.publish(WidgetLifecycleMessage(sender: self, content: .RenderStateInvalidated))
     }
 
     @discardableResult
@@ -874,16 +923,14 @@ open class Widget: Bounded, Parent, Child {
         // TODO: maybe automatically clear all EventHandlerManagers / WidgetEventHandlerManagers by using reflection?
 
         onParentChanged.removeAllHandlers()
-        onAnyParentChanged.removeAllHandlers()
+        //onAnyParentChanged.removeAllHandlers()
         onMounted.removeAllHandlers()
         onBoxConfigChanged.removeAllHandlers()
         onSizeChanged.removeAllHandlers()
         onLayoutInvalidated.removeAllHandlers()
-        onAnyLayoutInvalidated.removeAllHandlers()
         onLayoutingStarted.removeAllHandlers()
         onLayoutingFinished.removeAllHandlers()
         onRenderStateInvalidated.removeAllHandlers()
-        onAnyRenderStateInvalidated.removeAllHandlers()
 
         for remove in nextTickHandlerRemovers {
             remove()
