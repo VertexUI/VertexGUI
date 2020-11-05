@@ -115,7 +115,12 @@ open class Root: Parent {
     reboxConfigWidgets.clear()
     
     for widget in relayoutWidgets {
-      widget.layout(constraints: widget.previousConstraints!)
+      // the widget should only be relayouted if it hasn't been layouted before
+      // if it hasn't been layouted before it will be layouted during
+      // the first layout pass started by rootWidget.layout()
+      if widget.layouted {
+        widget.layout(constraints: widget.previousConstraints!)
+      }
     }
     relayoutWidgets.clear()
 
