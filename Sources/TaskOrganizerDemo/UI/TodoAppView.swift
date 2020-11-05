@@ -7,15 +7,23 @@ public class TodoAppView: SingleChildWidget {
     case SelectedList, Search
   }
 
-  @Inject private var store: TodoStore
+  @Inject
+  private var store: TodoStore
 
   private var todoLists: [TodoList] {
     store.state.lists
   }
 
-  @Reference private var activeViewTopSpace: Space
-  @MutableProperty private var mode: Mode = .SelectedList
-  @MutableProperty private var searchQuery: String = ""
+  @Reference
+  private var activeViewTopSpace: Space
+  @MutableProperty
+  private var mode: Mode = .SelectedList
+  @MutableProperty
+  private var searchQuery: String = ""
+
+  public init() {
+    super.init()
+  }
 
   override public func buildChild() -> Widget {
     ThemeProvider(appTheme) { [unowned self] in
@@ -177,7 +185,7 @@ public class TodoAppView: SingleChildWidget {
             ObservingBuilder($mode) {
               switch mode {
               case .SelectedList:
-                ObservingBuilder(store.getters.$selectedList.compute { $0?.id }) {
+                return ObservingBuilder(store.getters.$selectedList.compute { $0?.id }) {
                   if let list = store.getters.selectedList {
                     return TodoListView(store.getters.$selectedList.compute { $0! })
                   } else {
@@ -188,7 +196,7 @@ public class TodoAppView: SingleChildWidget {
                 }
 
               case .Search:
-                SearchResultsView()
+                return SearchResultsView()
               }
             }
           }

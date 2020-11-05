@@ -18,16 +18,8 @@ public class ObservableProperty<V>: ObservableProtocol {
     return self
   }
 
-  private weak var _any: AnyObservableProperty?
   public var any: AnyObservableProperty  {
-    let returnedAny: AnyObservableProperty
-    if let storedAny = _any {
-      returnedAny = storedAny
-    } else {
-      returnedAny = AnyObservableProperty(self)
-    }
-    //_any = returnedAny
-    return returnedAny
+    AnyObservableProperty(self)
   }
 
   public internal(set) var onChanged = EventHandlerManager<Value>()
@@ -135,7 +127,7 @@ public class ObservableArrayProperty<Value>: ObservableProperty<[Value]>, Collec
 
 public class AnyObservableProperty {
   public let onChanged = EventHandlerManager<Void>()
-  private unowned let otherObservable: AnyObject
+  private let otherObservable: AnyObject
   private var removeOtherObservableChangedHandler: (() -> ())? = nil
  
   public init<V>(_ otherObservable: ObservableProperty<V>) {

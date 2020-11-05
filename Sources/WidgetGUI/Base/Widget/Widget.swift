@@ -945,7 +945,7 @@ open class Widget: Bounded, Parent, Child {
         }
 
         // TODO: maybe automatically clear all EventHandlerManagers / WidgetEventHandlerManagers by using reflection?
-
+        
         onParentChanged.removeAllHandlers()
         //onAnyParentChanged.removeAllHandlers()
         onMounted.removeAllHandlers()

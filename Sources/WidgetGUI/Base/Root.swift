@@ -105,12 +105,16 @@ open class Root: Parent {
     widgetContext!.onTick.invokeHandlers(tick)
 
     for widget in rebuildWidgets {
-      widget.build()
+      if !widget.destroyed {
+        widget.build()
+      }
     }
     rebuildWidgets.clear()
 
     for widget in reboxConfigWidgets {
-      widget.updateBoxConfig()
+      if widget.mounted {
+        widget.updateBoxConfig()
+      }
     }
     reboxConfigWidgets.clear()
     
@@ -118,7 +122,7 @@ open class Root: Parent {
       // the widget should only be relayouted if it hasn't been layouted before
       // if it hasn't been layouted before it will be layouted during
       // the first layout pass started by rootWidget.layout()
-      if widget.layouted {
+      if widget.layouted && !widget.destroyed {
         widget.layout(constraints: widget.previousConstraints!)
       }
     }
@@ -126,7 +130,9 @@ open class Root: Parent {
 
     // TODO: is it good to put this here or better in render()?
     for widget in rerenderWidgets {
-      widget.updateRenderState()
+      if !widget.destroyed {
+        widget.updateRenderState()
+      }
     }
     rerenderWidgets.clear()
   }
