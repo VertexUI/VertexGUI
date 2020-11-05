@@ -180,12 +180,12 @@ open class Widget: Bounded, Parent, Child {
     public var layoutable: Bool {
         mounted/* && constraints != nil*/ && context != nil
     }
-    public var buildInvalid = true
-    public var boxConfigInvalid = true
+    public var buildInvalid = false
+    public var boxConfigInvalid = false
     public private(set) var layouting = false
     public private(set) var layouted = false
     // TODO: maybe rename to boundsInvalid???
-    public internal(set) var layoutInvalid = true
+    public internal(set) var layoutInvalid = false
     public internal(set) var destroyed = false
 
 
@@ -228,6 +228,7 @@ open class Widget: Bounded, Parent, Child {
     //public internal(set) var onAnyParentChanged = EventHandlerManager<Parent?>()
     public internal(set) var onMounted = EventHandlerManager<Void>()
     public internal(set) var onTick = WidgetEventHandlerManager<Tick>()
+    public internal(set) var onBoxConfigInvalidated = WidgetEventHandlerManager<Void>()
     public internal(set) var onBoxConfigChanged = EventHandlerManager<BoxConfigChangedEvent>()
     public internal(set) var onSizeChanged = EventHandlerManager<DSize2>()
     public internal(set) var onLayoutInvalidated = EventHandlerManager<Void>()
@@ -304,7 +305,6 @@ open class Widget: Bounded, Parent, Child {
       }
       if let remove = contextOnTickHandlerRemover {
         remove()
-        print("CALLED REMOVE ON TICK")
       }
     }
     
@@ -550,6 +550,7 @@ open class Widget: Bounded, Parent, Child {
             onBoxConfigChanged.invokeHandlers(BoxConfigChangedEvent(old: currentBoxConfig, new: newBoxConfig))
             invalidateLayout()
         }
+        boxConfigInvalid = false
     }
 
     open func getBoxConfig() -> BoxConfig {
@@ -565,7 +566,9 @@ open class Widget: Bounded, Parent, Child {
             #endif
             return
         }
+        boxConfigInvalid = true
         lifecycleBus.publish(WidgetLifecycleMessage(sender: self, content: .BoxConfigInvalidated))
+        onBoxConfigInvalidated.invokeHandlers(Void())
     }
 
     @inlinable public final func layout(constraints: BoxConstraints) {

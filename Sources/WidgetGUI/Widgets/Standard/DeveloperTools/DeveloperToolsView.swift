@@ -55,7 +55,8 @@ public class DeveloperToolsView: SingleChildWidget {
             }
           }
         }
-      } 
+      }
+
       ObservingBuilder($inspectedWidget) {
         if let inspectedWidget = inspectedWidget {
           WidgetDetailView(inspectedWidget)

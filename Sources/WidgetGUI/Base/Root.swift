@@ -6,8 +6,8 @@ import VisualAppBase
 open class Root: Parent {
   open var bounds: DRect = DRect(min: DPoint2(0, 0), size: DSize2(0, 0)) {
     didSet {
-      rootWidget.invalidateRenderState()
       layout()
+      rootWidget.invalidateRenderState()
     }
   }
 
@@ -26,10 +26,10 @@ open class Root: Parent {
   }
   private let widgetLifecycleBus = WidgetBus<WidgetLifecycleMessage>()
   //private var focusContext = FocusContext()
-  internal var rebuildWidgets: [Widget] = []
-  internal var reboxConfigWidgets: [Widget] = []
-  internal var relayoutWidgets: [Widget] = []
-  internal var rerenderWidgets: [Widget] = []
+  internal var rebuildWidgets = WidgetBuffer()
+  internal var reboxConfigWidgets = WidgetBuffer()
+  internal var relayoutWidgets = WidgetBuffer()
+  internal var rerenderWidgets = WidgetBuffer()
 
   private var mouseEventManager = WidgetTreeMouseEventManager()
   private var mouseMoveEventBurstLimiter = BurstLimiter(minDelay: 0.015)
@@ -107,23 +107,23 @@ open class Root: Parent {
     for widget in rebuildWidgets {
       widget.build()
     }
-    rebuildWidgets = []
+    rebuildWidgets.clear()
 
     for widget in reboxConfigWidgets {
       widget.updateBoxConfig()
     }
-    reboxConfigWidgets = []
+    reboxConfigWidgets.clear()
     
     for widget in relayoutWidgets {
       widget.layout(constraints: widget.previousConstraints!)
     }
-    relayoutWidgets = []
+    relayoutWidgets.clear()
 
     // TODO: is it good to put this here or better in render()?
     for widget in rerenderWidgets {
       widget.updateRenderState()
     }
-    rerenderWidgets = []
+    rerenderWidgets.clear()
   }
 
   open func render() -> RenderObject? {
@@ -277,5 +277,43 @@ open class Root: Parent {
 
   open func destroy() {
     rootWidget.destroy()
+  }
+}
+
+extension Root {
+  class WidgetBuffer: Sequence {
+    var widgets: [Widget] = []
+
+    init() {}
+    
+    func makeIterator() -> WidgetBufferIterator {
+      WidgetBufferIterator(self)
+    }
+
+    func append(_ widget: Widget) {
+      widgets.append(widget)
+    }
+
+    func clear() {
+      widgets = []
+    }
+  }
+
+  struct WidgetBufferIterator: IteratorProtocol {
+    var buffer: WidgetBuffer
+    var nextIndex = 0
+
+    init(_ buffer: WidgetBuffer) {
+      self.buffer = buffer
+    }
+    
+    mutating func next() -> Widget? {
+      if buffer.widgets.count == nextIndex {
+        return nil
+      } else {
+        defer { nextIndex += 1 }
+        return buffer.widgets[nextIndex]
+      }
+    }
   }
 }

@@ -1,7 +1,7 @@
 import ColorizeSwift
 
 public class Logger {
-    public static var enabled = true
+    public static var enabled = false
 
     public static var activeLevels: Set<Level> = [
         .Message//, .Debug, .Warning, .Error

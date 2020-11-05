@@ -2,7 +2,6 @@ import CustomGraphicsMath
 import VisualAppBase
 
 public class Flex: Widget {
-
   private let orientation: Orientation
   private let crossAlignment: CrossAlignment
   private let mainAxisVectorIndex: Int
