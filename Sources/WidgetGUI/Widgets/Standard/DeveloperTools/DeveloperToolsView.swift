@@ -48,7 +48,7 @@ public class DeveloperToolsView: SingleChildWidget {
           case .Inspector:
             InspectorView(inspectedRoot)
           case .EventRoll:
-            EventRollView(inspectedRoot)
+            EventRollView(inspectedRoot, messages: $bufferedMessages.observable)
           case .EventLog:
             EventLogView(inspectedRoot, messages: $bufferedMessages.observable) {
               inspectedWidget = $0
