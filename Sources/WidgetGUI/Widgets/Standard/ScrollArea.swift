@@ -18,7 +18,7 @@ public class ScrollArea: SingleChildWidget, GUIMouseEventConsumer {
   /// Offset before current mouse track.
   private var previousOffset: DVec2 = .zero
   private var previousScrollProgress: DVec2 = .zero
-  private var scrollProgress: DVec2 = .zero {
+  public private(set) var scrollProgress: DVec2 = .zero {
     didSet {
       if scrollProgress.x < 0 {
         scrollProgress.x = 0
@@ -39,7 +39,7 @@ public class ScrollArea: SingleChildWidget, GUIMouseEventConsumer {
       + DVec2(scrollYEnabled ? scrollBarWidths.y : 0, scrollXEnabled ? scrollBarWidths.x : 0)
   }
 
-  private var offsets: DVec2 {
+  public var offsets: DVec2 {
     maxOffsets * scrollProgress
   }
 
@@ -66,6 +66,8 @@ public class ScrollArea: SingleChildWidget, GUIMouseEventConsumer {
 
   private var mouseIsDown = false
   private let mouseMoveBurstLimiter = BurstLimiter(minDelay: 0.005)
+
+  public let onScrollProgressChanged = WidgetEventHandlerManager<DVec2>()
 
   public init(
     scrollX scrollXConfig: ScrollConfig = .Auto,
@@ -221,6 +223,7 @@ public class ScrollArea: SingleChildWidget, GUIMouseEventConsumer {
         scrollProgress.x -= event.scrollAmount.x / 10
       }
       previousScrollProgress = scrollProgress
+      onScrollProgressChanged.invokeHandlers(scrollProgress)
       invalidateRenderState()
 
     default:
@@ -245,6 +248,8 @@ public class ScrollArea: SingleChildWidget, GUIMouseEventConsumer {
         self.scrollProgress.y += totalMove.y / self.maxScrollBarTranslations.y
       }
 
+      self.onScrollProgressChanged.invokeHandlers(self.scrollProgress)
+      
       if scrollProgressBeforeUpdate != self.scrollProgress {
         self.invalidateRenderState()
       }

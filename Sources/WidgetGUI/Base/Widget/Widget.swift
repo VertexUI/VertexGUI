@@ -12,7 +12,14 @@ open class Widget: Bounded, Parent, Child {
     open var id: UInt = UInt.random(in: 0..<UInt.max)
     open var key: String?
     open var classes: [String] = []
-    open var visibility: Visibility = .Visible
+    open var visibility: Visibility = .Visible {
+        didSet {
+            if oldValue != visibility {
+                // TODO: should invalidation of lifecycle happen inside didSet?
+                invalidateRenderState()
+            }
+        }
+    }
 
     open var _context: WidgetContext?
     open var context: WidgetContext {

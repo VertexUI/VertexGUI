@@ -21,10 +21,8 @@ public class EventLogView: SingleChildWidget {
   }
 
   override public func buildChild() -> Widget {
-    ScrollArea(scrollX: .Never) { [unowned self] in
-      List($messages) {
-        buildInspectionMessageItem(message: $0)
-      }
+    List($messages) { [unowned self] in
+      buildInspectionMessageItem(message: $0)
     }
   }
 

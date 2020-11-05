@@ -3,6 +3,8 @@ public class List<Item>: SingleChildWidget {
   private var items: [Item]
 
   private var itemWidgets: [Widget] = []
+  @Reference
+  private var scrollArea: ScrollArea
 
   private let childBuilder: (Item) -> Widget
 
@@ -18,6 +20,9 @@ public class List<Item>: SingleChildWidget {
       _ = self.onDestroy(self.$items.onChanged { [unowned self] _ in
         invalidateChild()
       })
+      _ = self.onLayoutingFinished { [unowned self] _ in
+        updateDisplayedItems()
+      }
   }
 
   override public func buildChild() -> Widget {
@@ -30,10 +35,23 @@ public class List<Item>: SingleChildWidget {
           }
         }
       }
+    }.connect(ref: $scrollArea).onScrollProgressChanged.chain { [unowned self] _ in
+      updateDisplayedItems()
     }
   }
 
   private func updateDisplayedItems() {
     let currentFirstIndex = firstDisplayedIndex
+
+    let currentScrollOffsets = scrollArea.offsets
+    let currentScrollProgress = scrollArea.scrollProgress
+
+    for widget in itemWidgets {
+      if widget.y + widget.height >= currentScrollOffsets.y && widget.y <= currentScrollOffsets.y + scrollArea.height {
+        widget.visibility = .Visible
+      } else {
+        widget.visibility = .Hidden
+      }
+    }
   }
 }
