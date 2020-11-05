@@ -6,7 +6,7 @@ public class MinmalDemoApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoV
 
     let guiRoot = WidgetGUI.Root(rootWidget: MainView())
 
-    _ = createWindow(guiRoot: guiRoot, background: Color(20, 36, 50, 255), immediate: true)
+    _ = createWindow(guiRoot: guiRoot, options: Window.Options(background: Color(20, 36, 50, 255)), immediate: true)
   }
 
   override open func createRenderer(for window: Window) -> Renderer {
