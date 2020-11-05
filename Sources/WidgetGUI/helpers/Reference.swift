@@ -4,7 +4,7 @@ public protocol ReferenceProtocol {
 
 @propertyWrapper
 public class Reference<ReferencedWidget: Widget>: ReferenceProtocol {
-    public var referenced: Widget?
+    public unowned var referenced: Widget?
 
     public var wrappedValue: ReferencedWidget {
         get {

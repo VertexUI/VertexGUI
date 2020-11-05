@@ -280,6 +280,7 @@ open class Widget: Bounded, Parent, Child {
     @inlinable
     public final func connect(ref reference: ReferenceProtocol) -> Self {
         self.reference = reference
+        self.reference!.referenced = self
         return self
     }
 
@@ -400,6 +401,10 @@ open class Widget: Bounded, Parent, Child {
 
         let oldChildren = children
 
+        for oldChild in oldChildren {
+            oldChild.destroy()
+        }
+
         performBuild()
 
         mountChildren(oldChildren: oldChildren)
@@ -458,9 +463,9 @@ open class Widget: Bounded, Parent, Child {
             mountChild(newChild, with: childContext)
         }
 
-        for child in oldChildren {
+       /* for child in oldChildren {
             child.destroy()
-        }
+        }*/
     }
 
     public func mountChild(_ child: Widget, with replacementContext: ReplacementContext? = nil) {
@@ -941,7 +946,9 @@ open class Widget: Bounded, Parent, Child {
         undoContextSetup()
         
         if var reference = reference {
-            reference.referenced = nil
+            if reference.referenced === self {
+                reference.referenced = nil
+            }
         }
 
         // TODO: maybe automatically clear all EventHandlerManagers / WidgetEventHandlerManagers by using reflection?
