@@ -619,12 +619,16 @@ open class Widget: Bounded, Parent, Child {
         }
 
         #if (DEBUG)
-        context.inspectionBus.publish(WidgetInspectionMessage(sender: self, content: .LayoutingStarted(constraints: constraints)))
+        context.inspectionBus.publish(WidgetInspectionMessage(
+            sender: self,
+            content: .LayoutingStarted(
+                constraints: constraints)))
         
         if countCalls {
             if callCounter.count(.Layout) && burstHighlightEnabled {
                 flashHighlight()
-                context.inspectionBus.publish(WidgetInspectionMessage(sender: self, content: .LayoutBurstThresholdExceeded))
+                context.inspectionBus.publish(
+                    WidgetInspectionMessage(sender: self, content: .LayoutBurstThresholdExceeded))
             }
         }
         Logger.log("Layouting Widget: \(self)".with(fg: .Blue, style: .Bold), level: .Message, context: .WidgetLayouting)
@@ -638,15 +642,15 @@ open class Widget: Bounded, Parent, Child {
 
         let previousSize = size
         let isFirstRound = !layouted
+
         #if DEBUG
         let startTimestamp = Date.timeIntervalSinceReferenceDate
         #endif
+
         let newUnconstrainedSize = performLayout(constraints: constraints)
-        #if DEBUG
-        let layoutDuration = Date.timeIntervalSinceReferenceDate - startTimestamp
-        #endif
 
         #if DEBUG
+        let layoutDuration = Date.timeIntervalSinceReferenceDate - startTimestamp
         Logger.log("Layout of Widget: \(self) took time:", (layoutDuration.description + " s").with(style: .Bold), level: .Message, context: .WidgetLayouting)
         Logger.log("Layout of Widget: \(self) produced result.".with(fg: .Green, style: .Bold), level: .Message, context: .WidgetLayouting)
         Logger.log("New self size: \(newUnconstrainedSize)", level: .Message, context: .WidgetLayouting)
@@ -678,7 +682,8 @@ open class Widget: Bounded, Parent, Child {
         context.inspectionBus.publish(WidgetInspectionMessage(
             sender: self,
             content: .LayoutingFinished(
-                unconstrainedSize: newUnconstrainedSize, constrainedSize: constrainedSize, duration: layoutDuration)))
+                unconstrainedSize: newUnconstrainedSize,
+                constrainedSize: constrainedSize)))
         #endif
 
         // TODO: where to call this? after setting bounds or before?
@@ -691,6 +696,10 @@ open class Widget: Bounded, Parent, Child {
         }
 
         self.previousConstraints = constraints
+    }
+
+    open func performLayout(constraints: BoxConstraints) -> DSize2 {
+        fatalError("performLayout(constraints:) not implemented.")
     }
 
     @inlinable
@@ -711,15 +720,14 @@ open class Widget: Bounded, Parent, Child {
         if countCalls {
             callCounter.count(.InvalidateLayout)
         }
-        context.inspectionBus.publish(WidgetInspectionMessage(sender: self, content: .LayoutInvalidated))
+        context.inspectionBus.publish(
+            WidgetInspectionMessage(
+                sender: self,
+                content: .LayoutInvalidated))
         #endif
         layoutInvalid = true
         onLayoutInvalidated.invokeHandlers(Void())
         lifecycleBus.publish(WidgetLifecycleMessage(sender: self, content: .LayoutInvalidated))
-    }
-
-    open func performLayout(constraints: BoxConstraints) -> DSize2 {
-        fatalError("performLayout(constraints:) not implemented.")
     }
 
     /// Returns the result of renderContent() wrapped in an IdentifiedSubTreeRenderObject
