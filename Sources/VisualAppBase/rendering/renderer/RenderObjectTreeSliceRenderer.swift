@@ -81,7 +81,7 @@ public class RenderObjectTreeSliceRenderer {
               backendRenderer.applyFill(cachedLoadedFill)
             } else {
               let loadedFill = backendRenderer.fillImage(value, position: position)
-              renderObjectMeta[id] = loadedFill
+              backendRenderer.applyFill(loadedFill) //  renderObjectMeta[id] = loadedFill
             }
           }
         }

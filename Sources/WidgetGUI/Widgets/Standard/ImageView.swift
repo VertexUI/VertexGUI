@@ -5,13 +5,9 @@ import Dispatch
 import ColorizeSwift
 
 public class ImageView: Widget {
-
     private var image: Image
-
     private var resizedImage: Image?
-
     private var resizingImage = false
-
     private let onImageResized = EventHandlerManager<Void>()
     
     public init(image: Image) {
@@ -19,8 +15,6 @@ public class ImageView: Widget {
         super.init()
 
         _ = onDestroy(onSizeChanged { [unowned self] _ in
-            print("IMAGE BOUNDS CHANGED!".onWhite(), bounds.size)
-
             if resizingImage {
                 _ = onImageResized.once {
                     resizedImage = nil

@@ -41,8 +41,8 @@ open class SDL2OpenGL3NanoVGRenderer: Renderer {
         }
 
         deinit {
-            print("DEINITILAIZEING SPECIFIC LOADED FILL")
-            delete()
+            print("Warn: need to deinitialize fill!")
+            //delete()
         }
     }
 

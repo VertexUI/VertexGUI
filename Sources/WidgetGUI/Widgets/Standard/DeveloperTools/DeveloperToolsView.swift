@@ -4,7 +4,7 @@ public class DeveloperToolsView: SingleChildWidget {
   private let inspectedRoot: Root
 
   @MutableProperty
-  private var activeTab: Tab = .EventLog
+  private var activeTab: Tab = .EventRoll
   
   @MutableProperty
   private var bufferedMessages: [WidgetInspectionMessage] = []
