@@ -31,30 +31,6 @@ public class SDL2OpenGL3NanoVGVirtualScreen: VirtualScreen {
 }
 
 open class SDL2OpenGL3NanoVGRenderer: Renderer {
-    public class SpecificLoadedFill: LoadedFill {
-        public var paint: NVGpaint
-        public var delete: () -> ()
-
-        private var deleted = false
-
-        @usableFromInline
-        internal init(paint: NVGpaint, delete: @escaping () -> ()) {
-            self.paint = paint
-            self.delete = delete
-        }
-
-        public func destroy() {
-            delete()
-            deleted = true
-        }
-
-        deinit {
-            if !deleted {
-                fatalError("deinitializing fill without destroy() being called first")
-            }
-        }
-    }
-
     // TODO: maybe this has to be put into System? or does NanoVG load it into the current gl state???
     //public typealias VirtualScreen = SDL2OpenGL3NanoVGVirtualScreen
     public internal(set) var virtualScreenStack = [VirtualScreen]()
@@ -304,34 +280,51 @@ open class SDL2OpenGL3NanoVGRenderer: Renderer {
     }
 
     @inlinable
-    open func fillColor(_ color: Color) {
-        nvgFillColor(window.nvg, color.toNVG())
+    open func loadFill(_ fill: Fill) -> LoadedFill {
+        var loadedFill = SpecificLoadedFill(fill)
+
+        switch fill {
+        case .Color:
+            break   
+        case let .Image(image, position):
+            var data = image.getData()
+
+            let imageHandle = withUnsafeMutablePointer(to: &data[0]) {
+                nvgCreateImageRGBA(window.nvg, Int32(image.width), Int32(image.height), 0, $0)
+            }
+
+            let paint = nvgImagePattern(window.nvg, Float(position.x), Float(position.y), Float(image.width), Float(image.height), 0, imageHandle, 1)
+
+            nvgFillPaint(window.nvg, paint)
+
+            loadedFill.paint = paint
+            loadedFill.delete = { [unowned self] in
+                nvgDeleteImage(window.nvg, imageHandle)
+            }
+        }
+
+        return loadedFill
     }
 
     @inlinable
-    open func fillImage(_ image: Image, position: DVec2) -> LoadedFill {
-        var data = image.getData()
-
-        let imageHandle = withUnsafeMutablePointer(to: &data[0]) {
-            nvgCreateImageRGBA(window.nvg, Int32(image.width), Int32(image.height), 0, $0)
-        }
-
-        let paint = nvgImagePattern(window.nvg, Float(position.x), Float(position.y), Float(image.width), Float(image.height), 0, imageHandle, 1)
-
-        nvgFillPaint(window.nvg, paint)
-
-        return SpecificLoadedFill(paint: paint) { [unowned self] in
-            nvgDeleteImage(window.nvg, imageHandle)
-        }
-    }
-
-    @inlinable
-    open func applyFill(_ fill: LoadedFill) {
+    open func setFill(_ fill: LoadedFill) {
         guard let unwrappedFill = fill as? SpecificLoadedFill else {
             fatalError("Tried to apply a LoadedFill of a type that is not supported by the renderer: \(fill).")
         }
 
-        nvgFillPaint(window.nvg, unwrappedFill.paint)
+        switch unwrappedFill.fill {
+            case let .Color(color):
+                nvgFillColor(window.nvg, color.toNVG())
+            case .Image:
+                nvgFillPaint(window.nvg, unwrappedFill.paint!)
+        }
+    }
+
+    @inlinable
+    open func setFill(_ fill: Fill) -> LoadedFill {
+        let loadedFill = loadFill(fill)
+        setFill(loadedFill)
+        return loadedFill
     }
 
     @inlinable
@@ -470,5 +463,34 @@ open class SDL2OpenGL3NanoVGRenderer: Renderer {
 
     open func destroy() {
         // TODO: cleanup
+    }
+}
+
+extension SDL2OpenGL3NanoVGRenderer {
+    public class SpecificLoadedFill: LoadedFill {
+        public var fill: Fill
+        public var paint: NVGpaint? = nil
+        public var delete: (() -> ())? = nil
+
+        private var deleted = false
+
+        @usableFromInline
+        internal init(_ fill: Fill) {
+            self.fill = fill
+        }
+
+        public func destroy() {
+            if let delete = delete {
+                delete()
+            }
+            deleted = true
+        }
+
+        deinit {
+            if !deleted {
+                //print("warn: deinitializing fill without destroy() being called first")
+                destroy()
+            }
+        }
     }
 }

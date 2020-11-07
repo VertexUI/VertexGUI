@@ -61,33 +61,19 @@ public class RenderObjectTreeSliceRenderer {
     case let node as RenderStyleRenderObject:
       if let fillRenderValue = node.fill {
         let fill = fillRenderValue.getValue(at: timestamp)
+        
         if fillRenderValue.isTimed {
-          switch fill {
-          case let .Color(value):
-            backendRenderer.fillColor(value)
-
-          case let .Image(value, position):
-            backendRenderer.fillImage(value, position: position)
-          }
+          backendRenderer.setFill(fill)
         } else {
-          switch fill {
-          case let .Color(value):
-            backendRenderer.fillColor(value)
-
-          case let .Image(value, position):
-            if let state = node.renderState as? RenderStyleObjectState, let loadedFill = state.loadedFill {
-              backendRenderer.applyFill(loadedFill)
-            } else {
-              let loadedFill = backendRenderer.fillImage(value, position: position)
-              backendRenderer.applyFill(loadedFill)
-              let state = RenderStyleObjectState(renderer: self, loadedFill: loadedFill)
-              node.renderState = state
-            }
+          if let state = node.renderState as? RenderStyleObjectState, let loadedFill = state.loadedFill {
+            backendRenderer.setFill(loadedFill)
+          } else {
+            let loadedFill = backendRenderer.loadFill(fill)
+            backendRenderer.setFill(loadedFill)
+            let state = RenderStyleObjectState(renderer: self, loadedFill: loadedFill)
+            node.renderState = state
           }
         }
-        // performFill = true
-      } else {
-        backendRenderer.fillColor(.Transparent)
       }
 
       if let strokeWidth = node.strokeWidth,
@@ -115,7 +101,7 @@ public class RenderObjectTreeSliceRenderer {
   private func renderClose(node: RenderObject, with backendRenderer: Renderer) {
     switch node {
     case let node as RenderStyleRenderObject:
-      backendRenderer.fillColor(.Transparent)
+      backendRenderer.setFill(.Color(.Transparent))
       backendRenderer.strokeWidth(0)
       backendRenderer.strokeColor(.Transparent)
     case let node as TranslationRenderObject:

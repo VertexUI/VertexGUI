@@ -51,15 +51,26 @@ public protocol Renderer {
 
     func closePath()
 
-    // TODO: maybe merge fill into one function, given by enum Fill?
-    func fillColor(_ color: Color)
+    /**
+    Load a fill for being used later. Does not apply the fill to the current graphics.
+    */
+    func loadFill(_ fill: Fill) -> LoadedFill
 
+    /**
+    Set the fill of the current graphics to a previously loaded fill.
+    */
+    func setFill(_ fill: LoadedFill)
+
+    /**
+    Set the fill to a not pre loaded fill.
+    Essentialy loadFill(:) and setFill(:) combined in one function for convenience.
+    */
     @discardableResult
-    func fillImage(_ image: Image, position: DVec2) -> LoadedFill
+    func setFill(_ fill: Fill) -> LoadedFill
 
-    /// Reapply a previously loaded fill
-    func applyFill(_ fill: LoadedFill)
-
+    /**
+    Perform filling of the current graphics with the previously set fill.
+    */
     func fill() 
 
     func strokeWidth(_ width: Double) 
