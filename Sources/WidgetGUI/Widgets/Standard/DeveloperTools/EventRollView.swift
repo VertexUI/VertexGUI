@@ -6,24 +6,35 @@ import Path
 public class EventRollView: SingleChildWidget {
   private let inspectedRoot: Root
 
-  @ObservableProperty
-  private var messages: [WidgetInspectionMessage]
+  private var messages: WidgetBus<WidgetInspectionMessage>.MessageBuffer
+
+  private var messagesUpdated: Bool = false
 
   @Reference
   private var canvas: PixelCanvas
+
+  private let minDuration: Double = 40
 
   private var lineData = LineData() 
 
   public init(
     _ inspectedRoot: Root,
-    messages observableMessages: ObservableProperty<[WidgetInspectionMessage]>) {
+    messageBuffer: WidgetBus<WidgetInspectionMessage>.MessageBuffer) {
     self.inspectedRoot = inspectedRoot
-    self._messages = observableMessages
+    self.messages = messageBuffer
     super.init()
     //_ = self.onMounted { [unowned self] _ in draw() }
-    _ = onDestroy(self._messages.onChanged { [unowned self] _ in
-      processMessages()
+    _ = onDestroy(self.messages.onUpdated { [unowned self] _ in
+      messagesUpdated = true
+      //processMessages()
     })
+    _ = onTick { [unowned self] _ in
+      if messagesUpdated {
+        processMessages()
+        draw()
+        messagesUpdated = false
+      }
+    }
   }
   
   override public func buildChild() -> Widget {
@@ -36,7 +47,7 @@ public class EventRollView: SingleChildWidget {
 
   private func draw() {
     canvas.clear()
-    let dataDuration = lineData.endTimestamp - lineData.startTimestamp
+    let dataDuration = max(minDuration, lineData.endTimestamp - lineData.startTimestamp)
     for (timestamp, count) in lineData.timeCounts {
       let relativeX = (timestamp - lineData.startTimestamp) / dataDuration
       let relativeY = lineData.maxCount > 0 ? Double(count) / Double(lineData.maxCount) : 1
@@ -68,7 +79,6 @@ public class EventRollView: SingleChildWidget {
         lineData.endTimestamp = message.timestamp
       }
     }
-    draw()
   }
 }
 

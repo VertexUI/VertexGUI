@@ -4,9 +4,36 @@ import CustomGraphicsMath
 
 public class WidgetBus<Message> {
   public private(set) var onMessage = EventHandlerManager<Message>()
+  private var buffers: [MessageBuffer] = []
 
   public func publish(_ message: Message) {
     onMessage.invokeHandlers(message)
+    for buffer in buffers {
+      buffer.append(message)
+    }
+  }
+
+  public func pipe(into buffer: MessageBuffer) {
+    buffers.append(buffer)
+  }
+}
+
+extension WidgetBus {
+  public class MessageBuffer: Sequence {
+    public private(set) var messages: [Message] = []
+
+    public let onUpdated = EventHandlerManager<MessageBuffer>()
+    public let onMessageAdded = EventHandlerManager<Message>()
+
+    public func append(_ message: Message) {
+      messages.append(message)
+      onMessageAdded.invokeHandlers(message)
+      onUpdated.invokeHandlers(self)
+    }
+
+    public func makeIterator() -> IndexingIterator<[Message]> {
+      messages.makeIterator()
+    }
   }
 }
 

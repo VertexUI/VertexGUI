@@ -1,3 +1,4 @@
+import Foundation
 import VisualAppBase
 
 public class DeveloperToolsView: SingleChildWidget {
@@ -6,8 +7,7 @@ public class DeveloperToolsView: SingleChildWidget {
   @MutableProperty
   private var activeTab: Tab = .EventRoll
   
-  @MutableProperty
-  private var bufferedMessages: [WidgetInspectionMessage] = []
+  private var messages = WidgetBus<WidgetInspectionMessage>.MessageBuffer()
 
   @MutableProperty
   private var inspectedWidget: Widget?
@@ -15,9 +15,7 @@ public class DeveloperToolsView: SingleChildWidget {
   public init(_ inspectedRoot: Root) {
     self.inspectedRoot = inspectedRoot
     super.init()
-    _ = onDestroy(self.inspectedRoot.widgetContext!.inspectionBus.onMessage { [unowned self] in
-      bufferedMessages.append($0)
-    })
+    self.inspectedRoot.widgetContext!.inspectionBus.pipe(into: messages)
   }
 
   override public func buildChild() -> Widget {
@@ -48,11 +46,12 @@ public class DeveloperToolsView: SingleChildWidget {
           case .Inspector:
             InspectorView(inspectedRoot)
           case .EventRoll:
-            EventRollView(inspectedRoot, messages: $bufferedMessages.observable)
+            EventRollView(inspectedRoot, messageBuffer: messages)
           case .EventLog:
-            EventLogView(inspectedRoot, messages: $bufferedMessages.observable) {
+            /*EventLogView(inspectedRoot, messages: $bufferedMessages.observable) {
               inspectedWidget = $0
-            }
+            }*/
+            Space(.zero)
           }
         }
       }
