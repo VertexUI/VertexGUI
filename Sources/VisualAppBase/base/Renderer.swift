@@ -10,7 +10,7 @@ public protocol VirtualScreen {
 }
 
 public protocol LoadedFill {
-
+    func destroy()
 }
 
 /// Rendering is relative to topLeft of whatever area the renderer is rendering in.
@@ -54,6 +54,7 @@ public protocol Renderer {
     // TODO: maybe merge fill into one function, given by enum Fill?
     func fillColor(_ color: Color)
 
+    @discardableResult
     func fillImage(_ image: Image, position: DVec2) -> LoadedFill
 
     /// Reapply a previously loaded fill

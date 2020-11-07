@@ -35,14 +35,23 @@ open class SDL2OpenGL3NanoVGRenderer: Renderer {
         public var paint: NVGpaint
         public var delete: () -> ()
 
-        public init(paint: NVGpaint, delete: @escaping () -> ()) {
+        private var deleted = false
+
+        @usableFromInline
+        internal init(paint: NVGpaint, delete: @escaping () -> ()) {
             self.paint = paint
             self.delete = delete
         }
 
+        public func destroy() {
+            delete()
+            deleted = true
+        }
+
         deinit {
-            print("Warn: need to deinitialize fill!")
-            //delete()
+            if !deleted {
+                fatalError("deinitializing fill without destroy() being called first")
+            }
         }
     }
 

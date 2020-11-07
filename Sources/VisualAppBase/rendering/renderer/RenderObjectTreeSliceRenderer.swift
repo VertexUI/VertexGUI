@@ -2,7 +2,6 @@ import CustomGraphicsMath
 import Foundation
 
 public class RenderObjectTreeSliceRenderer {
-  private var renderObjectMeta: [ObjectIdentifier: Any] = [:]
   private var destroyed = false
   private var context: ApplicationContext
 
@@ -76,12 +75,13 @@ public class RenderObjectTreeSliceRenderer {
             backendRenderer.fillColor(value)
 
           case let .Image(value, position):
-            let id = ObjectIdentifier(node)
-            if let cachedLoadedFill = renderObjectMeta[id] as? LoadedFill {
-              backendRenderer.applyFill(cachedLoadedFill)
+            if let state = node.renderState as? RenderStyleObjectState, let loadedFill = state.loadedFill {
+              backendRenderer.applyFill(loadedFill)
             } else {
               let loadedFill = backendRenderer.fillImage(value, position: position)
-              backendRenderer.applyFill(loadedFill) //  renderObjectMeta[id] = loadedFill
+              backendRenderer.applyFill(loadedFill)
+              let state = RenderStyleObjectState(renderer: self, loadedFill: loadedFill)
+              node.renderState = state
             }
           }
         }
@@ -175,5 +175,20 @@ public class RenderObjectTreeSliceRenderer {
 
   public func destroy() {
 
+  }
+}
+
+fileprivate protocol RenderObjectSliceRendererState: RenderObjectRenderState {
+  var renderer: RenderObjectTreeSliceRenderer { get }
+}
+
+fileprivate struct RenderStyleObjectState: RenderObjectSliceRendererState {
+  let renderer: RenderObjectTreeSliceRenderer
+  let loadedFill: LoadedFill?
+
+  func destroy() {
+    if let fill = loadedFill {
+      fill.destroy()
+    }
   }
 }

@@ -75,6 +75,7 @@ open class RenderObject: CustomDebugStringConvertible, TreeNode {
         fatalError("debugDescription not implemented.")
     }
     
+    public var renderState: RenderObjectRenderState? = nil
     public internal(set) var destroyed = false
 
     private var nextTickHandlers: [() -> ()] = []
@@ -155,6 +156,9 @@ open class RenderObject: CustomDebugStringConvertible, TreeNode {
     public final func destroy() {
         for child in children {
             child.destroy()
+        }
+        if let state = renderState {
+            state.destroy()
         }
         destroySelf()
         destroyed = true
