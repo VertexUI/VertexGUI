@@ -25,11 +25,12 @@ open class Root: Parent {
     }
   }
   private let widgetLifecycleBus = WidgetBus<WidgetLifecycleMessage>()
+  private var widgetLifecycleMessages = WidgetBus<WidgetLifecycleMessage>.MessageBuffer()
+  private var rebuildWidgets = WidgetBuffer()
+  private var reboxConfigWidgets = WidgetBuffer()
+  private var relayoutWidgets = WidgetBuffer()
+  private var rerenderWidgets = WidgetBuffer()
   //private var focusContext = FocusContext()
-  internal var rebuildWidgets = WidgetBuffer()
-  internal var reboxConfigWidgets = WidgetBuffer()
-  internal var relayoutWidgets = WidgetBuffer()
-  internal var rerenderWidgets = WidgetBuffer()
 
   private var mouseEventManager = WidgetTreeMouseEventManager()
   private var mouseMoveEventBurstLimiter = BurstLimiter(minDelay: 0.015)
@@ -44,19 +45,7 @@ open class Root: Parent {
 
   public init(rootWidget contentRootWidget: Widget) {
     self.rootWidget = contentRootWidget
-
-    _ = widgetLifecycleBus.onMessage { [unowned self] in
-      switch $0.content {
-      case .BuildInvalidated:
-        rebuildWidgets.append($0.sender)
-      case .BoxConfigInvalidated:
-        reboxConfigWidgets.append($0.sender)
-      case .LayoutInvalidated:
-        relayoutWidgets.append($0.sender)
-      case .RenderStateInvalidated:
-        rerenderWidgets.append($0.sender)
-      }
-    }
+    self.widgetLifecycleBus.pipe(into: widgetLifecycleMessages)
   }
   
   // TODO: instead of receiving a widgetcontext directly, receive an application and a rendercontext
@@ -104,6 +93,15 @@ open class Root: Parent {
   open func tick(_ tick: Tick) {
     widgetContext!.onTick.invokeHandlers(tick)
 
+    for message in widgetLifecycleMessages {
+      processLifecycleMessage(message)
+    }
+    widgetLifecycleMessages.clear()
+
+    let removeOnAdd = widgetLifecycleMessages.onMessageAdded { [unowned self] in
+      processLifecycleMessage($0)
+    }
+
     for widget in rebuildWidgets {
       if !widget.destroyed {
         widget.build()
@@ -135,6 +133,23 @@ open class Root: Parent {
       }
     }
     rerenderWidgets.clear()
+
+    removeOnAdd()
+    widgetLifecycleMessages.clear()
+  }
+
+  @inline(__always)
+  private func processLifecycleMessage(_ message: WidgetLifecycleMessage) {
+    switch message.content {
+    case .BuildInvalidated:
+      rebuildWidgets.append(message.sender)
+    case .BoxConfigInvalidated:
+      reboxConfigWidgets.append(message.sender)
+    case .LayoutInvalidated:
+      relayoutWidgets.append(message.sender)
+    case .RenderStateInvalidated:
+      rerenderWidgets.append(message.sender)
+    }
   }
 
   open func render() -> RenderObject? {
