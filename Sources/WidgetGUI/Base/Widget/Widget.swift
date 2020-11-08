@@ -197,10 +197,10 @@ open class Widget: Bounded, Parent, Child {
 
 
 
-    @usableFromInline internal var reference: ReferenceProtocol? {
+    @usableFromInline internal var reference: AnyReferenceProtocol? {
         didSet {
             if var reference = reference {
-                reference.referenced = self
+                reference.anyReferenced = self
             }
         }
     }
@@ -285,9 +285,9 @@ open class Widget: Bounded, Parent, Child {
     }
 
     @inlinable
-    public final func connect(ref reference: ReferenceProtocol) -> Self {
+    public final func connect(ref reference: AnyReferenceProtocol) -> Self {
         self.reference = reference
-        self.reference!.referenced = self
+        self.reference!.anyReferenced = self
         return self
     }
 
@@ -366,11 +366,7 @@ open class Widget: Bounded, Parent, Child {
         
         let mirror = Mirror(reflecting: self)
         for child in mirror.children {
-            // TODO: this type of value needs to be caught specifically for some reason or there will be a crash
-            if child.value is [AnyObject] {
-                continue
-            }
-            if child.value is AnyInject {
+            if child.value is _AnyInject {
                 injectables.append(child.value as! AnyInject)
             }
         }
@@ -378,7 +374,7 @@ open class Widget: Bounded, Parent, Child {
         if injectables.count > 0 {
             let providers = getParents(ofType: DependencyProvider.self)
             for provider in providers {
-                for injectable in injectables {
+                for var injectable in injectables {
                     if injectable.anyValue == nil {
                         if let dependency = provider.getDependency(ofType: injectable.anyType) {
                             injectable.anyValue = dependency.value
@@ -621,8 +617,7 @@ open class Widget: Bounded, Parent, Child {
         #if (DEBUG)
         context.inspectionBus.publish(WidgetInspectionMessage(
             sender: self,
-            content: .LayoutingStarted(
-                constraints: constraints)))
+            content: .LayoutingStarted))
         
         if countCalls {
             if callCounter.count(.Layout) && burstHighlightEnabled {
@@ -681,9 +676,7 @@ open class Widget: Bounded, Parent, Child {
         #if DEBUG
         context.inspectionBus.publish(WidgetInspectionMessage(
             sender: self,
-            content: .LayoutingFinished(
-                unconstrainedSize: newUnconstrainedSize,
-                constrainedSize: constrainedSize)))
+            content: .LayoutingFinished))
         #endif
 
         // TODO: where to call this? after setting bounds or before?
@@ -811,9 +804,8 @@ open class Widget: Bounded, Parent, Child {
         renderState.invalid = false
 
         #if DEBUG
-        let duration = Date.timeIntervalSinceReferenceDate - startTime
         context.inspectionBus.publish(WidgetInspectionMessage(
-            sender: self, content: .RenderingFinished(duration: duration)))
+            sender: self, content: .RenderingFinished))
         #endif
     }
 
@@ -961,8 +953,8 @@ open class Widget: Bounded, Parent, Child {
         undoContextSetup()
         
         if var reference = reference {
-            if reference.referenced === self {
-                reference.referenced = nil
+            if reference.anyReferenced === self {
+                reference.anyReferenced = nil
             }
         }
 
