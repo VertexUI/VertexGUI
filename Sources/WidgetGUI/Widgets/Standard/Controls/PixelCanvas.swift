@@ -36,6 +36,10 @@ public class PixelCanvas: Widget {
     content[position.x, position.y, 3] = color.a
   }
 
+  public func setContent(_ content: Image) {
+    self.content = content
+  }
+
   override public func renderContent() -> RenderObject? {
     let resizedContent = content.resize(width: Int(width), height: Int(height))
     return RenderStyleRenderObject(fill: FixedRenderValue(.Image(resizedContent, position: globalBounds.min))) {

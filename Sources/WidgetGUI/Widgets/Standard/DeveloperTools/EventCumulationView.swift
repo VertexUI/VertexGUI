@@ -2,37 +2,32 @@ import Foundation
 import CustomGraphicsMath
 import VisualAppBase
 import Path
+import Swim
 
-public class EventRollView: SingleChildWidget {
+public class EventCumulationView: SingleChildWidget {
   private let inspectedRoot: Root
 
-  private var messages: WidgetBus<WidgetInspectionMessage>.MessageBuffer
-
-  private var messagesUpdated: Bool = false
+  private var messages = WidgetBus<WidgetInspectionMessage>.MessageBuffer()
 
   @Reference
   private var canvas: PixelCanvas
 
   private let minDuration: Double = 40
 
-  private var lineData = LineData() 
+  private var lineData = LineData()
+  private var graphImage = Image(width: 500, height: 300, value: 0)
+  private var lastUpdateTimestamp = 0.0
+  private let updateInterval = 0.5
 
-  public init(
-    _ inspectedRoot: Root,
-    messageBuffer: WidgetBus<WidgetInspectionMessage>.MessageBuffer) {
+  public init(_ inspectedRoot: Root) {
     self.inspectedRoot = inspectedRoot
-    self.messages = messageBuffer
     super.init()
-    //_ = self.onMounted { [unowned self] _ in draw() }
-    _ = onDestroy(self.messages.onUpdated { [unowned self] _ in
-      messagesUpdated = true
-      //processMessages()
-    })
+    self.inspectedRoot.widgetContext!.inspectionBus.pipe(into: messages)
     _ = onTick { [unowned self] _ in
-      if messagesUpdated {
-        processMessages()
-        draw()
-        messagesUpdated = false
+      let currentTimestamp = Date.timeIntervalSinceReferenceDate
+      if currentTimestamp - lastUpdateTimestamp > updateInterval {
+        checkUpdateGraph()
+        lastUpdateTimestamp = currentTimestamp
       }
     }
   }
@@ -45,22 +40,40 @@ public class EventRollView: SingleChildWidget {
     }
   }
 
+  private func checkUpdateGraph() {
+    let previousLineData = lineData
+    DispatchQueue.global().async { [weak self] in
+      if let self = self {
+        self.processMessages()
+        if self.lineData != previousLineData {
+          self.draw()
+          DispatchQueue.main.async { [weak self] in
+            if let self = self {
+              self.nextTick { _ in
+                self.canvas.setContent(self.graphImage)
+                self.canvas.invalidateRenderState()
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
   private func draw() {
-    canvas.clear()
+    graphImage = Image(width: graphImage.width, height: graphImage.height, value: 0)
     let dataDuration = max(minDuration, lineData.endTimestamp - lineData.startTimestamp)
     for (timestamp, count) in lineData.timeCounts {
       let relativeX = (timestamp - lineData.startTimestamp) / dataDuration
       let relativeY = lineData.maxCount > 0 ? Double(count) / Double(lineData.maxCount) : 1
       let position = SIMD2<Int>(SIMD2<Double>(canvas.contentSize) * [relativeX, relativeY])
       for y in stride(from: canvas.contentSize.y - 1, to: position.y, by: -1) {
-        canvas.setPixel(at: [position.x, y], to: Color.Yellow)
+        graphImage[position.x, y] = Swim.Color<RGBA, UInt8>(r: 255, g: 255, b: 0, a: 255)
       } 
     }
-    canvas.invalidateRenderState()
   }
 
   private func processMessages() {
-    lineData = LineData()
     for message in messages {
       switch message.content {
       case .LayoutInvalidated:
@@ -79,11 +92,12 @@ public class EventRollView: SingleChildWidget {
         lineData.endTimestamp = message.timestamp
       }
     }
+    messages.clear()
   }
 }
 
-extension EventRollView {
-  struct LineData {
+extension EventCumulationView {
+  struct LineData: Equatable {
     var startTimestamp: Double = -1
     var endTimestamp: Double = -1
     var timeCounts: [Double: UInt] = [:]

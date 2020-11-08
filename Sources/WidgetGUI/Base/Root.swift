@@ -91,6 +91,8 @@ open class Root: Parent {
   }
 
   open func tick(_ tick: Tick) {
+    let startTime = Date.timeIntervalSinceReferenceDate
+
     widgetContext!.onTick.invokeHandlers(tick)
 
     for message in widgetLifecycleMessages {
@@ -136,6 +138,7 @@ open class Root: Parent {
 
     removeOnAdd()
     widgetLifecycleMessages.clear()
+    //print("ONTICK TOOK", Date.timeIntervalSinceReferenceDate - startTime, "seconds")
   }
 
   @inline(__always)
