@@ -5,23 +5,37 @@ import Path
 import Swim
 
 public class EventCumulationView: SingleChildWidget {
+  private typealias Event = WidgetInspectionMessage.MessageContent
+
   private let inspectedRoot: Root
 
   private var messages = WidgetBus<WidgetInspectionMessage>.MessageBuffer()
 
-  @Reference
-  private var canvas: PixelCanvas
+  private var cumulatedEvents: [Event] = [
+    .BuildInvalidated, .BoxConfigInvalidated, .LayoutInvalidated, .RenderStateInvalidated
+  ]
 
+  private var canvases: [Event: Reference<PixelCanvas>] = [:]
+
+  private var data = CumulationData()
   private let minDuration: Double = 40
+  private var startTimestamp: Double = -1
+  private var endTimestamp: Double = -1
 
-  private var lineData = LineData()
-  private var graphImage = Image(width: 500, height: 300, value: 0)
+  private var images: [Event: VisualAppBase.Image] = [:]
   private var lastUpdateTimestamp = 0.0
   private let updateInterval = 0.5
 
   public init(_ inspectedRoot: Root) {
     self.inspectedRoot = inspectedRoot
     super.init()
+
+    for event in cumulatedEvents {
+      canvases[event] = Reference()
+      images[event] = Image(width: 600, height: 200, value: 0)
+    }
+
+
     self.inspectedRoot.widgetContext!.inspectionBus.pipe(into: messages)
     _ = onTick { [unowned self] _ in
       let currentTimestamp = Date.timeIntervalSinceReferenceDate
@@ -33,25 +47,31 @@ public class EventCumulationView: SingleChildWidget {
   }
   
   override public func buildChild() -> Widget {
-    ConstrainedSize(minSize: DSize2(200, 200)) { [unowned self] in
-      PixelCanvas(DSize2(300, 200)).connect(ref: $canvas).with {
-        $0.debugLayout = true
+    Column { [unowned self] in
+      cumulatedEvents.map { event in
+        ConstrainedSize(minSize: DSize2(200, 200)) {
+          PixelCanvas(DSize2(300, 200)).connect(ref: canvases[event]!).with {
+            $0.debugLayout = true
+          }
+        }
       }
     }
   }
 
   private func checkUpdateGraph() {
-    let previousLineData = lineData
+    let previousData = data
     DispatchQueue.global().async { [weak self] in
       if let self = self {
         self.processMessages()
-        if self.lineData != previousLineData {
+        if self.data != previousData {
           self.draw()
           DispatchQueue.main.async { [weak self] in
             if let self = self {
               self.nextTick { _ in
-                self.canvas.setContent(self.graphImage)
-                self.canvas.invalidateRenderState()
+                for event in self.cumulatedEvents {
+                  self.canvases[event]!.referenced!.setContent(self.images[event]!)
+                  self.canvases[event]!.referenced!.invalidateRenderState()
+                }
               }
             }
           }
@@ -61,35 +81,30 @@ public class EventCumulationView: SingleChildWidget {
   }
 
   private func draw() {
-    graphImage = Image(width: graphImage.width, height: graphImage.height, value: 0)
-    let dataDuration = max(minDuration, lineData.endTimestamp - lineData.startTimestamp)
-    for (timestamp, count) in lineData.timeCounts {
-      let relativeX = (timestamp - lineData.startTimestamp) / dataDuration
-      let relativeY = lineData.maxCount > 0 ? Double(count) / Double(lineData.maxCount) : 1
-      let position = SIMD2<Int>(SIMD2<Double>(canvas.contentSize) * [relativeX, relativeY])
-      for y in stride(from: canvas.contentSize.y - 1, to: position.y, by: -1) {
-        graphImage[position.x, y] = Swim.Color<RGBA, UInt8>(r: 255, g: 255, b: 0, a: 255)
-      } 
+    let dataDuration = max(minDuration, data.maxTimestamp - data.minTimestamp)
+    for event in cumulatedEvents {
+      images[event] = Image(width: images[event]!.width, height: images[event]!.height, value: 0)
+      
+      let eventData = data[event]
+
+      for (timestamp, count) in eventData.timeCounts {
+        let relativeX = dataDuration > 0 ? (timestamp - data.minTimestamp) / dataDuration : 0
+        let relativeY = eventData.maxCount > 0 ? Double(count) / Double(eventData.maxCount) : 1
+        let position = SIMD2<Int>(SIMD2<Double>([images[event]!.width, images[event]!.height]) * [relativeX, relativeY])
+        for y in stride(from: images[event]!.height - 1, to: position.y, by: -1) {
+          images[event]![position.x, y] = Swim.Color<RGBA, UInt8>(r: 255, g: 255, b: 0, a: 255)
+        }
+      }
     }
   }
 
   private func processMessages() {
     for message in messages {
-      switch message.content {
-      case .LayoutInvalidated:
-        let aggregationTimestamp = floor(message.timestamp)
-        if lineData.timeCounts[aggregationTimestamp] == nil {
-          lineData.timeCounts[aggregationTimestamp] = 0
+      for event in cumulatedEvents {
+        if message.content == event {
+          data.count(event, timestamp: message.timestamp)
+          break
         }
-        lineData.timeCounts[aggregationTimestamp]! += 1
-      default: break
-      }
-
-      if lineData.startTimestamp == -1 || lineData.startTimestamp > message.timestamp {
-        lineData.startTimestamp = message.timestamp
-      }
-      if lineData.endTimestamp == -1 || lineData.endTimestamp < message.timestamp {
-        lineData.endTimestamp = message.timestamp
       }
     }
     messages.clear()
@@ -97,9 +112,32 @@ public class EventCumulationView: SingleChildWidget {
 }
 
 extension EventCumulationView {
-  struct LineData: Equatable {
-    var startTimestamp: Double = -1
-    var endTimestamp: Double = -1
+  struct CumulationData: Equatable {
+    private var eventData: [WidgetInspectionMessage.MessageContent: EventData] = [:]
+    private(set) var minTimestamp: Double = -1
+    private(set) var maxTimestamp: Double = -1
+    
+    subscript(_ event: WidgetInspectionMessage.MessageContent) -> EventData {
+      eventData[event] ?? EventData()
+    }
+
+    mutating func count(_ event: WidgetInspectionMessage.MessageContent, timestamp: Double) {
+      let aggregatedTimestamp = round(timestamp)
+      if eventData[event] == nil {
+        eventData[event] = EventData()
+      }
+      eventData[event]!.increment(aggregatedTimestamp)
+
+      if timestamp < minTimestamp || minTimestamp == -1 {
+        minTimestamp = timestamp
+      }
+      if timestamp > maxTimestamp || maxTimestamp == -1 {
+        maxTimestamp = timestamp
+      }
+    }
+  }
+
+  struct EventData: Equatable {
     var timeCounts: [Double: UInt] = [:]
     var minCount: UInt {
       var min: UInt? = nil
@@ -118,6 +156,13 @@ extension EventCumulationView {
         }
       }
       return max
+    }
+
+    mutating func increment(_ timestamp: Double) {
+      if timeCounts[timestamp] == nil {
+        timeCounts[timestamp] = 0
+      }
+      timeCounts[timestamp]! += 1
     }
   }
 }

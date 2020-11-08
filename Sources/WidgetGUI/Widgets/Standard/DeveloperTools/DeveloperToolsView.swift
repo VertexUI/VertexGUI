@@ -29,7 +29,7 @@ public class DeveloperToolsView: SingleChildWidget {
           }
 
           Button {
-            Text("Event Roll")
+            Text("Event Cumulation")
           } onClick: { _ in
             activeTab = .EventRoll
           }

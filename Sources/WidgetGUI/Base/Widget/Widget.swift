@@ -523,6 +523,10 @@ open class Widget: Bounded, Parent, Child {
         buildInvalid = true
 
         lifecycleBus.publish(WidgetLifecycleMessage(sender: self, content: .BuildInvalidated))
+        
+        #if DEBUG
+        context.inspectionBus.publish(WidgetInspectionMessage(sender: self, content: .BuildInvalidated))
+        #endif
     }
 
     private final func handleChildBoxConfigChanged(child: Widget) {
@@ -576,6 +580,9 @@ open class Widget: Bounded, Parent, Child {
         }
         boxConfigInvalid = true
         lifecycleBus.publish(WidgetLifecycleMessage(sender: self, content: .BoxConfigInvalidated))
+        #if DEBUG
+        context.inspectionBus.publish(WidgetInspectionMessage(sender: self, content: .BoxConfigInvalidated))
+        #endif
         onBoxConfigInvalidated.invokeHandlers(Void())
     }
 
@@ -878,6 +885,9 @@ open class Widget: Bounded, Parent, Child {
         renderState.invalid = true
         onRenderStateInvalidated.invokeHandlers(self)
         lifecycleBus.publish(WidgetLifecycleMessage(sender: self, content: .RenderStateInvalidated))
+        #if DEBUG
+        context.inspectionBus.publish(WidgetInspectionMessage(sender: self, content: .RenderStateInvalidated))
+        #endif
     }
 
     @discardableResult

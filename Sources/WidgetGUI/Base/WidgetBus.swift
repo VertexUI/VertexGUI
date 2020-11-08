@@ -79,19 +79,22 @@ public struct WidgetInspectionMessage {
       self.timestamp = timestamp
   }
 
-  public enum MessageContent {
+  public enum MessageContent: Hashable {
     case BuildInvalidated
     case BuildStarted
     case BuildFinished
     
+    case BoxConfigInvalidated
+    
     case LayoutInvalidated
     case LayoutBurstThresholdExceeded
-    case LayoutingStarted(constraints: BoxConstraints)
-    case LayoutingFinished(unconstrainedSize: DSize2, constrainedSize: DSize2)
+    case LayoutingStarted
+    case LayoutingFinished
 
+    case RenderStateInvalidated
     case RenderBurstThresholdExceeded
     case RenderingStarted
-    case RenderingFinished(duration: Double)
+    case RenderingFinished
   }
 }
 
