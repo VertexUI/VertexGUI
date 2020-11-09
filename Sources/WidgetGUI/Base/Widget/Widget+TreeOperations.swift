@@ -95,11 +95,10 @@ extension Widget {
 
           if configs.count == 0 {
               return nil
-          }/*
+          }
 
           let resultConfig = type.merged(partials: configs)
-          return resultConfig*/
-          return nil
+          return resultConfig
         }
     }
 }

@@ -4,7 +4,7 @@ import CustomGraphicsMath
 
 open class WidgetsApp<S: System, W: Window, R: Renderer>: VisualApp<S, W, R> {
     public typealias Renderer = R
-    public private(set) var guiRoots: [ObjectIdentifier: Root] = [:]
+    public private(set) var guiRoots: [Int: Root] = [:]
 
     public init(system: System) {
         super.init(system: system, immediate: true)
@@ -19,48 +19,50 @@ open class WidgetsApp<S: System, W: Window, R: Renderer>: VisualApp<S, W, R> {
         let window = super.createWindow(
             options: options,
             immediate: immediate)
-        let context = windowContexts[ObjectIdentifier(window)]!
+        let windowId = window.id
+        let context = windowContexts[windowId]!
         let guiRoot = guiRootBuilder()
 
         guiRoot.setup(widgetContext: WidgetContext(
                       window: window,
-                      getTextBoundsSize: { [unowned self] in windowContexts[ObjectIdentifier(window)]!.renderer.getTextBoundsSize($0, fontConfig: $1, maxWidth: $2) },
+                      getTextBoundsSize: { [unowned self] in windowContexts[windowId]!.renderer.getTextBoundsSize($0, fontConfig: $1, maxWidth: $2) },
                       getApplicationTime: { [unowned self] in system.currentTime },
                       createWindow: { [unowned self] in createWindow(guiRoot: $0(), options: $1, immediate: true) },
-                      requestCursor: {
-                          self.system.requestCursor($0)
+                      requestCursor: { [unowned self] in
+                          system.requestCursor($0)
                       }))
       
-        guiRoots[ObjectIdentifier(window)] = guiRoot
+        guiRoots[windowId] = guiRoot
 
         guiRoot.bounds.size = window.size
         
-        _ = window.onMouse {
-            guiRoot.consume($0)
+        _ = window.onMouse { [unowned self] in
+            guiRoots[windowId]!.consume($0)
         }
 
-        _ = window.onKey {
-            guiRoot.consume($0)
+        _ = window.onKey { [unowned self] in
+            guiRoots[windowId]!.consume($0)
         }
 
-        _ = window.onText {
-            guiRoot.consume($0)
+        _ = window.onText { [unowned self] in
+            guiRoots[windowId]!.consume($0)
         }
 
-        _ = window.onSizeChanged {
-            guiRoot.bounds.size = $0
+        _ = window.onSizeChanged { [unowned self] in
+            guiRoots[windowId]!.bounds.size = $0
         }
 
         #if DEBUG
         _ = window.onKey { [unowned self] in
             if let event = $0 as? KeyUpEvent, event.key == Key.F12 {
-                openDevTools(for: window)
+                openDevTools(for: windowContexts[windowId]!.window)
            }
         }
         #endif
 
-        _ = window.onBeforeClose {
-            guiRoot.destroy()
+        _ = window.onBeforeClose { [unowned self] _ in
+            guiRoots[windowId]!.destroy()
+            guiRoots[windowId] = nil
         }
 
         if let rendering = guiRoot.render() {
@@ -71,7 +73,7 @@ open class WidgetsApp<S: System, W: Window, R: Renderer>: VisualApp<S, W, R> {
     }
 
     public func openDevTools(for window: Window) {
-        let devToolsView = DeveloperToolsView(guiRoots[ObjectIdentifier(window)]!)
+        let devToolsView = DeveloperToolsView(guiRoots[window.id]!)
         let devToolsGuiRoot = WidgetGUI.Root(
             rootWidget: devToolsView
         )

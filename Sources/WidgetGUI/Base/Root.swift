@@ -310,6 +310,10 @@ open class Root: Parent {
     rootWidget.destroy()
     onDestroy.invokeHandlers(())
   }
+
+  deinit {
+    print("DEINITIALIZED ROOT")
+  }
 }
 
 extension Root {

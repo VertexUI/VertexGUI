@@ -10,12 +10,15 @@ public class ImmediateRenderObjectTreeRenderer: RenderObjectTreeRenderer {
     private var treeMessageBuffer: [RenderObject.UpwardMessage] = []
     private var activeTransitionCount = 0
 
+    private var removeBusHandler: (() -> ())? = nil
+
     required public init(_ tree: RenderObjectTree, context: ApplicationContext) {
         self.tree = tree
         self.context = context
         self.sliceRenderer = RenderObjectTreeSliceRenderer(context: context)
-
-        _ = self.tree.bus.onUpwardMessage({ [unowned self] in
+        
+        // TODO: introduce pipes for tree bus as well
+        removeBusHandler = self.tree.bus.onUpwardMessage({ [unowned self] in
             treeMessageBuffer.append($0)
         })
     }
@@ -52,5 +55,11 @@ public class ImmediateRenderObjectTreeRenderer: RenderObjectTreeRenderer {
         rerenderNeeded = false
     }
 
-    public func destroy() {}
+    public func destroy() {
+        sliceRenderer.destroy()
+        if let remove = removeBusHandler {
+            remove()
+        }
+        destroyed = true
+    }
 }

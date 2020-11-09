@@ -1,11 +1,11 @@
-public class EventHandlerManager<Data> {
+public protocol AnyEventHandlerManager {
+  func removeAllHandlers()
+}
 
+public class EventHandlerManager<Data>: AnyEventHandlerManager {
   public typealias Handler = (Data) -> Void
-
   public typealias UnregisterCallback = () -> Void
-
   public var handlers = [Int: Handler]()
-
   private var nextHandlerId = 0
 
   public init() {
@@ -61,7 +61,7 @@ public class EventHandlerManager<Data> {
 }
 
 //@available(*, deprecated, message: "Just use EventHandlerManager (probably)!")
-public class ThrowingEventHandlerManager<Data> {
+public class ThrowingEventHandlerManager<Data>: AnyEventHandlerManager {
   public typealias Handler = (Data) throws -> Void
   public typealias UnregisterCallback = () -> Void
   public var handlers = [Int: Handler]()

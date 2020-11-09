@@ -153,7 +153,7 @@ open class SDL2OpenGL3NanoVGWindow: Window {
     SDL_GL_SwapWindow(sdlWindow)
   }
 
-  override open func destroy() {
+  override open func destroySelf() {
     // TODO: need to destroy those two contexts here?
     //SDL_GL_DeleteContext(glContext)
     //nvgDeleteGL3(nvg)

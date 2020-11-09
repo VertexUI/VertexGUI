@@ -65,6 +65,10 @@ public class DeveloperToolsView: SingleChildWidget {
       }
     }
   }
+
+  deinit {
+    print("DEINITIALIZED DEV TOOLS VIEW")
+  }
 }
 
 extension DeveloperToolsView {

@@ -7,7 +7,7 @@ open class VisualApp<S: System, W: Window, R: Renderer>: App<S, W> {
 
     public typealias Renderer = R
 
-    public private(set) var windowContexts: [ObjectIdentifier: WindowContext] = [:] {
+    public private(set) var windowContexts: [Int: WindowContext] = [:] {
         didSet {
             if windowContexts.count == 0 {
                 exit()
@@ -25,17 +25,21 @@ open class VisualApp<S: System, W: Window, R: Renderer>: App<S, W> {
         let renderObjectTree = RenderObjectTree()
 
         let window = try! Window(options: options)
+        let windowId = window.id
 
-        _ = window.onBeforeClose { [unowned self] in
-            let context = windowContexts[ObjectIdentifier(window)]!
+        _ = window.onBeforeClose { [unowned self] window in
+            let context = windowContexts[windowId]!
             context.treeRenderer.destroy()
             context.renderer.destroy()
+            context.tree.destroy()
+            windowContexts[windowId] = nil
         }
 
         let renderer = createRenderer(for: window) 
 
-        let renderObjectContext = RenderObjectContext(getTextBoundsSize: {
-            renderer.getTextBoundsSize($0, fontConfig: $1, maxWidth: $2)
+        let renderObjectContext = RenderObjectContext(getTextBoundsSize: { [unowned self] in
+            let renderer = windowContexts[windowId]!.renderer
+            return renderer.getTextBoundsSize($0, fontConfig: $1, maxWidth: $2)
         })
         renderObjectTree.context = renderObjectContext
 
@@ -53,7 +57,7 @@ open class VisualApp<S: System, W: Window, R: Renderer>: App<S, W> {
             tree: renderObjectTree,
             treeRenderer: renderObjectTreeRenderer)
 
-        windowContexts[ObjectIdentifier(window)] = context
+        windowContexts[windowId] = context
 
         return window
     }

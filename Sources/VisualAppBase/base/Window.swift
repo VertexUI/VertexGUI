@@ -98,7 +98,7 @@ open class Window {
   public var onPositionChanged = EventHandlerManager<DPoint2>()
   public var onVisibilityChanged = EventHandlerManager<Visibility>()
   public var onInputFocusChanged = EventHandlerManager<Bool>()
-  public var onBeforeClose = EventHandlerManager<Void>()
+  public var onBeforeClose = EventHandlerManager<Window>()
 
   // TODO: maybe can remove background color
   public required init(options: Options) throws {
@@ -174,12 +174,22 @@ open class Window {
   }
 
   open func close() {
-    onBeforeClose.invokeHandlers(Void())
+    onBeforeClose.invokeHandlers(self)
     destroy()
     destroyed = true
   }
 
-  open func destroy() {
+  public final func destroy() {
+    let mirror = Mirror(reflecting: self)
+    for child in mirror.children {
+      if let manager = child.value as? AnyEventHandlerManager {
+        manager.removeAllHandlers()
+      }
+    }
+    destroySelf()
+  }
+
+  open func destroySelf() {
 
   }
 }

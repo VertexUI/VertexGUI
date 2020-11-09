@@ -160,7 +160,7 @@ public class RenderObjectTreeSliceRenderer {
   }
 
   public func destroy() {
-
+    destroyed = true
   }
 }
 
