@@ -47,11 +47,16 @@ public class EventCumulationView: SingleChildWidget {
   }
   
   override public func buildChild() -> Widget {
-    Column { [unowned self] in
+    Row(wrap: true) { [unowned self] in
       cumulatedEvents.map { event in
-        ConstrainedSize(minSize: DSize2(200, 200)) {
-          PixelCanvas(DSize2(300, 200)).connect(ref: canvases[event]!).with {
-            $0.debugLayout = true
+        Row.Item(margins: Margins(right: 32, bottom: 32)) {
+          Column(spacing: 16) {
+            Text("Counts for event: \(event)")
+            ConstrainedSize(minSize: DSize2(200, 200)) {
+              PixelCanvas(DSize2(300, 200)).connect(ref: canvases[event]!).with {
+                $0.debugLayout = true
+              }
+            }
           }
         }
       }
@@ -67,6 +72,7 @@ public class EventCumulationView: SingleChildWidget {
           self.draw()
           DispatchQueue.main.async { [weak self] in
             if let self = self {
+              self.messages.clear()
               self.nextTick { _ in
                 for event in self.cumulatedEvents {
                   self.canvases[event]!.referenced!.setContent(self.images[event]!)
@@ -90,7 +96,7 @@ public class EventCumulationView: SingleChildWidget {
       for (timestamp, count) in eventData.timeCounts {
         let relativeX = dataDuration > 0 ? (timestamp - data.minTimestamp) / dataDuration : 0
         let relativeY = eventData.maxCount > 0 ? Double(count) / Double(eventData.maxCount) : 1
-        let position = SIMD2<Int>(SIMD2<Double>([images[event]!.width, images[event]!.height]) * [relativeX, relativeY])
+        let position = SIMD2<Int>(SIMD2<Double>([images[event]!.width - 1, images[event]!.height - 1]) * [relativeX, relativeY])
         for y in stride(from: images[event]!.height - 1, to: position.y, by: -1) {
           images[event]![position.x, y] = Swim.Color<RGBA, UInt8>(r: 255, g: 255, b: 0, a: 255)
         }
@@ -107,7 +113,6 @@ public class EventCumulationView: SingleChildWidget {
         }
       }
     }
-    messages.clear()
   }
 }
 
@@ -128,11 +133,11 @@ extension EventCumulationView {
       }
       eventData[event]!.increment(aggregatedTimestamp)
 
-      if timestamp < minTimestamp || minTimestamp == -1 {
-        minTimestamp = timestamp
+      if aggregatedTimestamp < minTimestamp || minTimestamp == -1 {
+        minTimestamp = aggregatedTimestamp
       }
-      if timestamp > maxTimestamp || maxTimestamp == -1 {
-        maxTimestamp = timestamp
+      if aggregatedTimestamp > maxTimestamp || maxTimestamp == -1 {
+        maxTimestamp = aggregatedTimestamp
       }
     }
   }
