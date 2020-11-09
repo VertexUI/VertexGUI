@@ -6,34 +6,24 @@ import VisualAppBase
 import WidgetGUI
 
 open class SDL2OpenGL3NanoVGSystem: System {
-
-  public static var windows = [Int: SDL2OpenGL3NanoVGWindow]()
+  public static var windows: [Int: SDL2OpenGL3NanoVGWindow] = [:]
 
   public static var isRunning = true
-
   public var targetFps = 60
-
   public var currentFps = 0
-
   public static let fpsBufferCount = 100
-
   public var fpsBuffer = [Int](repeating: 0, count: SDL2OpenGL3NanoVGSystem.fpsBufferCount)  // history of fpsBufferCount fps values
-
   public var fpsBufferIndex = 0
 
   var lastFrameTime = SDL_GetTicks()
-
   var totalTime: UInt32 = 0  // in ms
 
   override open var currentTime: Double {  // in s
-
     return Double(totalTime) / 1000
   }
 
   public var relativeMouseMode = false {
-
     didSet {
-
       SDL_SetRelativeMouseMode(relativeMouseMode ? SDL_TRUE : SDL_FALSE)
     }
   }
@@ -41,14 +31,11 @@ open class SDL2OpenGL3NanoVGSystem: System {
   public var mousePosition: DPoint2 = DPoint2(0, 0)
 
   private var pressedMouseButtons = [
-
     MouseButton.Left: false
   ]
 
   override public init() throws {
-
     if SDL_Init(SDL_INIT_VIDEO) != 0 {
-
       throw SDLError("Unable to initialize SDL.", SDL_GetError())
     }
 
@@ -61,30 +48,20 @@ open class SDL2OpenGL3NanoVGSystem: System {
   }
 
   override open func updateCursor() {
-
     if cursorRequests.count > 0 {
-
       print("HAVE CURSOR REQUEST")
-
       let cursor = Array(cursorRequests.values)[0]
-
       switch cursor {
-
       case .Arrow:
-
         SDL_SetCursor(SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_ARROW))
 
       case .Hand:
-
         SDL_SetCursor(SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_HAND))
 
       case .Text:
-
         SDL_SetCursor(SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_IBEAM))
       }
-
     } else {
-
       SDL_SetCursor(SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_ARROW))
     }
   }

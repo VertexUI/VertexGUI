@@ -32,7 +32,7 @@ open class VisualApp<S: System, W: Window, R: Renderer>: App<S, W> {
             context.treeRenderer.destroy()
             context.renderer.destroy()
             context.tree.destroy()
-            windowContexts[windowId] = nil
+            windowContexts.removeValue(forKey: windowId)
         }
 
         let renderer = createRenderer(for: window) 

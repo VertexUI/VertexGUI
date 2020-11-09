@@ -12,8 +12,9 @@ open class SDL2OpenGL3NanoVGWindow: Window {
   public var glContext: SDL_GLContext
   public var nvg: UnsafeMutablePointer<NVGcontext>
 
+  private var _id: Int = -1
   override open var id: Int {
-    return Int(SDL_GetWindowID(sdlWindow))
+    _id
   }
 
   public var pixelRatio: Float {
@@ -72,17 +73,14 @@ open class SDL2OpenGL3NanoVGWindow: Window {
       Int32(NVG_ANTIALIAS.rawValue | NVG_STENCIL_STROKES.rawValue | NVG_DEBUG.rawValue))
 
     try super.init(options: options)
+
+    _id = Int(SDL_GetWindowID(sdlWindow))
     
     SDL2OpenGL3NanoVGSystem.windows[id] = self
 
     invalidateSize()
     invalidatePosition()
     invalidateInputFocus()
-  }
-
-  deinit {
-    SDL_GL_DeleteContext(glContext)
-    SDL_DestroyWindow(sdlWindow)
   }
 
   override open func readSize() -> DSize2 {
@@ -158,5 +156,11 @@ open class SDL2OpenGL3NanoVGWindow: Window {
     //SDL_GL_DeleteContext(glContext)
     //nvgDeleteGL3(nvg)
     SDL_DestroyWindow(sdlWindow)
+    print("DESTROYED WINDOW")
+    SDL2OpenGL3NanoVGSystem.windows.removeValue(forKey: id)
+  }
+  
+  deinit {
+    print("DEINITIALIZED WINDOW")
   }
 }

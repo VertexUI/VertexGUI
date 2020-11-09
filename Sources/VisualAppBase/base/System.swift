@@ -41,7 +41,6 @@ open class System {
     }
     
     open func mainLoop() throws {
-        
         fatalError("mainLoop() not implemented.")
     }
 

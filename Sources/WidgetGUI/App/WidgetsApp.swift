@@ -59,10 +59,10 @@ open class WidgetsApp<S: System, W: Window, R: Renderer>: VisualApp<S, W, R> {
            }
         }
         #endif
-
+        
         _ = window.onBeforeClose { [unowned self] _ in
             guiRoots[windowId]!.destroy()
-            guiRoots[windowId] = nil
+            guiRoots.removeValue(forKey: windowId)
         }
 
         if let rendering = guiRoot.render() {
