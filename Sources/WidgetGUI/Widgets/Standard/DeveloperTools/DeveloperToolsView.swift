@@ -15,7 +15,7 @@ public class DeveloperToolsView: SingleChildWidget {
   public init(_ inspectedRoot: Root) {
     self.inspectedRoot = inspectedRoot
     super.init()
-    self.inspectedRoot.widgetContext!.inspectionBus.pipe(into: messages)
+    _ = onDestroy(self.inspectedRoot.widgetContext!.inspectionBus.pipe(into: messages))
   }
 
   override public func buildChild() -> Widget {

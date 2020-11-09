@@ -42,11 +42,11 @@ public extension ConfigurableWidget {
         // following closure as this crashes the swift compiler (5.3)
         let localPartialConfig = self.localPartialConfig
 
-        return ComputedProperty([computedInheritedPartial.any]) { //[unowned self] in
+        return ComputedProperty([computedInheritedPartial.any]) { Self.defaultConfig }/* ComputedProperty([computedInheritedPartial.any]) { //[unowned self] in
             let inheritedPartial = computedInheritedPartial.value
             let combinedPartial = PartialConfig.merged(partials: [localPartialConfig, inheritedPartial].compactMap { $0 })
-            return Self.defaultConfig.merged(with: combinedPartial)
-        }
+            return Self.defaultConfig//.merged(with: combinedPartial)
+        }*/
     }
 
     func combineConfigs() -> Config {

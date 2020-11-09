@@ -43,9 +43,11 @@ open class Root: Parent {
     }
   }
 
+  private var onDestroy = EventHandlerManager<Void>()
+
   public init(rootWidget contentRootWidget: Widget) {
     self.rootWidget = contentRootWidget
-    self.widgetLifecycleBus.pipe(into: widgetLifecycleMessages)
+    _ = onDestroy(self.widgetLifecycleBus.pipe(into: widgetLifecycleMessages))
   }
   
   // TODO: instead of receiving a widgetcontext directly, receive an application and a rendercontext
@@ -306,6 +308,7 @@ open class Root: Parent {
 
   open func destroy() {
     rootWidget.destroy()
+    onDestroy.invokeHandlers(())
   }
 }
 

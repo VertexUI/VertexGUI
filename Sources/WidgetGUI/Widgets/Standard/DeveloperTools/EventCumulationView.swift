@@ -36,7 +36,7 @@ public class EventCumulationView: SingleChildWidget {
     }
 
 
-    self.inspectedRoot.widgetContext!.inspectionBus.pipe(into: messages)
+    _ = onDestroy(self.inspectedRoot.widgetContext!.inspectionBus.pipe(into: messages))
     _ = onTick { [unowned self] _ in
       let currentTimestamp = Date.timeIntervalSinceReferenceDate
       if currentTimestamp - lastUpdateTimestamp > updateInterval {
