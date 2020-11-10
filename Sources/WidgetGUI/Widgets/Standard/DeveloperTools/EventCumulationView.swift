@@ -16,6 +16,8 @@ public class EventCumulationView: SingleChildWidget {
   ]
 
   private var canvases: [Event: Reference<PixelCanvas>] = [:]
+  @Reference
+  private var xLegendSpace: Space
 
   private var data = CumulationData()
   private let minDuration: Double = 40
@@ -26,6 +28,8 @@ public class EventCumulationView: SingleChildWidget {
   private var lastUpdateTimestamp = 0.0
   private let updateInterval = 0.5
   private var imageUpdateRunning = false
+
+  private let labelFontConfig = Text.defaultConfig.fontConfig
 
   public init(_ inspectedRoot: Root) {
     self.inspectedRoot = inspectedRoot
@@ -48,18 +52,18 @@ public class EventCumulationView: SingleChildWidget {
   }
   
   override public func buildChild() -> Widget {
-    Row(wrap: true) { [unowned self] in
+    Column { [unowned self] in
       cumulatedEvents.map { event in
-        Row.Item(margins: Margins(right: 32, bottom: 32)) {
-          Column(spacing: 16) {
-            Text("Counts for event: \(event)")
-            ConstrainedSize(minSize: DSize2(200, 200)) {
-              PixelCanvas(DSize2(300, 200)).connect(ref: canvases[event]!).with {
-                $0.debugLayout = true
-              }
-            }
+        //Text("Counts for event: \(event)")
+        ConstrainedSize(minSize: DSize2(200, 100)) {
+          PixelCanvas(DSize2(300, 200)).connect(ref: canvases[event]!).with {
+            $0.debugLayout = true
           }
         }
+      }
+
+      Column.Item(margins: Margins(top: 16)) {
+        Space(context.getTextBoundsSize("WOWO", fontConfig: labelFontConfig)).connect(ref: $xLegendSpace)
       }
     }
   }
@@ -86,6 +90,7 @@ public class EventCumulationView: SingleChildWidget {
                   self.canvases[event]!.referenced!.invalidateRenderState()
                 }
               }
+              self.invalidateRenderState()
             }
           }
         } else {
@@ -125,9 +130,28 @@ public class EventCumulationView: SingleChildWidget {
   }
 
   override public func renderContent() -> RenderObject {
-    ContainerRenderObject {
+    var timestampLabels = [(timestamp: Double, x: Double)]()
+
+    let minTimestamp = 0
+    let maxTimestamp = max(minDuration, data.maxTimestamp - data.minTimestamp)
+
+    let labelSize = context.getTextBoundsSize(String(maxTimestamp), fontConfig: labelFontConfig)
+
+    let labelCount = max(2, Int(xLegendSpace.width / labelSize.width / 2))
+
+    for i in 0..<labelCount {
+      let factor = Double(i) / Double(labelCount - 1)
+      let timestamp = round(maxTimestamp * factor * 100) / 100
+      let labelSize = context.getTextBoundsSize(String(timestamp), fontConfig: labelFontConfig)
+      timestampLabels.append((timestamp: timestamp, x: factor * xLegendSpace.width - labelSize.width / 2))
+    }
+
+    return ContainerRenderObject {
       super.renderContent()
-      CustomRenderObject(id: 1) { _ in }
+      
+      timestampLabels.map {
+        TextRenderObject(String($0.timestamp), fontConfig: labelFontConfig, color: .Black, topLeft: xLegendSpace.globalPosition + DVec2($0.x, 0))
+      }
     }
   }
 
@@ -190,4 +214,35 @@ extension EventCumulationView {
       timeCounts[timestamp]! += 1
     }
   }
+  /*
+  class UnlayoutedContainer: Widget {
+    private let childrenBuilder: () -> [Widget]
+    
+    public init(@WidgetBuilder children childrenBuilder: @escaping () -> [Widget]) {
+      self.childrenBuilder = childrenBuilder
+    }
+
+    override public func performBuild() {
+      self.children = childrenBuilder()
+    }
+
+    override public func getBoxConfig() {
+      BoxConfig(preferredSize: .zero)
+    }
+
+    override public func performLayout(constraints: BoxConstraints) -> DSize2 {
+      var size = DSize2.zero
+
+      for child in children {
+        if child.x + child.width > size.width {
+          size.width = child.x + child.width
+        }
+        if child.y + child.height > size.height {
+          size.height = child.y + child.height
+        }
+      }
+
+      return size
+    }
+  }*/
 }
