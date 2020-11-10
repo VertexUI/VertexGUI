@@ -919,15 +919,8 @@ open class Widget: Bounded, Parent, Child {
     Run something on the next tick.
     */
     public func nextTick(_ block: @escaping (Tick) -> ()) {
-        if mounted {
-            let remove = context.onTick.once(block)
-            nextTickHandlerRemovers.append(remove)
-        } else {
-            _ = onMounted.once { [unowned self] in
-                let remove = context.onTick.once(block)
-                nextTickHandlerRemovers.append(remove)
-            }
-        }
+        let remove = context.onTick.once(block)
+        nextTickHandlerRemovers.append(remove)
     }
     
     /**
@@ -970,6 +963,17 @@ open class Widget: Bounded, Parent, Child {
 
         // TODO: maybe automatically clear all EventHandlerManagers / WidgetEventHandlerManagers by using reflection?
         
+
+        for remove in nextTickHandlerRemovers {
+            remove()
+        }
+
+        parent = nil
+
+        destroySelf()
+        
+        onDestroy.invokeHandlers(Void())
+
         onParentChanged.removeAllHandlers()
         //onAnyParentChanged.removeAllHandlers()
         onMounted.removeAllHandlers()
@@ -979,23 +983,20 @@ open class Widget: Bounded, Parent, Child {
         onLayoutingStarted.removeAllHandlers()
         onLayoutingFinished.removeAllHandlers()
         onRenderStateInvalidated.removeAllHandlers()
+        onDestroy.removeAllHandlers()
 
-        for remove in nextTickHandlerRemovers {
-            remove()
-        }
-        
         let mirror = Mirror(reflecting: self)
         for child in mirror.allChildren {
             if var manager = child.value as? AnyWidgetEventHandlerManager {
                 manager.removeAllHandlers()
                 manager.widget = nil
+            } else if var manager = child.value as? AnyEventHandlerManager {
+                manager.removeAllHandlers()
             }
         } 
 
-        parent = nil
-        destroySelf()
-        onDestroy.invokeHandlers(Void())
         destroyed = true
+
         Logger.log("Destroyed Widget: \(self), \(id)", level: .Message, context: .Default)
     }
 

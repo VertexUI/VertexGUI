@@ -707,44 +707,33 @@ open class PathRenderObject: RenderObject {
 }
 
 open class CustomRenderObject: RenderObject {
-
     public var render: (_ renderer: Renderer) -> Void
 
     override open var hasTimedRenderValue: Bool {
-
         return false
     } 
     
     override open var debugDescription: String {
-
         "CustomRenderObject"
     }
 
     private var id: UInt
 
     override open var individualHash: Int {
-
         var hasher = Hasher()
-
         hasher.combine(id)
-
         return hasher.finalize()
     }
 
     /// - Parameter id: Used for hashing, should be unique for each render function.
     public init(id: UInt, _ render: @escaping (_ renderer: Renderer) -> Void) {
-       
         self.id = id
-       
         self.render = render
-        
         super.init()
     }
 
     override public func objectsAt(point: DPoint2) -> [ObjectAtPointResult] {
-    
         // TODO: implement for CustomRenderObject, maybe add a parameter that handles this
-
         return []
     }
 }

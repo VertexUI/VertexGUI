@@ -17,12 +17,12 @@ public class WidgetBus<Message> {
   /**
   - Returns: a function to break the pipe
   */
-  @inline(__always)
   public func pipe(into buffer: MessageBuffer) -> () -> () {
     buffers.append(buffer)
+    let bufferId = ObjectIdentifier(buffer)
     return { [weak self] in
       if let self = self {
-        self.buffers.removeAll { $0 === buffer }
+        self.buffers.removeAll { ObjectIdentifier($0) == bufferId }
       }
     }
   }

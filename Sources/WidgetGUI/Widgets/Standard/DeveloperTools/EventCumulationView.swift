@@ -114,6 +114,17 @@ public class EventCumulationView: SingleChildWidget {
       }
     }
   }
+
+  override public func renderContent() -> RenderObject {
+    ContainerRenderObject {
+      super.renderContent()
+      CustomRenderObject(id: 1) { _ in }
+    }
+  }
+
+  override public func destroySelf() {
+    super.destroySelf()
+  }
 }
 
 extension EventCumulationView {

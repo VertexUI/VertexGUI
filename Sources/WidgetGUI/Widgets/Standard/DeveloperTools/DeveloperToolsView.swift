@@ -66,6 +66,11 @@ public class DeveloperToolsView: SingleChildWidget {
     }
   }
 
+  override public func destroySelf() {
+    super.destroySelf()
+    messages.clear()
+  }
+
   deinit {
     print("DEINITIALIZED DEV TOOLS VIEW")
   }

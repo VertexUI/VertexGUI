@@ -70,6 +70,7 @@ public class EventLogView: SingleChildWidget {
         initialVisibility: .Hidden,
         borderless: true))
     window!.size = guiRoot.rootWidget.boxConfig.preferredSize
+    // TODO: fix the following probably create retain cycles
     _ = window!.onInputFocusChanged {
       if !$0 {
         window!.close()
