@@ -70,11 +70,12 @@ public class EventCumulationView: SingleChildWidget {
     }
     imageUpdateRunning = true
     let previousData = data
+    let imageSizes: [Event: SIMD2<Int>] = canvases.mapValues { SIMD2([Int($0.referenced!.width), Int($0.referenced!.height)]) }
     DispatchQueue.global().async { [weak self] in
       if let self = self {
         self.processMessages()
         if self.data != previousData {
-          self.draw()
+          self.draw(imageSizes)
           DispatchQueue.main.async { [weak self] in
             if let self = self {
               self.messages.clear()
@@ -94,10 +95,10 @@ public class EventCumulationView: SingleChildWidget {
     }
   }
 
-  private func draw() {
+  private func draw(_ imageSizes: [Event: SIMD2<Int>]) {
     let dataDuration = max(minDuration, data.maxTimestamp - data.minTimestamp)
     for event in cumulatedEvents {
-      images[event] = Image(width: images[event]!.width, height: images[event]!.height, value: 0)
+      images[event] = Image(width: imageSizes[event]!.x, height: imageSizes[event]!.y, value: 0)
       
       let eventData = data[event]
 

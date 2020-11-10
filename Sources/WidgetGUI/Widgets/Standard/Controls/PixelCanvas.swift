@@ -41,8 +41,8 @@ public class PixelCanvas: Widget {
   }
 
   override public func renderContent() -> RenderObject? {
-    let resizedContent = content.resize(width: Int(width), height: Int(height))
-    return RenderStyleRenderObject(fill: FixedRenderValue(.Image(resizedContent, position: globalBounds.min))) {
+    //let resizedContent = content.resize(width: Int(width), height: Int(height))
+    return RenderStyleRenderObject(fill: FixedRenderValue(.Image(content, position: globalBounds.min))) {
       RectangleRenderObject(globalBounds)
     }
   }
