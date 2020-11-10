@@ -25,6 +25,7 @@ public class EventCumulationView: SingleChildWidget {
   private var images: [Event: VisualAppBase.Image] = [:]
   private var lastUpdateTimestamp = 0.0
   private let updateInterval = 0.5
+  private var imageUpdateRunning = false
 
   public init(_ inspectedRoot: Root) {
     self.inspectedRoot = inspectedRoot
@@ -64,6 +65,10 @@ public class EventCumulationView: SingleChildWidget {
   }
 
   private func checkUpdateGraph() {
+    if imageUpdateRunning {
+      return
+    }
+    imageUpdateRunning = true
     let previousData = data
     DispatchQueue.global().async { [weak self] in
       if let self = self {
@@ -73,6 +78,7 @@ public class EventCumulationView: SingleChildWidget {
           DispatchQueue.main.async { [weak self] in
             if let self = self {
               self.messages.clear()
+              self.imageUpdateRunning = false
               self.nextTick { _ in
                 for event in self.cumulatedEvents {
                   self.canvases[event]!.referenced!.setContent(self.images[event]!)
@@ -81,6 +87,8 @@ public class EventCumulationView: SingleChildWidget {
               }
             }
           }
+        } else {
+          self.imageUpdateRunning = false
         }
       }
     }
