@@ -44,7 +44,9 @@ public class DeveloperToolsView: SingleChildWidget {
         ObservingBuilder($activeTab) {
           switch activeTab {
           case .Inspector:
-            InspectorView(inspectedRoot)
+            InspectorView(inspectedRoot).onInspectWidget.chain {
+              inspectedWidget = $0
+            }
           case .EventRoll:
             EventCumulationView(inspectedRoot)
           case .EventLog:

@@ -6,6 +6,8 @@ public class WidgetNestingView: SingleChildWidget {
   @MutableProperty
   private var expanded = false
 
+  public let onInspect = WidgetEventHandlerManager<Widget>()
+
   public init(_ inspectedWidget: Widget, depth: Int = 0) {
     self.inspectedWidget = inspectedWidget
     self.depth = depth
@@ -16,21 +18,37 @@ public class WidgetNestingView: SingleChildWidget {
 
   override public func buildChild() -> Widget {
     Column { [unowned self] in
-      MouseArea {
-        Background(fill: Color(0, 0, 255, 50)) {
-          Padding(all: 8) {
-            Text("\(String(describing: inspectedWidget))")
+      Row {
+        MouseArea {
+          Background(fill: .Yellow) {
+            Padding(all: 8) {
+              MaterialIcon(.menuDown)
+            }
           }
+        } onClick: { _ in
+          expanded = !expanded
         }
-      } onClick: { _ in
-        expanded = !expanded
+
+        MouseArea {
+          Background(fill: Color(0, 0, 255, 50)) {
+            Padding(all: 8) {
+              Text("\(String(describing: inspectedWidget))")
+            }
+          }
+        } onClick: { _ in
+          onInspect.invokeHandlers(inspectedWidget)
+        }
       }
 
       ObservingBuilder($expanded) {
         if expanded && inspectedWidget.children.count > 0 {
           Padding(left: 16) {
             Column {
-              inspectedWidget.children.map { WidgetNestingView($0, depth: depth + 1) }
+              inspectedWidget.children.map { 
+                WidgetNestingView($0, depth: depth + 1).onInspect.chain {
+                  onInspect.invokeHandlers($0)
+                } 
+              }
             }
           }
         } else {

@@ -5,7 +5,7 @@ import Path
 import Swim
 
 public class EventCumulationView: SingleChildWidget {
-  private typealias Event = WidgetInspectionMessage.MessageContent
+  internal typealias Event = WidgetInspectionMessage.MessageContent
 
   private let inspectedRoot: Root
 
@@ -182,9 +182,7 @@ public class EventCumulationView: SingleChildWidget {
     }
 
     return ContainerRenderObject {
-      //RenderStyleRenderObject(fillColor: .Transparent) {
-        super.renderContent() 
-      //}
+      super.renderContent() 
       
       timestampLabels.map {
         TextRenderObject(String($0.timestamp), fontConfig: scaleTickFontConfig, color: .Black, topLeft: xLegendSpace.globalPosition + DVec2($0.x, 0))
@@ -207,11 +205,11 @@ public class EventCumulationView: SingleChildWidget {
 
 extension EventCumulationView {
   struct CumulationData: Equatable {
-    private var eventData: [WidgetInspectionMessage.MessageContent: EventData] = [:]
+    private var eventData: [Event: EventData] = [:]
     private(set) var minTimestamp: Double = -1
     private(set) var maxTimestamp: Double = -1
     
-    subscript(_ event: WidgetInspectionMessage.MessageContent) -> EventData {
+    subscript(_ event: Event) -> EventData {
       eventData[event] ?? EventData()
     }
 

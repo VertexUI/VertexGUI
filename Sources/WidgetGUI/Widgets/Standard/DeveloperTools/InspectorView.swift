@@ -1,5 +1,7 @@
 public class InspectorView: SingleChildWidget {
   private let inspectedRoot: Root
+
+  public let onInspectWidget = WidgetEventHandlerManager<Widget>()
   
   public init(_ inspectedRoot: Root) {
     self.inspectedRoot = inspectedRoot
@@ -8,7 +10,9 @@ public class InspectorView: SingleChildWidget {
   override public func buildChild() -> Widget {
     Background(fill: .White) { [unowned self] in
       Column {
-        WidgetNestingView(inspectedRoot.rootWidget)
+        WidgetNestingView(inspectedRoot.rootWidget).onInspect.chain {
+          onInspectWidget.invokeHandlers($0)
+        }
       }
     }
   }

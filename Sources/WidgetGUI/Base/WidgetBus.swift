@@ -63,7 +63,7 @@ extension WidgetBus {
     }
 
     mutating public func next() -> Message? {
-      if buffer.messages.count == nextIndex {
+      if buffer.messages.count <= nextIndex {
         return nil
       } else {
         defer { nextIndex += 1 }
