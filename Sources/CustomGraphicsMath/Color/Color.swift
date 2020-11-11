@@ -1,7 +1,3 @@
-//
-
-//
-
 import Foundation
 
 public struct Color: Hashable, Equatable {
@@ -13,6 +9,9 @@ public struct Color: Hashable, Equatable {
     public private(set) var rgb: RGB 
     public private(set) var hsl: HSL
     public private(set) var a: UInt8
+    public var aFrac: Double {
+        Double(a) / 255
+    }
 
     public var r: UInt8 {
         rgb.r
