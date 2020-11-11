@@ -18,6 +18,8 @@ public class EventCumulationView: SingleChildWidget {
   private var canvases: [Event: Reference<PixelCanvas>] = [:]
   @Reference
   private var xLegendSpace: Space
+  @Reference
+  private var yLegendSpace: Space
 
   private var data = CumulationData()
   private let minDuration: Double = 40
@@ -29,7 +31,8 @@ public class EventCumulationView: SingleChildWidget {
   private let updateInterval = 0.5
   private var imageUpdateRunning = false
 
-  private let labelFontConfig = Text.defaultConfig.fontConfig
+  private let graphTitleFontConfig = Text.defaultConfig.fontConfig
+  private let scaleTickFontConfig = Text.defaultConfig.fontConfig
 
   public init(_ inspectedRoot: Root) {
     self.inspectedRoot = inspectedRoot
@@ -52,18 +55,22 @@ public class EventCumulationView: SingleChildWidget {
   }
   
   override public func buildChild() -> Widget {
-    Column { [unowned self] in
-      cumulatedEvents.map { event in
-        //Text("Counts for event: \(event)")
-        ConstrainedSize(minSize: DSize2(200, 100)) {
-          PixelCanvas(DSize2(300, 200)).connect(ref: canvases[event]!).with {
-            $0.debugLayout = true
+    Row { [unowned self] in
+      Space(context.getTextBoundsSize("1000", fontConfig: scaleTickFontConfig)).connect(ref: $yLegendSpace)
+
+      Column {
+        cumulatedEvents.map { event in
+          //Text("Counts for event: \(event)")
+          ConstrainedSize(minSize: DSize2(200, 100)) {
+            PixelCanvas(DSize2(300, 200)).connect(ref: canvases[event]!).with {
+              $0.debugLayout = true
+            }
           }
         }
-      }
 
-      Column.Item(margins: Margins(top: 16)) {
-        Space(context.getTextBoundsSize("WOWO", fontConfig: labelFontConfig)).connect(ref: $xLegendSpace)
+        Column.Item(margins: Margins(top: 16)) {
+          Space(context.getTextBoundsSize("WOWO", fontConfig: scaleTickFontConfig)).connect(ref: $xLegendSpace)
+        }
       }
     }
   }
@@ -135,22 +142,60 @@ public class EventCumulationView: SingleChildWidget {
     let minTimestamp = 0
     let maxTimestamp = max(minDuration, data.maxTimestamp - data.minTimestamp)
 
-    let labelSize = context.getTextBoundsSize(String(maxTimestamp), fontConfig: labelFontConfig)
+    let labelSize = context.getTextBoundsSize(String(maxTimestamp), fontConfig: scaleTickFontConfig)
 
     let labelCount = max(2, Int(xLegendSpace.width / labelSize.width / 2))
 
     for i in 0..<labelCount {
       let factor = Double(i) / Double(labelCount - 1)
       let timestamp = round(maxTimestamp * factor * 100) / 100
-      let labelSize = context.getTextBoundsSize(String(timestamp), fontConfig: labelFontConfig)
+      let labelSize = context.getTextBoundsSize(String(timestamp), fontConfig: scaleTickFontConfig)
       timestampLabels.append((timestamp: timestamp, x: factor * xLegendSpace.width - labelSize.width / 2))
     }
 
+    var yLabels = [(label: String, position: DPoint2)]()
+    for event in cumulatedEvents {
+      let eventData = data[event]
+      let canvas = canvases[event]!.referenced!
+
+      let labelSize = context.getTextBoundsSize(String(1000), fontConfig: scaleTickFontConfig)
+
+      let yMin = canvas.globalPosition.y + labelSize.height / 2
+      let yMax = canvas.globalPosition.y + canvas.height - labelSize.height / 2
+      let yDelta = yMax - yMin
+
+      let labelCount = max(Int(yDelta / labelSize.height), 2)
+
+      for i in 0..<labelCount {
+        let factor = Double(i) / Double(labelCount - 1)
+        let label = String(Int(Double(eventData.maxCount) * factor))
+        let y = yMin + (yDelta - labelSize.height) * factor
+        yLabels.append((label: label, position: DPoint2(yLegendSpace.globalPosition.x, y)))
+      }
+    }
+
+    var graphLabels = [(label: String, position: DPoint2)]()
+    for event in cumulatedEvents {
+      let canvas = canvases[event]!.referenced!
+      let labelPosition = canvas.globalPosition + DVec2(16, 16)
+      graphLabels.append((label: String(describing: event), position: labelPosition))
+    }
+
     return ContainerRenderObject {
-      super.renderContent()
+      //RenderStyleRenderObject(fillColor: .Transparent) {
+        super.renderContent() 
+      //}
       
       timestampLabels.map {
-        TextRenderObject(String($0.timestamp), fontConfig: labelFontConfig, color: .Black, topLeft: xLegendSpace.globalPosition + DVec2($0.x, 0))
+        TextRenderObject(String($0.timestamp), fontConfig: scaleTickFontConfig, color: .Black, topLeft: xLegendSpace.globalPosition + DVec2($0.x, 0))
+      }
+
+      yLabels.map {
+        TextRenderObject($0.label, fontConfig: scaleTickFontConfig, color: .Black, topLeft: $0.position)
+      }
+
+      graphLabels.map {
+        TextRenderObject(String($0.label), fontConfig: scaleTickFontConfig, color: .Black, topLeft: $0.position)
       }
     }
   }
