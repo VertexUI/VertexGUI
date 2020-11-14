@@ -1,6 +1,7 @@
 open class ReduxStore<S, G: ReduxGetters<S>, A> {
   public typealias State = S
   public typealias Getters = G
+  public typealias Action = A
 
   @ObservableProperty public var state: State
   private var mutableObservableState: MutableProperty<State>

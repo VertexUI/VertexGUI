@@ -232,18 +232,16 @@ open class Widget: Bounded, Parent, Child {
     @usableFromInline lazy internal var callCounter = CallCounter(widget: self)
 
     public internal(set) var onParentChanged = EventHandlerManager<Parent?>()
-    //public internal(set) var onAnyParentChanged = EventHandlerManager<Parent?>()
+    public let onDependenciesInjected = WidgetEventHandlerManager<Void>()
     public internal(set) var onMounted = EventHandlerManager<Void>()
     public internal(set) var onTick = WidgetEventHandlerManager<Tick>()
     public internal(set) var onBoxConfigInvalidated = WidgetEventHandlerManager<Void>()
     public internal(set) var onBoxConfigChanged = EventHandlerManager<BoxConfigChangedEvent>()
     public internal(set) var onSizeChanged = EventHandlerManager<DSize2>()
     public internal(set) var onLayoutInvalidated = EventHandlerManager<Void>()
-    /// Forwards LayoutInvalidated Events up from children (recursive). Also emits own events.
     public internal(set) var onLayoutingStarted = EventHandlerManager<BoxConstraints>()
     public internal(set) var onLayoutingFinished = EventHandlerManager<DSize2>()
     public internal(set) var onRenderStateInvalidated = EventHandlerManager<Widget>()
-    // TODO: this could lead to a strong reference cycle
     public internal(set) var onFocusChanged = WidgetEventHandlerManager<Bool>()
     public internal(set) var onDestroy = EventHandlerManager<Void>()
     
@@ -351,6 +349,8 @@ open class Widget: Bounded, Parent, Child {
                 self.parent = parent
 
                 resolveDependencies()
+
+                onDependenciesInjected.invokeHandlers(())
 
                 addedToParent()
 
