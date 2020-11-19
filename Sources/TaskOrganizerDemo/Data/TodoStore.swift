@@ -2,50 +2,45 @@ import Foundation
 import Dispatch
 import WidgetGUI
 
-public class TodoStore: ReduxStore<TodoState, TodoGetters, TodoAction> {
+public class TodoStore: ReduxStore<TodoState, TodoGetters, TodoMutation, TodoAction> {
   public init() {
     super.init(initialState: TodoState())
   }
 
-  override public func reduce(_ action: TodoAction, next: (@escaping () -> ()) -> ()) -> TodoState {
-    var newState = state
-    
-    outer: switch action {
+  override public func performMutation(_ state: inout State, _ mutation: Mutation) {
+    outer: switch mutation {
     case let .SelectList(listId):
-      newState.selectedListId = listId
+      state.selectedListId = listId
 
     case let .AddList:
-      newState.lists.append(TodoList(id: newState.nextListId, name: "New List", color: .Yellow, items: []))
-      newState.nextListId += 1
+      state.lists.append(TodoList(id: state.nextListId, name: "New List", color: .Yellow, items: []))
+      state.nextListId += 1
 
     case let .UpdateListName(newName, listId):
-      for (index, var list) in newState.lists.enumerated() {
+      for (index, var list) in state.lists.enumerated() {
         if list.id == listId {
           list.name = newName
-          newState.lists[index] = list
+          state.lists[index] = list
           break
         }
       }
 
     case let .AddItem(listId):
       let item = TodoItem(description: "New Item")
-      for (index, var list) in newState.lists.enumerated() {
+      for (index, var list) in state.lists.enumerated() {
         if list.id == listId {
           list.items.append(item)
-          newState.lists[index] = list
+          state.lists[index] = list
           break
         }
       }
 
     case let .UpdateTodoItem(updatedItem):
-      for (listIndex, var list) in newState.lists.enumerated() {
+      for (listIndex, var list) in state.lists.enumerated() {
         for (itemIndex, var item) in list.items.enumerated() {
           if item.id == updatedItem.id {
             list.items[itemIndex] = updatedItem
-            newState.lists[listIndex] = list
-            next { [unowned self] in
-              dispatch(.UpdateCurrentSearch)
-            }
+            state.lists[listIndex] = list
             break outer
           }
         }
@@ -53,34 +48,39 @@ public class TodoStore: ReduxStore<TodoState, TodoGetters, TodoAction> {
 
       fatalError("tried to update todo item that does not exist")
 
+    case let .SetSearchQuery(query):
+      state.searchQuery = query
+
+    case let .UpdateSearchResult(searchResult):
+      state.searchResult = searchResult
+    }
+  }
+
+  override public func performAction(_ action: Action) {
+    switch action {
+    case let .UpdateTodoItem(updatedItem):
+      commit(.UpdateTodoItem(updatedItem))
+      dispatch(.UpdateCurrentSearch)
     case let .Search(query):
-      newState.searchQuery = query
-      let tmpState = newState
+      commit(.SetSearchQuery(query))
+      let tmpState = state
       DispatchQueue.global().async { [unowned self] in
         let searchResult = getSearchResult(query, state: tmpState)
         DispatchQueue.main.async {
-          dispatch(.UpdateSearchResult(searchResult))
+          commit(.UpdateSearchResult(searchResult))
         }
       }
-
-    case let .UpdateSearchResult(searchResult):
-      newState.searchResult = searchResult
-
     case .UpdateCurrentSearch:
       if let searchResult = state.searchResult {
-        next { [unowned self] in
-          dispatch(.Search(searchResult.query))
-        }
+        dispatch(.Search(searchResult.query))
       }
     }
-
-    return newState
   }
 
   private func getSearchResult(_ query: String, state: State) -> TodoSearchResult {
-    if let previousSearchResult = state.searchResult {
+    /*if let previousSearchResult = state.searchResult {
 
-    }
+    }*/
 
     var newSearchResult = TodoSearchResult(query: query, filteredLists: [])
 
@@ -116,13 +116,18 @@ public class TodoGetters: ReduxGetters<TodoState> {
   public var selectedList: TodoList?
 }
 
-public enum TodoAction {
+public enum TodoMutation {
   case SelectList(_ listId: Int)
   case AddList
+  case UpdateTodoItem(_ updatedItem: TodoItem)
   case UpdateListName(_ newName: String, listId: Int)
   case AddItem(listId: Int)
+  case SetSearchQuery(_ query: String) 
+  case UpdateSearchResult(_ searchResult: TodoSearchResult)
+}
+
+public enum TodoAction {
   case UpdateTodoItem(_ updatedItem: TodoItem)
   case Search(_ query: String)
-  case UpdateSearchResult(_ searchResult: TodoSearchResult)
   case UpdateCurrentSearch
 }

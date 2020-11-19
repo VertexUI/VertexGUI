@@ -138,7 +138,7 @@ public class EventCumulationView: SingleChildWidget {
 
   override public func renderContent() -> RenderObject {
     var timestampLabels = [(timestamp: Double, x: Double)]()
-
+        
     let minTimestamp = 0
     let maxTimestamp = max(minDuration, data.maxTimestamp - data.minTimestamp)
 

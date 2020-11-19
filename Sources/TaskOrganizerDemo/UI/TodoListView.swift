@@ -37,7 +37,7 @@ public class TodoListView: SingleChildWidget {
               Button {
                 Text("done")
               } onClick: { _ in
-                store.dispatch(.UpdateListName(updatedNameBuffer, listId: list.id))
+                store.commit(.UpdateListName(updatedNameBuffer, listId: list.id))
                 nameEditMode = false
                 updatedNameBuffer = list.name
               }
@@ -81,6 +81,6 @@ public class TodoListView: SingleChildWidget {
   }
 
   private func handleAddTodoClick() {
-    store.dispatch(.AddItem(listId: list.id))
+    store.commit(.AddItem(listId: list.id))
   }
 }

@@ -23,7 +23,7 @@ public class SearchResultsView: SingleChildWidget {
   }
 
   override public func buildChild() -> Widget {
-    ObservingBuilder([$searchResult.any, $searchQuery.any]) { [unowned self] in
+    ObservingBuilder($searchResult, $searchQuery) { [unowned self] in
       Column(spacing: 48) {
 
         if let searchQuery = searchQuery {

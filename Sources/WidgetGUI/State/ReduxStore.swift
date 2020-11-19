@@ -1,34 +1,47 @@
-open class ReduxStore<S, G: ReduxGetters<S>, A> {
+open class ReduxStore<S, G: ReduxGetters<S>, M, A> {
   public typealias State = S
   public typealias Getters = G
+  public typealias Mutation = M
   public typealias Action = A
 
-  @ObservableProperty public var state: State
-  private var mutableObservableState: MutableProperty<State>
+  @MutableProperty public private(set) var state: State
+  private var _mutableState: State
 
   public let getters: Getters
 
+  private var dispatchingAction = false
+
   public init(initialState: S) {
-    self.mutableObservableState = MutableProperty(wrappedValue: initialState)
-    self.getters = Getters(mutableObservableState)
-    self._state = mutableObservableState
+    self._mutableState = initialState
+    self.state = initialState
+    self.getters = Getters(self._state.observable)
   }
 
-  private func _reduce(_ action: A, next: (@escaping () -> ()) -> ()) -> State {
-    reduce(action, next: next)
+  open func performMutation(_ state: inout State, _ mutation: Mutation) {
+    fatalError("performMutation() not implemented")
   }
 
-  open func reduce(_ action: A, next: (@escaping () -> ()) -> ()) -> State {
-    fatalError("reduce(action:) not implemented")
+  open func performAction(_ action: A) {
+    fatalError("performAction() not implemented")
+  }
+
+  public func commit(_ mutation: Mutation) {
+    // TODO: maybe implement in a way that state changed handlers are invoked after the root dispatch has finished
+    var newState = state
+    performMutation(&newState, mutation)
+    _mutableState = newState
+    if !dispatchingAction {
+      state = _mutableState
+    }
   }
 
   public func dispatch(_ action: A) {
-    var nextBlocks = [() -> ()]()
-    self.mutableObservableState.value = _reduce(action) {
-      nextBlocks.append($0)
-    }
-    for block in nextBlocks {
-      block()
+    let isRootDispatch = !dispatchingAction
+    dispatchingAction = true
+    performAction(action)
+    if isRootDispatch {
+      dispatchingAction = false
+      state = _mutableState
     }
   }
 }
@@ -38,7 +51,7 @@ open class ReduxGetters<S> {
 
   @ObservableProperty public var state: State
 
-  required public init(_ observableState: ObservableProperty<State>) {
+  required public init(_ observableState: ObservablePropertyBinding<State>) {
     self._state = observableState
 
     let mirror = Mirror(reflecting: self)
