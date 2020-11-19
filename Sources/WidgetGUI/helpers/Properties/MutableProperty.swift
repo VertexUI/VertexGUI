@@ -1,11 +1,11 @@
 import VisualAppBase
 
 @propertyWrapper
-public class MutableProperty<V>: ObservableProperty<V>, MutableProtocol {
-  //public typealias Value = V
+public class MutableProperty<V>: ObservableProtocol, MutableProtocol {
+  public typealias Value = V
 
   private var _value: Value? = nil
-  override public var value: Value {
+  public var value: Value {
     get {
       if let value = _value {
         return value
@@ -36,7 +36,7 @@ public class MutableProperty<V>: ObservableProperty<V>, MutableProtocol {
     }
   }
 
-  override public var wrappedValue: Value {
+  public var wrappedValue: Value {
     get {
       return value
     }
@@ -45,17 +45,23 @@ public class MutableProperty<V>: ObservableProperty<V>, MutableProtocol {
     }
   }
 
-  override public var projectedValue: MutableProperty<Value> {
+  public var projectedValue: MutableProperty<Value> {
     self
   }
 
-  public var observable: ObservableProperty<Value> {
-    self
+  public var observable: ObservablePropertyBinding<Value> {
+    ObservablePropertyBinding(parent: self)
+  }
+
+  public var any: AnyObservableProperty {
+    observable.any
   }
 
   public var binding: MutablePropertyBinding<Value> {
     MutablePropertyBinding(parent: self)
   }
+
+  public internal(set) var onChanged = EventHandlerManager<Value>()
 
   public init(storedValue: Value?) {
     _value = storedValue
@@ -67,6 +73,14 @@ public class MutableProperty<V>: ObservableProperty<V>, MutableProtocol {
 
   public init(wrappedValue: Value) {
     _value = wrappedValue
+  }
+  
+  // TODO: maybe put this in ObservableProtocol
+  public func compute<ComputedValue>(_ computeFunction: @escaping (_ parent: Value) -> ComputedValue) -> ComputedProperty<ComputedValue> {
+    ComputedProperty<ComputedValue>([any], compute: {
+      // possible retain cycle?
+      computeFunction(self.value)
+    })
   }
 }
 

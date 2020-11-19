@@ -24,7 +24,7 @@ public final class MouseInteraction: SingleChildWidget, GUIMouseEventConsumer, C
     self._activeStateConfig.compute = { [unowned self] in
       config.stateConfigs[state]
     }
-    self._activeStateConfig.dependencies = [self.$state.any]
+    self._activeStateConfig.dependencies = [self.$state.observable.any]
   }
 
   override public func addedToParent() {

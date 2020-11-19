@@ -25,7 +25,7 @@ public final class Text: Widget, ConfigurableWidget {
   public var localConfig: Config?
   lazy public var config: Config = combineConfigs()
 
-  public init(_ text: ObservableProperty<String>) {
+  public init(_ text: ObservablePropertyBinding<String>) {
     self._text = text
     super.init()
     _ = onDestroy(
@@ -47,7 +47,7 @@ public final class Text: Widget, ConfigurableWidget {
     color: Color? = nil,
     wrap: Bool? = nil
   ) {
-    self.init(StaticProperty(text))
+    self.init(StaticProperty(text).binding)
     with(
       config: PartialConfig(
         fontConfig: PartialFontConfig(
@@ -63,7 +63,7 @@ public final class Text: Widget, ConfigurableWidget {
   }
 
   public convenience init(
-    _ text: ObservableProperty<String>,
+    _ text: ObservablePropertyBinding<String>,
     fontFamily: FontFamily? = nil,
     fontSize: Double? = nil,
     fontWeight: FontWeight? = nil,

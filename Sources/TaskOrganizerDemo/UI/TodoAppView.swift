@@ -170,7 +170,7 @@ public class TodoAppView: SingleChildWidget {
           ]
         })
     } onClick: { [unowned self] _ in
-      store.dispatch(.SelectList(list.id))
+      store.commit(.SelectList(list.id))
       mode = .SelectedList
     }
   }
@@ -206,6 +206,6 @@ public class TodoAppView: SingleChildWidget {
   }
 
   private func handleNewListClick() {
-    store.dispatch(.AddList)
+    store.commit(.AddList)
   }
 }

@@ -84,7 +84,8 @@ let package = Package(
 
         .target(
             name: "SwiftGUI",
-            dependencies: ["VisualAppBase", "VisualAppBaseImplSDL2OpenGL3NanoVG", "WidgetGUI", "CustomGraphicsMath"]
+            dependencies: ["VisualAppBase", "VisualAppBaseImplSDL2OpenGL3NanoVG", "WidgetGUI", "CustomGraphicsMath"],
+            resources: [.process("Resources")]
         ),
 
         .testTarget(name: "VisualAppBaseTests", dependencies: ["VisualAppBase"]),

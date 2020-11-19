@@ -22,6 +22,10 @@ public class ObservableProperty<V>: ObservableProtocol {
     AnyObservableProperty(self)
   }
 
+  public var binding: ObservablePropertyBinding<Value> {
+    ObservablePropertyBinding(parent: self)
+  }
+
   public internal(set) var onChanged = EventHandlerManager<Value>()
 
   public init() {}
@@ -56,6 +60,33 @@ extension EquatableObservablePropertyProtocol {
 
 internal protocol AnyEquatableObservablePropertyProtocol {
   func valuesEqual(_ value1: Any?, _ value2: Any?) -> Bool
+}
+
+public class ObservablePropertyBinding<V>: ObservableProperty<V> {
+  override public var value: Value {
+    getValue()
+  }
+
+  private let parent: AnyObject
+  private let getValue: () -> Value
+  private var removeParentChangedHandler: (() -> ())? = nil
+
+  public init<P: ObservableProtocol>(parent: P) where P.Value == Value {
+    self.parent = parent
+    self.getValue = {
+      parent.value
+    }
+    super.init()
+    self.removeParentChangedHandler = parent.onChanged { [unowned self] in
+      self.onChanged.invokeHandlers($0)
+    }
+  }
+
+  deinit {
+    if let remove = removeParentChangedHandler {
+      remove()
+    }
+  }
 }
 
 // TODO: implement ObservableArray of Observables --> emit changed event if one item changes

@@ -52,7 +52,7 @@ public final class TextInput: SingleChildWidget, StatefulWidget, ConfigurableWid
   }
 
   override public func buildChild() -> Widget {
-    Text($text).with(config: config.textConfig)
+    Text($text.observable).with(config: config.textConfig)
   }
 
   override public func performLayout(constraints: BoxConstraints) -> DSize2 {
