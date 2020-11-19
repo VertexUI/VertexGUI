@@ -21,3 +21,11 @@ public struct BoxConfig: Equatable {
     self.maxSize = size
   }
 }
+
+/*
+/*
+- Returns: a BoxConfig with the max value of the given BoxConfigs in each dimension
+*/
+public func max(_ configs: BoxConfig...) -> BoxConfig {
+  var result = BoxConfig(size: .zero)
+}*/

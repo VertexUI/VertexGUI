@@ -7,14 +7,14 @@ public class ObservingBuilder: SingleChildWidget {
   private var anyObservableChanged: Bool = false
 
   public init(
-    _ observables: [AnyObservableProperty], @WidgetBuilder child childBuilder: @escaping () -> Widget
+    _ observables: [AnyObservableProtocol], @WidgetBuilder child childBuilder: @escaping () -> Widget
   ) {
-    self.observables = observables
+    self.observables = observables.map { $0.any }
     self.childBuilder = childBuilder
 
     super.init()
 
-    for observable in observables {
+    for observable in self.observables {
       _ = onDestroy(observable.onChanged { [unowned self] _ in
         anyObservableChanged = true
       })
@@ -28,17 +28,12 @@ public class ObservingBuilder: SingleChildWidget {
     }
   }
 
-  public convenience init<Value>(
-    _ observable: ObservableProperty<Value>, @WidgetBuilder child childBuilder: @escaping () -> Widget
-  ) {
-    self.init([observable.any], child: childBuilder)
-  }
 
-  public convenience init<Value1, Value2>(
-    _ observable1: ObservableProperty<Value1>, _ observable2: ObservableProperty<Value2>,
+  public convenience init(
+    _ observables: AnyObservableProtocol...,
     @WidgetBuilder child childBuilder: @escaping () -> Widget
   ) {
-    self.init([observable1.any, observable2.any], child: childBuilder)
+    self.init(observables, child: childBuilder)
   }
 
   override open func buildChild() -> Widget {
