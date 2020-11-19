@@ -70,7 +70,7 @@ public class MutableComputedProperty<V>: MutableProperty<V> {
       let previousValue = _value
       _value = compute()
 
-      if let equatableSelf = self as? AnyEquatableComputedPropertyProtocol {
+      if let equatableSelf = self as? AnyEquatableObservableProtocol {
         if !equatableSelf.valuesEqual(previousValue, _value) {
           onChanged.invokeHandlers(value)
         }
@@ -87,8 +87,8 @@ public class MutableComputedProperty<V>: MutableProperty<V> {
     performComputation(force: true)
   }
 }
-
-extension MutableComputedProperty: AnyEquatableComputedPropertyProtocol where Value: Equatable {
+/*
+extension MutableComputedProperty: AnyEquatableObservablePropertyProtocol where Value: Equatable {
   func valuesEqual(_ value1: Any?, _ value2: Any?) -> Bool {
     if value1 == nil && value2 == nil {
       return true
@@ -98,4 +98,4 @@ extension MutableComputedProperty: AnyEquatableComputedPropertyProtocol where Va
       return false
     }
   }
-}
+}*/

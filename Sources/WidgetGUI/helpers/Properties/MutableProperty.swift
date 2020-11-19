@@ -19,7 +19,7 @@ public class MutableProperty<V>: ObservableProtocol, MutableProtocol {
       _value = newValue
 
       let invokeHandlers: Bool
-      if let self = self as? AnyEquatableObservablePropertyProtocol {
+      if let self = self as? AnyEquatableObservableProtocol {
         invokeHandlers = !self.valuesEqual(oldValue, _value)
       } else {
         invokeHandlers = true
@@ -85,7 +85,7 @@ public class MutableProperty<V>: ObservableProtocol, MutableProtocol {
 }
 
 extension MutableProperty: EquatableObservablePropertyProtocol where Value: Equatable {}
-extension MutableProperty: AnyEquatableObservablePropertyProtocol where Value: Equatable {}
+extension MutableProperty: AnyEquatableObservableProtocol where Value: Equatable {}
 
 public class MutablePropertyBinding<V>: MutableProperty<V> {
   override public var value: Value {

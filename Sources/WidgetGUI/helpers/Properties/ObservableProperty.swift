@@ -42,7 +42,7 @@ public class ObservableProperty<V>: ObservableProtocol {
   }
 }
 
-internal protocol EquatableObservablePropertyProtocol: AnyEquatableObservablePropertyProtocol {
+internal protocol EquatableObservablePropertyProtocol: AnyEquatableObservableProtocol {
   associatedtype Value: Equatable
 }
 
@@ -56,10 +56,6 @@ extension EquatableObservablePropertyProtocol {
       return false
     }
   }
-}
-
-internal protocol AnyEquatableObservablePropertyProtocol {
-  func valuesEqual(_ value1: Any?, _ value2: Any?) -> Bool
 }
 
 public class ObservablePropertyBinding<V>: ObservableProperty<V> {

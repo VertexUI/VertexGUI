@@ -11,3 +11,7 @@ public protocol ObservableProtocol: AnyObservableProtocol {
   var value: Value { get }
   var onChanged: EventHandlerManager<Value> { get }
 }
+
+internal protocol AnyEquatableObservableProtocol {
+  func valuesEqual(_ value1: Any?, _ value2: Any?) -> Bool
+}

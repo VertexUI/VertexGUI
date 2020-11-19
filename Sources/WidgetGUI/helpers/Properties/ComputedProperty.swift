@@ -7,7 +7,7 @@ public class ComputedProperty<V>: ObservableProperty<V>, ComputedPropertyProtoco
   internal var _value: Value?
   override public var value: Value {
     if _value == nil {
-      performComputation(force: true)
+      performComputation(force: true, notify: false)
     }
     return _value!
   }
@@ -18,6 +18,10 @@ public class ComputedProperty<V>: ObservableProperty<V>, ComputedPropertyProtoco
 
   override public var projectedValue: ObservableProperty<V> {
     self
+  }
+
+  public var observable: ObservablePropertyBinding<Value> {
+    binding
   }
 
   public var compute: () -> Value {
@@ -65,17 +69,19 @@ public class ComputedProperty<V>: ObservableProperty<V>, ComputedPropertyProtoco
     }
   }
 
-  internal func performComputation(force: Bool = false) {
+  internal func performComputation(force: Bool = false, notify: Bool = true) {
     if onChanged.handlers.count > 0 || force {
       let previousValue = _value
       _value = compute()
 
-      if let equatableSelf = self as? AnyEquatableComputedPropertyProtocol {
-        if !equatableSelf.valuesEqual(previousValue, _value) {
+      if notify {
+        if let equatableSelf = self as? AnyEquatableObservableProtocol {
+          if !equatableSelf.valuesEqual(previousValue, _value) {
+            onChanged.invokeHandlers(value)
+          }
+        } else {
           onChanged.invokeHandlers(value)
         }
-      } else {
-        onChanged.invokeHandlers(value)
       }
     } else {
       _value = nil
@@ -83,4 +89,4 @@ public class ComputedProperty<V>: ObservableProperty<V>, ComputedPropertyProtoco
   }
 }
 
-extension ComputedProperty: EquatableObservablePropertyProtocol, AnyEquatableObservablePropertyProtocol where V: Equatable {}
+extension ComputedProperty: EquatableObservablePropertyProtocol, AnyEquatableObservableProtocol where V: Equatable {}
