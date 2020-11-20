@@ -99,4 +99,10 @@ extension ToggleButton {
   public enum State {
     case LeftToggled, RightToggled
   }
+
+  public struct Style: WidgetGUI.Style, BackgroundColorStyle {
+    public var selector: WidgetSelector
+    public var backgroundColor: Color? = nil
+  }
 }
+
