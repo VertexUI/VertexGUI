@@ -1,12 +1,10 @@
 import CustomGraphicsMath
 
 public protocol RenderObjectTreeRenderer: class {
-
     var tree: RenderObjectTree { get }
-
     var rerenderNeeded: Bool { get }
 
-    init(_ tree: RenderObjectTree, context: ApplicationContext)
+    init(_ tree: RenderObjectTree, treeSliceRenderer: RenderObjectTreeSliceRenderer, context: ApplicationContext)
 
     func tick(_ tick: Tick)
 

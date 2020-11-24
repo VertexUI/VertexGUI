@@ -2,8 +2,7 @@ import Foundation
 import VisualAppBase
 import CustomGraphicsMath
 
-open class WidgetsApp<S: System, W: Window, R: Renderer>: VisualApp<S, W, R> {
-    public typealias Renderer = R
+open class WidgetsApp<S: System, W: Window, TSR: RenderObjectTreeSliceRenderer, R: Renderer>: VisualApp<S, W, TSR, R> {
     public private(set) var guiRoots: [Int: Root] = [:]
 
     public init(system: System) {

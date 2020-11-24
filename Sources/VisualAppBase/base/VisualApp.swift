@@ -3,8 +3,10 @@ import Foundation
 import CustomGraphicsMath
 
 // TODO: why is there a specific VisualApp when App also takes a Window?, maybe find a more specific name
-open class VisualApp<S: System, W: Window, R: Renderer>: App<S, W> {
+// TODO: should probably rename the Renderer to something like PaintingRenderer or so to avoid ambiguity with TreeSliceRenderer
+open class VisualApp<S: System, W: Window, TSR: RenderObjectTreeSliceRenderer, R: Renderer>: App<S, W> {
 
+    public typealias TreeSliceRenderer = TSR
     public typealias Renderer = R
 
     public private(set) var windowContexts: [Int: WindowContext] = [:] {
@@ -35,7 +37,7 @@ open class VisualApp<S: System, W: Window, R: Renderer>: App<S, W> {
             windowContexts.removeValue(forKey: windowId)
         }
 
-        let renderer = createRenderer(for: window) 
+        let renderer = createRenderer(for: window)
 
         let renderObjectContext = RenderObjectContext(getTextBoundsSize: { [unowned self] in
             let renderer = windowContexts[windowId]!.renderer
@@ -45,10 +47,11 @@ open class VisualApp<S: System, W: Window, R: Renderer>: App<S, W> {
 
         let renderObjectTreeRenderer: RenderObjectTreeRenderer
         let applicationContext = ApplicationContext(system: system, window: window)
+        let treeSliceRenderer = createTreeSliceRenderer(context: applicationContext)
         if immediate {
-            renderObjectTreeRenderer = ImmediateRenderObjectTreeRenderer(renderObjectTree, context: applicationContext)
+            renderObjectTreeRenderer = ImmediateRenderObjectTreeRenderer(renderObjectTree, treeSliceRenderer: treeSliceRenderer, context: applicationContext)
         } else {
-            renderObjectTreeRenderer = OptimizingRenderObjectTreeRenderer(renderObjectTree, context: applicationContext)
+            renderObjectTreeRenderer = OptimizingRenderObjectTreeRenderer(renderObjectTree, treeSliceRenderer: treeSliceRenderer, context: applicationContext)
         }
 
         let context = WindowContext(
@@ -66,6 +69,10 @@ open class VisualApp<S: System, W: Window, R: Renderer>: App<S, W> {
         fatalError("createRenderer(for:) not implemented")
     }
 
+    open func createTreeSliceRenderer(context: ApplicationContext) -> TreeSliceRenderer {
+        fatalError("createTreeSliceRenderer() not implemented")
+    } 
+
     open func onTick(_ tick: Tick) {
         for context in windowContexts.values {
             context.tree.bus.down(.Tick(tick: tick))
@@ -82,7 +89,7 @@ open class VisualApp<S: System, W: Window, R: Renderer>: App<S, W> {
     }
 
     open func renderWindow(_ context: WindowContext) {
-        //context.window.makeCurrent()
+        context.window.makeCurrent()
         if !context.window.destroyed {
             context.renderer.beginFrame()
             context.renderer.clear(context.window.options.background)

@@ -1,7 +1,7 @@
 import CustomGraphicsMath
 import Foundation
 
-public class RenderObjectTreeSliceRenderer {
+open class RenderObjectTreeSliceRenderer {
   private var destroyed = false
   private var context: ApplicationContext
 
@@ -149,13 +149,13 @@ public class RenderObjectTreeSliceRenderer {
       backendRenderer.fill()
       backendRenderer.stroke()
 
-    case let node as RenderObject.Text:
+    case let node as TextRenderObject:
       backendRenderer.text(
         node.text, fontConfig: node.fontConfig, color: node.color, topLeft: node.topLeft,
         maxWidth: node.maxWidth)
 
     default:
-      break
+      print("unsupported render object could not be rendered: \(node)")
     }
   }
 

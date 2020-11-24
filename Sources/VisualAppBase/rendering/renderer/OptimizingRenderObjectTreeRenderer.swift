@@ -19,10 +19,10 @@ public class OptimizingRenderObjectTreeRenderer: RenderObjectTreeRenderer {
     private var sliceRenderer: RenderObjectTreeSliceRenderer
     private var destroyed = false
     
-    required public init(_ tree: RenderObjectTree, context: ApplicationContext) {
+    required public init(_ tree: RenderObjectTree, treeSliceRenderer: RenderObjectTreeSliceRenderer, context: ApplicationContext) {
         self.tree = tree
         self.context = context
-        self.sliceRenderer = RenderObjectTreeSliceRenderer(context: context)
+        self.sliceRenderer = treeSliceRenderer
         _ = self.tree.bus.onUpwardMessage { [unowned self] in
             treeMessageBuffer.append($0)
         }

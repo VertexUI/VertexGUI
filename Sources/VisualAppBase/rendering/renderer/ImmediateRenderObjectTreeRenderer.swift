@@ -1,6 +1,7 @@
 import Foundation
 import CustomGraphicsMath
 
+// TODO: maybe should rename this to something with RenderStrategy and only keep TreeSliceRenderer with Renderer as main type name
 public class ImmediateRenderObjectTreeRenderer: RenderObjectTreeRenderer {
     public let tree: RenderObjectTree
     private let context: ApplicationContext
@@ -12,10 +13,10 @@ public class ImmediateRenderObjectTreeRenderer: RenderObjectTreeRenderer {
 
     private var removeBusHandler: (() -> ())? = nil
 
-    required public init(_ tree: RenderObjectTree, context: ApplicationContext) {
+    required public init(_ tree: RenderObjectTree, treeSliceRenderer: RenderObjectTreeSliceRenderer, context: ApplicationContext) {
         self.tree = tree
         self.context = context
-        self.sliceRenderer = RenderObjectTreeSliceRenderer(context: context)
+        self.sliceRenderer = treeSliceRenderer
         
         // TODO: introduce pipes for tree bus as well
         removeBusHandler = self.tree.bus.onUpwardMessage({ [unowned self] in
