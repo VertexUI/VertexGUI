@@ -1,16 +1,12 @@
 import SwiftGUI
 
-public class MinmalDemoApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGWindow, SDL2OpenGL3NanoVGRenderer> {
+public class MinmalDemoApp: WidgetsApp {
   public init() {
-    super.init(system: try! System())
+    super.init(baseApp: SDL2OpenGL3NanoVGVisualApp())
 
     let guiRoot = WidgetGUI.Root(rootWidget: MainView())
 
     _ = createWindow(guiRoot: guiRoot, options: Window.Options(background: Color(20, 36, 50, 255)), immediate: true)
-  }
-
-  override open func createRenderer(for window: Window) -> Renderer {
-      return SDL2OpenGL3NanoVGRenderer(for: window)
   }
 }
 

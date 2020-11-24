@@ -9,7 +9,7 @@ import CSDL2
 import ColorizeSwift
 
 // TODO: create a subclass of App, DesktopApp which supports windows/screens which can support different resolutions --> renderContexts --> different text boundsSize
-open class TodoApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGWindow, SDL2OpenGL3NanoVGRenderer> {    
+open class TodoApp: WidgetsApp {    
     open var guiRoot: WidgetGUI.Root
     private var todoStore = TodoStore()
 
@@ -20,11 +20,7 @@ open class TodoApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGWindow,
             ]) {
                 TodoAppView().with { $0.debugLayout = false }
             })
-        super.init(system: try! System())
-    }
-
-    override open func createRenderer(for window: Window) -> Renderer {
-        return SDL2OpenGL3NanoVGRenderer(for: window)
+        super.init(baseApp: SDL2OpenGL3NanoVGVisualApp())
     }
 
     override open func start() throws {

@@ -95,7 +95,7 @@ open class WidgetsApp {
         }
     }
 
-    public func start() throws {
+    open func start() throws {
         try baseApp.start()
     }
 
