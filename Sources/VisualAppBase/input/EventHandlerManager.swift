@@ -2,9 +2,10 @@ public protocol AnyEventHandlerManager {
   func removeAllHandlers()
 }
 
-public class EventHandlerManager<Data>: AnyEventHandlerManager {
+open class EventHandlerManager<Data>: AnyEventHandlerManager {
   public typealias Handler = (Data) -> Void
   public typealias UnregisterCallback = () -> Void
+  public var handlerOrder = [Int]()
   public var handlers = [Int: Handler]()
   private var nextHandlerId = 0
 
@@ -21,12 +22,18 @@ public class EventHandlerManager<Data>: AnyEventHandlerManager {
 
   // TODO: implement function to add to start of handler list
   @discardableResult
-  public func addHandler(_ handler: @escaping Handler) -> UnregisterCallback {
+  public func addHandler(at position: Int? = nil, _ handler: @escaping Handler) -> UnregisterCallback {
     let currentHandlerId = nextHandlerId
     handlers[currentHandlerId] = handler
     nextHandlerId += 1
+    if let position = position, position < handlerOrder.count {
+      handlerOrder.insert(currentHandlerId, at: position)
+    } else {
+      handlerOrder.append(currentHandlerId)
+    }
     return {
       self.handlers.removeValue(forKey: currentHandlerId)
+      self.handlerOrder.removeAll(where: { $0 == currentHandlerId })
     }
   }
 
@@ -49,8 +56,8 @@ public class EventHandlerManager<Data>: AnyEventHandlerManager {
     // TODO: call handlers in same order as they were added
     if handlers.count > 0 {
       let data = getData()
-      for handler in handlers.values {
-        handler(data)
+      for handlerId in handlerOrder {
+        handlers[handlerId]!(data)
       }
     }
   }
