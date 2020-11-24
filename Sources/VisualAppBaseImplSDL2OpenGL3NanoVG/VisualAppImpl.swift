@@ -1,20 +1,19 @@
 import VisualAppBase
 
-open class SDL2OpenGL3NanoVGVisualApp: VisualApp<
-SDL2OpenGL3NanoVGSystem,
-SDL2OpenGL3NanoVGWindow,
-SDL2OpenGL3NanoVGRenderObjectTreeSliceRenderer,
-SDL2OpenGL3NanoVGRenderer> {
-
+open class SDL2OpenGL3NanoVGVisualApp: VisualApp {
   public init(immediate: Bool = false) {
-    super.init(system: try! System(), immediate: immediate)
+    super.init(system: try! SDL2OpenGL3NanoVGSystem(), immediate: immediate)
+  }
+
+  override open func createRawWindow(options: Window.Options) -> Window {
+    try! SDL2OpenGL3NanoVGWindow(options: options)
   }
 
   override open func createRenderer(for window: Window) -> Renderer {
-    Renderer(for: window)
+    SDL2OpenGL3NanoVGRenderer(for: window as! SDL2OpenGL3NanoVGWindow)
   }
 
-  override open func createTreeSliceRenderer(context: ApplicationContext) -> TreeSliceRenderer {
-    TreeSliceRenderer(context: context)
+  override open func createTreeSliceRenderer(context: ApplicationContext) -> RenderObjectTreeSliceRenderer {
+    SDL2OpenGL3NanoVGRenderObjectTreeSliceRenderer(context: context)
   }
 }

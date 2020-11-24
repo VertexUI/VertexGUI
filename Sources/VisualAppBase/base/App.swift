@@ -1,10 +1,7 @@
 import Dispatch
 import Foundation
 
-open class App<S: System, W: Window> {
-    public typealias System = S
-    public typealias Window = W
-
+open class App {
     public var system: System
 
     public init(system: System) {
@@ -18,7 +15,6 @@ open class App<S: System, W: Window> {
     }*/
 
     open func exit() {
-        
         system.exit()
     }
 

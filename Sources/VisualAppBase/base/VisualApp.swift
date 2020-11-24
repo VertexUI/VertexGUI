@@ -4,11 +4,7 @@ import CustomGraphicsMath
 
 // TODO: why is there a specific VisualApp when App also takes a Window?, maybe find a more specific name
 // TODO: should probably rename the Renderer to something like PaintingRenderer or so to avoid ambiguity with TreeSliceRenderer
-open class VisualApp<S: System, W: Window, TSR: RenderObjectTreeSliceRenderer, R: Renderer>: App<S, W> {
-
-    public typealias TreeSliceRenderer = TSR
-    public typealias Renderer = R
-
+open class VisualApp: App {
     public private(set) var windowContexts: [Int: WindowContext] = [:] {
         didSet {
             if windowContexts.count == 0 {
@@ -23,10 +19,14 @@ open class VisualApp<S: System, W: Window, TSR: RenderObjectTreeSliceRenderer, R
         _ = system.onFrame(handleOnFrame)
     }
 
+    open func createRawWindow(options: Window.Options) -> Window {
+        fatalError("createRawWindow() not implemented")
+    } 
+
     open func createWindow(options: Window.Options, immediate: Bool = false) -> Window {
         let renderObjectTree = RenderObjectTree()
 
-        let window = try! Window(options: options)
+        let window = createRawWindow(options: options)
         let windowId = window.id
 
         _ = window.onBeforeClose { [unowned self] window in
@@ -69,7 +69,7 @@ open class VisualApp<S: System, W: Window, TSR: RenderObjectTreeSliceRenderer, R
         fatalError("createRenderer(for:) not implemented")
     }
 
-    open func createTreeSliceRenderer(context: ApplicationContext) -> TreeSliceRenderer {
+    open func createTreeSliceRenderer(context: ApplicationContext) -> RenderObjectTreeSliceRenderer {
         fatalError("createTreeSliceRenderer() not implemented")
     } 
 

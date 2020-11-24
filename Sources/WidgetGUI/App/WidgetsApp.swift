@@ -2,9 +2,8 @@ import Foundation
 import VisualAppBase
 import CustomGraphicsMath
 
-open class WidgetsApp<A: VisualApp<S, W, TSR, R>, S: System, W: Window, TSR: RenderObjectTreeSliceRenderer, R: Renderer> {
-    public typealias VisualApp = A
-    private var baseApp: A
+open class WidgetsApp {
+    private var baseApp: VisualApp
     
     public private(set) var guiRoots: [Int: Root] = [:]
 
@@ -12,7 +11,7 @@ open class WidgetsApp<A: VisualApp<S, W, TSR, R>, S: System, W: Window, TSR: Ren
         baseApp.windowContexts
     }
 
-    public init(baseApp: A) {
+    public init(baseApp: VisualApp) {
         //super.init(system: system, immediate: true)    }
         self.baseApp = baseApp
         _ = self.baseApp.system.onTick.addHandler(at: 0, handleOnTick)
