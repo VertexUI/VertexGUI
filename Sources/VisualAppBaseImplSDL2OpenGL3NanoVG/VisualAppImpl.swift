@@ -6,6 +6,10 @@ SDL2OpenGL3NanoVGWindow,
 SDL2OpenGL3NanoVGRenderObjectTreeSliceRenderer,
 SDL2OpenGL3NanoVGRenderer> {
 
+  public init(immediate: Bool = false) {
+    super.init(system: try! System(), immediate: immediate)
+  }
+
   override open func createRenderer(for window: Window) -> Renderer {
     Renderer(for: window)
   }

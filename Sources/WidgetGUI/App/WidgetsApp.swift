@@ -2,11 +2,20 @@ import Foundation
 import VisualAppBase
 import CustomGraphicsMath
 
-open class WidgetsApp<S: System, W: Window, TSR: RenderObjectTreeSliceRenderer, R: Renderer>: VisualApp<S, W, TSR, R> {
+open class WidgetsApp<A: VisualApp<S, W, TSR, R>, S: System, W: Window, TSR: RenderObjectTreeSliceRenderer, R: Renderer> {
+    public typealias VisualApp = A
+    private var baseApp: A
+    
     public private(set) var guiRoots: [Int: Root] = [:]
 
-    public init(system: System) {
-        super.init(system: system, immediate: true)
+    private var windowContexts: [Int: VisualApp.WindowContext] {
+        baseApp.windowContexts
+    }
+
+    public init(baseApp: A) {
+        //super.init(system: system, immediate: true)    }
+        self.baseApp = baseApp
+        _ = self.baseApp.system.onTick.addHandler(at: 0, handleOnTick)
     }
 
     /// - Parameter guiRoot: is an autoclosure. This ensures, that the window
@@ -15,7 +24,7 @@ open class WidgetsApp<S: System, W: Window, TSR: RenderObjectTreeSliceRenderer, 
         guiRoot guiRootBuilder: @autoclosure () -> Root,
         options: Window.Options,
         immediate: Bool = false) -> Window {
-        let window = super.createWindow(
+        let window = baseApp.createWindow(
             options: options,
             immediate: immediate)
         let windowId = window.id
@@ -25,10 +34,10 @@ open class WidgetsApp<S: System, W: Window, TSR: RenderObjectTreeSliceRenderer, 
         guiRoot.setup(widgetContext: WidgetContext(
                       window: window,
                       getTextBoundsSize: { [unowned self] in windowContexts[windowId]!.renderer.getTextBoundsSize($0, fontConfig: $1, maxWidth: $2) },
-                      getApplicationTime: { [unowned self] in system.currentTime },
+                      getApplicationTime: { [unowned self] in baseApp.system.currentTime },
                       createWindow: { [unowned self] in createWindow(guiRoot: $0(), options: $1, immediate: true) },
                       requestCursor: { [unowned self] in
-                          system.requestCursor($0)
+                          baseApp.system.requestCursor($0)
                       }))
       
         guiRoots[windowId] = guiRoot
@@ -81,14 +90,17 @@ open class WidgetsApp<S: System, W: Window, TSR: RenderObjectTreeSliceRenderer, 
         ), immediate: true)
     }
 
-    override public func onTick(_ tick: Tick) {
+    public func handleOnTick(_ tick: Tick) {
         for guiRoot in guiRoots.values {
             guiRoot.tick(tick)
         }
-        super.onTick(tick)
     }
 
-    override public func renderWindow(_ context: WindowContext) {
+    public func start() throws {
+        try baseApp.start()
+    }
+
+    /*public func renderWindow(_ context: WindowContext) {
         #if DEBUG
         let startTime = Date.timeIntervalSinceReferenceDate
         #endif
@@ -103,5 +115,5 @@ open class WidgetsApp<S: System, W: Window, TSR: RenderObjectTreeSliceRenderer, 
             context: .Performance
         )
         #endif
-    }
+    }*/
 }

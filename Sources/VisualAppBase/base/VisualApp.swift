@@ -19,8 +19,8 @@ open class VisualApp<S: System, W: Window, TSR: RenderObjectTreeSliceRenderer, R
 
     public init(system: System, immediate: Bool = false) {
         super.init(system: system)
-        _ = system.onTick(onTick)
-        _ = system.onFrame(onFrame)
+        _ = system.onTick(handleOnTick)
+        _ = system.onFrame(handleOnFrame)
     }
 
     open func createWindow(options: Window.Options, immediate: Bool = false) -> Window {
@@ -73,14 +73,14 @@ open class VisualApp<S: System, W: Window, TSR: RenderObjectTreeSliceRenderer, R
         fatalError("createTreeSliceRenderer() not implemented")
     } 
 
-    open func onTick(_ tick: Tick) {
+    open func handleOnTick(_ tick: Tick) {
         for context in windowContexts.values {
             context.tree.bus.down(.Tick(tick: tick))
             context.treeRenderer.tick(tick)
         }
     }
 
-    open func onFrame(_ deltaTime: Int) {
+    open func handleOnFrame(_ deltaTime: Int) {
         for context in windowContexts.values {
             if context.treeRenderer.rerenderNeeded {
                 renderWindow(context)
