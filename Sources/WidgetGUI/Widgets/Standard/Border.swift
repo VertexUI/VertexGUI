@@ -1,5 +1,5 @@
 import VisualAppBase
-import CustomGraphicsMath
+import GfxMath
 
 public class Border: SingleChildWidget {
     private let borders: Borders

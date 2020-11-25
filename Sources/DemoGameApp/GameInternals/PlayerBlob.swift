@@ -1,4 +1,4 @@
-import CustomGraphicsMath
+import GfxMath
 
 public struct PlayerBlob: Blob {
     public var id: UInt

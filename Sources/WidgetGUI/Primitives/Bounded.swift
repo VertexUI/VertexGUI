@@ -1,4 +1,4 @@
-import CustomGraphicsMath
+import GfxMath
 
 public protocol Bounded {
     

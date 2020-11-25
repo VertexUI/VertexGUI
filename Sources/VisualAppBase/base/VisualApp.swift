@@ -1,6 +1,6 @@
 import Dispatch
 import Foundation
-import CustomGraphicsMath
+import GfxMath
 
 // TODO: why is there a specific VisualApp when App also takes a Window?, maybe find a more specific name
 // TODO: should probably rename the Renderer to something like PaintingRenderer or so to avoid ambiguity with TreeSliceRenderer

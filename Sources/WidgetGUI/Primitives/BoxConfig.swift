@@ -1,4 +1,4 @@
-import CustomGraphicsMath
+import GfxMath
 
 public struct BoxConfig: Equatable {
   public var preferredSize: DSize2

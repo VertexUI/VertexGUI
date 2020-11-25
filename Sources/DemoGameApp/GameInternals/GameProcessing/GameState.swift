@@ -1,4 +1,4 @@
-import CustomGraphicsMath
+import GfxMath
 
 public class GameState {
     public var chunks = [GameChunk]()

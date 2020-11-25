@@ -1,5 +1,5 @@
 import Foundation
-import CustomGraphicsMath
+import GfxMath
 
 // TODO: maybe should rename this to something with RenderStrategy and only keep TreeSliceRenderer with Renderer as main type name
 public class ImmediateRenderObjectTreeRenderer: RenderObjectTreeRenderer {

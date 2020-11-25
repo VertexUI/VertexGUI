@@ -1,4 +1,4 @@
-import CustomGraphicsMath
+import GfxMath
 import Foundation
 
 open class RenderObjectTreeSliceRenderer {
@@ -113,8 +113,7 @@ open class RenderObjectTreeSliceRenderer {
     }
   }
 
-  @inline(__always)
-  private func renderLeaf(node: RenderObject, with backendRenderer: Renderer) {
+  open func renderLeaf(node: RenderObject, with backendRenderer: Renderer) {
     switch node {
     case let node as RectangleRenderObject:
       backendRenderer.beginPath()

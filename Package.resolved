@@ -42,7 +42,7 @@
         "repositoryURL": "https://github.com/mxcl/Path.swift.git",
         "state": {
           "branch": "master",
-          "revision": "07007a54213b5a29db538e473ac97d00fef9125f",
+          "revision": "891d70ec7cb448829acb8a2d73970b088fd9e5a7",
           "version": null
         }
       },
@@ -53,6 +53,24 @@
           "branch": null,
           "revision": "61c9776f47d2951bdc562486ad348e5e1ca2e180",
           "version": "2.1.1"
+        }
+      },
+      {
+        "package": "GfxMath",
+        "repositoryURL": "https://github.com/UnGast/swift-gfx-math.git",
+        "state": {
+          "branch": "master",
+          "revision": "96b321df392368d8ee899038d5000dbdd5928e4f",
+          "version": null
+        }
+      },
+      {
+        "package": "GLUtils",
+        "repositoryURL": "https://github.com/UnGast/swift-gl-utils.git",
+        "state": {
+          "branch": "master",
+          "revision": "3b082d18017aa7513e220f1e4912056fa60ede60",
+          "version": null
         }
       },
       {
@@ -69,7 +87,7 @@
         "repositoryURL": "https://github.com/UnGast/swift-opengl.git",
         "state": {
           "branch": "master",
-          "revision": "5cffdfff5ae39aabddf093cfa084f55270b3cb2a",
+          "revision": "cd9bd03260324887e5e0251f91b32599c2b5fc72",
           "version": null
         }
       },

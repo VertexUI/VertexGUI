@@ -1,5 +1,5 @@
 import WidgetGUI
-import CustomGraphicsMath
+import GfxMath
 
 public class RaycastDetailView: SingleChildWidget {
     private var raycast: TwoDRaycast

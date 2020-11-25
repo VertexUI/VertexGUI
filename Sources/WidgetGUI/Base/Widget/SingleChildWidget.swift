@@ -1,4 +1,4 @@
-import CustomGraphicsMath
+import GfxMath
 import VisualAppBase
 
 // TODO: maybe rename to BuildableSingleChildWidget and create another SingleChildWidget as Basis for button?... maybe can simply use Widget for this

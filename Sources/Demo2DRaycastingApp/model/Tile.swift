@@ -1,4 +1,4 @@
-import CustomGraphicsMath
+import GfxMath
 
 public struct Tile {
     public enum Edge: String, CaseIterable {

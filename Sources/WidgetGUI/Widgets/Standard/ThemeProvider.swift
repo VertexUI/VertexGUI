@@ -1,5 +1,5 @@
 import VisualAppBase
-import CustomGraphicsMath
+import GfxMath
 
 public class ThemeProvider: ConfigProvider {
     public init(_ theme: Theme, @WidgetBuilder child childBuilder: @escaping () -> Widget) {

@@ -1,5 +1,5 @@
 import VisualAppBase
-import CustomGraphicsMath
+import GfxMath
 import WidgetGUI
 
 public class GameControlView: SingleChildWidget {

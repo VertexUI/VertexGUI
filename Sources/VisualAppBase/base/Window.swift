@@ -2,7 +2,7 @@
 
 //
 
-import CustomGraphicsMath
+import GfxMath
 import Foundation
 
 open class Window {

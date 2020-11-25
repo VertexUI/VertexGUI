@@ -1,7 +1,7 @@
 import Foundation
 import Dispatch
 import VisualAppBase
-import CustomGraphicsMath
+import GfxMath
 
 // TODO: implement the RenderObjects in a way similar to SVG --> like defining an SVG graphic
 // TODO: might split into SubTreeRenderObject and LeafRenderObject!!!
@@ -575,44 +575,64 @@ open class CacheSplitRenderObject: SubTreeRenderObject {
 // TODO: maybe combine Rectangle, Circle, Ellipse into Shape?
 // and then provide some static initializers like ShapeRenderObject.Circle etc.?
 open class RectangleRenderObject: RenderObject {
-
     public var rect: DRect
-
     public var cornerRadii: CornerRadii?
 
     override open var hasTimedRenderValue: Bool {
-
         return false
     }
     
     override open var debugDescription: String {
-
         "RectangleRenderObject"
     }
     
     override open var individualHash: Int {
-
         var hasher = Hasher()
-
         hasher.combine(rect)
-        
         return hasher.finalize()
     }
     
     public init(_ rect: DRect, cornerRadii: CornerRadii? = nil) {
-        
         self.rect = rect
-
         self.cornerRadii = cornerRadii
     }
 
     override public func objectsAt(point: DPoint2) -> [ObjectAtPointResult] {
-        
         if rect.contains(point: point) {
-
             return [ObjectAtPointResult(object: self, transformedPoint: point)]
         }
+        return []
+    }
+}
 
+open class VideoRenderObject: RenderObject {
+    public var stream: VideoStream
+    public var bounds: DRect
+
+    // TODO: might rename hasTimedRenderValue to something like requiresFraemRendering (indicate that it cannot be cached?)
+    override open var hasTimedRenderValue: Bool {
+        true
+    }
+
+    override open var debugDescription: String {
+        "VideoRenderObject"
+    }
+
+    override open var individualHash: Int {
+        var hasher = Hasher()
+        hasher.combine(bounds)
+        return hasher.finalize()
+    }
+
+    public init(stream: VideoStream, bounds: DRect) {
+        self.stream = stream
+        self.bounds = bounds
+    }
+
+    override public func objectsAt(point: DPoint2) -> [ObjectAtPointResult] {
+        if bounds.contains(point: point) {
+            return [ObjectAtPointResult(object: self, transformedPoint: point)]
+        }
         return []
     }
 }

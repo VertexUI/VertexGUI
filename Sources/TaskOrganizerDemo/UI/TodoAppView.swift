@@ -1,4 +1,4 @@
-import CustomGraphicsMath
+import GfxMath
 import VisualAppBase
 import WidgetGUI
 

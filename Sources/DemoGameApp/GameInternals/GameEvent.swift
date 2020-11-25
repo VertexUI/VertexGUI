@@ -1,4 +1,4 @@
-import CustomGraphicsMath
+import GfxMath
 
 public enum GameEvent {
     case Add(id: UInt, type: BlobType, position: DPoint2, radius: Double)

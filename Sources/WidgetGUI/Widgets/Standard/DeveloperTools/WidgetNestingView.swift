@@ -1,4 +1,4 @@
-import CustomGraphicsMath
+import GfxMath
 
 public class WidgetNestingView: SingleChildWidget {
   private let inspectedWidget: Widget

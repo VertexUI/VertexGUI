@@ -1,4 +1,4 @@
-import CustomGraphicsMath
+import GfxMath
 import Foundation
 
 public class FoodBlobDrawable: BlobDrawable<FoodBlob> {

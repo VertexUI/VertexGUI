@@ -1,5 +1,5 @@
 import VisualAppBase
-import CustomGraphicsMath
+import GfxMath
 
 public class PixelCanvas: Widget {
   private var content: Image

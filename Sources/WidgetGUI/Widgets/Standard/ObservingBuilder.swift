@@ -1,4 +1,4 @@
-import CustomGraphicsMath
+import GfxMath
 
 public class ObservingBuilder: SingleChildWidget {
   private var observables: [AnyObservableProperty]

@@ -1,5 +1,5 @@
 import Foundation
-import CustomGraphicsMath
+import GfxMath
 import Dispatch
 import VisualAppBase
 

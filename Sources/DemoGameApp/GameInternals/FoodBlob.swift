@@ -1,5 +1,5 @@
 import Foundation
-import CustomGraphicsMath
+import GfxMath
 
 public struct FoodBlob: Blob {
     public var id: UInt

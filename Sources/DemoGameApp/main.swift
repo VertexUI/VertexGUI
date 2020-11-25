@@ -1,7 +1,7 @@
 import VisualAppBase
 import VisualAppBaseImplSDL2OpenGL3NanoVG
 import WidgetGUI
-import CustomGraphicsMath
+import GfxMath
 import Foundation
 
 public class DemoGameApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGWindow, SDL2OpenGL3NanoVGRenderer> {

@@ -1,5 +1,5 @@
 import CSDL2
-import CustomGraphicsMath
+import GfxMath
 import Dispatch
 import Foundation
 import VisualAppBase

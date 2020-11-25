@@ -1,4 +1,4 @@
-import CustomGraphicsMath
+import GfxMath
 
 public class GameChunk {
     public static let size = DSize2(100, 100)

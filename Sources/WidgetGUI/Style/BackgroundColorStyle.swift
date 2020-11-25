@@ -1,5 +1,5 @@
 import VisualAppBase
-import CustomGraphicsMath
+import GfxMath
 
 public protocol BackgroundColorStyle {
   var backgroundColor: Color? { get set }

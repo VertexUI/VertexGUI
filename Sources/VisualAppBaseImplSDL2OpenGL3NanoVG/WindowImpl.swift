@@ -1,6 +1,6 @@
 import CSDL2
 import CnanovgGL3
-import CustomGraphicsMath
+import GfxMath
 import Foundation
 import GL
 import Path

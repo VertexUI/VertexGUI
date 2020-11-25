@@ -1,4 +1,4 @@
-import CustomGraphicsMath
+import GfxMath
 
 public enum TwoDRaycastResult: Equatable {
     case Hit(tileIndex: IVec2, edge: Tile.Edge)

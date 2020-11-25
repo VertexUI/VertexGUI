@@ -1,4 +1,4 @@
-import CustomGraphicsMath
+import GfxMath
 
 public struct TodoSearchResult {
   public var query: String

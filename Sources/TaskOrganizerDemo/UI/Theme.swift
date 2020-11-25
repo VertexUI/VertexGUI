@@ -1,5 +1,5 @@
 import WidgetGUI
-import CustomGraphicsMath
+import GfxMath
 
 let appTheme = DefaultTheme(
 

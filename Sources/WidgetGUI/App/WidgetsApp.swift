@@ -1,6 +1,6 @@
 import Foundation
 import VisualAppBase
-import CustomGraphicsMath
+import GfxMath
 
 open class WidgetsApp {
     private var baseApp: VisualApp

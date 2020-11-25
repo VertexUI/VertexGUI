@@ -1,7 +1,7 @@
 import Foundation
 import VisualAppBase
 import WidgetGUI
-import CustomGraphicsMath
+import GfxMath
 import Dispatch
 
 public class GameView: Widget, GUIMouseEventConsumer {

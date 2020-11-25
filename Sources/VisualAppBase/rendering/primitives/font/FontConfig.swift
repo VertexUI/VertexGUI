@@ -3,7 +3,7 @@
 //
 
 import Foundation
-import CustomGraphicsMath
+import GfxMath
 
 public struct FontConfig: Hashable {
     public var family: FontFamily

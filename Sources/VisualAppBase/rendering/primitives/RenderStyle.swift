@@ -3,7 +3,7 @@
 //
 
 import Foundation
-import CustomGraphicsMath
+import GfxMath
 
 // ------
 // UNUSED

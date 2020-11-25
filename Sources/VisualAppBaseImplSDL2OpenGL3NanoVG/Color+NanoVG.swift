@@ -1,5 +1,5 @@
 import Cnanovg
-import CustomGraphicsMath
+import GfxMath
 
 public extension Color {
     func toNVG() -> NVGcolor {

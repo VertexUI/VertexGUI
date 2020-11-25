@@ -1,4 +1,4 @@
-import CustomGraphicsMath
+import GfxMath
 
 public class Drawable {
     public internal(set) var vertices: [DPoint2] = []

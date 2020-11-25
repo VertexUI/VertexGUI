@@ -1,4 +1,4 @@
-import CustomGraphicsMath
+import GfxMath
 
 public class Center: SingleChildWidget {
   private var childBuilder: () -> Widget

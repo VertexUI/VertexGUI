@@ -1,5 +1,5 @@
 import WidgetGUI
-import CustomGraphicsMath
+import GfxMath
 import VisualAppBase
 
 public class TaskCompletionButton: Widget, GUIMouseEventConsumer {

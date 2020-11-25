@@ -1,5 +1,5 @@
 import VisualAppBase
-import CustomGraphicsMath
+import GfxMath
 import Foundation
 import Dispatch
 import ColorizeSwift

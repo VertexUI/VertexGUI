@@ -1,8 +1,8 @@
-import CustomGraphicsMath
+import GfxMath
 
 // TODO: might change this into structs to avoid needing to calculate the hash for image in the caller
 public enum Fill: Hashable {
-    case Color(_ value: CustomGraphicsMath.Color)
+    case Color(_ value: GfxMath.Color)
     case Image(_ value: Image, position: DVec2)
 
     public func hash(into hasher: inout Hasher) {

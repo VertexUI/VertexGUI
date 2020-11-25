@@ -2,7 +2,7 @@ import VisualAppBase
 import VisualAppBaseImplSDL2OpenGL3NanoVG
 import WidgetGUI
 import Dispatch
-import CustomGraphicsMath
+import GfxMath
 import Path
 import GL
 import CSDL2

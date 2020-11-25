@@ -1,6 +1,6 @@
 import Dispatch
 import Foundation
-import CustomGraphicsMath
+import GfxMath
 
 public class GameProcessor {
     private var _nextBlobId: UInt = 0

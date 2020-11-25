@@ -1,5 +1,5 @@
 import Foundation
-import CustomGraphicsMath
+import GfxMath
 
 public protocol Blob {
     var id: UInt { get }

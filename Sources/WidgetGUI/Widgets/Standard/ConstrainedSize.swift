@@ -1,4 +1,4 @@
-import CustomGraphicsMath
+import GfxMath
 
 // TODO: maybe simply provide these as modifiers on each Widget?
 public class ConstrainedSize: SingleChildWidget {

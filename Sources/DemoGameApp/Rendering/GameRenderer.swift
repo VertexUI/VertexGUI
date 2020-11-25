@@ -1,6 +1,6 @@
 import Foundation
 import VisualAppBase
-import CustomGraphicsMath
+import GfxMath
 import GLGraphicsMath
 import GL
 

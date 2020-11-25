@@ -1,4 +1,4 @@
-import CustomGraphicsMath
+import GfxMath
 
 public struct GamePerspective {
     public let visibleArea: DRect

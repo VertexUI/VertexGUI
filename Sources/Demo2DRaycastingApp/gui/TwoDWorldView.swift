@@ -1,6 +1,6 @@
 import VisualAppBase
 import WidgetGUI
-import CustomGraphicsMath
+import GfxMath
 
 open class TwoDWorldView: Widget, GUIMouseEventConsumer, StatefulWidget {
     public struct State {

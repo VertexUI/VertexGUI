@@ -1,4 +1,4 @@
-import CustomGraphicsMath
+import GfxMath
 
 public class SimpleRow: Widget {
   private let childrenBuilder: () -> [Widget]

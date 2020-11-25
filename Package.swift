@@ -30,7 +30,9 @@ let package = Package(
         .package(url: "https://github.com/UnGast/Cnanovg.git", .branch("master")),
         .package(url: "https://github.com/wickwirew/Runtime.git", from: "2.1.1"),
         .package(url: "https://github.com/mtynior/ColorizeSwift", .branch("master")),
-        .package(url: "https://github.com/manuelCarlos/Easing.git", from: "2.0.0")
+        .package(url: "https://github.com/manuelCarlos/Easing.git", from: "2.0.0"),
+        .package(name: "GfxMath", url: "https://github.com/UnGast/swift-gfx-math.git", .branch("master")),
+        .package(name: "GLUtils", url: "https://github.com/UnGast/swift-gl-utils.git", .branch("master"))
     ],
 
     targets: [
@@ -43,24 +45,20 @@ let package = Package(
                 .apt(["libsdl2-dev"])
         ]),
 
-        .target(name: "CustomGraphicsMath"),
-
-        .target(name: "GLGraphicsMath", dependencies: ["GL", "CustomGraphicsMath"]),
-        
         .target(
-            name: "VisualAppBase", dependencies: ["CSDL2", "CustomGraphicsMath", "Swim"]
+            name: "VisualAppBase", dependencies: ["CSDL2", "GfxMath", "Swim"]
         ),
 
         .target(
                 // TODO: maybe rename to SwiftApplicationFramework or so...? or split to SwiftApplicationFramework and SwiftUIFramework
             name: "WidgetGUI",
-            dependencies: ["VisualAppBase", "CustomGraphicsMath", "Runtime", "ColorizeSwift", "Easing"],
+            dependencies: ["VisualAppBase", "GfxMath", "Runtime", "ColorizeSwift", "Easing"],
             resources: [.process("Resources")]
         ),
 
         .target(
             name: "VisualAppBaseImplSDL2OpenGL3NanoVG",
-            dependencies: ["WidgetGUI", "CSDL2", "GL", "Swim", .product(name: "CnanovgGL3", package: "Cnanovg"), "CustomGraphicsMath", "GLGraphicsMath", .product(name: "Path", package: "Path.swift")],
+            dependencies: ["WidgetGUI", "CSDL2", "GL", "GLUtils", "Swim", .product(name: "CnanovgGL3", package: "Cnanovg"), "GfxMath", .product(name: "Path", package: "Path.swift")],
             resources: [.process("Resources")]),
        
         /*.target(
@@ -84,7 +82,7 @@ let package = Package(
 
         .target(
             name: "SwiftGUI",
-            dependencies: ["VisualAppBase", "VisualAppBaseImplSDL2OpenGL3NanoVG", "WidgetGUI", "CustomGraphicsMath"],
+            dependencies: ["VisualAppBase", "VisualAppBaseImplSDL2OpenGL3NanoVG", "WidgetGUI", "GfxMath"],
             resources: [.process("Resources")]
         ),
 

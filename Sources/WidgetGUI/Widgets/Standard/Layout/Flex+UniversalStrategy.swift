@@ -1,4 +1,4 @@
-import CustomGraphicsMath
+import GfxMath
 
 extension Flex {
   internal class UniversalStrategy: LayoutStrategy {

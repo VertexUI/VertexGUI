@@ -1,5 +1,5 @@
 import VisualAppBase
-import CustomGraphicsMath
+import GfxMath
 
 public class RadioButton: Widget, GUIMouseEventConsumer {
   @MutableProperty

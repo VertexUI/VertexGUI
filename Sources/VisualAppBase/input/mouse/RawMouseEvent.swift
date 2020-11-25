@@ -3,7 +3,7 @@
 //
 
 import Foundation
-import CustomGraphicsMath
+import GfxMath
 
 // TODO: maybe remove the "Raw" again and only prefix GUI for the widget events..
 public protocol RawMouseEvent {

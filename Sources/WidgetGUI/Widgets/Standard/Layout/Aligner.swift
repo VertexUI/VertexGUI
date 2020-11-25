@@ -1,4 +1,4 @@
-import CustomGraphicsMath
+import GfxMath
 
 public class Aligner: Widget {
     public init(@WidgetBuilder children childrenBuilder: () -> [Widget]) {

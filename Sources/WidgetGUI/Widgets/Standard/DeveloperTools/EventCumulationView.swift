@@ -1,5 +1,5 @@
 import Foundation
-import CustomGraphicsMath
+import GfxMath
 import VisualAppBase
 import Path
 import Swim

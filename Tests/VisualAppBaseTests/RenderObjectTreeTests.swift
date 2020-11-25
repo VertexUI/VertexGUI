@@ -1,4 +1,4 @@
-import CustomGraphicsMath
+import GfxMath
 import Foundation
 @testable import VisualAppBase
 import XCTest

@@ -1,4 +1,4 @@
-import CustomGraphicsMath
+import GfxMath
 import WidgetGUI
 
 public struct Style {

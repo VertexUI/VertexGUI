@@ -1,6 +1,6 @@
 import VisualAppBase
 import WidgetGUI
-import CustomGraphicsMath
+import GfxMath
 
 open class TwoDWorldPage: SingleChildWidget {
     private var world: TwoDVoxelWorld = TwoDVoxelWorld(size: ISize2(40, 40))

@@ -1,5 +1,5 @@
 import VisualAppBase
-import CustomGraphicsMath
+import GfxMath
 
 @available(*, deprecated, message: "Use ConstrainedSize instead.")
 public class ComputedSize: SingleChildWidget {

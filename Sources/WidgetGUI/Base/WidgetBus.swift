@@ -1,6 +1,6 @@
 import Foundation
 import VisualAppBase
-import CustomGraphicsMath
+import GfxMath
 
 public class WidgetBus<Message> {
   public private(set) var onMessage = EventHandlerManager<Message>()

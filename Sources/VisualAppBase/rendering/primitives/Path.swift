@@ -1,4 +1,4 @@
-import CustomGraphicsMath
+import GfxMath
 
 // TODO: maybe this belongs to GraphicsMath
 public struct Path: Hashable {

@@ -1,8 +1,8 @@
 import CSDL2
 import GL
 import Cnanovg
-import CustomGraphicsMath
-import GLGraphicsMath
+import GfxMath
+import GLUtils
 import VisualAppBase
 import Path
 import Foundation

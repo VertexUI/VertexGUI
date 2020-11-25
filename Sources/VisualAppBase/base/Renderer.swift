@@ -1,5 +1,5 @@
 import Foundation
-import CustomGraphicsMath
+import GfxMath
 
 // TODO: maybe put this into another file
 // TODO: maybe rename to VirtualRenderTarget
