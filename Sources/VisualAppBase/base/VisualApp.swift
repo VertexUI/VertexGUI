@@ -16,7 +16,7 @@ open class VisualApp: App {
     public init(system: System, immediate: Bool = false) {
         super.init(system: system)
         _ = system.onTick(handleOnTick)
-        _ = system.onFrame(handleOnFrame)
+        //_ = system.onFrame(handleOnFrame)
     }
 
     open func createRawWindow(options: Window.Options) -> Window {
@@ -27,15 +27,8 @@ open class VisualApp: App {
         let renderObjectTree = RenderObjectTree()
 
         let window = createRawWindow(options: options)
+        window.frameNeeded = false
         let windowId = window.id
-
-        _ = window.onBeforeClose { [unowned self] window in
-            let context = windowContexts[windowId]!
-            context.treeRenderer.destroy()
-            context.renderer.destroy()
-            context.tree.destroy()
-            windowContexts.removeValue(forKey: windowId)
-        }
 
         let renderer = createRenderer(for: window)
 
@@ -60,6 +53,24 @@ open class VisualApp: App {
             tree: renderObjectTree,
             treeRenderer: renderObjectTreeRenderer)
 
+        _ = window.onBeforeFrame { window in
+            if renderObjectTreeRenderer.rerenderNeeded {
+                window.frameNeeded = true
+            }
+        }
+
+        _ = window.onFrame { [unowned self] _ in
+            renderWindow(context)
+        }
+
+        _ = window.onBeforeClose { [unowned self] window in
+            let context = windowContexts[windowId]!
+            context.treeRenderer.destroy()
+            context.renderer.destroy()
+            context.tree.destroy()
+            windowContexts.removeValue(forKey: windowId)
+        }
+
         windowContexts[windowId] = context
 
         return window
@@ -80,23 +91,27 @@ open class VisualApp: App {
         }
     }
 
-    open func handleOnFrame(_ deltaTime: Int) {
+    /*open func handleOnFrame(_ deltaTime: Int) {
         for context in windowContexts.values {
             if context.treeRenderer.rerenderNeeded {
                 renderWindow(context)
             }
         }
-    }
+    }*/
 
     open func renderWindow(_ context: WindowContext) {
-        context.window.makeCurrent()
-        if !context.window.destroyed {
+        //if context.treeRenderer.rerenderNeeded {
+            // TODO: maybe introduce something like canvas --> areas inside the window, can be stacked and
+            // drawn upon --> are composed later (if only one canvas of full size, draw to window directly)
+            //context.renderer.clear(context.window.options.background)
+            //context.renderer.beginFrame()
+            //context.renderer.clear(context.window.options.background)
             context.renderer.beginFrame()
-            context.renderer.clear(context.window.options.background)
             context.treeRenderer.render(with: context.renderer, in: DRect(min: .zero, size: context.window.drawableSize))
             context.renderer.endFrame()
-            context.window.updateContent()
-        }
+            context.window.frameNeeded = false
+            //context.renderer.endFrame()
+        //}
     }
   
     public struct WindowContext {

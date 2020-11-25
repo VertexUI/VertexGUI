@@ -89,16 +89,20 @@ open class Window {
   }
   private var inputFocusInvalid = false
 
+  public var frameNeeded = true
   public private(set) var destroyed = false
 
-  public var onMouse = EventHandlerManager<RawMouseEvent>()
-  public var onKey = EventHandlerManager<KeyEvent>()
-  public var onText = EventHandlerManager<TextEvent>()
-  public var onSizeChanged = EventHandlerManager<DSize2>()
-  public var onPositionChanged = EventHandlerManager<DPoint2>()
-  public var onVisibilityChanged = EventHandlerManager<Visibility>()
-  public var onInputFocusChanged = EventHandlerManager<Bool>()
-  public var onBeforeClose = EventHandlerManager<Window>()
+  public let onBeforeFrame = EventHandlerManager<Window>()
+  public let onFrame = EventHandlerManager<Double>()
+
+  public let onMouse = EventHandlerManager<RawMouseEvent>()
+  public let onKey = EventHandlerManager<KeyEvent>()
+  public let onText = EventHandlerManager<TextEvent>()
+  public let onSizeChanged = EventHandlerManager<DSize2>()
+  public let onPositionChanged = EventHandlerManager<DPoint2>()
+  public let onVisibilityChanged = EventHandlerManager<Visibility>()
+  public let onInputFocusChanged = EventHandlerManager<Bool>()
+  public let onBeforeClose = EventHandlerManager<Window>()
 
   // TODO: maybe can remove background color
   public required init(options: Options) throws {
@@ -166,7 +170,21 @@ open class Window {
     fatalError("applyInputFocus(:) not implemented")
   }
 
+  open func performFrame(_ deltaTime: Double) {
+    onBeforeFrame.invokeHandlers(self)
+    if self.frameNeeded {
+      self.makeCurrent()
+      self.clear()
+      onFrame.invokeHandlers(deltaTime)
+      self.updateContent()
+    }
+  }
+
   open func makeCurrent() {
+  }
+
+  open func clear() {
+    fatalError("clear() not implemented")
   }
 
   open func updateContent() {

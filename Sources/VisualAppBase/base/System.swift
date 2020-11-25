@@ -4,12 +4,11 @@ open class System {
     public var cursorRequests: [UInt64: Cursor] = [:] // TODO: maybe handle first come first or z index
     public var nextCursorRequestId: UInt64 = 0
     public var onTick = EventHandlerManager<Tick>()
-    public var onFrame = EventHandlerManager<Int>()
+    public var onFrame = EventHandlerManager<Double>()
 
     public var averageFps = 0 // average FPS over a certain time, TODO: which time?
 
     open var currentTime: Double {
-
         fatalError("currentTime not implemented")
     }
     

@@ -6,6 +6,7 @@ import VisualAppBase
 import WidgetGUI
 
 open class SDL2OpenGL3NanoVGSystem: System {
+  private static var instance: SDL2OpenGL3NanoVGSystem? = nil
   public static var windows: [Int: SDL2OpenGL3NanoVGWindow] = [:]
 
   public static var isRunning = true
@@ -34,7 +35,7 @@ open class SDL2OpenGL3NanoVGSystem: System {
     MouseButton.Left: false
   ]
 
-  override public init() throws {
+  override private init() throws {
     if SDL_Init(SDL_INIT_VIDEO) != 0 {
       throw SDLError("Unable to initialize SDL.", SDL_GetError())
     }
@@ -45,6 +46,15 @@ open class SDL2OpenGL3NanoVGSystem: System {
     //}
 
     //defer { SDL.quit() }
+  }
+
+  public static func getInstance() throws -> SDL2OpenGL3NanoVGSystem {
+    if let instance = instance {
+      return instance
+    } else {
+      instance = try SDL2OpenGL3NanoVGSystem()
+      return instance!
+    }
   }
 
   override open func updateCursor() {
@@ -250,7 +260,11 @@ open class SDL2OpenGL3NanoVGSystem: System {
           self.onTick.invokeHandlers(
             Tick(deltaTime: Double(deltaTime) / 1000, totalTime: currentTime))
 
-          self.onFrame.invokeHandlers(Int(deltaTime))
+          self.onFrame.invokeHandlers(Double(deltaTime / 1000))
+          // TODO: maybe call onFrame on windows through system's onFrame handler?
+          for window in SDL2OpenGL3NanoVGSystem.windows.values {
+            window.performFrame(Double(deltaTime / 1000))
+          }
 
           let frameDuration = Int(SDL_GetTicks() - frameStartTime)
 
