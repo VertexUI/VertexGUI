@@ -3,7 +3,7 @@ import Foundation
 
 open class RenderObjectTreeSliceRenderer {
   private var destroyed = false
-  private var context: ApplicationContext
+  public let context: ApplicationContext
 
   deinit {
     if !destroyed {
