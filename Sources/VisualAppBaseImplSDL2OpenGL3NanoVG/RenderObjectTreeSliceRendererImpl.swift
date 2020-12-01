@@ -64,12 +64,12 @@ open class SDL2OpenGL3NanoVGRenderObjectTreeSliceRenderer: RenderObjectTreeSlice
         let glBottomLeft = glPosition + FVec2(0, -glSize.y)
 
         let vertices = [
-          glBottomLeft, FVec2(-1, -1),
-          glBottomRight, FVec2(1, -1),
+          glBottomLeft, FVec2(0, 0),
+          glBottomRight, FVec2(1, 0),
           glTopRight, FVec2(1, 1),
-          glBottomLeft, FVec2(-1, -1),
+          glBottomLeft, FVec2(0, 0),
           glTopRight, FVec2(1, 1),
-          glTopLeft, FVec2(-1, 1)
+          glTopLeft, FVec2(0, 1)
         ].flatMap { $0.elements }
 
         imageVbo.bind(.arrayBuffer)
