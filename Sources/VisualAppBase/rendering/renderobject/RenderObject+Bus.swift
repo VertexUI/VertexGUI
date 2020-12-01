@@ -20,7 +20,7 @@ extension RenderObject {
     }
     
     public enum UpwardMessageContent {
-        case TransitionStarted, TransitionEnded, ChildrenUpdated
+        case transitionStarted, transitionEnded, addUncachable, removeUncachable, childrenUpdated
     }
 
     public enum DownwardMessage {

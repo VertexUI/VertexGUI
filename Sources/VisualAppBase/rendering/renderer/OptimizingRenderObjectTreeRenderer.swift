@@ -118,7 +118,7 @@ public class OptimizingRenderObjectTreeRenderer: RenderObjectTreeRenderer {
         }
 
         switch message.content {
-        case .ChildrenUpdated:
+        case .childrenUpdated:
             groups = []
 
         default:
@@ -214,13 +214,17 @@ extension OptimizingRenderObjectTreeRenderer {
         public func processBusMessage(_ message: RenderObject.UpwardMessage) {
             print("RENDER GROUP RECEIVED BUS message!", message, "from", message.sender)
             switch message.content {
-            case .ChildrenUpdated:
+            case .childrenUpdated:
                 cache = nil
                 onMessage.invokeHandlers(.RerenderNeeded)
-            case .TransitionStarted:
+            case .transitionStarted:
                 activeTransitionCount += 1
-            case .TransitionEnded:
+            case .transitionEnded:
                 activeTransitionCount -= 1
+            case .addUncachable:
+                fatalError("unhandled: .addUncachable")
+            case .removeUncachable:
+                fatalError("unhandled: .removeUncachable")
             }
         }
 

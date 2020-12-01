@@ -81,7 +81,10 @@ open class RenderObject: CustomDebugStringConvertible, TreeNode {
     private var nextTickHandlers: [() -> ()] = []
     private var removeNextTickListener: (() -> ())?
     private var removeOnTickMessageHandler: (() -> ())?
-    internal private(set) var onTick = EventHandlerManager<Tick>()
+    internal let onTick = EventHandlerManager<Tick>()
+
+    internal var mounted = false
+    internal let onMounted = EventHandlerManager<Void>()
 
     public init() {
         setupOnTick()
@@ -97,16 +100,40 @@ open class RenderObject: CustomDebugStringConvertible, TreeNode {
         }
     }
 
+    public func mount(parent: RenderObject, treePath: TreePath, bus: Bus, context: RenderObjectContext?) {
+        self.parent = parent
+        self.treePath = treePath
+        self.bus = bus
+        if let context = context {
+            self.context = context
+        }
+        
+        mountChildren()
+
+        self.mounted = true
+
+        onMounted.invokeHandlers(Void())
+    }
+
+    internal func mountChildren() {
+        for (index, child) in children.enumerated() {
+            child.mount(parent: self, treePath: treePath/index, bus: self.bus, context: self._context)
+        }
+    }
+
     public func appendChild(_ child: RenderObject) {
-        child.parent = self
-        child.bus = bus
-        if let context = _context {
+        children.append(child)
+        if self.mounted {
+            child.mount(parent: self, treePath: treePath/children.count, bus: bus, context: _context)
+        }
+        //child.parent = self
+        //child.bus = bus
+        /*if let context = _context {
             child.context = context
         }
-        child.treePath = treePath/children.count
-        children.append(child)
+        child.treePath = treePath/children.count*/
         bus.up(
-            UpwardMessage(sender: self, content: .ChildrenUpdated)
+            UpwardMessage(sender: self, content: .childrenUpdated)
         )
     }
 
@@ -117,7 +144,7 @@ open class RenderObject: CustomDebugStringConvertible, TreeNode {
         children = []
 
         bus.up(
-            UpwardMessage(sender: self, content: .ChildrenUpdated)
+            UpwardMessage(sender: self, content: .childrenUpdated)
         )
     }
 
@@ -157,9 +184,19 @@ open class RenderObject: CustomDebugStringConvertible, TreeNode {
         for child in children {
             child.destroy()
         }
+
         if let state = renderState {
             state.destroy()
         }
+
+        let mirror = Mirror(reflecting: self)
+        for property in mirror.children {
+            if let manager = property.value as? AnyEventHandlerManager {
+                manager.removeAllHandlers()
+                print("RENDER OBJECT AUTOREMOVE HANDLERS!")
+            }
+        }        
+
         destroySelf()
         destroyed = true
     }
@@ -335,11 +372,11 @@ open class RenderStyleRenderObject: SubTreeRenderObject {
                         removeOnTickHandler = onTick { [unowned self] tick in
                             if timedValue.startTimestamp <= tick.totalTime {
                                 bus.up(UpwardMessage(
-                                    sender: self, content: .TransitionStarted))
+                                    sender: self, content: .transitionStarted))
 
                                 if let remove = removeTransitionEndListener {
                                     bus.up(UpwardMessage(
-                                        sender: self, content: .TransitionEnded
+                                        sender: self, content: .transitionEnded
                                     ))
 
                                     removeTransitionEndListener = nil
@@ -352,7 +389,7 @@ open class RenderStyleRenderObject: SubTreeRenderObject {
                                     if timedValue.endTimestamp <= tick.totalTime {
                                         self?.nextTick {
                                             self?.bus.up(UpwardMessage(
-                                                sender: self!, content: .TransitionEnded))
+                                                sender: self!, content: .transitionEnded))
                                         }
 
                                         if let remove = self?.removeTransitionEndListener {
@@ -446,7 +483,7 @@ open class RenderStyleRenderObject: SubTreeRenderObject {
                 
             bus.up(UpwardMessage(
 
-                sender: self, content: .TransitionEnded))
+                sender: self, content: .transitionEnded))
         }
     }
 }
@@ -627,6 +664,11 @@ open class VideoRenderObject: RenderObject {
     public init(stream: VideoStream, bounds: DRect) {
         self.stream = stream
         self.bounds = bounds
+        super.init()
+        // TODO: or should onMounted be a function like mountSelf (compare: destroySelf)
+        _ = onMounted {
+            self.bus.up(UpwardMessage(sender: self, content: .addUncachable))
+        }
     }
 
     override public func objectsAt(point: DPoint2) -> [ObjectAtPointResult] {
@@ -634,6 +676,10 @@ open class VideoRenderObject: RenderObject {
             return [ObjectAtPointResult(object: self, transformedPoint: point)]
         }
         return []
+    }
+
+    override public func destroySelf() {
+        UpwardMessage(sender: self, content: .removeUncachable)
     }
 }
 

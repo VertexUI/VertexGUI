@@ -81,6 +81,8 @@ open class SDL2OpenGL3NanoVGWindow: Window {
     invalidateSize()
     invalidatePosition()
     invalidateInputFocus()
+
+    print("RESOLUTION IS", resolution)
   }
 
   override open func readSize() -> DSize2 {

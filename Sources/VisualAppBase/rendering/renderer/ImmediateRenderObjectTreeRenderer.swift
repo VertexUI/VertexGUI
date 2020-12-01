@@ -9,6 +9,7 @@ public class ImmediateRenderObjectTreeRenderer: RenderObjectTreeRenderer {
     private var destroyed = false
     private let sliceRenderer: RenderObjectTreeSliceRenderer
     private var treeMessageBuffer: [RenderObject.UpwardMessage] = []
+    private var uncachableElements: Set<ObjectIdentifier> = []
     private var activeTransitionCount = 0
 
     private var removeBusHandler: (() -> ())? = nil
@@ -33,13 +34,17 @@ public class ImmediateRenderObjectTreeRenderer: RenderObjectTreeRenderer {
     public func tick(_ tick: Tick) {
         for message in treeMessageBuffer {
             switch message.content {
-            case .TransitionStarted:
+            case .transitionStarted:
                 //activeTransitionCount += 1
                 break
-            case .TransitionEnded:
+            case .transitionEnded:
                 //activeTransitionCount -= 1
                 break
-            case .ChildrenUpdated:
+            case .addUncachable:
+                uncachableElements.insert(ObjectIdentifier(message.sender))
+            case .removeUncachable:
+                uncachableElements.remove(ObjectIdentifier(message.sender))
+            case .childrenUpdated:
                 rerenderNeeded = true
             default:
                 break
@@ -48,12 +53,20 @@ public class ImmediateRenderObjectTreeRenderer: RenderObjectTreeRenderer {
         if activeTransitionCount > 0 {
             rerenderNeeded = true
         }
+        if uncachableElements.count > 0 {
+            rerenderNeeded = true
+        }
         treeMessageBuffer = []
     }
 
     public func render(with backendRenderer: Renderer, in bounds: DRect) {
         sliceRenderer.render(RenderObjectTree.TreeSlice(tree: tree, start: TreePath(), end: TreePath()), with: backendRenderer)
-        rerenderNeeded = false
+        print("IMMEDIATE RENDERER DID RENDER:", uncachableElements.count, rerenderNeeded)
+        if activeTransitionCount == 0 && uncachableElements.count == 0 {
+            rerenderNeeded = false
+        } else {
+            rerenderNeeded = true
+        }
     }
 
     public func destroy() {

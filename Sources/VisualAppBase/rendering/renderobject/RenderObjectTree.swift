@@ -2,23 +2,19 @@ import Foundation
 
 // TODO: maybe rename RenderObjectTree
 public class RenderObjectTree: SubTreeRenderObject {
-
     public private(set) var state = State()
 
     public var idPaths = [UInt: TreePath]()
 
     override open var hasTimedRenderValue: Bool {
-
         return false
     }
 
     override open var debugDescription: String {
-
         "RenderObjectTree"
     }
 
     override open var individualHash: Int {
-
         return 0
     }
 
@@ -27,55 +23,39 @@ public class RenderObjectTree: SubTreeRenderObject {
     //public internal(set) var onUpdate = EventHandlerManager<Update>()
 
     public init(_ children: [RenderObject] = []) {
-
         self.idPaths = [:]
-
         super.init(children: children)
-
         self.idPaths = getIdPathsRecursively(self, TreePath(), [UInt: TreePath]())
+        self.mountChildren()
+        self.mounted = true // a root node cannot not be mounted
     }
 
     public convenience init(@RenderObjectBuilder children childrenBuilder: () -> [RenderObject]) {
-
         self.init(childrenBuilder())
     }
 
     // TODO: maybe add setter...
     public subscript(path: TreePath) -> RenderObject? {
-
         if path.count == 0 {
-
             return self
         }
 
         var checkChildren = children
 
         for i in 0..<path.count {
-
             let pathSegment = path[i]
-
             if let child = checkChildren.count > pathSegment ? checkChildren[pathSegment] : nil {
-              
                 if i + 1 == path.count {
-               
                     return child
-              
                 } else {
-               
                     switch child {
-                
                     case let child as SubTreeRenderObject:
-                 
                         checkChildren = child.children 
-                
                     default:
-               
                         return nil
                     }
                 }
-          
             } else {
-          
                 return nil
             }
         }
@@ -84,18 +64,14 @@ public class RenderObjectTree: SubTreeRenderObject {
     }
 
     private func getIdPathsRecursively(_ renderObject: RenderObject, _ currentPath: TreePath, _ currentIdPaths: [UInt: TreePath]) -> [UInt: TreePath] {
-        
         var updatedPaths = currentIdPaths
         
         if let renderObject = renderObject as? RenderObject.IdentifiedSubTree {
-        
             updatedPaths[renderObject.id] = currentPath
         }
       
         if let renderObject = renderObject as? SubTreeRenderObject {
-      
             for i in 0..<renderObject.children.count {
-       
                 updatedPaths = getIdPathsRecursively(renderObject.children[i], currentPath/i, updatedPaths)
             }
         }
@@ -275,11 +251,8 @@ public class RenderObjectTree: SubTreeRenderObject {
 
     /// - Warnings: Unused, untested
     public func traverseDepth(onObject objectHandler: (_ object: RenderObject, _ path: TreePath, _ index: Int, _ parentIndex: Int) throws -> Void) rethrows {
-      
         var currentPath = TreePath()
-       
         var currentIndex = 0
-       
         try objectHandler(self, currentPath, currentIndex, -1)
         /*if !(rootObject is SubTreeRenderObject) {
             objectHandler(rootObject, currentPath, currentIndex)
@@ -287,52 +260,35 @@ public class RenderObjectTree: SubTreeRenderObject {
         }*/
 
         var parents: [SubTreeRenderObject] = [self]
-     
         var parentIndices: [Int] = [currentIndex]
-      
         var visitedChildrenCounts: [Int] = [0]
 
         depthLoop: repeat {
-          
             let currentParentListIndex = currentPath.count
             
             breadthLoop: for i in visitedChildrenCounts[currentParentListIndex]..<parents[currentParentListIndex].children.count {
-          
                 currentIndex += 1
-            
                 visitedChildrenCounts[currentParentListIndex] += 1
             
                 // TODO: does this create two unnecessary copies?
                 let child = parents[currentParentListIndex].children[i]
             
                 if let subTree = child as? SubTreeRenderObject {
-            
                     currentPath = currentPath/i
-              
                     try objectHandler(subTree, currentPath, currentIndex, parentIndices[currentParentListIndex])
-               
                     parents.append(subTree)
-              
                     parentIndices.append(currentIndex)
-               
                     visitedChildrenCounts.append(0)
-                 
                     continue depthLoop
-               
                 } else {
-             
                     try objectHandler(child, currentPath/i, currentIndex, parentIndices[currentParentListIndex])
                 }
             }
 
             parents.popLast()
-          
             parentIndices.popLast()
-          
             currentPath.popLast()
-          
             visitedChildrenCounts.popLast()
-        
         } while parents.count > 0
     }
 
@@ -366,9 +322,7 @@ public class RenderObjectTree: SubTreeRenderObject {
 }
 
 extension RenderObjectTree {
-
     public enum Update {
-
         case Replace(path: TreePath, old: RenderObject, new: RenderObject)
     }
 

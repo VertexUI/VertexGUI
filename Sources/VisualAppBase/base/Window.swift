@@ -39,6 +39,10 @@ open class Window {
   }
   public private(set) var drawableSizeInvalid = false
 
+  public var resolution: DSize2 {
+    drawableSize / size
+  }
+
   private var _position: DPoint2 = .zero
   open var position: DPoint2 {
     get {
