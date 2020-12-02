@@ -46,7 +46,7 @@ open class SDL2OpenGL3NanoVGRenderObjectTreeSliceRenderer: RenderObjectTreeSlice
 
   override open func renderLeaf(node: RenderObject, with backendRenderer: Renderer) {
     if let node = node as? VideoRenderObject {
-      if let frameData = node.stream.getCurrentFrame() {
+      if let frame = node.stream.getCurrentFrame() {
         //glViewport(0, 0, 600, 600)
         imageShader.use()
         //imageShader.setUniform()
@@ -85,8 +85,7 @@ open class SDL2OpenGL3NanoVGRenderObjectTreeSliceRenderer: RenderObjectTreeSlice
           0,
           GLMap.RGB,
           GLMap.UNSIGNED_BYTE,
-          frameData.baseAddress)
-        frameData.deallocate()
+          frame.data)
         glGenerateMipmap(GLMap.TEXTURE_2D)
 
         glDrawArrays(GLMap.TRIANGLES, 0, 6)

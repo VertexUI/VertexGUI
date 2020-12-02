@@ -61,7 +61,6 @@ public class ImmediateRenderObjectTreeRenderer: RenderObjectTreeRenderer {
 
     public func render(with backendRenderer: Renderer, in bounds: DRect) {
         sliceRenderer.render(RenderObjectTree.TreeSlice(tree: tree, start: TreePath(), end: TreePath()), with: backendRenderer)
-        print("IMMEDIATE RENDERER DID RENDER:", uncachableElements.count, rerenderNeeded)
         if activeTransitionCount == 0 && uncachableElements.count == 0 {
             rerenderNeeded = false
         } else {
