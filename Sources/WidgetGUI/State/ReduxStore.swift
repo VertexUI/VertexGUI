@@ -26,8 +26,7 @@ open class ReduxStore<S, G: ReduxGetters<S>, M, A> {
   }
 
   public func commit(_ mutation: Mutation) {
-    // TODO: maybe implement in a way that state changed handlers are invoked after the root dispatch has finished
-    var newState = state
+    var newState = _mutableState
     performMutation(&newState, mutation)
     _mutableState = newState
     if !dispatchingAction {
