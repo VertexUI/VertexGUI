@@ -77,7 +77,7 @@ public class EventLogView: SingleChildWidget {
       }
     }
     nextTick { _ in
-      window!.visibility = .Shown
+      window!.visibility = .Visible
     }
   }
 

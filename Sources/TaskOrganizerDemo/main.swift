@@ -23,12 +23,11 @@ open class TodoApp: WidgetsApp {
         super.init(baseApp: SDL2OpenGL3NanoVGVisualApp())
     }
 
-    override open func start() throws {
+    override open func setup() {
         let window = createWindow(guiRoot: guiRoot, options: Window.Options(), immediate: true)
         #if DEBUG
         openDevTools(for: window)
         #endif
-        try super.start()
     }
 }
 

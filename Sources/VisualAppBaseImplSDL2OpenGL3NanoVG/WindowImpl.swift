@@ -24,7 +24,7 @@ open class SDL2OpenGL3NanoVGWindow: Window {
   public required init(options: Options) throws {
     /* sdlWindow = try SDL.SDLWindow(title: "SDLDemo",
                 frame: (x: .centered, y: .centered, width: Int(size.width), height: Int(size.height)),
-                options: [.resizable, .shown, .opengl, .allowRetina])*/
+                options: [.resizable, .Visible, .opengl, .allowRetina])*/
 
     SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8)
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1)
@@ -66,6 +66,12 @@ open class SDL2OpenGL3NanoVGWindow: Window {
       flags
     )
 
+    if sdlWindow == nil {
+      throw WindowError.SDLWindowCreationFailed
+    }
+
+    SDL_SetWindowBordered(sdlWindow, SDL_bool(1))
+
     glContext = SDL_GL_CreateContext(sdlWindow)
     SDL_GL_MakeCurrent(sdlWindow, glContext)
 
@@ -82,6 +88,7 @@ open class SDL2OpenGL3NanoVGWindow: Window {
     invalidatePosition()
     invalidateInputFocus()
 
+    print("SIZE IS", size)
     print("RESOLUTION IS", resolution)
   }
 
@@ -109,7 +116,7 @@ open class SDL2OpenGL3NanoVGWindow: Window {
   override open func readVisibility() -> Window.Visibility {
     let flags = SDL_GetWindowFlags(sdlWindow)
     if flags & SDL_WINDOW_SHOWN.rawValue == SDL_WINDOW_SHOWN.rawValue {
-      return .Shown
+      return .Visible
     } else if flags & SDL_WINDOW_HIDDEN.rawValue == SDL_WINDOW_HIDDEN.rawValue {
       return .Hidden
     } else {
@@ -132,7 +139,7 @@ open class SDL2OpenGL3NanoVGWindow: Window {
 
   override open func applyVisibility(_ newVisibility: Window.Visibility) {
     switch newVisibility {
-    case .Shown:
+    case .Visible:
       SDL_ShowWindow(sdlWindow)
     case .Hidden:
       SDL_HideWindow(sdlWindow)
@@ -170,5 +177,11 @@ open class SDL2OpenGL3NanoVGWindow: Window {
   
   deinit {
     print("DEINITIALIZED WINDOW")
+  }
+}
+
+extension SDL2OpenGL3NanoVGWindow {
+  public enum WindowError: Error {
+    case SDLWindowCreationFailed
   }
 }

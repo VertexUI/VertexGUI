@@ -15,6 +15,7 @@ open class WidgetsApp {
         //super.init(system: system, immediate: true)    }
         self.baseApp = baseApp
         _ = self.baseApp.system.onTick.addHandler(at: 0, handleOnTick)
+        _ = self.baseApp.onSetup { [unowned self] in setup() }
     }
 
     /// - Parameter guiRoot: is an autoclosure. This ensures, that the window
@@ -95,7 +96,11 @@ open class WidgetsApp {
         }
     }
 
-    open func start() throws {
+    open func setup() {
+
+    }
+
+    public func start() throws {
         try baseApp.start()
     }
 

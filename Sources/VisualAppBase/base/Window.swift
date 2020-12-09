@@ -60,7 +60,7 @@ open class Window {
   }
   public private(set) var positionInvalid = false
 
-  private var _visibility: Visibility = .Shown
+  private var _visibility: Visibility = .Visible
   open var visibility: Visibility {
     get {
       if visibilityInvalid {
@@ -218,7 +218,7 @@ open class Window {
 
 extension Window {
   public enum Visibility {
-    case Shown
+    case Visible
     case Hidden
   }
 
@@ -239,7 +239,7 @@ extension Window {
       title: String? = nil,
       initialSize: DSize2 = DSize2(800, 600),
       initialPosition: InitialPosition = .Centered,
-      initialVisibility: Visibility = .Shown,
+      initialVisibility: Visibility = .Visible,
       background: Color = .Grey,
       borderless: Bool = false) {
         self.title = title
