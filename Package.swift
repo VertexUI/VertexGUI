@@ -86,6 +86,13 @@ let package = Package(
             resources: [.process("Resources")]
         ),
 
+        .target(
+            name: "CTestSDL"
+        ),
+        .target(
+            name: "TestSDLSwift", dependencies: ["CTestSDL", "CSDL2", "GL", .product(name: "CnanovgGL3", package: "Cnanovg"), "VisualAppBaseImplSDL2OpenGL3NanoVG"], linkerSettings: [LinkerSetting.linkedLibrary("SDL2")]
+        ),
+
         .testTarget(name: "VisualAppBaseTests", dependencies: ["VisualAppBase"]),
         
         .testTarget(name: "WidgetGUITests", dependencies: ["WidgetGUI"])
