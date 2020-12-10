@@ -20,15 +20,6 @@
         }
       },
       {
-        "package": "CRuntime",
-        "repositoryURL": "https://github.com/wickwirew/CRuntime.git",
-        "state": {
-          "branch": null,
-          "revision": "95f911318d8c885f6fc05e971471f94adfd39405",
-          "version": "2.1.2"
-        }
-      },
-      {
         "package": "Easing",
         "repositoryURL": "https://github.com/manuelCarlos/Easing.git",
         "state": {
@@ -51,8 +42,8 @@
         "repositoryURL": "https://github.com/wickwirew/Runtime.git",
         "state": {
           "branch": null,
-          "revision": "61c9776f47d2951bdc562486ad348e5e1ca2e180",
-          "version": "2.1.1"
+          "revision": "a848b81e1a0100801f572e5273ffe4352fd54088",
+          "version": "2.2.2"
         }
       },
       {
@@ -69,7 +60,7 @@
         "repositoryURL": "https://github.com/UnGast/swift-gl-utils.git",
         "state": {
           "branch": "master",
-          "revision": "3b082d18017aa7513e220f1e4912056fa60ede60",
+          "revision": "b04851b2c252c72c5bf50a69dde5514c9f386897",
           "version": null
         }
       },
@@ -87,7 +78,7 @@
         "repositoryURL": "https://github.com/UnGast/swift-opengl.git",
         "state": {
           "branch": "master",
-          "revision": "cd9bd03260324887e5e0251f91b32599c2b5fc72",
+          "revision": "229ef7cdbfe1948948171e17a7d44d9c03ae4b65",
           "version": null
         }
       },
