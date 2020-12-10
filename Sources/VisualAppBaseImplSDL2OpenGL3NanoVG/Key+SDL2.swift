@@ -3,8 +3,8 @@ import WidgetGUI
 import VisualAppBase
 
 #if os(macOS)
-fileprivate func asSDLKeycode(_ key: SDL_Keycode) -> SDL_Keycode {
-    key
+fileprivate func asSDLKeycode(_ key: SDL_KeyCode) -> SDL_Keycode {
+    SDL_Keycode(key)
 }
 
 #elseif os(Linux)
