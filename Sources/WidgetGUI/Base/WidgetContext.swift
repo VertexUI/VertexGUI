@@ -23,6 +23,11 @@ public class WidgetContext {
     public var applicationTime: Double {
         _getApplicationTime()
     }
+
+    private let getRealFps: () -> Double
+    public var realFps: Double {
+        getRealFps()
+    }
     
     public let inspectionBus = WidgetBus<WidgetInspectionMessage>()
 
@@ -32,11 +37,13 @@ public class WidgetContext {
         window: Window,
         getTextBoundsSize: @escaping (_ text: String, _ fontConfig: FontConfig, _ maxWidth: Double?) -> DSize2,
         getApplicationTime: @escaping () -> Double,
+        getRealFps: @escaping () -> Double,
         createWindow: @escaping (_ guiRootBuilder: @autoclosure () -> Root, _ options: Window.Options) -> Window,
         requestCursor: @escaping (_ cursor: Cursor) -> () -> Void) {
             self.window = window
             self._getTextBoundsSize = getTextBoundsSize
             self._getApplicationTime = getApplicationTime
+            self.getRealFps = getRealFps
             self._createWindow = createWindow
             self._requestCursor = requestCursor
     }

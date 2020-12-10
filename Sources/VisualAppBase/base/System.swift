@@ -6,7 +6,9 @@ open class System {
     public var onTick = EventHandlerManager<Tick>()
     public var onFrame = EventHandlerManager<Double>()
 
-    public var averageFps = 0 // average FPS over a certain time, TODO: which time?
+    open var realFps: Double {
+        fatalError("realFps not implemented")
+    }
 
     open var currentTime: Double {
         fatalError("currentTime not implemented")

@@ -11,10 +11,13 @@ open class SDL2OpenGL3NanoVGSystem: System {
 
   public static var isRunning = true
   public var targetFps = 60
-  public var currentFps = 0
-  public static let fpsBufferCount = 100
-  public var fpsBuffer = [Int](repeating: 0, count: SDL2OpenGL3NanoVGSystem.fpsBufferCount)  // history of fpsBufferCount fps values
-  public var fpsBufferIndex = 0
+  private var _realFps: Double = 0
+  override public var realFps: Double {
+    _realFps
+  }
+  private static let fpsBufferCount = 30 
+  private var fpsBuffer = [Double](repeating: 0, count: SDL2OpenGL3NanoVGSystem.fpsBufferCount)  // history of fpsBufferCount fps values
+  private var fpsBufferIndex = 0
 
   var lastFrameTime = SDL_GetTicks()
   var totalTime: UInt32 = 0  // in ms
@@ -245,14 +248,15 @@ open class SDL2OpenGL3NanoVGSystem: System {
         do {
           let frameStartTime = SDL_GetTicks()
           let deltaTime = frameStartTime - self.lastFrameTime
+          self.totalTime += deltaTime
           self.lastFrameTime = frameStartTime
-          self.currentFps = deltaTime > 0 ? Int(1000 / deltaTime) : 0
+ 
+          let singleFrameFps = deltaTime > 0 ? 1000 / Double(deltaTime) : 0
           self.fpsBufferIndex += 1
           self.fpsBufferIndex = self.fpsBufferIndex % SDL2OpenGL3NanoVGSystem.fpsBufferCount
-          self.fpsBuffer[self.fpsBufferIndex] = self.currentFps
+          self.fpsBuffer[self.fpsBufferIndex] = singleFrameFps 
 
-          self.calcAverageFps()
-          self.totalTime += deltaTime
+          self.calcRealFps()
 
           let eventProcessingDuration = max(10, (1000 / self.targetFps))
           try self.processEvents(timeout: eventProcessingDuration)
@@ -267,7 +271,6 @@ open class SDL2OpenGL3NanoVGSystem: System {
           }
 
           let frameDuration = Int(SDL_GetTicks() - frameStartTime)
-
           try! mainLoop()
         } catch {
           print("Error in main loop", error)
@@ -276,11 +279,11 @@ open class SDL2OpenGL3NanoVGSystem: System {
     }
   }
 
-  private func calcAverageFps() {
-    averageFps =
-      fpsBuffer.reduce(0) {
+  private func calcRealFps() {
+    _realFps =
+      fpsBuffer.reduce(0.0) {
         $0 + $1
-      } / SDL2OpenGL3NanoVGSystem.fpsBufferCount
+      } / Double(SDL2OpenGL3NanoVGSystem.fpsBufferCount)
   }
 
   override open func exit() {
