@@ -1,0 +1,32 @@
+name: Swift
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build-macos:
+
+    runs-on: macos-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build
+      run: swift build -v
+    - name: Run tests
+      run: swift test -v
+  
+  build-ubuntu:
+    
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Setup Swift Action
+      uses: tgymnich/setup-swift@v1.0.4
+    - uses: actions/checkout@v2
+    - name: Build
+      run: swift build -v
+    - name: Run tests
+      run: swift test -v
