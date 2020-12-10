@@ -214,6 +214,8 @@ extension OptimizingRenderObjectTreeRenderer {
         public func processBusMessage(_ message: RenderObject.UpwardMessage) {
             print("RENDER GROUP RECEIVED BUS message!", message, "from", message.sender)
             switch message.content {
+            case .invalidateCache:
+                fatalError("unhandled: .invalidateCache")
             case .childrenUpdated:
                 cache = nil
                 onMessage.invokeHandlers(.RerenderNeeded)

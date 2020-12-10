@@ -35,6 +35,7 @@ open class WidgetsApp {
                       window: window,
                       getTextBoundsSize: { [unowned self] in windowContexts[windowId]!.renderer.getTextBoundsSize($0, fontConfig: $1, maxWidth: $2) },
                       getApplicationTime: { [unowned self] in baseApp.system.currentTime },
+                      getRealFps: { [unowned self] in baseApp.system.realFps },
                       createWindow: { [unowned self] in createWindow(guiRoot: $0(), options: $1, immediate: true) },
                       requestCursor: { [unowned self] in
                           baseApp.system.requestCursor($0)

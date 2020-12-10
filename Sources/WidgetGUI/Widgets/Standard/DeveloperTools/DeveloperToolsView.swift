@@ -39,6 +39,12 @@ public class DeveloperToolsView: SingleChildWidget {
           } onClick: { _ in
             activeTab = .EventLog
           }
+
+          Flex.Item(grow: 1) {
+            Space(.zero)
+          }
+          
+          LiveText { "fps: \(self.context.realFps)" }
         }
 
         ObservingBuilder($activeTab) {

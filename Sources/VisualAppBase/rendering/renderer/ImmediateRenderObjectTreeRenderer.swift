@@ -34,6 +34,8 @@ public class ImmediateRenderObjectTreeRenderer: RenderObjectTreeRenderer {
     public func tick(_ tick: Tick) {
         for message in treeMessageBuffer {
             switch message.content {
+            case .invalidateCache:
+                rerenderNeeded = true
             case .transitionStarted:
                 //activeTransitionCount += 1
                 break

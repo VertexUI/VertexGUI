@@ -180,6 +180,14 @@ open class RenderObject: CustomDebugStringConvertible, TreeNode {
         }
     }
     
+    /**
+    Notify the responsible renderer that this object needs to be rerendered
+    by passing a message over the bus.
+    */
+    public func invalidateCache() {
+        bus.up(UpwardMessage(sender: self, content: .invalidateCache))
+    }
+
     public final func destroy() {
         for child in children {
             child.destroy()

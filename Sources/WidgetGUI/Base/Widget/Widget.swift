@@ -730,7 +730,9 @@ open class Widget: Bounded, Parent, Child {
         lifecycleBus.publish(WidgetLifecycleMessage(sender: self, content: .LayoutInvalidated))
     }
 
-    /// Returns the result of renderContent() wrapped in an IdentifiedSubTreeRenderObject
+    /**
+    Returns the rendered representation of the Widget. Updates the Widgets render state if it is invalid.
+    */
     @inlinable
     public final func render() -> RenderObject.IdentifiedSubTree {
         if renderState.invalid && mounted && !destroyed {
@@ -759,6 +761,11 @@ open class Widget: Bounded, Parent, Child {
         return renderState.content!
     }
 
+    /**
+    For internal use only. Use render() on the outside.
+    Takes the output of renderContent() and wraps it in an identifiable container.
+    Adds rendered output for debugging as well.
+    */
     @usableFromInline
     internal final func updateRenderState() {
         if !renderState.invalid {
@@ -780,25 +787,41 @@ open class Widget: Bounded, Parent, Child {
         #endif
 
         let subTree = renderState.content ?? IdentifiedSubTreeRenderObject(id, [])
+        let oldMainContent = renderState.mainContent
+        renderState.content = subTree
+        renderState.mainContent = nil
+        renderState.debuggingContent = []
 
         if visibility == .Visible, mounted && layouted && !layouting {
             subTree.removeChildren()
 
-            if let content = renderContent() {
-                subTree.appendChild(content)
+            if let newMainContent = renderContent() {
+                subTree.appendChild(newMainContent)
+
+                // if the content that was rendered by the inheriting Widget
+                // is still the same object as the old one, invalidate is cache
+                // to force a rerender
+                // TODO: there might be a better approach to this
+                if let oldMainContent = oldMainContent, oldMainContent === newMainContent {
+                    newMainContent.invalidateCache()
+                }
+                
+                renderState.mainContent = newMainContent
             }
             
             #if DEBUG
             if debugLayout {
-                subTree.appendChild(renderLayoutDebuggingInformation())
+                let layoutDebuggingRendering = renderLayoutDebuggingInformation()
+                subTree.appendChild(layoutDebuggingRendering)
+                renderState.debuggingContent.append(layoutDebuggingRendering)
             }
 
             if highlighted {
-                subTree.appendChild(
-                    RenderStyleRenderObject(fillColor: .Red) {
-                        RectangleRenderObject(globalBounds)
-                    }
-                )
+                let highlight = RenderStyleRenderObject(fillColor: .Red) {
+                    RectangleRenderObject(globalBounds)
+                }
+                subTree.appendChild(highlight)
+                renderState.debuggingContent.append(highlight)
             }
             #endif
         } else {
@@ -807,7 +830,6 @@ open class Widget: Bounded, Parent, Child {
             #endif
         }
 
-        renderState.content = subTree
         renderState.invalid = false
 
         #if DEBUG
@@ -816,7 +838,13 @@ open class Widget: Bounded, Parent, Child {
         #endif
     }
 
-    /// Invoked by render(), if Widget has children, should use child.render() to render them.
+    /**
+    Should be used by inheriting Widgets to create their rendered representation.
+    This function is called internally by the render() (which then calls updateRenderState()) function. So don't call this directly.
+    It is allowed to access the current render state, modify the current RenderObject
+    and return it again (this approach might increase performance for Widgets that often need
+    to rerender as it avoids some class instatiations and mounting in the RenderObjectTree).
+    */
     open func renderContent() -> RenderObject? {
         .Container {
             children.map { $0.render() }
@@ -837,7 +865,9 @@ open class Widget: Bounded, Parent, Child {
         }
     }
 
-    /// This should trigger a rerender of the widget in the next frame.
+    /**
+    Pass a message up to the manging root node and request a render state update in the next cycle.
+    */
     @inlinable
     public final func invalidateRenderState(deep: Bool = false) {
         if renderState.invalid {
