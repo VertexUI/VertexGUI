@@ -4,5 +4,5 @@ import VisualAppBase
 public protocol MutableProtocol: class {
   associatedtype Value
   var value: Value { get set }
-  var onChanged: EventHandlerManager<Value> { get }
+  var onChanged: EventHandlerManager<ObservableChangedEventData<Value>> { get }
 }

@@ -28,8 +28,9 @@ public class ReduxGetter<V, State>: ObservableProperty<V>, ReduxGetterMarkerProt
 
   public var compute: (_ state: State) -> Value {
     didSet {
+      // TODO: is this correct, or need to store old value in willSet and then pass it here?
+      onChanged.invokeHandlers(ObservableChangedEventData(old: _value, new: value))
       _value = nil
-      onChanged.invokeHandlers(value)
     }
   }
 
@@ -61,9 +62,10 @@ public class ReduxGetter<V, State>: ObservableProperty<V>, ReduxGetterMarkerProt
 
   private func registerDependencyHandlers() {
     dependencyChangedHandlerRemovers = dependencies.map { [unowned self] in
-      $0.onChanged {
+      $0.onAnyChanged { _ in
+        let previousValue = _value
         _value = nil
-        onChanged.invokeHandlers(value)
+        onChanged.invokeHandlers(ObservableChangedEventData(old: previousValue, new: value))
       }
     }
   }

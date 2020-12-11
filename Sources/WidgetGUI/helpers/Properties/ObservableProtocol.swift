@@ -9,9 +9,14 @@ public protocol AnyObservableProtocol: class {
 public protocol ObservableProtocol: AnyObservableProtocol {
   associatedtype Value
   var value: Value { get }
-  var onChanged: EventHandlerManager<Value> { get }
+  var onChanged: EventHandlerManager<ObservableChangedEventData<Value>> { get }
 }
 
 internal protocol AnyEquatableObservableProtocol {
   func valuesEqual(_ value1: Any?, _ value2: Any?) -> Bool
+}
+
+public struct ObservableChangedEventData<D> {
+  public var old: D?
+  public var new: D
 }

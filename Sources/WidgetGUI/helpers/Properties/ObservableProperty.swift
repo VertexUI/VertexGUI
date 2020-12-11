@@ -26,7 +26,7 @@ public class ObservableProperty<V>: ObservableProtocol {
     ObservablePropertyBinding(parent: self)
   }
 
-  public internal(set) var onChanged = EventHandlerManager<Value>()
+  public internal(set) var onChanged = EventHandlerManager<ObservableChangedEventData<Value>>()
 
   public init() {}
 
@@ -153,14 +153,14 @@ public class ObservableArrayProperty<Value>: ObservableProperty<[Value]>, Collec
 */
 
 public class AnyObservableProperty {
-  public let onChanged = EventHandlerManager<Void>()
+  public let onAnyChanged = EventHandlerManager<ObservableChangedEventData<Any>>()
   private let otherObservable: AnyObject
   private var removeOtherObservableChangedHandler: (() -> ())? = nil
  
   public init<V>(_ otherObservable: ObservableProperty<V>) {
     self.otherObservable = otherObservable
-    self.removeOtherObservableChangedHandler = otherObservable.onChanged { [unowned self] _ in
-      onChanged.invokeHandlers(Void())
+    self.removeOtherObservableChangedHandler = otherObservable.onChanged { [unowned self] in
+      onAnyChanged.invokeHandlers(ObservableChangedEventData(old: $0.old, new: $0.new))
     }
   }
 
@@ -168,7 +168,6 @@ public class AnyObservableProperty {
     if let remove = removeOtherObservableChangedHandler {
       remove()
     }
-    onChanged.removeAllHandlers()
+    onAnyChanged.removeAllHandlers()
   }
 }
-

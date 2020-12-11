@@ -3,16 +3,16 @@ import GfxMath
 
 public class RadioButton: Widget, GUIMouseEventConsumer {
   @MutableProperty
-  private var checked: Bool
+  public var checked: Bool
 
-  private var onCheckedChanged = WidgetEventHandlerManager<Bool>()
+  //private var onCheckedChanged = WidgetEventHandlerManager<Bool>()
 
   public init(_ checked: Bool = false) {
     self.checked = checked
     super.init()
-    _ = onDestroy(self._checked.onChanged { [unowned self] in
+    _ = onDestroy(self._checked.onChanged { [unowned self] _ in
       invalidateRenderState()
-      onCheckedChanged.invokeHandlers($0)
+      //onCheckedChanged.invokeHandlers($0)
     })
   }
 

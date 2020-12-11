@@ -34,13 +34,25 @@ public class TodoListItemView: SingleChildWidget {
             ObservingBuilder($editing) {
               if editing {
                 Row(spacing: 16) {
-                  TextField(item.description).onTextChanged.chain {
-                    updatedDescriptionBuffer = $0
-                  }.requestFocus().onFocusChanged.chain { focused in
-                    if !focused {
-                      editing = false
+                  {
+                    let textField = TextField(item.description)
+                    
+                    _ = onDestroy(textField.$text.onChanged {
+                      updatedDescriptionBuffer = $0.new 
+                    })
+
+                    _ = onDestroy(textField.onFocusChanged { focused in
+                      if !focused {
+                        editing = false
+                      }
+                    })
+
+                    _ = textField.onMounted.once {
+                      textField.requestFocus()
                     }
-                  }
+
+                    return textField
+                  }()
 
                   Button {
                     Text("done")

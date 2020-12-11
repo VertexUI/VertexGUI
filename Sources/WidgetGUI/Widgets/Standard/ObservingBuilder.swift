@@ -15,7 +15,7 @@ public class ObservingBuilder: SingleChildWidget {
     super.init()
 
     for observable in self.observables {
-      _ = onDestroy(observable.onChanged { [unowned self] _ in
+      _ = onDestroy(observable.onAnyChanged { [unowned self] _ in
         anyObservableChanged = true
       })
     }

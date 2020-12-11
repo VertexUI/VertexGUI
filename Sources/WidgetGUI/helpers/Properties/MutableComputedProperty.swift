@@ -53,7 +53,7 @@ public class MutableComputedProperty<V>: MutableProperty<V> {
 
   private func registerDependencyHandlers() {
     dependencyChangedHandlerRemovers = dependencies.map { [unowned self] in
-      $0.onChanged {
+      $0.onAnyChanged { _ in
         performComputation()
       }
     }
@@ -72,10 +72,10 @@ public class MutableComputedProperty<V>: MutableProperty<V> {
 
       if let equatableSelf = self as? AnyEquatableObservableProtocol {
         if !equatableSelf.valuesEqual(previousValue, _value) {
-          onChanged.invokeHandlers(value)
+          onChanged.invokeHandlers(ObservableChangedEventData(old: previousValue, new: _value as! Value))
         }
       } else {
-        onChanged.invokeHandlers(value)
+        onChanged.invokeHandlers(ObservableChangedEventData(old: previousValue, new: _value as! Value))
       }
     } else {
       _value = nil

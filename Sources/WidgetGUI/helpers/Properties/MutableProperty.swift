@@ -26,12 +26,12 @@ public class MutableProperty<V>: ObservableProtocol, MutableProtocol {
       }
       
       if invokeHandlers {
-        if let value = _value {
-          onChanged.invokeHandlers(value)
-        } else {
+        //if let value = _value {
+        onChanged.invokeHandlers(ObservableChangedEventData(old: oldValue, new: value))
+        //} else {
           // assuming that Value itself is an optional
-          onChanged.invokeHandlers(_value as! Value)
-        }
+        //  onChanged.invokeHandlers(_value as! Value)
+        //}
       }
     }
   }
@@ -61,7 +61,7 @@ public class MutableProperty<V>: ObservableProtocol, MutableProtocol {
     MutablePropertyBinding(parent: self)
   }
 
-  public internal(set) var onChanged = EventHandlerManager<Value>()
+  public internal(set) var onChanged = EventHandlerManager<ObservableChangedEventData<Value>>()
 
   public init(storedValue: Value?) {
     _value = storedValue

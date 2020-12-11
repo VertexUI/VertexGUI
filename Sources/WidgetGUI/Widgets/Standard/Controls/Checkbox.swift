@@ -3,9 +3,9 @@ import GfxMath
 
 public class Checkbox: Widget, GUIMouseEventConsumer {
   @MutableProperty
-  private var checked: Bool
+  public var checked: Bool
 
-  public let onCheckedChanged = WidgetEventHandlerManager<Bool>()
+  //public let onCheckedChanged = WidgetEventHandlerManager<Bool>()
 
   private var inset: DVec2 {
     DVec2(size * 0.1)
@@ -17,31 +17,31 @@ public class Checkbox: Widget, GUIMouseEventConsumer {
     checked = observableChecked.value
     super.init()
     _ = onDestroy(observableChecked.onChanged { [unowned self] in
-      if $0 != checked {
-        checked = $0
+      if $0.new != checked {
+        checked = $0.new
       }
     })
-    _ = onDestroy(self._checked.onChanged { [unowned self] in
+    _ = onDestroy(self._checked.onChanged { [unowned self] _ in
       invalidateRenderState()
-      onCheckedChanged.invokeHandlers($0)
+      //onCheckedChanged.invokeHandlers($0)
     })
   }
 
   public init(bind mutableChecked: MutableProperty<Bool>) {
     _checked = mutableChecked
     super.init()
-    _ = onDestroy(self._checked.onChanged { [unowned self] in
+    _ = onDestroy(self._checked.onChanged { [unowned self] _ in
       invalidateRenderState()
-      onCheckedChanged.invokeHandlers($0)
+      //onCheckedChanged.invokeHandlers($0)
     })
   }
 
   public init(checked: Bool = false) {
     self.checked = checked
     super.init()
-    _ = onDestroy(self._checked.onChanged { [unowned self] in
+    _ = onDestroy(self._checked.onChanged { [unowned self] _ in
       invalidateRenderState()
-      onCheckedChanged.invokeHandlers($0)
+      //onCheckedChanged.invokeHandlers($0)
     })
   }
 

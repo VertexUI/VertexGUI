@@ -19,27 +19,27 @@ public final class TextField: SingleChildWidget, ConfigurableWidget {
   @Reference
   private var textInput: TextInput
 
-  public internal(set) var onTextChanged = WidgetEventHandlerManager<String>()
+  //public internal(set) var onTextChanged = WidgetEventHandlerManager<Observabl>()
 
   public init(
     _ initialText: String = "", onTextChanged textChangedHandler: ((String) -> Void)? = nil
   ) {
     self.text = initialText
     super.init()
-    if let handler = textChangedHandler {
+    /*if let handler = textChangedHandler {
       _ = onDestroy(onTextChanged(handler))
-    }
-    _ = onDestroy(_text.onChanged { [unowned self] in
+    }*/
+    /*_ = onDestroy(_text.onChanged { [unowned self] in
       onTextChanged.invokeHandlers($0)
-    })
+    })*/
   }
 
   public init(bind mutableText: MutableProperty<String>) {
     self._text = mutableText
     super.init()
-    _ = onDestroy(_text.onChanged { [unowned self] in
+    /*_ = onDestroy(_text.onChanged { [unowned self] in
       onTextChanged.invokeHandlers($0)
-    })
+    })*/
   }
 
   override public func buildChild() -> Widget {
