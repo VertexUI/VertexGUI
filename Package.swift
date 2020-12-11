@@ -46,19 +46,28 @@ let package = Package(
         ]),
 
         .target(
-            name: "VisualAppBase", dependencies: ["CSDL2", "GfxMath", "Swim"]
+            name: "VisualAppBase", dependencies: ["CSDL2", "GfxMath", "Swim", .product(name: "Path", package: "Path.swift")]
+        ),
+
+        .target(
+            name: "ReactiveProperties",
+            dependencies: ["Events"]
+        ),
+
+        .target(
+            name: "Events"
         ),
 
         .target(
                 // TODO: maybe rename to SwiftApplicationFramework or so...? or split to SwiftApplicationFramework and SwiftUIFramework
             name: "WidgetGUI",
-            dependencies: ["VisualAppBase", "GfxMath", "Runtime", "ColorizeSwift", "Easing"],
+            dependencies: ["VisualAppBase", "Events", "ReactiveProperties", "GfxMath", "Runtime", "ColorizeSwift", "Easing"],
             resources: [.process("Resources")]
         ),
 
         .target(
             name: "VisualAppBaseImplSDL2OpenGL3NanoVG",
-            dependencies: ["WidgetGUI", "CSDL2", "GL", "GLUtils", "Swim", .product(name: "CnanovgGL3", package: "Cnanovg"), "GfxMath", .product(name: "Path", package: "Path.swift")],
+            dependencies: ["WidgetGUI", "CSDL2", "GL", "Events", "GLUtils", "Swim", .product(name: "CnanovgGL3", package: "Cnanovg"), "GfxMath", .product(name: "Path", package: "Path.swift")],
             resources: [.process("Resources")]),
        
         /*.target(
@@ -72,7 +81,7 @@ let package = Package(
        
         .target(
             name: "TaskOrganizerDemo",
-            dependencies: ["WidgetGUI", "VisualAppBase", "ColorizeSwift", "VisualAppBaseImplSDL2OpenGL3NanoVG", "Swim"],
+            dependencies: ["SwiftGUI", "ColorizeSwift", "Swim"],
             resources: [.copy("Resources")]),
 
         .target(
@@ -82,7 +91,7 @@ let package = Package(
 
         .target(
             name: "SwiftGUI",
-            dependencies: ["VisualAppBase", "VisualAppBaseImplSDL2OpenGL3NanoVG", "WidgetGUI", "GfxMath"],
+            dependencies: ["VisualAppBase", "VisualAppBaseImplSDL2OpenGL3NanoVG", "WidgetGUI", "Events", "ReactiveProperties", "GfxMath"],
             resources: [.process("Resources")]
         ),
 

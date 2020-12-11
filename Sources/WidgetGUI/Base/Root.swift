@@ -2,6 +2,7 @@ import Foundation
 import GfxMath
 import Dispatch
 import VisualAppBase
+import Events
 
 open class Root: Parent {
   open var bounds: DRect = DRect(min: DPoint2(0, 0), size: DSize2(0, 0)) {
@@ -120,6 +121,7 @@ open class Root: Parent {
     }
     reboxConfigWidgets.clear()
     
+    print("relayout widgets count", relayoutWidgets.count)
     for widget in relayoutWidgets {
       // the widget should only be relayouted if it hasn't been layouted before
       // if it hasn't been layouted before it will be layouted during
@@ -131,6 +133,7 @@ open class Root: Parent {
     relayoutWidgets.clear()
 
     // TODO: is it good to put this here or better in render()?
+    print("rerender widgets count", rerenderWidgets.count)
     for widget in rerenderWidgets {
       if !widget.destroyed {
         widget.updateRenderState()
@@ -140,7 +143,7 @@ open class Root: Parent {
 
     removeOnAdd()
     widgetLifecycleMessages.clear()
-    //print("ONTICK TOOK", Date.timeIntervalSinceReferenceDate - startTime, "seconds")
+    print("ONTICK TOOK", Date.timeIntervalSinceReferenceDate - startTime, "seconds")
   }
 
   @inline(__always)
@@ -317,10 +320,31 @@ open class Root: Parent {
 }
 
 extension Root {
-  class WidgetBuffer: Sequence {
+  class WidgetBuffer: Collection {
+    typealias Index = Int
+    typealias Element = Widget
+
     var widgets: [Widget] = []
 
     init() {}
+
+    var count: Int {
+      widgets.count
+    }
+ 
+    var startIndex: Int = 0
+
+    var endIndex: Int {
+      startIndex + count
+    }
+
+    subscript(position: Int) -> Widget {
+      widgets[position]
+    }
+
+    func index(after i: Int) -> Int {
+      i + 1
+    }
     
     func makeIterator() -> WidgetBufferIterator {
       WidgetBufferIterator(self)

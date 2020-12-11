@@ -1,4 +1,5 @@
 import VisualAppBase
+import Events
 
 internal protocol AnyWidgetEventHandlerManager {
   var widget: Widget? { get set }

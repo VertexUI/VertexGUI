@@ -1,4 +1,5 @@
 import GfxMath
+import Events
 
 open class VideoStream: EventfulObject {
   open var size: ISize2 {

@@ -1,4 +1,5 @@
 import VisualAppBase
+import Events
 
 public protocol Child: class {
     var parent: Parent? { get set }

@@ -1,3 +1,5 @@
+import ReactiveProperties
+
 public protocol ConfigurableWidget where Self: Widget, Config.PartialConfig == PartialConfig {
     associatedtype Config: ConfigProtocol
     associatedtype PartialConfig: PartialConfigProtocol

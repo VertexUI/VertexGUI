@@ -2,6 +2,8 @@ import Foundation
 import GfxMath
 import VisualAppBase
 import ColorizeSwift
+import ReactiveProperties
+import Events
 
 open class Widget: Bounded, Parent, Child {
     public struct ReplacementContext {
@@ -789,31 +791,27 @@ open class Widget: Bounded, Parent, Child {
         let subTree = renderState.content ?? IdentifiedSubTreeRenderObject(id, [])
         let oldMainContent = renderState.mainContent
         renderState.content = subTree
-        renderState.mainContent = nil
-        renderState.debuggingContent = []
 
         if visibility == .Visible, mounted && layouted && !layouting {
-            subTree.removeChildren()
 
-            if let newMainContent = renderContent() {
-                subTree.appendChild(newMainContent)
-
-                // if the content that was rendered by the inheriting Widget
-                // is still the same object as the old one, invalidate is cache
-                // to force a rerender
-                // TODO: there might be a better approach to this
-                if let oldMainContent = oldMainContent, oldMainContent === newMainContent {
+            let newMainContent = renderContent()
+            // if the content that was rendered by the inheriting Widget
+            // is still the same object as the old one, invalidate is cache
+            // to force a rerender
+            // TODO: there might be a better approach to this
+            if let newMainContent = newMainContent,
+               let oldMainContent = oldMainContent, oldMainContent === newMainContent {
                     newMainContent.invalidateCache()
-                }
-                
-                renderState.mainContent = newMainContent
             }
+            renderState.mainContent = newMainContent
             
+            var newDebuggingContent = [RenderObject]()
+
             #if DEBUG
             if debugLayout {
                 let layoutDebuggingRendering = renderLayoutDebuggingInformation()
                 subTree.appendChild(layoutDebuggingRendering)
-                renderState.debuggingContent.append(layoutDebuggingRendering)
+                newDebuggingContent.append(layoutDebuggingRendering)
             }
 
             if highlighted {
@@ -821,10 +819,19 @@ open class Widget: Bounded, Parent, Child {
                     RectangleRenderObject(globalBounds)
                 }
                 subTree.appendChild(highlight)
-                renderState.debuggingContent.append(highlight)
+                newDebuggingContent.append(highlight)
             }
             #endif
+
+            let duration = Date.timeIntervalSinceReferenceDate - startTime
+            if duration > 1 {
+                print("THIS PART TOOK", duration, self, newMainContent)
+            }
+
+            renderState.debuggingContent = newDebuggingContent
+            subTree.replaceChildren(([renderState.mainContent] + renderState.debuggingContent).compactMap { $0 })
         } else {
+            subTree.removeChildren()
             #if DEBUG
             Logger.warn("Called updateRenderState on Widget that cannot be rendered in it's current state.".with(fg: .White, bg: .Red), context: .WidgetRendering)
             #endif

@@ -3,6 +3,7 @@ import GfxMath
 import Foundation
 import Dispatch
 import ColorizeSwift
+import Events
 
 public class ImageView: Widget {
     private var image: Image

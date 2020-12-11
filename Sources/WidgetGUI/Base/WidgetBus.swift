@@ -1,6 +1,7 @@
 import Foundation
 import VisualAppBase
 import GfxMath
+import Events
 
 public class WidgetBus<Message> {
   public private(set) var onMessage = EventHandlerManager<Message>()

@@ -1,6 +1,7 @@
 import WidgetGUI
 import GfxMath
 import VisualAppBase
+import ReactiveProperties
 
 public class TaskCompletionButton: Widget, GUIMouseEventConsumer {
     private var color: Color

@@ -1,4 +1,5 @@
 import VisualAppBase
+import ReactiveProperties
 
 internal protocol ReduxGetterMarkerProtocol {
   var dependencies: [AnyObservableProperty] { get set }

@@ -1,3 +1,5 @@
+import ReactiveProperties
+
 // TODO: find a better name, maybe; sounds too similar to MouseArea / Why need both even?
 public final class MouseInteraction: SingleChildWidget, GUIMouseEventConsumer, ConfigurableWidget {
   @MutableProperty

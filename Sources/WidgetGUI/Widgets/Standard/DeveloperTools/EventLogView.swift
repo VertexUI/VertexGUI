@@ -1,5 +1,7 @@
 import GfxMath
 import VisualAppBase
+import ReactiveProperties
+import Events
 
 public class EventLogView: SingleChildWidget {
   private let inspectedRoot: Root

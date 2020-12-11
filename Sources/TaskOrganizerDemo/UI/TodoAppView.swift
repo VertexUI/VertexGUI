@@ -1,6 +1,4 @@
-import GfxMath
-import VisualAppBase
-import WidgetGUI
+import SwiftGUI
 
 public class TodoAppView: SingleChildWidget {
   public enum Mode {
@@ -10,9 +8,9 @@ public class TodoAppView: SingleChildWidget {
   @Inject
   private var store: TodoStore
 
-  private var todoLists: [TodoList] {
+  /*private var todoLists: [TodoList] {
     store.state.lists
-  }
+  }*/
 
   @Reference
   private var activeViewTopSpace: Space
@@ -27,20 +25,16 @@ public class TodoAppView: SingleChildWidget {
 
   override public func buildChild() -> Widget {
     ThemeProvider(appTheme) { [unowned self] in
-      DependencyProvider(provide: [
-        Dependency(todoLists)
-      ]) {
-        Background(fill: appTheme.backgroundColor) { [unowned self] in
-          Column(spacing: 32) {
-            Column.Item(grow: 1, crossAlignment: .Stretch) {
-              Row {
-                Row.Item(grow: 0, crossAlignment: .Stretch) {
-                  buildMenu()
-                }
+      Background(fill: appTheme.backgroundColor) { [unowned self] in
+        Column(spacing: 32) {
+          Column.Item(grow: 1, crossAlignment: .Stretch) {
+            Row {
+              Row.Item(grow: 0, crossAlignment: .Stretch) {
+                buildMenu()
+              }
 
-                Row.Item(grow: 1, crossAlignment: .Stretch) {
-                  buildActiveView()
-                }
+              Row.Item(grow: 1, crossAlignment: .Stretch) {
+                buildActiveView()
               }
             }
           }
@@ -67,31 +61,8 @@ public class TodoAppView: SingleChildWidget {
             }
 
             Column.Item(crossAlignment: .Stretch) {
-              ObservingBuilder(store.$state) {
-                Column {
-                  // TODO: implement Flex shrink
-                  Column.Item(grow: 0, crossAlignment: .Stretch) {
-                    ScrollArea(scrollX: .Never) {
-                      Column(spacing: 24) {
-                        Border(bottom: 1, color: appTheme.primaryColor) {
-                          Padding(top: 16, right: 32, bottom: 16, left: 32) {
-                            Text("Lists", fontSize: 24, fontWeight: .Bold)
-                          }
-                        }
-
-                        Column.Item(crossAlignment: .Stretch) {
-                          Column {
-                            todoLists.map { list in
-                              Column.Item(crossAlignment: .Stretch) {
-                                buildMenuListItem(for: list)
-                              }
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
+              List(store.$state.compute { $0.lists }) {
+                buildMenuListItem(for: $0)
               }
             }
           }
@@ -105,13 +76,21 @@ public class TodoAppView: SingleChildWidget {
       Padding(all: 32) {
         Row(spacing: 0) {
           Row.Item(grow: 1, margins: Margins(right: 24)) {
-            TextField(store.state.searchResult?.query ?? "").onTextChanged.chain {
-              store.dispatch(.Search($0))
-            }.onFocusChanged.chain {
-              if $0 {
-                mode = .Search
-              }
-            }
+            {
+              let textField = TextField(store.state.searchResult?.query ?? "")
+
+              _ = onDestroy(textField.$text.onChanged {
+                store.dispatch(.Search($0.new))
+              })
+              
+              _ = onDestroy(textField.onFocusChanged {
+                if $0 {
+                  mode = .Search
+                }
+              })
+
+              return textField
+            }()
           }
 
           Row.Item(crossAlignment: .Center) {

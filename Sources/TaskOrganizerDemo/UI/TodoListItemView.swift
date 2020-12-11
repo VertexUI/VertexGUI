@@ -1,4 +1,4 @@
-import WidgetGUI
+import SwiftGUI
 
 public class TodoListItemView: SingleChildWidget {
   @Inject

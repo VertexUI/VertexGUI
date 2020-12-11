@@ -1,4 +1,5 @@
 import VisualAppBase
+import ReactiveProperties
 
 public class ConfigProvider: SingleChildWidget {
     @ObservableProperty public var configs: [PartialConfigMarkerProtocol]

@@ -1,5 +1,6 @@
 import GfxMath
 import VisualAppBase
+import ReactiveProperties
 
 public final class TextField: SingleChildWidget, ConfigurableWidget {
   public static let defaultConfig = Config(

@@ -1,10 +1,7 @@
-//
-
-//
-
 import GfxMath
 import Foundation
 import VisualAppBase
+import ReactiveProperties
 
 public final class Text: Widget, ConfigurableWidget {
   @ObservableProperty

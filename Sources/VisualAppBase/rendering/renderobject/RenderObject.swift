@@ -2,6 +2,7 @@ import Foundation
 import Dispatch
 import VisualAppBase
 import GfxMath
+import Events
 
 // TODO: implement the RenderObjects in a way similar to SVG --> like defining an SVG graphic
 // TODO: might split into SubTreeRenderObject and LeafRenderObject!!!
@@ -90,16 +91,6 @@ open class RenderObject: CustomDebugStringConvertible, TreeNode {
         setupOnTick()
     }
 
-    deinit {
-        if !destroyed {
-            fatalError("deinit executed for RenderObject that has not yet been destroyed \(self)")
-        }
-     
-        if let remove = removeOnTickMessageHandler {
-            remove()
-        }
-    }
-
     public func mount(parent: RenderObject, treePath: TreePath, bus: Bus, context: RenderObjectContext?) {
         self.parent = parent
         self.treePath = treePath
@@ -148,6 +139,12 @@ open class RenderObject: CustomDebugStringConvertible, TreeNode {
         )
     }
 
+    public func replaceChildren(_ newChildren: [RenderObject]) {
+        children = newChildren
+        mountChildren()
+        bus.up(UpwardMessage(sender: self, content: .childrenUpdated))
+    }
+
     internal func nextTick(_ execute: @escaping () -> ()) {
         if removeNextTickListener == nil {
             removeNextTickListener = bus.onDownwardMessage { [weak self] in
@@ -179,6 +176,19 @@ open class RenderObject: CustomDebugStringConvertible, TreeNode {
             }
         }
     }
+
+    /**
+    - Returns: Self if object contains point as well as all children (deep) that contain it.
+    // TODO: might rename to raycast() --> RaycastResult
+    */
+    public func objectsAt(point: DPoint2) -> [ObjectAtPointResult] {
+        fatalError("objectsAt(point:) not implemented for RenderObject \(self)")
+    }
+
+    public struct ObjectAtPointResult {
+        public var object: RenderObject
+        public var transformedPoint: DPoint2
+    }
     
     /**
     Notify the responsible renderer that this object needs to be rerendered
@@ -187,6 +197,11 @@ open class RenderObject: CustomDebugStringConvertible, TreeNode {
     public func invalidateCache() {
         bus.up(UpwardMessage(sender: self, content: .invalidateCache))
     }
+
+    /*public final func unmount() {
+        mounted = false
+        parent.removeChild(self)
+    }*/
 
     public final func destroy() {
         for child in children {
@@ -212,17 +227,15 @@ open class RenderObject: CustomDebugStringConvertible, TreeNode {
     open func destroySelf() {
     }
 
-    /**
-    - Returns: Self if object contains point as well as all children (deep) that contain it.
-    // TODO: might rename to raycast() --> RaycastResult
-    */
-    public func objectsAt(point: DPoint2) -> [ObjectAtPointResult] {
-        fatalError("objectsAt(point:) not implemented for RenderObject \(self)")
-    }
-
-    public struct ObjectAtPointResult {
-        public var object: RenderObject
-        public var transformedPoint: DPoint2
+    deinit {
+        if !destroyed {
+            destroy()
+            //fatalError("deinit executed for RenderObject that has not yet been destroyed \(self)")
+        }
+     
+        if let remove = removeOnTickMessageHandler {
+            remove()
+        }
     }
 }
 

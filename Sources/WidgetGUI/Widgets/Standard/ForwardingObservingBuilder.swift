@@ -1,3 +1,5 @@
+import ReactiveProperties
+
 public class ForwardingObservingBuilder<Value>: SingleChildWidget {
     private var observable: ObservableProperty<Value>
 

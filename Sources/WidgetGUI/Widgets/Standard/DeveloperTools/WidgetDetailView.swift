@@ -1,3 +1,5 @@
+import ReactiveProperties
+
 public class WidgetDetailView: SingleChildWidget {
   private let inspectedWidget: Widget
 

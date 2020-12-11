@@ -1,3 +1,5 @@
+import Events
+
 extension RenderObject {
     public class Bus {
         public private(set) var onUpwardMessage = EventHandlerManager<UpwardMessage>()

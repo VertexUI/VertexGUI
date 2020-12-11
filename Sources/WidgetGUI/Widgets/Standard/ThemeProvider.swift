@@ -1,5 +1,6 @@
 import VisualAppBase
 import GfxMath
+import ReactiveProperties
 
 public class ThemeProvider: ConfigProvider {
     public init(_ theme: Theme, @WidgetBuilder child childBuilder: @escaping () -> Widget) {

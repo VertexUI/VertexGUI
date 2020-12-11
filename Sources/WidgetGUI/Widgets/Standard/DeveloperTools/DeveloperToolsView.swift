@@ -1,5 +1,6 @@
 import Foundation
 import VisualAppBase
+import ReactiveProperties
 
 public class DeveloperToolsView: SingleChildWidget {
   private let inspectedRoot: Root

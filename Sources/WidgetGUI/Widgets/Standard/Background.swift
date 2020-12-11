@@ -1,6 +1,7 @@
 import Foundation
 import GfxMath
 import VisualAppBase
+import ReactiveProperties
 
 public final class Background: SingleChildWidget, ConfigurableWidget {
     public static let defaultConfig = Config(fill: .Transparent, shape: .Rectangle)    

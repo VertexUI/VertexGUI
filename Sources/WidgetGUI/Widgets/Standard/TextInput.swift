@@ -1,6 +1,7 @@
 import GfxMath
 import Foundation
 import VisualAppBase
+import ReactiveProperties
 
 public final class TextInput: SingleChildWidget, StatefulWidget, ConfigurableWidget,
   GUIMouseEventConsumer, GUIKeyEventConsumer, GUITextEventConsumer

@@ -1,5 +1,6 @@
 import GfxMath
 import VisualAppBase
+import ReactiveProperties
 
 public class ColorPicker: SingleChildWidget {
   @MutableProperty

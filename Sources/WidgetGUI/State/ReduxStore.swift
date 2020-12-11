@@ -1,3 +1,5 @@
+import ReactiveProperties
+
 open class ReduxStore<S, G: ReduxGetters<S>, M, A> {
   public typealias State = S
   public typealias Getters = G

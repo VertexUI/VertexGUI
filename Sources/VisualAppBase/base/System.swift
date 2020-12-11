@@ -1,3 +1,5 @@
+import Events
+
 open class System {
     public var keyStates = KeyStatesContainer()
 

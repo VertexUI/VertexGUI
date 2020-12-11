@@ -1,4 +1,5 @@
 import VisualAppBase
+import Events
 
 public class MouseArea: SingleChildWidget, GUIMouseEventConsumer {
     public typealias GUIMouseEventHandlerTuple = (

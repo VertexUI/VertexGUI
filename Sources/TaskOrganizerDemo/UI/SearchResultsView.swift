@@ -1,5 +1,4 @@
-import VisualAppBase
-import WidgetGUI
+import SwiftGUI
 
 public class SearchResultsView: SingleChildWidget {
   @Inject

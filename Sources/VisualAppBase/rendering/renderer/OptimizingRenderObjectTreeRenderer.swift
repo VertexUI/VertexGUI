@@ -2,6 +2,7 @@ import VisualAppBase
 import GfxMath
 import Path
 import Foundation
+import Events
 
 // TODO: maybe give rendering an extra package outside of VisualAppBase
 public class OptimizingRenderObjectTreeRenderer: RenderObjectTreeRenderer {

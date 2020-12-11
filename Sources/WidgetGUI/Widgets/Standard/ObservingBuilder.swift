@@ -1,4 +1,5 @@
 import GfxMath
+import ReactiveProperties
 
 public class ObservingBuilder: SingleChildWidget {
   private var observables: [AnyObservableProperty]
