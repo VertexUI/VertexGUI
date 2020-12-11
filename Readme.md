@@ -1,6 +1,7 @@
 # SwiftGUI
 
-![build](https://github.com/ungast/swift-gui/workflows/build/badge.svg)
+![build-ubuntu](https://github.com/ungast/swift-gui/workflows/build-ubuntu/badge.svg)
+![build-macos](https://github.com/ungast/swift-gui/workflows/build-macos/badge.svg)
 
 SwiftGUI is a Swift framework for writing cross-platform GUI applications.
 
