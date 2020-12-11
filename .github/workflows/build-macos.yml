@@ -1,0 +1,19 @@
+name: build-macos
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build-macos:
+
+    runs-on: macos-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: install_dependencies
+      run: brew install sdl2
+    - name: Build
+      run: swift build -v
