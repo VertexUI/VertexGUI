@@ -1,4 +1,5 @@
 import XCTest
+import ReactiveProperties
 @testable import WidgetGUI
 
 final class PropertyTests: XCTestCase {
@@ -90,7 +91,6 @@ final class PropertyTests: XCTestCase {
   func testMutablePropertyComputedObservable() {
     let mutable = MutableProperty("InitialValue")
     var computed: ComputedProperty<String>? = mutable.compute { $0.lowercased() }
-    print(computed!.valuesEqual)
     let observable = computed!.observable
     computed = nil
 

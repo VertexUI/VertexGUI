@@ -102,7 +102,7 @@ let package = Package(
             name: "TestSDLSwift", dependencies: ["CTestSDL", "CSDL2", "GL", .product(name: "CnanovgGL3", package: "Cnanovg"), "VisualAppBaseImplSDL2OpenGL3NanoVG"], linkerSettings: [LinkerSetting.linkedLibrary("SDL2")]
         ),
 
-        .testTarget(name: "VisualAppBaseTests", dependencies: ["VisualAppBase"]),
+        .testTarget(name: "VisualAppBaseTests", dependencies: ["VisualAppBase", "Events"]),
         
         .testTarget(name: "WidgetGUITests", dependencies: ["WidgetGUI"])
     ]

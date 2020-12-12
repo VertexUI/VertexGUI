@@ -1,3 +1,4 @@
+import Events
 @testable import VisualAppBase
 import XCTest
 
@@ -7,7 +8,7 @@ final class EventHandlerManagerTests: XCTestCase {
     let handlerCount = 5
     var previousCall = -1
     for i in 0..<handlerCount {
-      manager.addHandler {
+      manager.addHandler {
         XCTAssertEqual(previousCall, i - 1)
         previousCall = i
       }

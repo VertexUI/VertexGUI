@@ -1,3 +1,4 @@
+import Events
 @testable import VisualAppBase
 import XCTest
 

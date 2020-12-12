@@ -1,5 +1,6 @@
 import GfxMath
 import Foundation
+import Events
 @testable import VisualAppBase
 import XCTest
 
@@ -36,7 +37,7 @@ final class RenderObjectTreeTests: XCTestCase {
 
         XCTAssertEqual(messageBuffer[0].sender.individualHash, tree.children[0].individualHash)
 
-        XCTAssertEqual(messageBuffer[0].content, RenderObject.UpwardMessageContent.ChildrenUpdated)
+        XCTAssertEqual(messageBuffer[0].content, RenderObject.UpwardMessageContent.childrenUpdated)
     }
 
     /**
@@ -130,11 +131,11 @@ final class RenderObjectTreeTests: XCTestCase {
             messageBuffer.append($0)
 
             switch $0.content {
-            case .TransitionStarted:
+            case .transitionStarted:
 
                 transitionCount += 1
 
-            case .TransitionEnded:
+            case .transitionEnded:
 
                 transitionCount -= 1
 
@@ -147,11 +148,11 @@ final class RenderObjectTreeTests: XCTestCase {
         bus.down(.Tick(tick: Tick(deltaTime: 5, totalTime: 10.5)))
 
         XCTAssertTrue(messageBuffer.contains {
-            $0.content == RenderObject.UpwardMessageContent.TransitionStarted
+            $0.content == RenderObject.UpwardMessageContent.transitionStarted
         })
 
         XCTAssertTrue(!messageBuffer.contains {
-            $0.content == RenderObject.UpwardMessageContent.TransitionEnded
+            $0.content == RenderObject.UpwardMessageContent.transitionEnded
         })
 
         XCTAssertEqual(transitionCount, 1)
@@ -161,7 +162,7 @@ final class RenderObjectTreeTests: XCTestCase {
         bus.down(.Tick(tick: Tick(deltaTime: 1, totalTime: 11.2)))
 
         XCTAssertTrue(messageBuffer.contains {
-            $0.content == RenderObject.UpwardMessageContent.TransitionEnded
+            $0.content == RenderObject.UpwardMessageContent.transitionEnded
         })
 
         XCTAssertEqual(transitionCount, 0)
@@ -188,11 +189,11 @@ final class RenderObjectTreeTests: XCTestCase {
 
         _ = testedNode!.bus.onUpwardMessage {
             switch $0.content {
-            case .TransitionStarted:
+            case .transitionStarted:
 
                 transitionCount += 1
 
-            case .TransitionEnded:
+            case .transitionEnded:
 
                 transitionCount -= 1
 

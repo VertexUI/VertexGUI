@@ -1,4 +1,4 @@
-public protocol EventfulObject: AnyObject {
+public protocol EventfulObject: class {
   func removeAllEventHandlers()
 }
 
