@@ -9,7 +9,7 @@ public protocol TodoListProtocol {
     var items: [TodoItem] { get }
 }
 
-public struct TodoList: TodoListProtocol {
+public struct TodoList: TodoListProtocol, Equatable {
     public var id: Int
     public var name: String
     public var color: Color

@@ -74,7 +74,7 @@ extension WidgetBus {
   }
 }
 
-public struct WidgetInspectionMessage {
+public struct WidgetInspectionMessage: Equatable {
   public let sender: Widget
   public let content: MessageContent
   public let timestamp: Double
@@ -86,6 +86,10 @@ public struct WidgetInspectionMessage {
       self.sender = sender
       self.content = content
       self.timestamp = timestamp
+  }
+
+  public static func == (lhs: Self, rhs: Self) -> Bool {
+    return lhs.sender === rhs.sender && lhs.timestamp == rhs.timestamp && lhs.content == rhs.content
   }
 
   public enum MessageContent: Hashable {

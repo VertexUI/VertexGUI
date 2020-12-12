@@ -1,6 +1,6 @@
 import VisualAppBase
 
-public struct TodoItem {
+public struct TodoItem: Equatable {
     public static var nextTodoItemId = 0
     
     public var id: Int
