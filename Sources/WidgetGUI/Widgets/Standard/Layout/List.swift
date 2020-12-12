@@ -1,8 +1,13 @@
-public class List<Item>: SingleChildWidget {
+import ReactiveProperties
+
+public class List<Item: Equatable>: SingleChildWidget {
   @ObservableProperty
   private var items: [Item]
-
+  private var previousItems: [Item] = []
   private var itemWidgets: [Widget] = []
+
+  @Reference
+  private var itemLayoutContainer
   @Reference
   private var scrollArea: ScrollArea
 
@@ -18,15 +23,31 @@ public class List<Item>: SingleChildWidget {
       self.childBuilder = childBuilder
       super.init()
       _ = self.onDestroy(self.$items.onChanged { [unowned self] _ in
-        invalidateChild()
+        buildItemWidgets()
       })
       _ = self.onLayoutingFinished { [unowned self] _ in
         updateDisplayedItems()
       }
   }
 
+  private func buildItemWidgets() {
+    let previousItemWidgets = itemWidgets
+    var updatedItemWidgets = [Widget]()
+    let updatedItems = items
+    for (index, updatedItem) in updatedItems.enumerated() {
+      if previousItems.count > index, updatedItems[index] == previousItems[index] {
+        updatedItemWidgets.append(previousItemWidgets[index])
+      } else {
+        updatedItemWidgets.append(childBuilder(updatedItem))
+      }
+    }
+
+    itemWidgets = updatedItemWidgets
+
+    invalidateChild()
+  }
+
   override public func buildChild() -> Widget {
-    itemWidgets = items.map(childBuilder)
     return ScrollArea(scrollX: .Never) { [unowned self] in
       Column {
         itemWidgets.map {
@@ -34,7 +55,7 @@ public class List<Item>: SingleChildWidget {
             $0.visibility = .Visible
           }
         }
-      }
+      }.connect(ref: $itemLayoutContainer)
     }.connect(ref: $scrollArea).onScrollProgressChanged.chain { [unowned self] _ in
       updateDisplayedItems()
     }
