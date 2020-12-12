@@ -4,7 +4,7 @@ import VisualAppBase
 
 #if os(macOS)
 fileprivate func asSDLKeycode(_ key: SDL_KeyCode) -> SDL_Keycode {
-    SDL_Keycode(key)
+    SDL_Keycode(key.rawValue)
 }
 
 #elseif os(Linux)
