@@ -231,6 +231,7 @@ open class Widget: Bounded, Parent, Child {
     internal var highlighted = false
 
     public var countCalls: Bool = true
+    public var countCallsFlash: Bool = false
     @usableFromInline lazy internal var callCounter = CallCounter(widget: self)
 
     public internal(set) var onParentChanged = EventHandlerManager<Parent?>()
@@ -390,7 +391,11 @@ open class Widget: Bounded, Parent, Child {
     open func addedToParent() {
     }
 
-    /// Called automatically during mount(). Can be used to fill self.children.
+    // TODO: this is work in progress, possibly one step towards a new approach to child handling
+    open func visitChildren() -> ChildIterator {
+        fatalError("visitChildren() not implemented")
+    }
+
     // TODO: maybe rename to inMount or something like that
     public final func build() {
         // TODO: check for invalid build
@@ -405,13 +410,15 @@ open class Widget: Bounded, Parent, Child {
         #endif
 
         let oldChildren = children
-
+        
+        // TODO: should probably not call destroy here as these children might be mounted somewhere else, maybe have something like unmount()
         for oldChild in oldChildren {
             oldChild.destroy()
         }
 
         performBuild()
 
+        // TODO: should mountChildren be called by build?
         mountChildren(oldChildren: oldChildren)
 
         buildInvalid = false
@@ -428,7 +435,7 @@ open class Widget: Bounded, Parent, Child {
     open func performBuild() {
         
     }
-
+    
     /**
     Checks whether the state of the old children can be transferred to the new children and if yes, applies it.
     */
@@ -630,7 +637,9 @@ open class Widget: Bounded, Parent, Child {
         
         if countCalls {
             if callCounter.count(.Layout) && burstHighlightEnabled {
-                flashHighlight()
+                if countCallsFlash {
+                    flashHighlight()
+                }
                 context.inspectionBus.publish(
                     WidgetInspectionMessage(sender: self, content: .LayoutBurstThresholdExceeded))
             }
