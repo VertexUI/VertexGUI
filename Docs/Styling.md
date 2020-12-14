@@ -14,36 +14,44 @@ At the moment it will the basis for implementing, later it will serve as documen
       // remain unaffected by the provided styles,
       // even if their selectors match
       StyleProvider {
-        Style(".button-text", Text.Style {
+        Text.Style(".button-text") {
           $0.fontSize = 16
           $0.fontWeight = .bold
           $0.color = .red
         })
 
-        Style(".button", Button.Style {
+        Button.Style(".button") {
           // this transition means: whenever the active style is this one,
           // start a transition of the given duration towards the currently
           // active color
           $0.colorTransition = Transition(duration: 0.1)
-          $0.color = .blue
-        }).sub {
+          $0.backgroundColor = .blue
+        }.sub {
           // append nested styles that are only checked for a match when the parent selector matches
 
           // & means: extend the parent selector by what follows after &
           // :hover means: pseudo class hover, that is available on Button
-          Style("&:hover")
+          Button.Style("&:hover", Button.Style) {
+
+          }
+
+          // it should be possible to perform matching by checking all
+          // Widgets with a custom match function
+          Button.Style({ ($0 as? Button)?.text == "button1" }) {
+            
+          }
         }
       } {
         Column {
           Button {
-            Text.with(class: "button-text")
+            Text("button1").with(class: "button-text")
           }
 
           Button {
-            Text.with(class: "button-text")
+            Text("button2").with(class: "button-text")
           }
 
-          Text().with(class: "description").with(style: Text.Style {
+          Text("This is a description.").with(class: "description").with(style: Text.Style {
             $0.fontSize = 18
             $0.fontWeight = .normal
           })
