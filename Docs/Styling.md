@@ -17,7 +17,7 @@ At the moment it will the basis for implementing, later it will serve as documen
         Text.Style(".button-text") {
           $0.fontSize = 16
           $0.fontWeight = .bold
-          $0.color = .black
+          $0.foreground = .black
         })
 
         Button.Style(".default-button") {
@@ -37,7 +37,7 @@ At the moment it will the basis for implementing, later it will serve as documen
             $0.background = Color.red
           }.sub {
             Text.Style {
-              $0.color = .white
+              $0.foreground = .white
             }
           }
 
@@ -48,8 +48,21 @@ At the moment it will the basis for implementing, later it will serve as documen
             $0.background = Color.orange
           }.sub {
             Text.Style {
-              $0.color = .yellow
+              $0.foreground = .yellow
             }
+          }
+
+          // ForegroundStyle and BackgroundStyle should be protocols
+          // which elements like Text, Button conform to. If only the properties
+          // need to be set, on a selector which selects different types of elements, 
+          // use the AnyStyleProtocol struct implementation of the protocol.
+          // The Widget should accept these basic types as styles and apply them.
+          AnyForegroundStyle(".foreground-highlight) {
+            $0.foreground = .red
+          }
+
+          AnyBackgroundStyle(".background-highlight) {
+            $0.background = .blue
           }
         }
       } {
@@ -66,6 +79,17 @@ At the moment it will the basis for implementing, later it will serve as documen
             $0.fontSize = 18
             $0.fontWeight = .normal
           })
+
+          Card {
+            Row {
+              Icon(...).with(class: "foreground-highlight")
+              Text(...).with(class: "foreground-highlight")
+            }
+
+            RichText { ... }
+
+            Text(...).with(class: "background-highlight")            
+          }
         }
       }
     }
