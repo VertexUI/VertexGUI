@@ -6,7 +6,7 @@ At the moment it will the basis for implementing, later it will serve as documen
 
 <br>
 
-# Targetted Syntax
+## Targetted Syntax
 
     Main {
       // the styles inserted by StyleProvider should only be checked for a
@@ -62,9 +62,6 @@ At the moment it will the basis for implementing, later it will serve as documen
               // use this information to reduce number of unnecessary rebuilds (e.g. a parent is updated but it is anyway of a different type, or anyway overwritten by the children or something like that)
               $0.background = (context.get(BackgroundStyle.self, AnyBackgroundStyle.self)?.background as? Color)?.darken(10) ?? Color.red
             }
-          // a reactive style can have reactive and non-reactive sub styles
-          }.sub { (context: StyleContext) in
-            ...
           }.sub {
             ...
           }
@@ -111,7 +108,32 @@ At the moment it will the basis for implementing, later it will serve as documen
       }
     }
 
-# Needing Clarification
+<br>
+
+## Overview
+
+- there are structs(? or classes) for each Widget which define the stylable properties of the Widget
+- a StyleProvider Widget provides such styles to all it's children and only to it's children, siblings are unaffected
+- the styles are distributed according to selectors which contain classes, pseudo-classes and probably more
+  - classes which are strings (can e.g. use enums to get autocomplete), classes can be assigned to the Widgets from the outside when instantiating them or really at any point in time probably
+  - pseudo-classes are strings as well and are internally exposed by the Widget according to it's own state
+  - a function can be applied to each style definition that checks each Widget that passes the selector for other things that are better checked by a function and only if this function returns true, the styles are applied to the Widget
+- there are protocols which contain properties that many Widgets share, e.g. ForegroundStyle
+  - the specific Widget styles implement these protocols and provide the described properties, e.g. a TextStyle which conforms to ForegroundStyle provides a property "foreground"
+  - there are direct implementations of these shared styles as well which can then be applied to many different Widgets which don't share their main style definition (e.g. Text and Icon can both receive a ForegroundStyle instead of their specific TextStyle or IconStyle)
+- styles have sub styles, the selectors of the sub styles are appended to the parent and checked only if the parent matched first
+- a Widget can receive multiple styles, depending on how many selectors match the Widget
+  - the styles are in the order in which they occur in the definition of the Widget tree
+  - the Widgets needs to go through all styles and check whether it accepts the given object (is it of an accepted type?)
+  - and then merge all the properties together, later definitions overwriting previous definitions, and apply them to itself
+- there are reactive style definitions, which receive a context through which they can access all earlier defined styles which match the Widget they match
+  - the information about the parent styles can then be used to provide a computed style
+  - whenever a parent changes, it must be checked whether the computed style needs to be updated (track dependencies)
+  - if it updates and is changed, all other computed styles which depend on this one must update as well
+
+<br>
+
+## Needs Clarification:
 
 - are styles reactive? and if so at what level? at each property? or for each Style element, and where do the dependencies for the reactive calculation come from? from the Widget --> properties?
 
