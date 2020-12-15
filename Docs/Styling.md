@@ -52,6 +52,23 @@ At the moment it will the basis for implementing, later it will serve as documen
             }
           }
 
+          // The StyleContext object should provide an easy way to access all the other
+          // styles that apply to the same element as this style, handling overwriting by preferring later definitions over earlier definitions on a per property basis.
+          // Whenever a style in the context is updated, removed, added, the following style needs to be recomputed. If other styles depend on it
+          // these will then also be recomputed.
+          Button.Style("$:active") { (context: StyleContext) in {
+              //context.get(AnyStyle.self) should go through all styles that apply to this element before the current style and look for any styles that conform to BackgroundStyle and return the merged properties as an AnyBackgroundStyle 
+              // the context should store information about which styles were accessed and therefore are dependencies of this style
+              // use this information to reduce number of unnecessary rebuilds (e.g. a parent is updated but it is anyway of a different type, or anyway overwritten by the children or something like that)
+              $0.background = (context.get(BackgroundStyle.self, AnyBackgroundStyle.self)?.background as? Color)?.darken(10) ?? Color.red
+            }
+          // a reactive style can have reactive and non-reactive sub styles
+          }.sub { (context: StyleContext) in
+            ...
+          }.sub {
+            ...
+          }
+
           // ForegroundStyle and BackgroundStyle should be protocols
           // which elements like Text, Button conform to. If only the properties
           // need to be set, on a selector which selects different types of elements, 
