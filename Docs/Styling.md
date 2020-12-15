@@ -17,39 +17,50 @@ At the moment it will the basis for implementing, later it will serve as documen
         Text.Style(".button-text") {
           $0.fontSize = 16
           $0.fontWeight = .bold
-          $0.color = .red
+          $0.color = .black
         })
 
-        Button.Style(".button") {
+        Button.Style(".default-button") {
           // this transition means: whenever the active style is this one,
           // start a transition of the given duration towards the currently
-          // active color
-          $0.colorTransition = Transition(duration: 0.1)
-          $0.backgroundColor = .blue
+          // active background fill
+          $0.backgroundTransition = Transition(duration: 0.1)
+          // .background should be a property of type Fill, which is a protocol that Color, Gradient, Image, ... should conform to
+          $0.background = Color.blue
         }.sub {
           // append nested styles that are only checked for a match when the parent selector matches
 
           // & means: extend the parent selector by what follows after &
           // :hover means: pseudo class hover, that is available on Button
           Button.Style("&:hover", Button.Style) {
-
+            $0.backgroundTransition = Transition(duration: 0.2)
+            $0.background = Color.red
+          }.sub {
+            Text.Style {
+              $0.color = .white
+            }
           }
 
           // it should be possible to perform matching by checking all
           // Widgets with a custom match function
-          Button.Style({ ($0 as? Button)?.text == "button1" }) {
-            
+          Button.Style("&:hover", { ($0 as? Button)?.text == "button1" }) {
+            // the transition defined in the $:hover style above should apply here as well,
+            $0.background = Color.orange
+          }.sub {
+            Text.Style {
+              $0.color = .yellow
+            }
           }
         }
       } {
         Column {
           Button {
             Text("button1").with(class: "button-text")
-          }
+          }.with(class: "default-button")
 
           Button {
             Text("button2").with(class: "button-text")
-          }
+          }.with(class: "default button")
 
           Text("This is a description.").with(class: "description").with(style: Text.Style {
             $0.fontSize = 18
