@@ -101,9 +101,12 @@ extension ToggleButton {
     case LeftToggled, RightToggled
   }
 
-  public struct Style: WidgetGUI.Style, BackgroundColorStyle {
-    public var selector: WidgetSelector
-    public var backgroundColor: Color? = nil
+  public struct Style: WidgetGUI.Style, BackgroundStyle {
+    public var selector: WidgetSelector? = nil
+    @StyleProperty
+    public var background: Color?
+
+    public init() {}
   }
 }
 

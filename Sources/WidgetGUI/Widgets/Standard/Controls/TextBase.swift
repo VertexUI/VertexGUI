@@ -2,38 +2,44 @@ import GfxMath
 import Foundation
 import VisualAppBase
 
-open class TextBase: Widget {
+open class TextBase: Widget, StylableWidget {
   public var _text: String {
     didSet {
       handleTextChange()
     }
   }
-  private var transformedText: String {
-    textStyle.transform.apply(to: _text)
+  private var transformedText: String {   
+    filledStyle.transform!.apply(to: _text)
   }
 
-  public var textStyle: TextStyle
-  public static let defaultTextStyle = TextStyle(
-    fontConfig: FontConfig(
-      family: defaultFontFamily,
-      size: 16,
-      weight: .Regular,
-      style: .Normal
-    ),
-    transform: .None,
-    color: .Black,
-    wrap: true)
+  public private(set) lazy var mergedStyle: Style = mergeStyles() 
+  public private(set) lazy var filledStyle: Style = fillStyle()
+  public var fontConfig: FontConfig {
+    FontConfig(
+      family: filledStyle.fontFamily!,
+      size: filledStyle.fontSize!,
+      weight: filledStyle.fontWeight!,
+      style: filledStyle.fontStyle!)
+  }
+  public static let defaultStyle = Style {
+    $0.fontFamily = defaultFontFamily
+    $0.fontSize = 16
+    $0.fontWeight = .Regular
+    $0.fontStyle = .Normal
+    $0.transform = .None
+    $0.foreground = .Black
+    $0.wrap = true
+  }
 
-  public init(text: String = "", style: TextStyle = TextBase.defaultTextStyle) {
+  public init(text: String = "") {
     self._text = text
-    self.textStyle = style
   }
 
   override public func getBoxConfig() -> BoxConfig {
     var boxConfig = BoxConfig(
-      preferredSize: context.getTextBoundsSize(transformedText, fontConfig: textStyle.fontConfig))
+      preferredSize: context.getTextBoundsSize(transformedText, fontConfig: fontConfig))
 
-    if !textStyle.wrap {
+    if !filledStyle.wrap! {
       boxConfig.minSize = boxConfig.preferredSize
     }
 
@@ -44,7 +50,7 @@ open class TextBase: Widget {
     let boundedText = transformedText.isEmpty ? " " : transformedText
 
     var textBoundsSize = context.getTextBoundsSize(
-      boundedText, fontConfig: textStyle.fontConfig, maxWidth: textStyle.wrap ? constraints.maxWidth : nil
+      boundedText, fontConfig: fontConfig, maxWidth: filledStyle.wrap! ? constraints.maxWidth : nil
     )
     
     if transformedText.isEmpty {
@@ -66,16 +72,16 @@ open class TextBase: Widget {
   public func getSubBounds(to index: Int) -> DRect {
     var preferredSize = DSize2.zero
     let partialText = String(_text[..<_text.index(_text.startIndex, offsetBy: index)])
-    let transformedText = textStyle.transform.apply(to: partialText)
+    let transformedText = filledStyle.transform!.apply(to: partialText)
 
     if transformedText.isEmpty {
-      preferredSize.height = context.getTextBoundsSize(" ", fontConfig: textStyle.fontConfig).height
+      preferredSize.height = context.getTextBoundsSize(" ", fontConfig: fontConfig).height
     } else {
-      if textStyle.wrap {
+      if filledStyle.wrap! {
         preferredSize = context.getTextBoundsSize(
-          transformedText, fontConfig: textStyle.fontConfig, maxWidth: previousConstraints!.maxWidth)
+          transformedText, fontConfig: fontConfig, maxWidth: previousConstraints!.maxWidth)
       } else {
-        preferredSize = context.getTextBoundsSize(transformedText, fontConfig: textStyle.fontConfig)
+        preferredSize = context.getTextBoundsSize(transformedText, fontConfig: fontConfig)
       }
     }
 
@@ -88,28 +94,77 @@ open class TextBase: Widget {
   }
 
   override public func renderContent() -> RenderObject? {
-    let maxWidth = textStyle.wrap ? bounds.size.width : nil
+    let maxWidth = filledStyle.wrap! ? bounds.size.width : nil
 
     if let previousContent = renderState.mainContent as? TextRenderObject {
       previousContent.text = transformedText
-      previousContent.fontConfig = textStyle.fontConfig
-      previousContent.color = textStyle.color
+      previousContent.fontConfig = fontConfig
+      previousContent.color = filledStyle.foreground!
       previousContent.topLeft = globalPosition
       previousContent.maxWidth = maxWidth
       return previousContent
     } else {
       return TextRenderObject(
-        transformedText, fontConfig: textStyle.fontConfig, color: textStyle.color,
+        transformedText, fontConfig: fontConfig, color: filledStyle.foreground!,
         topLeft: globalPosition, maxWidth: maxWidth)
     }
+  }
+
+  public func filterStyles() -> [AnyStyle] {
+    styles.filter {
+      $0 as? Style != nil || $0 as? AnyForegroundStyle != nil
+    }
+  }
+
+  public func mergeStyles() -> Style {
+    let filteredStyles = filterStyles()
+    var result = Style()
+    let resultMirror = Mirror(reflecting: result)
+    for style in filteredStyles {
+      let mirror = Mirror(reflecting: style)
+      for child in mirror.children {
+        if let property = child.value as? AnyStyleProperty {
+          for var resultChild in resultMirror.children {
+            if resultChild.label == child.label, var resultProperty = resultChild.value as? AnyStyleProperty {
+              resultProperty.anyValue = property.anyValue
+            }
+          }
+        }
+      }
+    }
+    return result
+  }
+
+  public func fillStyle() -> Style {
+    return Self.defaultStyle
   }
 }
 
 extension TextBase {
-  public struct TextStyle {
-    public var fontConfig: FontConfig
-    public var transform: TextTransform
-    public var color: Color
-    public var wrap: Bool
+  public struct Style: WidgetGUI.Style, ForegroundStyle {
+    public var selector: WidgetSelector? = nil
+
+    @StyleProperty
+    public var fontFamily: FontFamily?
+
+    @StyleProperty
+    public var fontSize: Double?
+
+    @StyleProperty
+    public var fontWeight: FontWeight?
+
+    @StyleProperty
+    public var fontStyle: FontStyle?
+
+    @StyleProperty
+    public var transform: TextTransform?
+
+    @StyleProperty
+    public var foreground: Color? 
+
+    @StyleProperty
+    public var wrap: Bool?
+
+    public init() {}
   }
 }
