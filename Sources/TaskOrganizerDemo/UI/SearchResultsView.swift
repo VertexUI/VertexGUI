@@ -26,7 +26,7 @@ public class SearchResultsView: SingleChildWidget {
       Column(spacing: 48) {
 
         if let searchQuery = searchQuery {
-          Text("Results for \"\(searchQuery)\"", fontSize: 48, fontWeight: .Bold)
+          Text("Results for \"\(searchQuery)\"", fontSize: 48, fontWeight: .bold)
 
           if let searchResult = searchResult {
             searchResult.filteredLists.map { list in

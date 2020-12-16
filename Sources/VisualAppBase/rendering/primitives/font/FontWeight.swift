@@ -1,3 +1,3 @@
 public enum FontWeight {
-    case Light, Regular, Medium, Bold, Black
+    case light, regular, medium, bold, black
 }

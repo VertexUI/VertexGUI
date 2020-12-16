@@ -15,9 +15,9 @@ public final class Text: Widget, ConfigurableWidget {
     fontConfig: FontConfig(
       family: defaultFontFamily,
       size: 16,
-      weight: .Regular,
+      weight: .regular,
       style: .Normal
-    ), transform: .None, color: .Black, wrap: true)
+    ), transform: .None, color: .black, wrap: true)
   public var localPartialConfig: PartialConfig?
   public var localConfig: Config?
   lazy public var config: Config = combineConfigs()

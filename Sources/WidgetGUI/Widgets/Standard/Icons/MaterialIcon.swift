@@ -11,12 +11,12 @@ public class MaterialIcon: SingleChildWidget {
     faces: [
       FontFace(
         path: Bundle.module.path(forResource: "materialdesignicons-webfont", ofType: "ttf")!,
-        weight: .Regular,
+        weight: .regular,
         style: .Normal
       )
     ])
 
-  public init(_ identifier: Identifier, color: Color = .Black) {
+  public init(_ identifier: Identifier, color: Color = .black) {
     self.identifier = identifier
     self.color = color
   }

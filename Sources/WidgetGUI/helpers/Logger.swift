@@ -19,7 +19,7 @@ public class Logger {
         }
 
         if activeContexts.contains(context) && activeLevels.contains(level) {
-            renderer.log(["\(context) \(level): ".with(style: .Bold)] + outputs())
+            renderer.log(["\(context) \(level): ".with(style: .bold)] + outputs())
         }
     }
 
@@ -81,15 +81,15 @@ public struct LogText: ExpressibleByStringInterpolation {
     }
 
     public enum ForegroundColor {
-        case Blue, White, Yellow, Green
+        case blue, white, yellow, green
     }
 
     public enum BackgroundColor {
-        case Blue, White, Yellow, Black, Red
+        case blue, white, yellow, black, red
     }
 
     public enum FontStyle {
-        case Bold
+        case bold
     }
 }
 
@@ -112,35 +112,35 @@ public struct ConsoleLogRenderer: LogRenderer {
 
             if let foregroundColor = text.foregroundColor {
                 switch foregroundColor {
-                case .Green:
+                case .green:
                     partialString = partialString.green()
-                case .Yellow:
+                case .yellow:
                     partialString = partialString.yellow()
-                case .Blue:
+                case .blue:
                     partialString = partialString.blue()
-                case .White:
+                case .white:
                     partialString = partialString.white()
                 }
             }
 
             if let backgroundColor = text.backgroundColor {
                 switch backgroundColor {
-                case .Blue:
+                case .blue:
                     partialString = partialString.onBlue()
-                case .White:
+                case .white:
                     partialString = partialString.onWhite()
-                case .Yellow:
+                case .yellow:
                     partialString = partialString.onYellow()
-                case .Red:
+                case .red:
                     partialString = partialString.onRed()
-                case .Black:
+                case .black:
                     partialString = partialString.onBlack()
                 }
             }
 
             if let fontStyle = text.fontStyle {
                 switch fontStyle {
-                case .Bold:
+                case .bold:
                     partialString = partialString.bold()
                 }
             }

@@ -21,7 +21,7 @@ public class TodoListItemView: SingleChildWidget {
       Padding(all: 16) {
         Row(spacing: 48) {
           Row.Item(crossAlignment: .Center) {
-            TaskCompletionButton(StaticProperty(item.completed), color: .Yellow) { _ in
+            TaskCompletionButton(StaticProperty(item.completed), color: .yellow) { _ in
               if checkable {
                 var updatedItem = item
                 updatedItem.completed = !updatedItem.completed

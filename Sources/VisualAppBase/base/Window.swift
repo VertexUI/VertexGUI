@@ -237,7 +237,7 @@ extension Window {
       initialSize: DSize2 = DSize2(800, 600),
       initialPosition: InitialPosition = .Centered,
       initialVisibility: Visibility = .Visible,
-      background: Color = .Grey,
+      background: Color = .grey,
       borderless: Bool = false) {
         self.title = title
         self.initialSize = initialSize

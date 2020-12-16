@@ -3,13 +3,13 @@ import Foundation
 import VisualAppBase
 
 open class TextBase: Widget, StylableWidget {
-  public var _text: String {
+  public var displayedText: String {
     didSet {
       handleTextChange()
     }
   }
   private var transformedText: String {   
-    filledStyle.transform!.apply(to: _text)
+    filledStyle.transform!.apply(to: displayedText)
   }
 
   public private(set) lazy var mergedStyle: Style = mergeStyles() 
@@ -24,15 +24,15 @@ open class TextBase: Widget, StylableWidget {
   public static let defaultStyle = Style {
     $0.fontFamily = defaultFontFamily
     $0.fontSize = 16
-    $0.fontWeight = .Regular
+    $0.fontWeight = .regular
     $0.fontStyle = .Normal
     $0.transform = .None
-    $0.foreground = .Black
+    $0.foreground = .black
     $0.wrap = true
   }
 
   public init(text: String = "") {
-    self._text = text
+    self.displayedText = text
   }
 
   override public func getBoxConfig() -> BoxConfig {
@@ -71,7 +71,7 @@ open class TextBase: Widget, StylableWidget {
   /// TODO: maybe put this somewhere else
   public func getSubBounds(to index: Int) -> DRect {
     var preferredSize = DSize2.zero
-    let partialText = String(_text[..<_text.index(_text.startIndex, offsetBy: index)])
+    let partialText = String(displayedText[..<displayedText.index(displayedText.startIndex, offsetBy: index)])
     let transformedText = filledStyle.transform!.apply(to: partialText)
 
     if transformedText.isEmpty {

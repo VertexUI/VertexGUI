@@ -31,7 +31,7 @@ public class EventLogView: SingleChildWidget {
   private func buildInspectionMessageItem(message: WidgetInspectionMessage) -> Widget {
     MouseArea {
       Border(bottom: 1, color: Color(0, 0, 0, 40)) {
-        Background(fill: .White) {
+        Background(fill: .white) {
           Padding(all: 16) {
             Text("\(message.sender): \(message.content)")
           }
@@ -85,7 +85,7 @@ public class EventLogView: SingleChildWidget {
 
   private func buildContextMenuItem(@WidgetBuilder content: () -> Widget, action: @escaping () -> ()) -> Widget {
     MouseArea {
-      Background(fill: .White) {
+      Background(fill: .white) {
         Padding(all: 16) {
           content()
         }

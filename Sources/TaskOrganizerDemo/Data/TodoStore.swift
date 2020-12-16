@@ -13,7 +13,7 @@ public class TodoStore: ReduxStore<TodoState, TodoGetters, TodoMutation, TodoAct
       state.selectedListId = listId
 
     case let .AddList:
-      state.lists.append(TodoList(id: state.nextListId, name: "New List", color: .Yellow, items: []))
+      state.lists.append(TodoList(id: state.nextListId, name: "New List", color: .yellow, items: []))
       state.nextListId += 1
 
     case let .UpdateListName(newName, listId):

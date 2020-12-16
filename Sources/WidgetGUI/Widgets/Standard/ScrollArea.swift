@@ -170,7 +170,7 @@ public class ScrollArea: SingleChildWidget, GUIMouseEventConsumer {
   override public final func renderContent() -> RenderObject? {
     return RenderObject.Container {
       // to catch events in spaces where there is no content
-      RenderStyleRenderObject(fillColor: .Transparent) {
+      RenderStyleRenderObject(fillColor: .transparent) {
         RectangleRenderObject(globalBounds)
       }
 
@@ -180,7 +180,7 @@ public class ScrollArea: SingleChildWidget, GUIMouseEventConsumer {
         }
       }
 
-      RenderObject.RenderStyle(fillColor: .Blue) {
+      RenderObject.RenderStyle(fillColor: .blue) {
         if scrollXEnabled {
           RenderObject.Rectangle(xScrollBarBounds.translated(globalPosition))
         }

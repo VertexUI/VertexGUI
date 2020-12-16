@@ -9,7 +9,7 @@ public class GameControlView: SingleChildWidget {
 
             Padding(top: 32, right: 32, bottom: 48, left: 32) {
                 
-                TextConfigProvider(color: .White) {
+                TextConfigProvider(color: .white) {
 
                     Column {
 
@@ -19,7 +19,7 @@ public class GameControlView: SingleChildWidget {
 
                                 Column(spacing: 32) {
                                     
-                                    Text("Stats", fontSize: 48, fontWeight: .Bold, color: .White)
+                                    Text("Stats", fontSize: 48, fontWeight: .bold, color: .white)
 
                                     Text("Id: \(player.state.player.value.id)")
 

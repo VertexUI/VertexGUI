@@ -54,7 +54,10 @@ public class TodoAppView: SingleChildWidget {
 
             Padding(all: 32) {
               Button {
-                Text("New List")
+                ExperimentalText("New List").with(style: ExperimentalText.Style {
+                  $0.foreground = Color.black
+                  $0.fontWeight = .bold
+                })
               } onClick: { [unowned self] _ in
                 handleNewListClick()
               }
@@ -119,7 +122,7 @@ public class TodoAppView: SingleChildWidget {
                 Row.Item(crossAlignment: .Center) {
                   Background(fill: list.color) {
                     Padding(all: 8) {
-                      MaterialIcon(.formatListBulletedSquare, color: .White)
+                      MaterialIcon(.formatListBulletedSquare, color: .white)
                     }
                   }
                 }
@@ -169,7 +172,7 @@ public class TodoAppView: SingleChildWidget {
                     return TodoListView(store.getters.$selectedList.compute { $0! })
                   } else {
                     return Center {
-                      Text("No list selected.", fontSize: 24, fontWeight: .Bold, color: .Grey)
+                      Text("No list selected.", fontSize: 24, fontWeight: .bold, color: .grey)
                     }
                   }
                 }

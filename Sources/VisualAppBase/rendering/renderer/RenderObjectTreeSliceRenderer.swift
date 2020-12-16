@@ -84,7 +84,7 @@ open class RenderObjectTreeSliceRenderer {
         // performStroke = true
       } else {
         backendRenderer.strokeWidth(0)
-        backendRenderer.strokeColor(.Transparent)
+        backendRenderer.strokeColor(.transparent)
       }
 
     case let node as RenderObject.Translation:
@@ -101,9 +101,9 @@ open class RenderObjectTreeSliceRenderer {
   private func renderClose(node: RenderObject, with backendRenderer: Renderer) {
     switch node {
     case let node as RenderStyleRenderObject:
-      backendRenderer.setFill(.Color(.Transparent))
+      backendRenderer.setFill(.Color(.transparent))
       backendRenderer.strokeWidth(0)
-      backendRenderer.strokeColor(.Transparent)
+      backendRenderer.strokeColor(.transparent)
     case let node as TranslationRenderObject:
       backendRenderer.translate(-node.translation)
     case let node as ClipRenderObject:

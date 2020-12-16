@@ -73,7 +73,7 @@ open class TwoDWorldPage: SingleChildWidget {
                                             
                                                 MouseArea {
 
-                                                    Background(fill: .Red) {
+                                                    Background(fill: .red) {
 
                                                         Padding(all: 16) {
 

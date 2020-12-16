@@ -24,7 +24,7 @@ open class TwoDGraphicalApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3Nano
 
         super.init(system: try! System())
 
-        createWindow(guiRoot: guiRoot, background: .Grey)
+        createWindow(guiRoot: guiRoot, background: .grey)
     }
 
     override open func createRenderer(for window: Window) -> Renderer {

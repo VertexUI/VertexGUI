@@ -27,12 +27,12 @@ public class RadioButton: Widget, GUIMouseEventConsumer {
   
   override public func renderContent() -> RenderObject? {
     ContainerRenderObject {
-      RenderStyleRenderObject(strokeWidth: 2, strokeColor: FixedRenderValue(.Black)) {
+      RenderStyleRenderObject(strokeWidth: 2, strokeColor: FixedRenderValue(.black)) {
         EllipsisRenderObject(globalBounds)
       }
 
       if checked {
-        RenderStyleRenderObject(fillColor: .Black) {
+        RenderStyleRenderObject(fillColor: .black) {
           EllipsisRenderObject(DRect(center: globalBounds.center, size: globalBounds.size * 0.7))
         }
       }

@@ -5,7 +5,7 @@ public class LiveText: TextBase {
     self.getText = getText
     super.init(text: getText())
     _ = onTick { _ in
-      self._text = self.getText()
+      self.displayedText = self.getText()
     }
   }
 

@@ -53,12 +53,12 @@ public class DemoGameApp: WidgetsApp<SDL2OpenGL3NanoVGSystem, SDL2OpenGL3NanoVGW
             Dependency(gameRuleset)
         ]) {
             Space(DSize2(20, 20))
-            /*ThemeProvider(DefaultTheme(mode: .Dark, primaryColor: .Blue)) { [unowned self] in
+            /*ThemeProvider(DefaultTheme(mode: .Dark, primaryColor: .blue)) { [unowned self] in
                 Column {
                     ComputedSize {
                         Background(fill: Color(40, 40, 80, 255), shape: .Rectangle) {
                             Padding(all: 32) {
-                                Text("An awesome game.", fontSize: 24, fontWeight: .Bold, color: .White)
+                                Text("An awesome game.", fontSize: 24, fontWeight: .bold, color: .white)
                             }
                         }
                     } calculate: {

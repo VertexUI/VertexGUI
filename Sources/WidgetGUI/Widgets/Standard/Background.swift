@@ -4,7 +4,7 @@ import VisualAppBase
 import ReactiveProperties
 
 public final class Background: SingleChildWidget, ConfigurableWidget {
-    public static let defaultConfig = Config(fill: .Transparent, shape: .Rectangle)    
+    public static let defaultConfig = Config(fill: .transparent, shape: .Rectangle)    
     public var localConfig: Config?
     public var localPartialConfig: PartialConfig?
     lazy public var config: Config = combineConfigs()

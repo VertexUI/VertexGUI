@@ -8,7 +8,7 @@ public class InspectorView: SingleChildWidget {
   }
 
   override public func buildChild() -> Widget {
-    Background(fill: .White) { [unowned self] in
+    Background(fill: .white) { [unowned self] in
       Column {
         WidgetNestingView(inspectedRoot.rootWidget).onInspect.chain {
           onInspectWidget.invokeHandlers($0)

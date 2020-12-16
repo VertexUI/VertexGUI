@@ -12,7 +12,7 @@ public class GameRenderer {
     private var playerBlobDrawables: [UInt: PlayerBlobDrawable] = [:]
 
     private var foodShaderProgram = FoodShaderProgram()
-    private var foodColor = Color.Green
+    private var foodColor = Color.green
     private var foodVao = GLMap.UInt()
     private var foodVerticesVbo = GLMap.UInt()
     private var foodVertices: [GLMap.Float] = {

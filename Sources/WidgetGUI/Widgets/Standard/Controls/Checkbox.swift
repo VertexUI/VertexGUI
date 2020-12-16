@@ -56,7 +56,7 @@ public class Checkbox: Widget, GUIMouseEventConsumer {
   
   override public func renderContent() -> RenderObject? {
     ContainerRenderObject {
-      RenderStyleRenderObject(strokeWidth: 2, strokeColor: FixedRenderValue(.Black)) {
+      RenderStyleRenderObject(strokeWidth: 2, strokeColor: FixedRenderValue(.black)) {
         RectangleRenderObject(globalBounds)
 
         if checked {

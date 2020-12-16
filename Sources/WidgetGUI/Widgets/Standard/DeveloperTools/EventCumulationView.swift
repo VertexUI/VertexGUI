@@ -185,15 +185,15 @@ public class EventCumulationView: SingleChildWidget {
       super.renderContent() 
       
       timestampLabels.map {
-        TextRenderObject(String($0.timestamp), fontConfig: scaleTickFontConfig, color: .Black, topLeft: xLegendSpace.globalPosition + DVec2($0.x, 0))
+        TextRenderObject(String($0.timestamp), fontConfig: scaleTickFontConfig, color: .black, topLeft: xLegendSpace.globalPosition + DVec2($0.x, 0))
       }
 
       yLabels.map {
-        TextRenderObject($0.label, fontConfig: scaleTickFontConfig, color: .Black, topLeft: $0.position)
+        TextRenderObject($0.label, fontConfig: scaleTickFontConfig, color: .black, topLeft: $0.position)
       }
 
       graphLabels.map {
-        TextRenderObject(String($0.label), fontConfig: scaleTickFontConfig, color: .Black, topLeft: $0.position)
+        TextRenderObject(String($0.label), fontConfig: scaleTickFontConfig, color: .black, topLeft: $0.position)
       }
     }
   }

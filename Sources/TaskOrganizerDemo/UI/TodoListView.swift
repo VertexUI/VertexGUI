@@ -55,7 +55,7 @@ public class TodoListView: SingleChildWidget {
             }
           } else {
             MouseArea {
-              Text(list.name, fontSize: 32, fontWeight: .Bold, color: list.color)
+              Text(list.name, fontSize: 32, fontWeight: .bold, color: list.color)
             } onClick: { _ in
               nameEditMode = editable && true
             }
@@ -86,7 +86,7 @@ public class TodoListView: SingleChildWidget {
 
     Column.Item(crossAlignment: .Stretch) {
       Padding(left: 40 + 48) {
-        Divider(color: .Grey, axis: .Horizontal, thickness: 1)
+        Divider(color: .grey, axis: .Horizontal, thickness: 1)
       }
     }
   }

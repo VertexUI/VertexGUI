@@ -82,7 +82,7 @@ final class RenderObjectTreeTests: XCTestCase {
 
         tree.bus = bus
 
-        let testObject = RenderStyleRenderObject(fillColor: .Black) {}
+        let testObject = RenderStyleRenderObject(fillColor: .black) {}
 
         tree.children[0].appendChild(testObject)
 
@@ -118,7 +118,7 @@ final class RenderObjectTreeTests: XCTestCase {
 
         ) { _ in
 
-            Fill.Color(Color.White)
+            Fill.Color(Color.white)
         }) {}
 
         tree.children[0].appendChild(testedNode)
@@ -181,7 +181,7 @@ final class RenderObjectTreeTests: XCTestCase {
             duration: 1
         ) { _ in
 
-            .Color(.White)
+            .Color(.white)
 
         }) {}
 

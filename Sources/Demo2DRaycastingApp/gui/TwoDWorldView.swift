@@ -117,7 +117,7 @@ open class TwoDWorldView: Widget, GUIMouseEventConsumer, StatefulWidget {
                     let index = IVec2(xIndex, yIndex)
                     let tileRect = self.getTileRect(index: index)
 
-                    let fillColor = ((yIndex % 2 == 0 ? 1 : 0) + xIndex) % 2 == 0 ? Color(240, 240, 240, 255) : Color.White
+                    let fillColor = ((yIndex % 2 == 0 ? 1 : 0) + xIndex) % 2 == 0 ? Color(240, 240, 240, 255) : Color.white
                     renderer.beginPath()
                     renderer.fillColor(fillColor)
                     renderer.rectangle(tileRect)
@@ -135,7 +135,7 @@ open class TwoDWorldView: Widget, GUIMouseEventConsumer, StatefulWidget {
                     switch result {
                     case .Test(let tileIndex):
                         let tileRect = self.getTileRect(index: tileIndex)
-                        let fillColor = Color.Blue.adjusted(alpha: 50)
+                        let fillColor = Color.blue.adjusted(alpha: 50)
                         renderer.beginPath()
                         renderer.fillColor(fillColor)
                         renderer.rectangle(tileRect)
@@ -151,7 +151,7 @@ open class TwoDWorldView: Widget, GUIMouseEventConsumer, StatefulWidget {
                         let vertices = Tile.edgeVertices(topLeft: DVec2(tileIndex), vectorLayout: .topLeftToBottomRight)[edge]!
                         renderer.lineSegment(from: self.globalPosition + scale * vertices.0, to: self.globalPosition + scale * vertices.1)
                         renderer.strokeWidth(10)
-                        renderer.strokeColor(.Yellow)
+                        renderer.strokeColor(.yellow)
                         renderer.stroke()
                     default:
                         break
@@ -161,9 +161,9 @@ open class TwoDWorldView: Widget, GUIMouseEventConsumer, StatefulWidget {
                 renderer.lineSegment(from: scaledRayStart, to: scaledRayEnd)
                 renderer.strokeWidth(5)
                 if let highlightedRaycast = self.highlightedRaycast.value, raycast == highlightedRaycast {
-                    renderer.strokeColor(.Black)
+                    renderer.strokeColor(.black)
                 } else {
-                    renderer.strokeColor(.Blue)
+                    renderer.strokeColor(.blue)
                 }
                 renderer.stroke()
 

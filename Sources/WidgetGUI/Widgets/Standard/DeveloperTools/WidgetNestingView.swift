@@ -22,7 +22,7 @@ public class WidgetNestingView: SingleChildWidget {
     Column { [unowned self] in
       Row {
         MouseArea {
-          Background(fill: .Yellow) {
+          Background(fill: .yellow) {
             Padding(all: 8) {
               MaterialIcon(.menuDown)
             }

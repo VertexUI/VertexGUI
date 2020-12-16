@@ -225,8 +225,8 @@ open class Widget: Bounded, Parent, Child {
         }
     }*/
     @MutableProperty
-    public var layoutDebuggingColor = Color.Red
-    private let layoutDebuggingTextFontConfig = FontConfig(family: defaultFontFamily, size: 16, weight: .Regular, style: .Normal)
+    public var layoutDebuggingColor = Color.red
+    private let layoutDebuggingTextFontConfig = FontConfig(family: defaultFontFamily, size: 16, weight: .regular, style: .Normal)
     // if true, highlight the Widget when bursts of calls to functions such as layout or render occur
     public var burstHighlightEnabled = true
     @usableFromInline
@@ -491,7 +491,7 @@ open class Widget: Bounded, Parent, Child {
 
         _ = child.onSizeChanged { [unowned self, unowned child] _ in
             // TODO: maybe need special relayout flag / function
-            Logger.log("Size of child \(child) of parent \(self) changed.".with(fg: .Blue, style: .Bold), level: .Message, context: .WidgetLayouting)
+            Logger.log("Size of child \(child) of parent \(self) changed.".with(fg: .blue, style: .bold), level: .Message, context: .WidgetLayouting)
             if layouted && !layouting {
                 Logger.log("Performing layout on parent parent.", level: .Message, context: .WidgetLayouting)
                 invalidateLayout()
@@ -541,7 +541,7 @@ open class Widget: Bounded, Parent, Child {
     }
 
     private final func handleChildBoxConfigChanged(child: Widget) {
-        Logger.log("Box config of child: \(child) of parent \(self) changed.".with(fg: .Blue, style: .Bold), level: .Message, context: .WidgetLayouting)
+        Logger.log("Box config of child: \(child) of parent \(self) changed.".with(fg: .blue, style: .bold), level: .Message, context: .WidgetLayouting)
 
         if layouted && !layouting {
             Logger.log("Invalidating own box config.", level: .Message, context: .WidgetLayouting)
@@ -558,7 +558,7 @@ open class Widget: Bounded, Parent, Child {
             // relayout will be triggered in Root for the whole UI.
             // TODO: maybe there is a better solution
             if oldBoxConfig == newBoxConfig {
-                Logger.log("Own box config is changed. Perform layout with previous constraints: \(String(describing: previousConstraints))".with(fg: .Yellow), level: .Message, context: .WidgetLayouting)
+                Logger.log("Own box config is changed. Perform layout with previous constraints: \(String(describing: previousConstraints))".with(fg: .yellow), level: .Message, context: .WidgetLayouting)
                 invalidateLayout()
             }
         }
@@ -583,6 +583,12 @@ open class Widget: Bounded, Parent, Child {
     // TODO: maybe call this updateBoxConfig / or queueBoxConfigUpdate??? --> on next tick?
     @inlinable
     public final func invalidateBoxConfig() {
+        if !mounted {
+            #if DEBUG
+            Logger.warn("Called invalidateBoxConfig() before Widget was mounted.")
+            #endif
+            return
+        }
         if boxConfigInvalid {
             #if DEBUG
             Logger.warn("Called invalidateBoxConfig() on a Widget where box config is already invalid", context: .WidgetLayouting)
@@ -599,12 +605,12 @@ open class Widget: Bounded, Parent, Child {
 
     @inlinable public final func layout(constraints: BoxConstraints) {
         #if DEBUG
-        Logger.log("Attempting layout".with(fg: .Yellow), "on Widget: \(self).", level: .Message, context: .WidgetLayouting)
+        Logger.log("Attempting layout".with(fg: .yellow), "on Widget: \(self).", level: .Message, context: .WidgetLayouting)
         #endif
 
         if !layoutInvalid, let previousConstraints = previousConstraints, constraints == previousConstraints {
             #if DEBUG
-            Logger.log("Constraints equal pervious constraints and layout is not invalid.", "Not performing layout.".with(fg: .Yellow), level: .Message, context: .WidgetLayouting)
+            Logger.log("Constraints equal pervious constraints and layout is not invalid.", "Not performing layout.".with(fg: .yellow), level: .Message, context: .WidgetLayouting)
             #endif
             return
         }
@@ -646,7 +652,7 @@ open class Widget: Bounded, Parent, Child {
                     WidgetInspectionMessage(sender: self, content: .LayoutBurstThresholdExceeded))
             }
         }
-        Logger.log("Layouting Widget: \(self)".with(fg: .Blue, style: .Bold), level: .Message, context: .WidgetLayouting)
+        Logger.log("Layouting Widget: \(self)".with(fg: .blue, style: .bold), level: .Message, context: .WidgetLayouting)
         Logger.log("Constraints: \(constraints)", level: .Message, context: .WidgetLayouting)
         Logger.log("Current size: \(bounds.size)", level: .Message, context: .WidgetLayouting)
         #endif
@@ -666,8 +672,8 @@ open class Widget: Bounded, Parent, Child {
 
         #if DEBUG
         let layoutDuration = Date.timeIntervalSinceReferenceDate - startTimestamp
-        Logger.log("Layout of Widget: \(self) took time:", (layoutDuration.description + " s").with(style: .Bold), level: .Message, context: .WidgetLayouting)
-        Logger.log("Layout of Widget: \(self) produced result.".with(fg: .Green, style: .Bold), level: .Message, context: .WidgetLayouting)
+        Logger.log("Layout of Widget: \(self) took time:", (layoutDuration.description + " s").with(style: .bold), level: .Message, context: .WidgetLayouting)
+        Logger.log("Layout of Widget: \(self) produced result.".with(fg: .green, style: .bold), level: .Message, context: .WidgetLayouting)
         Logger.log("New self size: \(newUnconstrainedSize)", level: .Message, context: .WidgetLayouting)
         #endif
 
@@ -703,7 +709,7 @@ open class Widget: Bounded, Parent, Child {
         onLayoutingFinished.invokeHandlers(bounds.size)
 
         if previousSize != size && !isFirstRound {
-            Logger.log("Size changed and is not first round.".with(fg: .Yellow), level: .Message, context: .WidgetLayouting)
+            Logger.log("Size changed and is not first round.".with(fg: .yellow), level: .Message, context: .WidgetLayouting)
             onSizeChanged.invokeHandlers(size)
             invalidateRenderState()
         }
@@ -757,17 +763,17 @@ open class Widget: Bounded, Parent, Child {
                 }
             }
 
-            Logger.log("Render state of Widget: \(self) invalid. Rerendering.".with(fg: .Yellow), level: .Message, context: .WidgetRendering)
+            Logger.log("Render state of Widget: \(self) invalid. Rerendering.".with(fg: .yellow), level: .Message, context: .WidgetRendering)
             #endif
 
             updateRenderState()
         } else if !mounted || destroyed {
             #if DEBUG
-            Logger.log("Widget: \(self) is not mounted or already destroyed. Skip rendering.".with(fg: .Yellow), level: .Message, context: .WidgetRendering)
+            Logger.log("Widget: \(self) is not mounted or already destroyed. Skip rendering.".with(fg: .yellow), level: .Message, context: .WidgetRendering)
             #endif
         } else {
             #if DEBUG
-            Logger.log("Render state of Widget: \(self) valid. Using cached state.".with(fg: .Yellow), level: .Message, context: .WidgetRendering)
+            Logger.log("Render state of Widget: \(self) valid. Using cached state.".with(fg: .yellow), level: .Message, context: .WidgetRendering)
             #endif
         }
 
@@ -783,12 +789,12 @@ open class Widget: Bounded, Parent, Child {
     internal final func updateRenderState() {
         if !renderState.invalid {
             #if DEBUG
-            Logger.warn("Called updateRenderState on Widget where renderState is not invalid.".with(fg: .White, bg: .Red), context: .WidgetRendering)
+            Logger.warn("Called updateRenderState on Widget where renderState is not invalid.".with(fg: .white, bg: .red), context: .WidgetRendering)
             #endif
             return
         } else if !mounted || destroyed {
             #if DEBUG
-            Logger.warn("Called updateRenderState on Widget that is not yet mounted or was destroyed.".with(fg: .White, bg: .Red), context: .WidgetRendering)
+            Logger.warn("Called updateRenderState on Widget that is not yet mounted or was destroyed.".with(fg: .white, bg: .red), context: .WidgetRendering)
             #endif
             return
         }
@@ -826,7 +832,7 @@ open class Widget: Bounded, Parent, Child {
             }
 
             if highlighted {
-                let highlight = RenderStyleRenderObject(fillColor: .Red) {
+                let highlight = RenderStyleRenderObject(fillColor: .red) {
                     RectangleRenderObject(globalBounds)
                 }
                 subTree.appendChild(highlight)
@@ -844,7 +850,7 @@ open class Widget: Bounded, Parent, Child {
         } else {
             subTree.removeChildren()
             #if DEBUG
-            Logger.warn("Called updateRenderState on Widget that cannot be rendered in it's current state.".with(fg: .White, bg: .Red), context: .WidgetRendering)
+            Logger.warn("Called updateRenderState on Widget that cannot be rendered in it's current state.".with(fg: .white, bg: .red), context: .WidgetRendering)
             #endif
         }
 

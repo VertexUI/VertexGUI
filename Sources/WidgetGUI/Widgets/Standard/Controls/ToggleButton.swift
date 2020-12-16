@@ -61,18 +61,18 @@ public class ToggleButton<Value: Equatable>: SingleChildWidget, GUIMouseEventCon
     return ContainerRenderObject {
       super.renderContent()
 
-      RenderStyleRenderObject(fillColor: .Blue) {
+      RenderStyleRenderObject(fillColor: .blue) {
         RectangleRenderObject(buttonGraphicSpace.globalBounds)
       }
 
       if state == .LeftToggled {
-        RenderStyleRenderObject(fillColor: .Yellow) {
+        RenderStyleRenderObject(fillColor: .yellow) {
           RectangleRenderObject(DRect(
             min: buttonGraphicSpace.globalPosition,
             size: toggleIndicatorSize))
         }
       } else if state == .RightToggled {
-        RenderStyleRenderObject(fillColor: .Yellow) {
+        RenderStyleRenderObject(fillColor: .yellow) {
           RectangleRenderObject(DRect(
             max: buttonGraphicSpace.globalBounds.max,
             size: toggleIndicatorSize))

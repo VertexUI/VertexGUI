@@ -23,7 +23,7 @@ public class DefaultTheme: Theme {
       },
 
       Text.PartialConfig {
-        $0.color = mode == .Light ? Color.Black : Color.White
+        $0.color = mode == .Light ? Color.black : Color.white
       },
 
       TextField.PartialConfig {
@@ -58,7 +58,7 @@ public class DefaultTheme: Theme {
           }
 
           $0.textConfig {
-            $0.color = .White
+            $0.color = .white
           }
         }
 
@@ -69,7 +69,7 @@ public class DefaultTheme: Theme {
           }
 
           $0.textConfig {
-            $0.color = .White
+            $0.color = .white
           }
         }
       },

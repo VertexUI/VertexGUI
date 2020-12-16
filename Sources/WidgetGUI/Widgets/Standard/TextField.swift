@@ -9,7 +9,7 @@ public final class TextField: SingleChildWidget, ConfigurableWidget {
       $0.shape = .Rectangle
     },
     textInputConfig: TextInput.PartialConfig(),
-    borderColor: .Blue)
+    borderColor: .blue)
   public var localPartialConfig: PartialConfig?
   public var localConfig: Config?
   lazy public var config: Config = combineConfigs()
