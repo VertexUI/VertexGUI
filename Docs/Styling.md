@@ -1,8 +1,6 @@
 # Styling
 
-This document defines the styling functionality that should be provided by the framework.
-
-At the moment it will the basis for implementing, later it will serve as documentation.
+This document serves as a reference for implementing the styling API of the framework. It will later help to provide documentation.
 
 <br>
 
