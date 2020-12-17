@@ -60,7 +60,11 @@ public class TodoAppView: SingleChildWidget {
                 })
               } onClick: { [unowned self] _ in
                 handleNewListClick()
-              }
+              }/*.provideStyles {
+                ExperimentalText.Style {
+                  $0.fontSize = 30
+                }
+              }*/
             }
 
             Column.Item(crossAlignment: .Stretch) {

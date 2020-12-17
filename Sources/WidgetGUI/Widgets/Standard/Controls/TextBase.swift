@@ -9,18 +9,18 @@ open class TextBase: Widget, SimpleStylableWidget {
     }
   }
   private var transformedText: String {   
-    filledStyle.transform!.apply(to: displayedText)
+    filledStyleProperties.transform!.apply(to: displayedText)
   }
 
-  public private(set) lazy var filledStyle: Style = getFilledStyle()
+  public private(set) lazy var filledStyleProperties: StyleProperties = getFilledStyleProperties()
   public var fontConfig: FontConfig {
     FontConfig(
-      family: filledStyle.fontFamily!,
-      size: filledStyle.fontSize!,
-      weight: filledStyle.fontWeight!,
-      style: filledStyle.fontStyle!)
+      family: filledStyleProperties.fontFamily!,
+      size: filledStyleProperties.fontSize!,
+      weight: filledStyleProperties.fontWeight!,
+      style: filledStyleProperties.fontStyle!)
   }
-  public static let defaultStyle = Style {
+  public static let defaultStyleProperties = StyleProperties {
     $0.fontFamily = defaultFontFamily
     $0.fontSize = 16
     $0.fontWeight = .regular
@@ -38,7 +38,7 @@ open class TextBase: Widget, SimpleStylableWidget {
     var boxConfig = BoxConfig(
       preferredSize: context.getTextBoundsSize(transformedText, fontConfig: fontConfig))
 
-    if !filledStyle.wrap! {
+    if !filledStyleProperties.wrap! {
       boxConfig.minSize = boxConfig.preferredSize
     }
 
@@ -49,7 +49,7 @@ open class TextBase: Widget, SimpleStylableWidget {
     let boundedText = transformedText.isEmpty ? " " : transformedText
 
     var textBoundsSize = context.getTextBoundsSize(
-      boundedText, fontConfig: fontConfig, maxWidth: filledStyle.wrap! ? constraints.maxWidth : nil
+      boundedText, fontConfig: fontConfig, maxWidth: filledStyleProperties.wrap! ? constraints.maxWidth : nil
     )
     
     if transformedText.isEmpty {
@@ -71,12 +71,12 @@ open class TextBase: Widget, SimpleStylableWidget {
   public func getSubBounds(to index: Int) -> DRect {
     var preferredSize = DSize2.zero
     let partialText = String(displayedText[..<displayedText.index(displayedText.startIndex, offsetBy: index)])
-    let transformedText = filledStyle.transform!.apply(to: partialText)
+    let transformedText = filledStyleProperties.transform!.apply(to: partialText)
 
     if transformedText.isEmpty {
       preferredSize.height = context.getTextBoundsSize(" ", fontConfig: fontConfig).height
     } else {
-      if filledStyle.wrap! {
+      if filledStyleProperties.wrap! {
         preferredSize = context.getTextBoundsSize(
           transformedText, fontConfig: fontConfig, maxWidth: previousConstraints!.maxWidth)
       } else {
@@ -93,31 +93,29 @@ open class TextBase: Widget, SimpleStylableWidget {
   }
 
   override public func renderContent() -> RenderObject? {
-    let maxWidth = filledStyle.wrap! ? bounds.size.width : nil
+    let maxWidth = filledStyleProperties.wrap! ? bounds.size.width : nil
 
     if let previousContent = renderState.mainContent as? TextRenderObject {
       previousContent.text = transformedText
       previousContent.fontConfig = fontConfig
-      previousContent.color = filledStyle.foreground!
+      previousContent.color = filledStyleProperties.foreground!
       previousContent.topLeft = globalPosition
       previousContent.maxWidth = maxWidth
       return previousContent
     } else {
       return TextRenderObject(
-        transformedText, fontConfig: fontConfig, color: filledStyle.foreground!,
+        transformedText, fontConfig: fontConfig, color: filledStyleProperties.foreground!,
         topLeft: globalPosition, maxWidth: maxWidth)
     }
   }
 
-  public func acceptsStyle(_ style: AnyStyle) -> Bool {
-    style as? Style != nil || style as? AnyForegroundStyle != nil
+  public func acceptsStyleProperties(_ properties: AnyStyleProperties) -> Bool {
+    properties as? StyleProperties != nil || properties as? AnyForegroundStyleProperties != nil
   }
 }
 
 extension TextBase {
-  public struct Style: WidgetGUI.Style, ForegroundStyle {
-    public var selector: WidgetSelector? = nil
-
+  public struct StyleProperties: WidgetGUI.StyleProperties, ForegroundStyleProperties {
     @StyleProperty
     public var fontFamily: FontFamily?
 

@@ -1,40 +1,23 @@
 public protocol AnyStyle {
+  var anyProperties: AnyStyleProperties { get set }
   var selector: WidgetSelector? { get set }
 }
 
-public protocol Style: AnyStyle {
-  init()
-  //init(_ selector: WidgetSelector)
-  init(_ selector: WidgetSelector, _ configure: (inout Self) -> ())
-  init(_ configure: (inout Self) -> ())
-
-  func sub(@StyleBuilder _ styles: () -> [AnyStyle])
-}
-
-extension Style {
-  public init(_ selector: WidgetSelector, _ configure: (inout Self) -> ()) {
-    self.init()
+public struct Style<Properties: StyleProperties>: AnyStyle {
+  public var properties: Properties 
+  public var anyProperties: AnyStyleProperties {
+    get {
+      properties
+    }
+    set {
+      properties = newValue as! Properties
+    }
+  }
+  public var selector: WidgetSelector?
+  
+  public init(_ selector: WidgetSelector? = nil, _ configure: (inout Properties) -> ()) {
     self.selector = selector
-    configure(&self)
-  }
-
-  public init(_ configure: (inout Self) -> ()) {
-    self.init()
-    configure(&self)
-  }
-
-  public func sub(@StyleBuilder _ styles: () -> [AnyStyle]) {
-
-  }
-  /*public init(_ selector: WidgetSelector) {
-    self.init()
-    self.selector = selector
-  }*/
-}
-
-@_functionBuilder
-public struct StyleBuilder {
-  public static func buildBlock(_ styles: [AnyStyle]) -> [AnyStyle] {
-    styles
+    self.properties = Properties()
+    configure(&properties)
   }
 }

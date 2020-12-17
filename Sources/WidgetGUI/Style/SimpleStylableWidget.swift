@@ -1,31 +1,36 @@
 public protocol SimpleStylableWidget: Widget, StylableWidget {
-  associatedtype Style: WidgetGUI.Style
+  associatedtype StyleProperties: WidgetGUI.StyleProperties
   
-  static var defaultStyle: Style { get }
-  var filledStyle: Style { get }
+  static var defaultStyleProperties: StyleProperties { get }
+  var filledStyleProperties: StyleProperties { get }
 
-  func acceptsStyle(_ style: AnyStyle) -> Bool
-  func filterStyles(_ styles: [AnyStyle]) -> [AnyStyle]
-  func mergeStyles(_ styles: [AnyStyle]) -> Style
-  func getFilledStyle() -> Style
+  /**
+  - Returns: `true` if the Widget can handle and apply the given type of StyleProperties. `false` if not.
+  */
+  func acceptsStyleProperties(_ properties: AnyStyleProperties) -> Bool
+  func filterStyleProperties(_ properties: [AnyStyleProperties]) -> [AnyStyleProperties]
+  func mergeStyleProperties(_ properties: [AnyStyleProperties]) -> StyleProperties
+  func getFilledStyleProperties() -> StyleProperties
 }
 
 extension SimpleStylableWidget {
-  public func filterStyles(_ styles: [AnyStyle]) -> [AnyStyle] {
-    styles.filter {
-      acceptsStyle($0)
+  public typealias Style = WidgetGUI.Style<StyleProperties>
+
+  public func filterStyleProperties(_ properties: [AnyStyleProperties]) -> [AnyStyleProperties] {
+    properties.filter {
+      acceptsStyleProperties($0)
     }
   }
 
-  public func mergeStyles(_ styles: [AnyStyle]) -> Style {
-    let filteredPartialStyles = filterStyles(styles)
+  public func mergeStyleProperties(_ properties: [AnyStyleProperties]) -> StyleProperties {
+    let filteredPartialProperties = filterStyleProperties(properties)
 
-    var result = Style()
+    var result = StyleProperties()
 
     let resultMirror = Mirror(reflecting: result)
 
-    for partialStyle in filteredPartialStyles {
-      let partialMirror = Mirror(reflecting: partialStyle)
+    for partialProperties in filteredPartialProperties {
+      let partialMirror = Mirror(reflecting: partialProperties)
       for partialChild in partialMirror.children {
         if let partialProperty = partialChild.value as? AnyStyleProperty, partialProperty.anyValue != nil {
           for resultChild in resultMirror.children {
@@ -40,7 +45,7 @@ extension SimpleStylableWidget {
     return result
   }
 
-  public func getFilledStyle() -> Style {
-    mergeStyles([Self.defaultStyle, mergeStyles(styles)])
+  public func getFilledStyleProperties() -> StyleProperties {
+    mergeStyleProperties([Self.defaultStyleProperties, mergeStyleProperties(styles.map { $0.anyProperties })])
   }
 }

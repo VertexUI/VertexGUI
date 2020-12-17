@@ -395,7 +395,9 @@ open class Widget: Bounded, Parent, Child {
 
     // TODO: this is work in progress, possibly one step towards a new approach to child handling
     open func visitChildren() -> ChildIterator {
-        fatalError("visitChildren() not implemented")
+        ChildIterator(count: children.count) { [unowned self] in
+            children[$0]
+        }
     }
 
     // TODO: maybe rename to inMount or something like that

@@ -10,8 +10,9 @@ public extension Widget {
       self.getNext = getNext
     }
 
-    public func next() -> Widget? {
+    mutating public func next() -> Widget? {
       if nextIndex < count {
+        defer { nextIndex += 1 }
         return getNext(nextIndex)
       } else {
         return nil
