@@ -2,6 +2,7 @@ public protocol SimpleStylableWidget: Widget, StylableWidget {
   associatedtype StyleProperties: WidgetGUI.StyleProperties
   
   static var defaultStyleProperties: StyleProperties { get }
+  var directStyleProperties: [AnyStyleProperties] { get set }
   var filledStyleProperties: StyleProperties { get }
 
   /**
@@ -11,6 +12,10 @@ public protocol SimpleStylableWidget: Widget, StylableWidget {
   func filterStyleProperties(_ properties: [AnyStyleProperties]) -> [AnyStyleProperties]
   func mergeStyleProperties(_ properties: [AnyStyleProperties]) -> StyleProperties
   func getFilledStyleProperties() -> StyleProperties
+  /**
+  Add style properties which will only apply to this specific Widget instance.
+  */
+  func with(properties: AnyStyleProperties) -> Self
 }
 
 extension SimpleStylableWidget {
@@ -46,6 +51,11 @@ extension SimpleStylableWidget {
   }
 
   public func getFilledStyleProperties() -> StyleProperties {
-    mergeStyleProperties([Self.defaultStyleProperties, mergeStyleProperties(styles.map { $0.anyProperties })])
+    mergeStyleProperties([Self.defaultStyleProperties, mergeStyleProperties(styles.map { $0.anyProperties })] + directStyleProperties)
+  }
+
+  public func with(properties: AnyStyleProperties) -> Self {
+    directStyleProperties.append(properties)
+    return self
   }
 }

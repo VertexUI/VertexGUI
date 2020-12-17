@@ -12,6 +12,7 @@ open class TextBase: Widget, SimpleStylableWidget {
     filledStyleProperties.transform!.apply(to: displayedText)
   }
 
+  public var directStyleProperties: [AnyStyleProperties] = []
   public private(set) lazy var filledStyleProperties: StyleProperties = getFilledStyleProperties()
   public var fontConfig: FontConfig {
     FontConfig(

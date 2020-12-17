@@ -54,7 +54,7 @@ public class TodoAppView: SingleChildWidget {
 
             Padding(all: 32) {
               Button {
-                ExperimentalText("New List").with(style: ExperimentalText.Style {
+                ExperimentalText("New List").with(properties: ExperimentalText.StyleProperties {
                   $0.foreground = Color.black
                   $0.fontWeight = .bold
                 })
