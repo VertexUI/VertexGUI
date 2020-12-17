@@ -135,6 +135,10 @@ This document serves as a reference for implementing the styling API of the fram
 
 - are styles reactive? and if so at what level? at each property? or for each Style element, and where do the dependencies for the reactive calculation come from? from the Widget --> properties?
 
+- how to handle nesting? 
+  - should every style object contain it's children directly?
+  - should only specific types of style objects be allowed to have children? --> e.g. via conformance to a protocol?
+
 - how powerful are the styles?
   - can they hide Widgets?
   - can they move Widgets around?

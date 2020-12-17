@@ -36,6 +36,8 @@ open class Root: Parent {
   private var mouseEventManager = WidgetTreeMouseEventManager()
   private var mouseMoveEventBurstLimiter = BurstLimiter(minDelay: 0.015)
 
+  lazy private var styleManager = StyleManager(rootWidget: rootWidget)
+
   public var debugLayout = false {
     didSet {
       if let widgetContext = widgetContext {
@@ -62,6 +64,8 @@ open class Root: Parent {
 
     rootWidget.mount(parent: self, context: widgetContext, lifecycleBus: widgetLifecycleBus)
     //rootWidget.focusContext = focusContext
+
+    styleManager.setup()
   }
   
   open func layout() {
@@ -112,6 +116,7 @@ open class Root: Parent {
         widget.build()
       }
     }
+    styleManager.refresh(Array(rebuildWidgets))
     rebuildWidgets.clear()
 
     for widget in reboxConfigWidgets {
@@ -121,7 +126,7 @@ open class Root: Parent {
     }
     reboxConfigWidgets.clear()
     
-    print("relayout widgets count", relayoutWidgets.count)
+    //print("relayout widgets count", relayoutWidgets.count)
     for widget in relayoutWidgets {
       // the widget should only be relayouted if it hasn't been layouted before
       // if it hasn't been layouted before it will be layouted during
@@ -133,7 +138,7 @@ open class Root: Parent {
     relayoutWidgets.clear()
 
     // TODO: is it good to put this here or better in render()?
-    print("rerender widgets count", rerenderWidgets.count)
+    //print("rerender widgets count", rerenderWidgets.count)
     for widget in rerenderWidgets {
       if !widget.destroyed {
         widget.updateRenderState()
@@ -143,7 +148,7 @@ open class Root: Parent {
 
     removeOnAdd()
     widgetLifecycleMessages.clear()
-    print("ONTICK TOOK", Date.timeIntervalSinceReferenceDate - startTime, "seconds")
+    //print("ONTICK TOOK", Date.timeIntervalSinceReferenceDate - startTime, "seconds")
   }
 
   @inline(__always)
