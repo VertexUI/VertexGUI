@@ -2,7 +2,7 @@ import GfxMath
 import Foundation
 import VisualAppBase
 
-open class TextBase: Widget, StylableWidget {
+open class TextBase: Widget, SimpleStylableWidget {
   public var displayedText: String {
     didSet {
       handleTextChange()
@@ -12,8 +12,7 @@ open class TextBase: Widget, StylableWidget {
     filledStyle.transform!.apply(to: displayedText)
   }
 
-  public private(set) lazy var mergedStyle: Style = mergeStyles() 
-  public private(set) lazy var filledStyle: Style = fillStyle()
+  public private(set) lazy var filledStyle: Style = getFilledStyle()
   public var fontConfig: FontConfig {
     FontConfig(
       family: filledStyle.fontFamily!,
@@ -110,33 +109,8 @@ open class TextBase: Widget, StylableWidget {
     }
   }
 
-  public func filterStyles() -> [AnyStyle] {
-    styles.filter {
-      $0 as? Style != nil || $0 as? AnyForegroundStyle != nil
-    }
-  }
-
-  public func mergeStyles() -> Style {
-    let filteredStyles = filterStyles()
-    var result = Style()
-    let resultMirror = Mirror(reflecting: result)
-    for style in filteredStyles {
-      let mirror = Mirror(reflecting: style)
-      for child in mirror.children {
-        if let property = child.value as? AnyStyleProperty {
-          for var resultChild in resultMirror.children {
-            if resultChild.label == child.label, var resultProperty = resultChild.value as? AnyStyleProperty {
-              resultProperty.anyValue = property.anyValue
-            }
-          }
-        }
-      }
-    }
-    return result
-  }
-
-  public func fillStyle() -> Style {
-    return Self.defaultStyle
+  public func acceptsStyle(_ style: AnyStyle) -> Bool {
+    style as? Style != nil || style as? AnyForegroundStyle != nil
   }
 }
 

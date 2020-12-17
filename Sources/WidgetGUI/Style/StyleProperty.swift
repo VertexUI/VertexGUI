@@ -1,11 +1,11 @@
 import GfxMath
 
-public protocol AnyStyleProperty {
+public protocol AnyStyleProperty: class {
   var anyValue: Any? { get set }
 }
 
 @propertyWrapper
-public struct StyleProperty<Value: Equatable>: Equatable, AnyStyleProperty {
+public class StyleProperty<Value: Equatable>: AnyStyleProperty {
   public var wrappedValue: Value?
 
   public var anyValue: Any? {
