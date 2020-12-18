@@ -79,22 +79,25 @@ final class StyleTests: XCTestCase {
       ExperimentalText.Style(WidgetSelector(classes: ["class-1"])) {
         $0.fontSize = 50
       }
+      ExperimentalText.Style {
+        $0.fontWeight = .bold
+      }
       class2Style1
       class2Style2
     }
     let mockRoot = MockRoot(rootWidget: rootWidget)
 
     // count should indicate that the selectors were respected
-    XCTAssertEqual(rootWidget.appliedStyles.count, 0)
-    XCTAssertEqual(widget1.appliedStyles.count, 1)
-    XCTAssertEqual(widget2.appliedStyles.count, 2)
-    XCTAssertEqual(widget3.appliedStyles.count, 2)
-    XCTAssertEqual(widget4.appliedStyles.count, 0)
-    XCTAssertEqual(widget5.appliedStyles.count, 3)
+    XCTAssertEqual(rootWidget.appliedStyles.count, 1)
+    XCTAssertEqual(widget1.appliedStyles.count, 2)
+    XCTAssertEqual(widget2.appliedStyles.count, 3)
+    XCTAssertEqual(widget3.appliedStyles.count, 3)
+    XCTAssertEqual(widget4.appliedStyles.count, 1)
+    XCTAssertEqual(widget5.appliedStyles.count, 4)
 
     // check order of styles
-    XCTAssert(widget2.appliedStyles[0] == class2Style1)
-    XCTAssert(widget2.appliedStyles[1] == class2Style2)
+    XCTAssert(widget2.appliedStyles[1] == class2Style1)
+    XCTAssert(widget2.appliedStyles[2] == class2Style2)
   }
 
   func testStyleOnDynamicallyInsertedWidget() {
@@ -131,9 +134,57 @@ final class StyleTests: XCTestCase {
     XCTAssertEqual(widget2.appliedStyles.count, 1)
   }
 
+  func testMultiParentStyleMergeOverwrite() {
+    let widget1 = ExperimentalText("Text1").with(classes: ["class-1", "class-2"])
+
+    let widget2 = Column {
+      widget1
+    }.provideStyles {
+      ExperimentalText.Style(WidgetSelector(classes: ["class-1"])) {
+        $0.fontSize = 4
+        $0.fontWeight = .black
+      }
+    }
+
+    let widget3 = Column {
+      widget2
+    }.provideStyles {
+      ExperimentalText.Style(WidgetSelector(classes: ["class-1"])) {
+        $0.fontSize = 3
+        $0.fontWeight = .bold
+      }
+    }
+
+    let widget4 = ExperimentalText("Text2").with(classes: ["class-1"])
+    
+    let widget5 = Column { 
+      widget3
+      widget4
+    }.provideStyles {
+      ExperimentalText.Style(WidgetSelector(classes: ["class-1"])) {
+        $0.fontSize = 1
+      }
+      ExperimentalText.Style(WidgetSelector(classes: ["class-1"])) {
+        $0.fontSize = 2
+      }
+      ExperimentalText.Style(WidgetSelector(classes: ["class-2"])) {
+        $0.fontWeight = .medium
+      }
+    }
+    
+    let mockRoot = MockRoot(rootWidget: widget5)
+
+    XCTAssertEqual(widget4.appliedStyles.count, 2)
+    XCTAssertEqual(widget4.filledStyleProperties.fontSize, 2)
+    XCTAssertEqual(widget1.appliedStyles.count, 5)
+    XCTAssertEqual(widget1.filledStyleProperties.fontSize, 4)
+    XCTAssertEqual(widget1.filledStyleProperties.fontWeight, .black)
+  }
+
   static var allTests = [
     ("testStyleComparison", testStyleComparison),
     ("testStyleOnDynamicallyInsertedWidget", testStyleOnDynamicallyInsertedWidget),
-    ("testStyleSelectorAndOrderRespected", testStyleSelectorAndOrderRespected)
+    ("testStyleSelectorAndOrderRespected", testStyleSelectorAndOrderRespected),
+    ("testMultiParentStyleMergeOverwrite", testMultiParentStyleMergeOverwrite)
   ]
 }
