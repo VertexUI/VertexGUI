@@ -51,7 +51,7 @@ extension SimpleStylableWidget {
   }
 
   public func getFilledStyleProperties() -> StyleProperties {
-    mergeStyleProperties([Self.defaultStyleProperties, mergeStyleProperties(styles.map { $0.anyProperties })] + directStyleProperties)
+    mergeStyleProperties([Self.defaultStyleProperties, mergeStyleProperties(appliedStyles.map { $0.anyProperties })] + directStyleProperties)
   }
 
   public func with(properties: AnyStyleProperties) -> Self {

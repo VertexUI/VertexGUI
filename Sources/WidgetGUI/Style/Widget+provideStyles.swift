@@ -4,7 +4,7 @@ public extension Widget {
   selector matches.
   */
   public func provideStyles(@StyleBuilder buildStyles: () -> [AnyStyle]) -> Widget {
-    styles.append(contentsOf: buildStyles())
+    providedStyles.append(contentsOf: buildStyles())
     return self
   }
 }

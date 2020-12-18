@@ -22,7 +22,7 @@ public class StyleManager {
 
     while var iterator = iterators.last {
       if let widget = iterator.next() {
-        styles.append(contentsOf: widget.styles.map { StyleWrapper(style: $0, source: widget) })
+        styles.append(contentsOf: widget.providedStyles.map { StyleWrapper(style: $0, source: widget) })
         iterators[iterators.count - 1] = iterator // to store the advancement by next()
         iterators.append(widget.visitChildren())
         continue
@@ -32,6 +32,10 @@ public class StyleManager {
     }
 
     print("RETRIEVED STYLES", styles)
+  }
+
+  public func applyStyles() {
+
   }
 }
 

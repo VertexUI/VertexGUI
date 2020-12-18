@@ -198,7 +198,8 @@ open class Widget: Bounded, Parent, Child {
     public internal(set) var destroyed = false
 
 
-    internal var styles: [AnyStyle] = []
+    internal var providedStyles: [AnyStyle] = []
+    internal var appliedStyles: [AnyStyle] = []
 
 
     @usableFromInline internal var reference: AnyReferenceProtocol? {
