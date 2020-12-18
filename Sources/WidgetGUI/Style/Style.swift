@@ -7,6 +7,10 @@ public func == (lhs: AnyStyle, rhs: AnyStyle) -> Bool {
   lhs.selector == rhs.selector && lhs.anyProperties == rhs.anyProperties
 }
 
+public func != (lhs: AnyStyle, rhs: AnyStyle) -> Bool {
+  !(lhs == rhs)
+}
+
 public struct Style<Properties: StyleProperties>: AnyStyle {
   public var properties: Properties 
   public var anyProperties: AnyStyleProperties {
