@@ -3,6 +3,15 @@ import VisualAppBase
 @testable import WidgetGUI
 
 final class StyleTests: XCTestCase {
+  func testWidgetSelectorParsing() {
+    var selector: WidgetSelector = ".class1"
+    XCTAssertEqual(selector.classes, ["class1"])
+    selector = ".class1.class2"
+    XCTAssertEqual(selector.classes, ["class1", "class2"])
+    selector = ""
+    XCTAssertEqual(selector.classes, [])
+  }
+
   func testStyleComparison() {
     let style1 = ExperimentalText.Style(WidgetSelector(classes: ["class-1"])) {
       $0.fontSize = 30
@@ -182,6 +191,7 @@ final class StyleTests: XCTestCase {
   }
 
   static var allTests = [
+    ("testWidgetSelectorParsing", testWidgetSelectorParsing),
     ("testStyleComparison", testStyleComparison),
     ("testStyleOnDynamicallyInsertedWidget", testStyleOnDynamicallyInsertedWidget),
     ("testStyleSelectorAndOrderRespected", testStyleSelectorAndOrderRespected),
