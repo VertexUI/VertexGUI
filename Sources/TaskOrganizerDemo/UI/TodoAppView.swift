@@ -132,8 +132,12 @@ public class TodoAppView: SingleChildWidget {
                 }
 
                 Row.Item(crossAlignment: .Center) {
-                  Text(list.name)
+                  ExperimentalText(list.name).with(classes: ["list-item-name"])
                 }
+              }
+            }.provideStyles {
+              ExperimentalText.Style(WidgetSelector(classes: ["list-item-name"])) {
+                $0.foreground = .white
               }
             }
           }
