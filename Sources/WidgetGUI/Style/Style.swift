@@ -3,6 +3,10 @@ public protocol AnyStyle {
   var selector: WidgetSelector? { get set }
 }
 
+public func == (lhs: AnyStyle, rhs: AnyStyle) -> Bool {
+  lhs.selector == rhs.selector && lhs.anyProperties == rhs.anyProperties
+}
+
 public struct Style<Properties: StyleProperties>: AnyStyle {
   public var properties: Properties 
   public var anyProperties: AnyStyleProperties {
