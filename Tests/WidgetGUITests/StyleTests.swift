@@ -10,6 +10,13 @@ final class StyleTests: XCTestCase {
     XCTAssertEqual(selector.classes, ["class1", "class2"])
     selector = ""
     XCTAssertEqual(selector.classes, [])
+    selector = ":pseudoClass1"
+    XCTAssertEqual(selector.pseudoClasses, ["pseudoClass1"])
+    selector = ":pseudoClass1:pseudoClass2"
+    XCTAssertEqual(selector.pseudoClasses, ["pseudoClass1", "pseudoClass2"])
+    selector = ":pseudoClass1.class1"
+    XCTAssertEqual(selector.pseudoClasses, ["pseudoClass1"])
+    XCTAssertEqual(selector.classes, ["class1"])
   }
 
   func testStyleComparison() {

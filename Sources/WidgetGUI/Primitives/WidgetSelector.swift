@@ -4,15 +4,18 @@ public struct WidgetSelector: Hashable, ExpressibleByStringLiteral {
     // TODO: make initializable from string literal
     public let type: ObjectIdentifier?
     public let classes: [String]
+    public let pseudoClasses: [String]
 
-    public init<T: Widget>(type: T.Type, classes: [String] = []) {
+    public init<T: Widget>(type: T.Type, classes: [String] = [], pseudoClasses: [String] = []) {
         self.type = ObjectIdentifier(type)
         self.classes = classes
+        self.pseudoClasses = pseudoClasses
     }
 
-    public init(classes: [String]) {
+    public init(classes: [String] = [], pseudoClasses: [String] = []) {
         self.type = nil
         self.classes = classes
+        self.pseudoClasses = pseudoClasses
     }
 
     public init(parse stringLiteral: String) throws {
@@ -40,10 +43,13 @@ public struct WidgetSelector: Hashable, ExpressibleByStringLiteral {
 
 extension WidgetSelector {
     private static let classIndicator = Character(".")
-    private static let allowedIdentifierCharacters = CharacterSet.letters.union(CharacterSet.decimalDigits)
+    private static let pseudoClassIndiator = Character(":")
+    private static let allowedIdentifierCharacters = CharacterSet.letters
+        .union(CharacterSet.decimalDigits)
+        .union(CharacterSet(["-", "_"]))
 
     private enum ParsingBufferResultType {
-        case `class`
+        case `class`, pseudoClass
     }
 
     public struct LiteralSyntaxEerror: LocalizedError {
@@ -58,6 +64,7 @@ extension WidgetSelector {
         private let string: String
 
         private var classes = [String]()
+        private var pseudoClasses = [String]()
         private var nextResultType: ParsingBufferResultType? = nil
         private var nextResultBuffer: String = "" 
 
@@ -70,6 +77,9 @@ extension WidgetSelector {
                 if character == WidgetSelector.classIndicator {
                     flushCurrentBuffer()
                     nextResultType = .class
+                } else if character == WidgetSelector.pseudoClassIndiator {
+                    flushCurrentBuffer()
+                    nextResultType = .pseudoClass
                 } else if character.unicodeScalars.allSatisfy(allowedIdentifierCharacters.contains) {
                     nextResultBuffer.append(character)
                 } else {
@@ -77,7 +87,7 @@ extension WidgetSelector {
                 }
             }
             flushCurrentBuffer()
-            return WidgetSelector(classes: classes)
+            return WidgetSelector(classes: classes, pseudoClasses: pseudoClasses)
         }
 
         mutating private func flushCurrentBuffer() {
@@ -85,6 +95,8 @@ extension WidgetSelector {
                 switch nextResultType {
                 case .class:
                     classes.append(nextResultBuffer)
+                case .pseudoClass:
+                    pseudoClasses.append(nextResultBuffer)
                 }
             }
             nextResultType = nil
