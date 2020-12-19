@@ -1,6 +1,6 @@
 import Foundation
 
-public struct WidgetSelector: Hashable, ExpressibleByStringLiteral {
+public struct StyleSelector: Hashable, ExpressibleByStringLiteral {
     // TODO: make initializable from string literal
     public let type: ObjectIdentifier?
     public let classes: [String]
@@ -41,7 +41,7 @@ public struct WidgetSelector: Hashable, ExpressibleByStringLiteral {
     }
 }
 
-extension WidgetSelector {
+extension StyleSelector {
     private static let classIndicator = Character(".")
     private static let pseudoClassIndiator = Character(":")
     private static let allowedIdentifierCharacters = CharacterSet.letters
@@ -72,12 +72,12 @@ extension WidgetSelector {
             self.string = string
         }
 
-        mutating public func parse() throws -> WidgetSelector {
+        mutating public func parse() throws -> StyleSelector {
             for character in string {
-                if character == WidgetSelector.classIndicator {
+                if character == StyleSelector.classIndicator {
                     flushCurrentBuffer()
                     nextResultType = .class
-                } else if character == WidgetSelector.pseudoClassIndiator {
+                } else if character == StyleSelector.pseudoClassIndiator {
                     flushCurrentBuffer()
                     nextResultType = .pseudoClass
                 } else if character.unicodeScalars.allSatisfy(allowedIdentifierCharacters.contains) {
@@ -87,7 +87,7 @@ extension WidgetSelector {
                 }
             }
             flushCurrentBuffer()
-            return WidgetSelector(classes: classes, pseudoClasses: pseudoClasses)
+            return StyleSelector(classes: classes, pseudoClasses: pseudoClasses)
         }
 
         mutating private func flushCurrentBuffer() {

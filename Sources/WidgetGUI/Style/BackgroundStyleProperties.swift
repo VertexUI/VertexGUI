@@ -6,7 +6,7 @@ public protocol BackgroundStyleProperties: StyleProperties {
 }
 
 public struct AnyBackgroundStyleProperties: BackgroundStyleProperties {
-  public var selector: WidgetSelector? = nil
+  public var selector: StyleSelector? = nil
   public var subStyles: [AnyStyle]? = nil
   @StyleProperty
   public var background: Color?

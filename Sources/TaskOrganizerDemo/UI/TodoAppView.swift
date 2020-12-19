@@ -136,7 +136,7 @@ public class TodoAppView: SingleChildWidget {
                 }
               }
             }.provideStyles {
-              ExperimentalText.Style(WidgetSelector(classes: ["list-item-name"])) {
+              ExperimentalText.Style(StyleSelector(classes: ["list-item-name"])) {
                 $0.foreground = .white
               }
             }
