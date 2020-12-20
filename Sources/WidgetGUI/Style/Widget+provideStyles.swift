@@ -4,7 +4,11 @@ public extension Widget {
   selector matches.
   */
   public func provideStyles(@StyleBuilder buildStyles: () -> [AnyStyle]) -> Widget {
-    providedStyles.append(contentsOf: buildStyles())
+    let styles = buildStyles()
+    if !styles.allSatisfy { !$0.extendsParent } {
+      fatalError("a root level style cannot extend a parent style")
+    }
+    providedStyles.append(contentsOf: styles) 
     return self
   }
 }
