@@ -220,7 +220,7 @@ final class StyleTests: XCTestCase {
     }.provideStyles {
       ExperimentalText.Style(".class-1") {
         $0.fontSize = 1
-      } sub: {
+
         ExperimentalText.Style() {
           $0.fontSize = 1
         }
@@ -235,13 +235,13 @@ final class StyleTests: XCTestCase {
     widget.with(classes: ["class-1", "class-2"]).provideStyles {
       MockLeafWidget.Style(".class-1") {
         $0.property1 = 1
-      } sub: {
+
         MockLeafWidget.Style("&.class-1") {
           $0.property1 = 2
-        } sub: {
+
           MockLeafWidget.Style {
             $0.property1 = 3
-          } sub: {
+
             MockLeafWidget.Style("&") {
               $0.property1 = 4
             }
@@ -265,14 +265,13 @@ final class StyleTests: XCTestCase {
         }.provideStyles {
           MockLeafWidget.Style(".class-1") {
             $0.property1 = 1
-          } sub: {
+
             MockLeafWidget.Style("&") {
               $0.property1 = 2
             }
 
             MockLeafWidget.Style("&.class-2") {
               $0.property1 = 3
-            } sub: {
               MockLeafWidget.Style("&") {
                 $0.property4 = 2
               }
@@ -282,15 +281,15 @@ final class StyleTests: XCTestCase {
       }.with(classes: ["container-class-1"]).connect(ref: reference2)
     }.provideStyles {
       // and some crazy nesting and backreferencing
-      MockContainerWidget.Style(".container-class-1") { _ in } sub: {
-        //MockContainerWidget.Style("&") { _ in
-          MockLeafWidget.Style(".class-1.class-2") {
-            //MockLeafWidget.Style("&") {
+      MockContainerWidget.Style(".container-class-1") {
+        MockContainerWidget.Style("&") { 
+          MockLeafWidget.Style(".class-1.class-2") { 
+            MockLeafWidget.Style("&") {
               $0.property3 = 1
               $0.property4 = 1
-            //}
+            }
           }
-       // }
+        }
       }
     })
 
@@ -298,8 +297,7 @@ final class StyleTests: XCTestCase {
     XCTAssertEqual(reference1.referenced!.filledStyleProperties.property2, "")
     XCTAssertEqual(reference1.referenced!.filledStyleProperties.property3, 1)
     XCTAssertEqual(reference1.referenced!.filledStyleProperties.property4, 2)
-    print("applied properties are -----------__", reference1.referenced!.appliedStyles)
-    XCTAssertEqual(reference2.referenced!.appliedStyles.count, 1)
+    XCTAssertEqual(reference2.referenced!.appliedStyles.count, 2)
   }
 
   static var allTests = [

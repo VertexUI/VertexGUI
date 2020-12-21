@@ -47,14 +47,26 @@ public struct Style<Properties: StyleProperties>: AnyStyle {
   public var selector: StyleSelector?
   public var subStyles: [AnyStyle] = []
   
-  public init(_ selector: StyleSelector? = nil, _ configure: (inout Properties) -> ()) {
+  public init(_ selector: StyleSelector? = nil, @StyleBuilder _ configure: (inout Properties) -> [AnyStyle]) {
+    self.selector = selector
+    self.properties = Properties()
+    self.subStyles = configure(&properties)
+  }
+
+  public init(_ selector: StyleSelector? = nil, @StyleBuilder _ buildSubStyles: () -> [AnyStyle]) {
+    self.selector = selector
+    self.properties = Properties()
+    self.subStyles = buildSubStyles()
+  }
+
+  /*public init(_ selector: StyleSelector? = nil, _ configure: (inout Properties) -> ()) {
     self.selector = selector
     self.properties = Properties()
     configure(&properties)
-  }
+  }*/
 
-  public init(_ selector: StyleSelector? = nil, _ configure: (inout Properties) -> (), @StyleBuilder sub buildSubStyles: () -> [AnyStyle]) {
+  /*public init(_ selector: StyleSelector? = nil, @StyleBuilder _ configure: (inout Properties) -> [AnyStyle], @StyleBuilder sub buildSubStyles: () -> [AnyStyle]) {
     self.init(selector, configure)
     self.subStyles = buildSubStyles()
-  }
+  }*/
 }
