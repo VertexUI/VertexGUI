@@ -3,8 +3,8 @@ import VisualAppBase
 @testable import WidgetGUI
 
 final class StyleTests: XCTestCase {
-  func testWidgetSelectorParsing() {
-    var selector: WidgetSelector = ".class1"
+  func testStyleSelectorParsing() {
+    var selector: StyleSelector = ".class1"
     XCTAssertEqual(selector.classes, ["class1"])
     selector = ".class1.class2"
     XCTAssertEqual(selector.classes, ["class1", "class2"])
@@ -20,46 +20,46 @@ final class StyleTests: XCTestCase {
   }
 
   func testStyleComparison() {
-    let style1 = ExperimentalText.Style(WidgetSelector(classes: ["class-1"])) {
+    let style1 = ExperimentalText.Style(StyleSelector(classes: ["class-1"])) {
       $0.fontSize = 30
       $0.foreground = .black
     }
 
-    let style2 = ExperimentalText.Style(WidgetSelector(classes: ["class-2"])) {
+    let style2 = ExperimentalText.Style(StyleSelector(classes: ["class-2"])) {
       $0.fontSize = 30
       $0.foreground = .black
     }
 
-    let style3 = ExperimentalText.Style(WidgetSelector(classes: ["class-1"])) {
+    let style3 = ExperimentalText.Style(StyleSelector(classes: ["class-1"])) {
       $0.fontSize = 30
       $0.foreground = .black
     }
 
-    let style4 = ExperimentalText.Style(WidgetSelector(classes: ["class-1"])) {
+    let style4 = ExperimentalText.Style(StyleSelector(classes: ["class-1"])) {
       $0.fontSize = 31
     }
 
-    let style5 = ExperimentalText.Style(WidgetSelector(classes: ["class-1"])) {
+    let style5 = ExperimentalText.Style(StyleSelector(classes: ["class-1"])) {
       $0.foreground = .red
     }
 
-    let style6 = ExperimentalText.Style(WidgetSelector(classes: ["class-1"])) {
+    let style6 = ExperimentalText.Style(StyleSelector(classes: ["class-1"])) {
       $0.fontSize = 31
       $0.foreground = .red
     }
 
-    let style7 = ExperimentalText.Style(WidgetSelector(classes: ["class-1"])) {
+    let style7 = ExperimentalText.Style(StyleSelector(classes: ["class-1"])) {
       $0.fontSize = 31
       $0.foreground = .black
     }
 
-    let style8 = ExperimentalText.Style(WidgetSelector(classes: ["class-1"])) {
+    let style8 = ExperimentalText.Style(StyleSelector(classes: ["class-1"])) {
       $0.fontSize = 30
       $0.foreground = .black
       $0.fontWeight = .bold
     }
 
-    let style9 = ExperimentalText.Style(WidgetSelector(classes: ["class-1"])) {
+    let style9 = ExperimentalText.Style(StyleSelector(classes: ["class-1"])) {
       $0.fontWeight = .bold
     }
 
@@ -73,17 +73,17 @@ final class StyleTests: XCTestCase {
     XCTAssertFalse(style1 == style9)
   }
 
-  func testStyleSelectorAndOrderRespected() {
-    let widget1 = ExperimentalText("Test1").with(classes: ["class-1"])
-    let widget2 = ExperimentalText("Test2").with(classes: ["class-2"])
-    let widget3 = Text("Test3").with(classes: ["class-2"])
-    let widget4 = Text("Test4").with(classes: ["class-3"])
-    let widget5 = ExperimentalText("Test5").with(classes: ["class-1", "class-2", "class-3"])
-    let class2Style1 = ExperimentalText.Style(WidgetSelector(classes: ["class-2"])) {
-      $0.foreground = .grey
+  func testSimpleClassSelector() {
+    let widget1 = MockLeafWidget().with(classes: ["class-1"])
+    let widget2 = MockLeafWidget().with(classes: ["class-2"])
+    let widget3 = MockLeafWidget().with(classes: ["class-2"])
+    let widget4 = MockLeafWidget().with(classes: ["class-3"])
+    let widget5 = MockLeafWidget().with(classes: ["class-1", "class-2", "class-3"])
+    let class2Style1 = MockLeafWidget.Style(StyleSelector(classes: ["class-2"])) {
+      $0.property1 = 1
     }
-    let class2Style2 = ExperimentalText.Style(WidgetSelector(classes: ["class-2"])) {
-      $0.fontWeight = .bold
+    let class2Style2 = MockLeafWidget.Style(StyleSelector(classes: ["class-2"])) {
+      $0.property2 = "test1" 
     }
     let rootWidget = Column {
       widget1
@@ -92,11 +92,11 @@ final class StyleTests: XCTestCase {
       widget4
       widget5
     }.provideStyles {
-      ExperimentalText.Style(WidgetSelector(classes: ["class-1"])) {
-        $0.fontSize = 50
+      MockLeafWidget.Style(StyleSelector(classes: ["class-1"])) {
+        $0.property1 = 2
       }
-      ExperimentalText.Style {
-        $0.fontWeight = .bold
+      MockLeafWidget.Style {
+        $0.property2 = "test2"
       }
       class2Style1
       class2Style2
@@ -104,7 +104,7 @@ final class StyleTests: XCTestCase {
     let mockRoot = MockRoot(rootWidget: rootWidget)
 
     // count should indicate that the selectors were respected
-    XCTAssertEqual(rootWidget.appliedStyles.count, 1)
+    XCTAssertEqual(rootWidget.appliedStyles.count, 0)
     XCTAssertEqual(widget1.appliedStyles.count, 2)
     XCTAssertEqual(widget2.appliedStyles.count, 3)
     XCTAssertEqual(widget3.appliedStyles.count, 3)
@@ -114,6 +114,22 @@ final class StyleTests: XCTestCase {
     // check order of styles
     XCTAssert(widget2.appliedStyles[1] == class2Style1)
     XCTAssert(widget2.appliedStyles[2] == class2Style2)
+  }
+
+  func testEmptySelectorNonMatchingStyleTypeIgnored() {
+    let reference1 = Reference<MockLeafWidget>()
+    let reference2 = Reference<MockContainerWidget>()
+    let root = MockRoot(rootWidget: MockContainerWidget {
+      MockLeafWidget().with(classes: ["class-1"]).connect(ref: reference1)
+      MockContainerWidget() {}.with(classes: ["class-1"]).connect(ref: reference2)
+    }.provideStyles {
+      MockLeafWidget.Style {
+        $0.property1 = 1
+      }
+    })
+
+    XCTAssertEqual(reference1.referenced!.appliedStyles.count, 1)
+    XCTAssertEqual(reference2.referenced!.appliedStyles.count, 0)
   }
 
   func testStyleOnDynamicallyInsertedWidget() {
@@ -128,10 +144,10 @@ final class StyleTests: XCTestCase {
         widget2
       }
     }.provideStyles {
-      ExperimentalText.Style(WidgetSelector(classes: ["class-1"])) {
+      ExperimentalText.Style(StyleSelector(classes: ["class-1"])) {
         $0.fontSize = 30
       }
-      ExperimentalText.Style(WidgetSelector(classes: ["class-2"])) {
+      ExperimentalText.Style(StyleSelector(classes: ["class-2"])) {
         $0.fontWeight = .bold
       }
     }
@@ -156,7 +172,7 @@ final class StyleTests: XCTestCase {
     let widget2 = Column {
       widget1
     }.provideStyles {
-      ExperimentalText.Style(WidgetSelector(classes: ["class-1"])) {
+      ExperimentalText.Style(StyleSelector(classes: ["class-1"])) {
         $0.fontSize = 4
         $0.fontWeight = .black
       }
@@ -165,7 +181,7 @@ final class StyleTests: XCTestCase {
     let widget3 = Column {
       widget2
     }.provideStyles {
-      ExperimentalText.Style(WidgetSelector(classes: ["class-1"])) {
+      ExperimentalText.Style(StyleSelector(classes: ["class-1"])) {
         $0.fontSize = 3
         $0.fontWeight = .bold
       }
@@ -177,13 +193,13 @@ final class StyleTests: XCTestCase {
       widget3
       widget4
     }.provideStyles {
-      ExperimentalText.Style(WidgetSelector(classes: ["class-1"])) {
+      ExperimentalText.Style(StyleSelector(classes: ["class-1"])) {
         $0.fontSize = 1
       }
-      ExperimentalText.Style(WidgetSelector(classes: ["class-1"])) {
+      ExperimentalText.Style(StyleSelector(classes: ["class-1"])) {
         $0.fontSize = 2
       }
-      ExperimentalText.Style(WidgetSelector(classes: ["class-2"])) {
+      ExperimentalText.Style(StyleSelector(classes: ["class-2"])) {
         $0.fontWeight = .medium
       }
     }
@@ -197,11 +213,104 @@ final class StyleTests: XCTestCase {
     XCTAssertEqual(widget1.filledStyleProperties.fontWeight, .black)
   }
 
+  func testSimpleSubStyles() {
+    let widget1 = ExperimentalText("Text1").with(classes: ["class-1"])
+    let rootWidget = Column {
+      widget1
+    }.provideStyles {
+      ExperimentalText.Style(".class-1") {
+        $0.fontSize = 1
+      } sub: {
+        ExperimentalText.Style() {
+          $0.fontSize = 1
+        }
+      }
+    }
+    let root = MockRoot(rootWidget: rootWidget)
+    XCTAssertEqual(widget1.appliedStyles.count, 1)
+  }
+
+  func testSimpleOverwritingSubStyles() {
+    let widget = MockLeafWidget()
+    widget.with(classes: ["class-1", "class-2"]).provideStyles {
+      MockLeafWidget.Style(".class-1") {
+        $0.property1 = 1
+      } sub: {
+        MockLeafWidget.Style("&.class-1") {
+          $0.property1 = 2
+        } sub: {
+          MockLeafWidget.Style {
+            $0.property1 = 3
+          } sub: {
+            MockLeafWidget.Style("&") {
+              $0.property1 = 4
+            }
+          }
+        }
+      }
+    }
+    let root = MockRoot(rootWidget: widget)
+
+    XCTAssertEqual(widget.filledStyleProperties.property1, 4)
+  }
+
+  func testComplexOverwritingSubStyles() {
+    var reference1 = Reference<MockLeafWidget>()
+    let reference2 = Reference<MockContainerWidget>()
+    
+    let root = MockRoot(rootWidget: MockContainerWidget {
+      MockContainerWidget {
+        MockContainerWidget {
+          MockLeafWidget().with(classes: ["class-1", "class-2"]).connect(ref: reference1)
+        }.provideStyles {
+          MockLeafWidget.Style(".class-1") {
+            $0.property1 = 1
+          } sub: {
+            MockLeafWidget.Style("&") {
+              $0.property1 = 2
+            }
+
+            MockLeafWidget.Style("&.class-2") {
+              $0.property1 = 3
+            } sub: {
+              MockLeafWidget.Style("&") {
+                $0.property4 = 2
+              }
+            }
+          }
+        }
+      }.with(classes: ["container-class-1"]).connect(ref: reference2)
+    }.provideStyles {
+      // and some crazy nesting and backreferencing
+      MockContainerWidget.Style(".container-class-1") { _ in } sub: {
+        //MockContainerWidget.Style("&") { _ in
+          MockLeafWidget.Style(".class-1.class-2") {
+            //MockLeafWidget.Style("&") {
+              $0.property3 = 1
+              $0.property4 = 1
+            //}
+          }
+       // }
+      }
+    })
+
+    XCTAssertEqual(reference1.referenced!.filledStyleProperties.property1, 3)
+    XCTAssertEqual(reference1.referenced!.filledStyleProperties.property2, "")
+    XCTAssertEqual(reference1.referenced!.filledStyleProperties.property3, 1)
+    XCTAssertEqual(reference1.referenced!.filledStyleProperties.property4, 2)
+    print("applied properties are -----------__", reference1.referenced!.appliedStyles)
+    XCTAssertEqual(reference2.referenced!.appliedStyles.count, 1)
+  }
+
   static var allTests = [
-    ("testWidgetSelectorParsing", testWidgetSelectorParsing),
+    ("testStyleSelectorParsing", testStyleSelectorParsing),
     ("testStyleComparison", testStyleComparison),
+    ("testSimpleClassSelector", testSimpleClassSelector),
+    ("testEmptySelectorNonMatchingTypeIgnored", testEmptySelectorNonMatchingStyleTypeIgnored),
     ("testStyleOnDynamicallyInsertedWidget", testStyleOnDynamicallyInsertedWidget),
-    ("testStyleSelectorAndOrderRespected", testStyleSelectorAndOrderRespected),
-    ("testMultiParentStyleMergeOverwrite", testMultiParentStyleMergeOverwrite)
+    ("testMultiParentStyleMergeOverwrite", testMultiParentStyleMergeOverwrite),
+    ("testSimpleSubStyles", testSimpleSubStyles),
+    ("testSimpleOverwritingSubStyles", testSimpleOverwritingSubStyles),
+    ("testComplexOverwritingSubStyles", testComplexOverwritingSubStyles),
   ]
 }

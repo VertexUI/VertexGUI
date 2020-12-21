@@ -1,4 +1,4 @@
-public protocol AnyStyleProperties {
+public protocol AnyStyleProperties: CustomDebugStringConvertible {
   //var selector: StyleSelector? { get set }
   //var subStyles: [AnyStyle]? { get set }
   func getProperties() -> [(name: String, wrapper: AnyStyleProperty)]
@@ -14,6 +14,11 @@ extension AnyStyleProperties {
       }
     }
     return properties
+  }
+
+  public var debugDescription: String {
+    let properties = getProperties()
+    return "\(type(of: self)): \(properties.map { "\($0.name): \($0.wrapper.anyValue)" })"
   }
 }
 

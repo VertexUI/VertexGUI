@@ -6,6 +6,7 @@ public class MockLeafWidget: Widget, SimpleStylableWidget {
     $0.property1 = 0
     $0.property2 = ""
     $0.property3 = 0
+    $0.property4 = 0
   }
   lazy public private(set) var filledStyleProperties = getFilledStyleProperties()
   public var directStyleProperties = [AnyStyleProperties]()
@@ -34,6 +35,8 @@ extension MockLeafWidget {
     public var property2: String?
     @StyleProperty
     public var property3: Double?
+    @StyleProperty
+    public var property4: Double?
 
     public init() {}
   }
