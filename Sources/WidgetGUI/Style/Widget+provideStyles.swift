@@ -5,9 +5,6 @@ public extension Widget {
   */
   public func provideStyles(@StyleBuilder buildStyles: () -> [AnyStyle]) -> Widget {
     let styles = buildStyles()
-    if !styles.allSatisfy { !$0.extendsParent } {
-      fatalError("a root level style cannot extend a parent style")
-    }
     providedStyles.append(contentsOf: styles) 
     return self
   }

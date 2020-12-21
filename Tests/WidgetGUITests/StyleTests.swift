@@ -85,13 +85,13 @@ final class StyleTests: XCTestCase {
     let class2Style2 = MockLeafWidget.Style(StyleSelector(classes: ["class-2"])) {
       $0.property2 = "test1" 
     }
-    let rootWidget = Column {
+    let rootWidget = MockContainerWidget {
       widget1
       widget2
       widget3
       widget4
       widget5
-    }.provideStyles {
+
       MockLeafWidget.Style(StyleSelector(classes: ["class-1"])) {
         $0.property1 = 2
       }
@@ -262,7 +262,7 @@ final class StyleTests: XCTestCase {
       MockContainerWidget {
         MockContainerWidget {
           MockLeafWidget().with(classes: ["class-1", "class-2"]).connect(ref: reference1)
-        }.provideStyles {
+
           MockLeafWidget.Style(".class-1") {
             $0.property1 = 1
 
@@ -279,7 +279,7 @@ final class StyleTests: XCTestCase {
           }
         }
       }.with(classes: ["container-class-1"]).connect(ref: reference2)
-    }.provideStyles {
+      
       // and some crazy nesting and backreferencing
       MockContainerWidget.Style(".container-class-1") {
         MockContainerWidget.Style("&") { 
