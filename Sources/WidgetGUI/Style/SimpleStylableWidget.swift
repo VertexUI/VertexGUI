@@ -5,10 +5,6 @@ public protocol SimpleStylableWidget: Widget, StylableWidget {
   var directStyleProperties: [AnyStyleProperties] { get set }
   var filledStyleProperties: StyleProperties { get }
 
-  /**
-  - Returns: `true` if the Widget can handle and apply the given type of StyleProperties. `false` if not.
-  */
-  func acceptsStyleProperties(_ properties: AnyStyleProperties) -> Bool
   func filterStyleProperties(_ properties: [AnyStyleProperties]) -> [AnyStyleProperties]
   func mergeStyleProperties(_ properties: [AnyStyleProperties]) -> StyleProperties
   func getFilledStyleProperties() -> StyleProperties

@@ -104,6 +104,6 @@ let package = Package(
 
         .testTarget(name: "VisualAppBaseTests", dependencies: ["VisualAppBase", "Events"]),
         
-        .testTarget(name: "WidgetGUITests", dependencies: ["WidgetGUI"])
+        .testTarget(name: "WidgetGUITests", dependencies: ["SwiftGUI"])
     ]
 )

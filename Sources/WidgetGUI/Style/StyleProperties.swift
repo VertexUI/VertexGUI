@@ -1,5 +1,5 @@
 public protocol AnyStyleProperties {
-  //var selector: WidgetSelector? { get set }
+  //var selector: StyleSelector? { get set }
   //var subStyles: [AnyStyle]? { get set }
   func getProperties() -> [(name: String, wrapper: AnyStyleProperty)]
 }
@@ -33,14 +33,14 @@ public func == (lhs: AnyStyleProperties, rhs: AnyStyleProperties) -> Bool {
 
 public protocol StyleProperties: AnyStyleProperties {
   init()
-  //init(_ selector: WidgetSelector, _ configure: (inout Self) -> ())
+  //init(_ selector: StyleSelector, _ configure: (inout Self) -> ())
   init(_ configure: (inout Self) -> ())
 
   //func sub(@StyleBuilder _ styles: () -> [AnyStyle])
 }
 
 extension StyleProperties {
-  /*public init(_ selector: WidgetSelector, _ configure: (inout Self) -> ()) {
+  /*public init(_ selector: StyleSelector, _ configure: (inout Self) -> ()) {
     self.init()
     self.selector = selector
     configure(&self)
