@@ -108,6 +108,8 @@ public struct WidgetInspectionMessage: Equatable {
     case RenderBurstThresholdExceeded
     case RenderingStarted
     case RenderingFinished
+
+    case SelectorChanged
   }
 }
 
@@ -125,5 +127,7 @@ public struct WidgetLifecycleMessage {
     case BoxConfigInvalidated
     case LayoutInvalidated
     case RenderStateInvalidated
+
+    case SelectorChanged
   }
 }

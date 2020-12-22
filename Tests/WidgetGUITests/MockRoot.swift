@@ -13,4 +13,8 @@ class MockRoot: Root {
       createWindow: { _, _ in try! Window(options: Window.Options()) },
       requestCursor: { _ in {} } ))
   }
+
+  public func mockTick() {
+    tick(Tick(deltaTime: 0, totalTime: 0))
+  }
 }

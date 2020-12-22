@@ -21,7 +21,7 @@ public class MockLeafWidget: Widget, SimpleStylableWidget {
     }
   }
 
-  private var mode: Mode {
+  public var mode: Mode {
     didSet {
       notifySelectorChanged()
     }

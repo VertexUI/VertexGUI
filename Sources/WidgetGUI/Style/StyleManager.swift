@@ -6,16 +6,16 @@ public class StyleManager {
   }
 
   public func setup() {
-    processTree(rootWidget)
+    distributeStylesInTree(rootWidget)
   }
 
   public func refresh(_ widgets: [Widget]) {
     for widget in widgets {
-      processTree(widget)
+      distributeStylesInTree(widget)
     }
   }
 
-  public func processTree(_ initialWidget: Widget) {
+  public func distributeStylesInTree(_ initialWidget: Widget) {
     var parentStyles = [AnyStyle]()
 
     var nextParent = Optional(initialWidget)
@@ -25,6 +25,7 @@ public class StyleManager {
       nextParent = currentParent.parent as? Widget 
     }
 
+    initialWidget.appliedStyles = []
     applyStyles(parentStyles, to: initialWidget)
 
     var iterators: [(iterator: Widget.ChildIterator, branchStyles: [AnyStyle])] = [(iterator: initialWidget.visitChildren(), branchStyles: parentStyles)]
@@ -32,6 +33,7 @@ public class StyleManager {
     while var (iterator, branchStyles) = iterators.first {
       while let widget = iterator.next() {
         widget.appliedStyles = []
+        
         let widgetProvidedStyles = widget.providedStyles
         let allAvailableStyles = branchStyles + widgetProvidedStyles
 

@@ -303,7 +303,7 @@ final class StyleTests: XCTestCase {
     showWidget2 = true
 
     rootWidget.invalidateBuild()
-    mockRoot.tick(Tick(deltaTime: 0, totalTime: 0))
+    mockRoot.mockTick()
 
     XCTAssertEqual(widget1.appliedStyles.count, 1)
     XCTAssertEqual(widget2.appliedStyles.count, 1)
@@ -434,6 +434,48 @@ final class StyleTests: XCTestCase {
     XCTAssertEqual(reference1.referenced!.filledStyleProperties.property4, 2)
   }
 
+  func testDynamicWidgetSelectorChange() {
+    var widget = MockLeafWidget()
+    widget.with(classes: ["class-1"]).provideStyles {
+      MockLeafWidget.Style("MockLeafWidget") {
+        $0.property1 = 1
+      }
+
+      MockLeafWidget.Style(":state1") {
+        $0.property1 = 2
+      }
+
+      MockLeafWidget.Style(":mode2") {
+        $0.property1 = 3
+      }
+
+      MockLeafWidget.Style(".class-1") {
+        $0.property1 = 4
+      }
+
+      MockLeafWidget.Style(".class-2") {
+        $0.property1 = 5
+      }
+
+      MockLeafWidget.Style(".class-3") {
+        $0.property1 = 6
+      }
+    }
+    let root = MockRoot(rootWidget: widget)
+
+    XCTAssertEqual(widget.appliedStyles.count, 3)
+
+    widget.classes = ["class-2", "class-3"]
+    root.mockTick()
+    
+    XCTAssertEqual(widget.appliedStyles.count, 4)
+
+    widget.mode = .mode2
+    root.mockTick()
+
+    XCTAssertEqual(widget.appliedStyles.count, 5)
+  }
+
   static var allTests = [
     ("testStyleSelectorPartParsing", testStyleSelectorPartParsing),
     ("testStyleSelectorParsing", testStyleSelectorParsing),
@@ -449,6 +491,7 @@ final class StyleTests: XCTestCase {
     ("testSimpleSubStyles", testSimpleSubStyles),
     ("testSimpleOverwritingSubStyles", testSimpleOverwritingSubStyles),
     ("testComplexOverwritingSubStyles", testComplexOverwritingSubStyles),
+    ("testDynamicWidgetSelectorChange", testDynamicWidgetSelectorChange)
   ]
 
   struct MockSharedStyleProperties: StyleProperties {

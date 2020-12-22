@@ -31,6 +31,7 @@ open class Root: Parent {
   private var reboxConfigWidgets = WidgetBuffer()
   private var relayoutWidgets = WidgetBuffer()
   private var rerenderWidgets = WidgetBuffer()
+  private var selectorChangedWidgets = WidgetBuffer()
   //private var focusContext = FocusContext()
 
   private var mouseEventManager = WidgetTreeMouseEventManager()
@@ -111,6 +112,11 @@ open class Root: Parent {
       processLifecycleMessage($0)
     }
 
+    // TODO: check whether any parent of the widget was already processed (which automatically leads to a reprocessing of the styles)
+    // TODO: or rather follow the pattern of invalidate...()? --> invalidateStyle()
+    styleManager.refresh(Array(selectorChangedWidgets))
+    selectorChangedWidgets.clear()
+
     for widget in rebuildWidgets {
       if !widget.destroyed {
         widget.build()
@@ -162,6 +168,8 @@ open class Root: Parent {
       relayoutWidgets.append(message.sender)
     case .RenderStateInvalidated:
       rerenderWidgets.append(message.sender)
+    case .SelectorChanged:
+      selectorChangedWidgets.append(message.sender)
     }
   }
 
