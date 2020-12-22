@@ -28,18 +28,25 @@ public struct StyleSelector: Equatable, ExpressibleByStringLiteral {
   the parent StyleSelectors that are managed by outside logic are checked as well.
   */
   public func selects(_ widget: Widget) -> Bool {
-    var nextWidgetToCheck = widget
+    // TODO: performance could be improved if each Widget stores it's own full selector path already
+    var nextWidgetToCheck = Optional(widget)
     var partsQueuedForParent = [StyleSelectorPart]()
-    for (index, part) in parts.enumerated() {
-      if part.extendsParent && index != 0 {
+    for (index, part) in parts.reversed().enumerated() {
+      if part.extendsParent && index != parts.count - 1 {
         partsQueuedForParent.append(part)
       } else {
-        if (partsQueuedForParent + [part]).allSatisfy({ $0.selects(nextWidgetToCheck) }) {
-          if let parent = nextWidgetToCheck.parent as? Widget {
-            nextWidgetToCheck = parent
+        var matched = false
+        while !matched, let currentWidgetToCheck = nextWidgetToCheck {
+          if (partsQueuedForParent + [part]).allSatisfy({ $0.selects(currentWidgetToCheck) }) {
             partsQueuedForParent = []
+            matched = true
+            nextWidgetToCheck = currentWidgetToCheck.parent as? Widget 
+            break
           }
-        } else {
+          nextWidgetToCheck = currentWidgetToCheck.parent as? Widget 
+        }
+
+        if !matched {
           return false
         }
       }
