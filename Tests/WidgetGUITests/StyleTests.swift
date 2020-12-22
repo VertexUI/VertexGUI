@@ -178,6 +178,28 @@ final class StyleTests: XCTestCase {
     XCTAssert(widget2.appliedStyles[2] == class2Style2)
   }
 
+  func testSimpleSinglePartPseudoClassSelector() {
+    let widget = MockLeafWidget(state: .state2)
+    let root = MockRoot(rootWidget: widget.provideStyles {
+      MockLeafWidget.Style(":state2") {
+        $0.property1 = 1
+      }
+
+      MockLeafWidget.Style(":state1") {
+        $0.property1 = 2
+      }
+
+      MockLeafWidget.Style(":mode1") {
+        $0.property3 = 1
+      }
+
+      MockLeafWidget.Style(":state2:mode1") {
+        $0.property3 = 2
+      }
+    })
+    XCTAssertEqual(widget.appliedStyles.count, 3)
+  }
+
   func testSimpleTypeSelector() {
     let reference1 = Reference<MockLeafWidget>()
     let root = MockRoot(rootWidget: MockContainerWidget {
@@ -199,7 +221,7 @@ final class StyleTests: XCTestCase {
     XCTAssertEqual(reference1.referenced!.appliedStyles.count, 2)
   }
 
-  func testSimpleMultiPartClassSelector() {
+  func testSimpleMultiPartSelector() {
     let reference1 = Reference<MockLeafWidget>()
     let root = MockRoot(rootWidget: MockContainerWidget {
       MockContainerWidget {
@@ -208,7 +230,7 @@ final class StyleTests: XCTestCase {
         }.with(classes: ["class-3", "class-4"])
       }.with(classes: ["class-2"])
     }.with(classes: ["class-1"]).provideStyles {
-      MockLeafWidget.Style(".class-1 .class-2 .class-3 &.class-4 .class-5.class-6 &") {
+      MockLeafWidget.Style(".class-1 .class-2 .class-3 &.class-4 .class-5.class-6:state1 &MockLeafWidget:mode1") {
         $0.property1 = 1
       }
     })
@@ -229,7 +251,7 @@ final class StyleTests: XCTestCase {
         }.with(classes: ["class-2"])
       }.with(classes: ["ignored-class-1"])
     }.with(classes: ["class-1"]).provideStyles {
-      MockLeafWidget.Style(".class-1 .class-2 .class-3 .class-4 &") {
+      MockLeafWidget.Style(".class-1 .class-2 .class-3 .class-4 &MockLeafWidget:state1:mode1") {
         $0.property1 = 1
       }
     })
@@ -417,8 +439,9 @@ final class StyleTests: XCTestCase {
     ("testStyleSelectorParsing", testStyleSelectorParsing),
     ("testStyleComparison", testStyleComparison),
     ("testSimpleSinglePartClassSelector", testSimpleSinglePartClassSelector),
+    ("testSimpleSinglePartPseudoClassSelector", testSimpleSinglePartPseudoClassSelector),
     ("testSimpleTypeSelector", testSimpleTypeSelector),
-    ("testSimpleMultiPartClassSelector", testSimpleMultiPartClassSelector),
+    ("testSimpleMultiPartSelector", testSimpleMultiPartSelector),
     ("testMultiPartClassSelectorWithGaps", testMultiPartClassSelectorWithGaps),
     ("testEmptySelectorNonMatchingTypeIgnored", testEmptySelectorNonMatchingStyleTypeIgnored),
     ("testStyleOnDynamicallyInsertedWidget", testStyleOnDynamicallyInsertedWidget),

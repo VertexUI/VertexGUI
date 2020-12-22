@@ -11,6 +11,27 @@ public class MockLeafWidget: Widget, SimpleStylableWidget {
   lazy public private(set) var filledStyleProperties = getFilledStyleProperties()
   public var directStyleProperties = [AnyStyleProperties]()
 
+  override public var pseudoClasses: [String] {
+    [state.rawValue, mode.rawValue]
+  }
+
+  private var state: State {
+    didSet {
+      notifySelectorChanged()
+    }
+  }
+
+  private var mode: Mode {
+    didSet {
+      notifySelectorChanged()
+    }
+  }
+
+  public init(state: State = .state1, mode: Mode = .mode1) {
+    self.state = state
+    self.mode = mode
+  }
+
   override public func getBoxConfig() -> BoxConfig {
     BoxConfig(preferredSize: .zero)
   }
@@ -25,6 +46,14 @@ public class MockLeafWidget: Widget, SimpleStylableWidget {
 }
 
 extension MockLeafWidget {
+  public enum State: String {
+    case state1, state2, state3
+  }
+
+  public enum Mode: String {
+    case mode1, mode2, mode3
+  }
+
   public struct StyleProperties: SwiftGUI.StyleProperties {
     @StyleProperty
     public var property1: Double?

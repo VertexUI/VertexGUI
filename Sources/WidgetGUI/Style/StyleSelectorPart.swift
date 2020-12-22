@@ -63,13 +63,11 @@ public struct StyleSelectorPart: Equatable, Hashable, ExpressibleByStringLiteral
             return false
         }
 
-        if widget.classes.count < classes.count {
+        if widget.classes.count < classes.count || widget.pseudoClasses.count < pseudoClasses.count {
             return false
         }
 
-        let selectorClasses = classes.sorted()
-        let widgetClasses = widget.classes.sorted()
-        return selectorClasses.allSatisfy(widgetClasses.contains)
+        return classes.allSatisfy(widget.classes.contains) && pseudoClasses.allSatisfy(widget.pseudoClasses.contains)
     }
 
     public static func == (lhs: Self, rhs: Self) -> Bool {

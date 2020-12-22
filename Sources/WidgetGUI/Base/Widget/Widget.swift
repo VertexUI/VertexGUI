@@ -16,8 +16,17 @@ open class Widget: Bounded, Parent, Child {
     }
 
     open var id: UInt = UInt.random(in: 0..<UInt.max)
+    // TODO: is this even used?
     open var key: String?
-    open var classes: [String] = []
+    open var classes: [String] = [] {
+        didSet {
+            notifySelectorChanged()
+        }
+    }
+    open var pseudoClasses: [String] {
+        []
+    }
+
     open var visibility: Visibility = .Visible {
         didSet {
             if oldValue != visibility {
