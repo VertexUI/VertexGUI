@@ -2,11 +2,40 @@ import Foundation
 
 public struct StyleSelectorPart: Equatable, Hashable, ExpressibleByStringLiteral {
     public var extendsParent: Bool
+
+    public var typeName: String? {
+        willSet {
+            if newValue != nil && type != nil {
+                fatalError("can only set one of type or typeName")
+            }
+        }
+    }
+    public var type: Any.Type? {
+        willSet {
+            if newValue != nil && typeName != nil {
+                fatalError("can only set one of type or typeName")
+            }
+        }
+    }
     public var classes: [String]
     public var pseudoClasses: [String]
 
-    public init(extendsParent: Bool = false, classes: [String] = [], pseudoClasses: [String] = []) {
+    public init() {
+        self.extendsParent = false
+        self.classes = []
+        self.pseudoClasses = []
+    }
+
+    public init(extendsParent: Bool = false, typeName: String? = nil, classes: [String] = [], pseudoClasses: [String] = []) {
         self.extendsParent = extendsParent
+        self.typeName = typeName
+        self.classes = classes
+        self.pseudoClasses = pseudoClasses
+    }
+
+    public init(extendsParent: Bool = false, type: Any.Type? = nil, classes: [String] = [], pseudoClasses: [String] = []) {
+        self.extendsParent = extendsParent
+        self.type = type
         self.classes = classes
         self.pseudoClasses = pseudoClasses
     }
@@ -21,11 +50,19 @@ public struct StyleSelectorPart: Equatable, Hashable, ExpressibleByStringLiteral
     }
 
     /**
-    - Returns: `true` if classes, pseudoClasses fully or partially match the given widget. Whereby the Widget can contain elements that are not in the selector, but the selector cannot contain elements that are not in the Widget.
+    - Returns: `true` if type or typeName are either not set or match the widget and classes, pseudoClasses fully or partially match the given widget. Whereby the Widget can contain elements that are not in the selector, but the selector cannot contain elements that are not in the Widget.
     An empty part always selects any widget (returns `true`).
     Otherwise returns `false`.
     */
     public func selects(_ widget: Widget) -> Bool {
+        if let typeName = typeName, widget.name != typeName {
+            return false
+        }
+
+        if let type = type, ObjectIdentifier(type) != ObjectIdentifier(Swift.type(of: widget)) {
+            return false
+        }
+
         if widget.classes.count < classes.count {
             return false
         }
@@ -42,6 +79,14 @@ public struct StyleSelectorPart: Equatable, Hashable, ExpressibleByStringLiteral
         lhs.classes.sorted() == rhs.classes.sorted() && 
         lhs.pseudoClasses.sorted() == rhs.pseudoClasses.sorted()
     }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(extendsParent)
+        hasher.combine(typeName)
+        hasher.combine(String(describing: type))
+        hasher.combine(classes)
+        hasher.combine(pseudoClasses)
+    }
 }
 
 extension StyleSelectorPart {
@@ -53,7 +98,7 @@ extension StyleSelectorPart {
         .union(CharacterSet(["-", "_"]))
 
     private enum ParsingBufferResultType {
-        case `class`, pseudoClass
+        case type, `class`, pseudoClass
     }
 
     public struct LiteralSyntaxEerror: LocalizedError {
@@ -87,6 +132,9 @@ extension StyleSelectorPart {
                     nextResultType = .pseudoClass
                 } else if character.unicodeScalars.allSatisfy(allowedIdentifierCharacters.contains) {
                     nextResultBuffer.append(character)
+                    if nextResultType == nil {
+                        nextResultType = .type
+                    }
                 } else {
                     throw LiteralSyntaxEerror(string: String(character))
                 }
@@ -98,10 +146,13 @@ extension StyleSelectorPart {
         mutating private func flushCurrentBuffer() {
             if let nextResultType = nextResultType {
                 switch nextResultType {
+                case .type:
+                    result.typeName = nextResultBuffer
                 case .class:
                     result.classes.append(nextResultBuffer)
                 case .pseudoClass:
                     result.pseudoClasses.append(nextResultBuffer)
+
                 }
             }
             nextResultType = nil

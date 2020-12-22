@@ -5,27 +5,79 @@ import VisualAppBase
 final class StyleTests: XCTestCase {
   func testStyleSelectorPartParsing() {
     var part: StyleSelectorPart = ".class1"
+    XCTAssertFalse(part.extendsParent)
+    XCTAssertNil(part.typeName)
+    XCTAssertNil(part.type)
     XCTAssertEqual(part.classes, ["class1"])
+    XCTAssertEqual(part.pseudoClasses, [])
+    
     part = ".class1.class2"
+    XCTAssertFalse(part.extendsParent)
+    XCTAssertNil(part.typeName)
+    XCTAssertNil(part.type)
     XCTAssertEqual(part.classes, ["class1", "class2"])
+    XCTAssertEqual(part.pseudoClasses, [])
+
     part = ""
+    XCTAssertFalse(part.extendsParent)
+    XCTAssertNil(part.typeName)
+    XCTAssertNil(part.type)
     XCTAssertEqual(part.classes, [])
+    XCTAssertEqual(part.pseudoClasses, [])
+
     part = ":pseudoClass1"
+    XCTAssertFalse(part.extendsParent)
+    XCTAssertNil(part.typeName)
+    XCTAssertNil(part.type)
+    XCTAssertEqual(part.classes, [])
     XCTAssertEqual(part.pseudoClasses, ["pseudoClass1"])
+
     part = ":pseudoClass1:pseudoClass2"
+    XCTAssertFalse(part.extendsParent)
+    XCTAssertNil(part.typeName)
+    XCTAssertNil(part.type)
+    XCTAssertEqual(part.classes, [])
     XCTAssertEqual(part.pseudoClasses, ["pseudoClass1", "pseudoClass2"])
+
     part = ":pseudoClass1.class1"
+    XCTAssertFalse(part.extendsParent)
+    XCTAssertNil(part.typeName)
+    XCTAssertNil(part.type)
     XCTAssertEqual(part.pseudoClasses, ["pseudoClass1"])
     XCTAssertEqual(part.classes, ["class1"])
+
     part = "&.class1:pseudoClass1.class2"
     XCTAssertTrue(part.extendsParent)
+    XCTAssertNil(part.typeName)
+    XCTAssertNil(part.type)
     XCTAssertEqual(part.classes, ["class1", "class2"])
     XCTAssertEqual(part.pseudoClasses, ["pseudoClass1"])
+
+    part = "&MockLeafWidget"
+    XCTAssertTrue(part.extendsParent)
+    XCTAssertEqual(part.typeName, "MockLeafWidget")
+    XCTAssertNil(part.type)
+    XCTAssertEqual(part.classes, [])
+    XCTAssertEqual(part.pseudoClasses, [])
+
+    part = "MockLeafWidget"
+    XCTAssertFalse(part.extendsParent)
+    XCTAssertEqual(part.typeName, "MockLeafWidget")
+    XCTAssertNil(part.type)
+    XCTAssertEqual(part.classes, [])
+    XCTAssertEqual(part.pseudoClasses, [])
+
+    part = "MockLeafWidget.class-1"
+    XCTAssertFalse(part.extendsParent)
+    XCTAssertEqual(part.typeName, "MockLeafWidget")
+    XCTAssertNil(part.type)
+    XCTAssertEqual(part.classes, ["class-1"])
+    XCTAssertEqual(part.pseudoClasses, [])
   }
 
   func testStyleSelectorParsing() {
-    let selector: StyleSelector = ".class1 &.class2 .class3:pseudoClass1"
-    let parts: [StyleSelectorPart] = [".class1", "&.class2", ".class3:pseudoClass1"]
+    let selector: StyleSelector = ".class1 &.class2 Type1.class3:pseudoClass1"
+    let parts: [StyleSelectorPart] = [".class1", "&.class2", "Type1.class3:pseudoClass1"]
     XCTAssertEqual(selector.parts, parts)
   }
 
@@ -126,7 +178,28 @@ final class StyleTests: XCTestCase {
     XCTAssert(widget2.appliedStyles[2] == class2Style2)
   }
 
-  func testSimpleMultiPartSelector() {
+  func testSimpleTypeSelector() {
+    let reference1 = Reference<MockLeafWidget>()
+    let root = MockRoot(rootWidget: MockContainerWidget {
+      MockLeafWidget().connect(ref: reference1)
+
+      Style<MockSharedStyleProperties>("MockLeafWidget") {
+        $0.property1 = 1
+      }
+
+      Style<MockSharedStyleProperties>("NonExistingWidget") {
+        $0.property1 = 2
+      }
+
+      Style<MockSharedStyleProperties>(StyleSelector([StyleSelectorPart(type: MockLeafWidget.self)])) {
+        $0.property1 = 3
+      }
+    })
+
+    XCTAssertEqual(reference1.referenced!.appliedStyles.count, 2)
+  }
+
+  func testSimpleMultiPartClassSelector() {
     let reference1 = Reference<MockLeafWidget>()
     let root = MockRoot(rootWidget: MockContainerWidget {
       MockContainerWidget {
@@ -143,7 +216,7 @@ final class StyleTests: XCTestCase {
     XCTAssertEqual(reference1.referenced!.appliedStyles.count, 1)
   }
 
-  func testMultiPartSelectorWithGaps() {
+  func testMultiPartClassSelectorWithGaps() {
     let reference1 = Reference<MockLeafWidget>()
     let root = MockRoot(rootWidget: MockContainerWidget {
       MockContainerWidget {
@@ -162,7 +235,6 @@ final class StyleTests: XCTestCase {
     })
 
     XCTAssertEqual(reference1.referenced!.appliedStyles.count, 1)
- 
   }
 
   func testEmptySelectorNonMatchingStyleTypeIgnored() {
@@ -345,8 +417,9 @@ final class StyleTests: XCTestCase {
     ("testStyleSelectorParsing", testStyleSelectorParsing),
     ("testStyleComparison", testStyleComparison),
     ("testSimpleSinglePartClassSelector", testSimpleSinglePartClassSelector),
-    ("testSimpleMultiPartSelector", testSimpleMultiPartSelector),
-    ("testMultiPartSelectorWithGaps", testMultiPartSelectorWithGaps),
+    ("testSimpleTypeSelector", testSimpleTypeSelector),
+    ("testSimpleMultiPartClassSelector", testSimpleMultiPartClassSelector),
+    ("testMultiPartClassSelectorWithGaps", testMultiPartClassSelectorWithGaps),
     ("testEmptySelectorNonMatchingTypeIgnored", testEmptySelectorNonMatchingStyleTypeIgnored),
     ("testStyleOnDynamicallyInsertedWidget", testStyleOnDynamicallyInsertedWidget),
     ("testMultiParentStyleMergeOverwrite", testMultiParentStyleMergeOverwrite),
@@ -354,4 +427,11 @@ final class StyleTests: XCTestCase {
     ("testSimpleOverwritingSubStyles", testSimpleOverwritingSubStyles),
     ("testComplexOverwritingSubStyles", testComplexOverwritingSubStyles),
   ]
+
+  struct MockSharedStyleProperties: StyleProperties {
+    @StyleProperty
+    var property1: Double?
+
+    init() {}
+  }
 }

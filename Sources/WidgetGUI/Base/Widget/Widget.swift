@@ -6,6 +6,10 @@ import ReactiveProperties
 import Events
 
 open class Widget: Bounded, Parent, Child {
+    public var name: String {
+        String(describing: type(of: self))
+    }
+
     public struct ReplacementContext {
         public var previousWidget: Widget?
         public var keyedWidgets: [String: Widget]

@@ -1,12 +1,12 @@
 public struct StyleSelector: Equatable, ExpressibleByStringLiteral {
   public var parts: [StyleSelectorPart]
 
-  public init(parts: [StyleSelectorPart]) {
+  public init(_ parts: [StyleSelectorPart]) {
     self.parts = parts
   }
 
   public init(parse literal: String) throws {
-    self.init(parts: try literal.split(separator: " ").map { try StyleSelectorPart(parse:String($0)) })
+    self.init(try literal.split(separator: " ").map { try StyleSelectorPart(parse:String($0)) })
   }
 
   public init(stringLiteral: String) {
