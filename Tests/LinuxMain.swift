@@ -1,11 +1,11 @@
 import XCTest
 
-//import swift_gui_demo_appTests
 import VisualAppBaseTests
 import WidgetGUITests
+import ReactivePropertiesTests
 
 var tests = [XCTestCaseEntry]()
-//tests += swift_gui_demo_appTests.allTests()
 tests += VisualAppBaseTests.allTests()
 tests += WidgetGUITests.allTests()
+tests += ReactivePropertiesTests.allTests()
 XCTMain(tests)

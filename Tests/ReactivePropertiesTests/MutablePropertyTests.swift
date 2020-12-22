@@ -1,8 +1,7 @@
 import XCTest
 import ReactiveProperties
-@testable import WidgetGUI
 
-final class PropertyTests: XCTestCase {
+final class MutablePropertyTests: XCTestCase {
   func testMutableProperty() {
     var mutable = MutableProperty("InitialValue")
 
@@ -130,6 +129,10 @@ final class PropertyTests: XCTestCase {
   }
   
   static var allTests = [
+    ("testMutableProperty", testMutableProperty),
+    ("testMutablePropertyBinding", testMutablePropertyBinding),
+    ("testMutablePropertyObservable", testMutablePropertyObservable),
+    ("testMutablePropertyComputedObservable", testMutablePropertyComputedObservable),
     ("testComputed", testComputed)
   ]
 }
