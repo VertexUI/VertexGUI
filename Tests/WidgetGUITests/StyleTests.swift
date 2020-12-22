@@ -3,63 +3,73 @@ import VisualAppBase
 @testable import WidgetGUI
 
 final class StyleTests: XCTestCase {
+  func testStyleSelectorPartParsing() {
+    var part: StyleSelectorPart = ".class1"
+    XCTAssertEqual(part.classes, ["class1"])
+    part = ".class1.class2"
+    XCTAssertEqual(part.classes, ["class1", "class2"])
+    part = ""
+    XCTAssertEqual(part.classes, [])
+    part = ":pseudoClass1"
+    XCTAssertEqual(part.pseudoClasses, ["pseudoClass1"])
+    part = ":pseudoClass1:pseudoClass2"
+    XCTAssertEqual(part.pseudoClasses, ["pseudoClass1", "pseudoClass2"])
+    part = ":pseudoClass1.class1"
+    XCTAssertEqual(part.pseudoClasses, ["pseudoClass1"])
+    XCTAssertEqual(part.classes, ["class1"])
+    part = "&.class1:pseudoClass1.class2"
+    XCTAssertTrue(part.extendsParent)
+    XCTAssertEqual(part.classes, ["class1", "class2"])
+    XCTAssertEqual(part.pseudoClasses, ["pseudoClass1"])
+  }
+
   func testStyleSelectorParsing() {
-    var selector: StyleSelector = ".class1"
-    XCTAssertEqual(selector.classes, ["class1"])
-    selector = ".class1.class2"
-    XCTAssertEqual(selector.classes, ["class1", "class2"])
-    selector = ""
-    XCTAssertEqual(selector.classes, [])
-    selector = ":pseudoClass1"
-    XCTAssertEqual(selector.pseudoClasses, ["pseudoClass1"])
-    selector = ":pseudoClass1:pseudoClass2"
-    XCTAssertEqual(selector.pseudoClasses, ["pseudoClass1", "pseudoClass2"])
-    selector = ":pseudoClass1.class1"
-    XCTAssertEqual(selector.pseudoClasses, ["pseudoClass1"])
-    XCTAssertEqual(selector.classes, ["class1"])
+    var selector: StyleSelector = ".class1 .class2 .class3"
+    var parts: [StyleSelectorPart] = [".class1", ".class2", ".class3"]
+    XCTAssertEqual(selector.parts, parts)
   }
 
   func testStyleComparison() {
-    let style1 = ExperimentalText.Style(StyleSelector(classes: ["class-1"])) {
+    let style1 = ExperimentalText.Style(".class-1") {
       $0.fontSize = 30
       $0.foreground = .black
     }
 
-    let style2 = ExperimentalText.Style(StyleSelector(classes: ["class-2"])) {
+    let style2 = ExperimentalText.Style(".class-2") {
       $0.fontSize = 30
       $0.foreground = .black
     }
 
-    let style3 = ExperimentalText.Style(StyleSelector(classes: ["class-1"])) {
+    let style3 = ExperimentalText.Style(".class-1") {
       $0.fontSize = 30
       $0.foreground = .black
     }
 
-    let style4 = ExperimentalText.Style(StyleSelector(classes: ["class-1"])) {
+    let style4 = ExperimentalText.Style(".class-1") {
       $0.fontSize = 31
     }
 
-    let style5 = ExperimentalText.Style(StyleSelector(classes: ["class-1"])) {
+    let style5 = ExperimentalText.Style(".class-1") {
       $0.foreground = .red
     }
 
-    let style6 = ExperimentalText.Style(StyleSelector(classes: ["class-1"])) {
+    let style6 = ExperimentalText.Style(".class-1") {
       $0.fontSize = 31
       $0.foreground = .red
     }
 
-    let style7 = ExperimentalText.Style(StyleSelector(classes: ["class-1"])) {
+    let style7 = ExperimentalText.Style(".class-1") {
       $0.fontSize = 31
       $0.foreground = .black
     }
 
-    let style8 = ExperimentalText.Style(StyleSelector(classes: ["class-1"])) {
+    let style8 = ExperimentalText.Style(".class-1") {
       $0.fontSize = 30
       $0.foreground = .black
       $0.fontWeight = .bold
     }
 
-    let style9 = ExperimentalText.Style(StyleSelector(classes: ["class-1"])) {
+    let style9 = ExperimentalText.Style(".class-1") {
       $0.fontWeight = .bold
     }
 
@@ -79,10 +89,10 @@ final class StyleTests: XCTestCase {
     let widget3 = MockLeafWidget().with(classes: ["class-2"])
     let widget4 = MockLeafWidget().with(classes: ["class-3"])
     let widget5 = MockLeafWidget().with(classes: ["class-1", "class-2", "class-3"])
-    let class2Style1 = MockLeafWidget.Style(StyleSelector(classes: ["class-2"])) {
+    let class2Style1 = MockLeafWidget.Style(".class-2") {
       $0.property1 = 1
     }
-    let class2Style2 = MockLeafWidget.Style(StyleSelector(classes: ["class-2"])) {
+    let class2Style2 = MockLeafWidget.Style(".class-2") {
       $0.property2 = "test1" 
     }
     let rootWidget = MockContainerWidget {
@@ -92,7 +102,7 @@ final class StyleTests: XCTestCase {
       widget4
       widget5
 
-      MockLeafWidget.Style(StyleSelector(classes: ["class-1"])) {
+      MockLeafWidget.Style(".class-1") {
         $0.property1 = 2
       }
       MockLeafWidget.Style {
@@ -144,10 +154,10 @@ final class StyleTests: XCTestCase {
         widget2
       }
     }.provideStyles {
-      ExperimentalText.Style(StyleSelector(classes: ["class-1"])) {
+      ExperimentalText.Style(".class-1") {
         $0.fontSize = 30
       }
-      ExperimentalText.Style(StyleSelector(classes: ["class-2"])) {
+      ExperimentalText.Style(".class-2") {
         $0.fontWeight = .bold
       }
     }
@@ -172,7 +182,7 @@ final class StyleTests: XCTestCase {
     let widget2 = Column {
       widget1
     }.provideStyles {
-      ExperimentalText.Style(StyleSelector(classes: ["class-1"])) {
+      ExperimentalText.Style(".class-1") {
         $0.fontSize = 4
         $0.fontWeight = .black
       }
@@ -181,7 +191,7 @@ final class StyleTests: XCTestCase {
     let widget3 = Column {
       widget2
     }.provideStyles {
-      ExperimentalText.Style(StyleSelector(classes: ["class-1"])) {
+      ExperimentalText.Style(".class-1") {
         $0.fontSize = 3
         $0.fontWeight = .bold
       }
@@ -193,13 +203,13 @@ final class StyleTests: XCTestCase {
       widget3
       widget4
     }.provideStyles {
-      ExperimentalText.Style(StyleSelector(classes: ["class-1"])) {
+      ExperimentalText.Style(".class-1") {
         $0.fontSize = 1
       }
-      ExperimentalText.Style(StyleSelector(classes: ["class-1"])) {
+      ExperimentalText.Style(".class-1") {
         $0.fontSize = 2
       }
-      ExperimentalText.Style(StyleSelector(classes: ["class-2"])) {
+      ExperimentalText.Style(".class-2") {
         $0.fontWeight = .medium
       }
     }
@@ -301,6 +311,7 @@ final class StyleTests: XCTestCase {
   }
 
   static var allTests = [
+    ("testStyleSelectorPartParsing", testStyleSelectorPartParsing),
     ("testStyleSelectorParsing", testStyleSelectorParsing),
     ("testStyleComparison", testStyleComparison),
     ("testSimpleClassSelector", testSimpleClassSelector),

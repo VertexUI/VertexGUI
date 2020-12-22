@@ -11,9 +11,6 @@ public class MockLeafWidget: Widget, SimpleStylableWidget {
   lazy public private(set) var filledStyleProperties = getFilledStyleProperties()
   public var directStyleProperties = [AnyStyleProperties]()
 
-  public init() {
-  }
-
   override public func getBoxConfig() -> BoxConfig {
     BoxConfig(preferredSize: .zero)
   }
