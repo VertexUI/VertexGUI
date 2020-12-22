@@ -24,8 +24,8 @@ final class StyleTests: XCTestCase {
   }
 
   func testStyleSelectorParsing() {
-    var selector: StyleSelector = ".class1 .class2 .class3"
-    var parts: [StyleSelectorPart] = [".class1", ".class2", ".class3"]
+    let selector: StyleSelector = ".class1 &.class2 .class3:pseudoClass1"
+    let parts: [StyleSelectorPart] = [".class1", "&.class2", ".class3:pseudoClass1"]
     XCTAssertEqual(selector.parts, parts)
   }
 
@@ -83,7 +83,7 @@ final class StyleTests: XCTestCase {
     XCTAssertFalse(style1 == style9)
   }
 
-  func testSimpleClassSelector() {
+  func testSimpleSinglePartClassSelector() {
     let widget1 = MockLeafWidget().with(classes: ["class-1"])
     let widget2 = MockLeafWidget().with(classes: ["class-2"])
     let widget3 = MockLeafWidget().with(classes: ["class-2"])
@@ -124,6 +124,45 @@ final class StyleTests: XCTestCase {
     // check order of styles
     XCTAssert(widget2.appliedStyles[1] == class2Style1)
     XCTAssert(widget2.appliedStyles[2] == class2Style2)
+  }
+
+  func testSimpleMultiPartSelector() {
+    let reference1 = Reference<MockLeafWidget>()
+    let root = MockRoot(rootWidget: MockContainerWidget {
+      MockContainerWidget {
+        MockContainerWidget {
+          MockLeafWidget().with(classes: ["class-5", "class-6"]).connect(ref: reference1)
+        }.with(classes: ["class-3", "class-4"])
+      }.with(classes: ["class-2"])
+    }.with(classes: ["class-1"]).provideStyles {
+      MockLeafWidget.Style(".class-1 .class-2 .class-3 &.class-4 .class-5.class-6 &") {
+        $0.property1 = 1
+      }
+    })
+
+    XCTAssertEqual(reference1.referenced!.appliedStyles.count, 1)
+  }
+
+  func testMultiPartSelectorWithGaps() {
+    let reference1 = Reference<MockLeafWidget>()
+    let root = MockRoot(rootWidget: MockContainerWidget {
+      MockContainerWidget {
+        MockContainerWidget {
+          MockContainerWidget {
+            MockContainerWidget {
+              MockLeafWidget().with(classes: ["class-4"]).connect(ref: reference1)
+            }.with(classes: ["ignored-class-2"])
+          }.with(classes: ["class-3"])
+        }.with(classes: ["class-2"])
+      }.with(classes: ["ignored-class-1"])
+    }.with(classes: ["class-1"]).provideStyles {
+      MockLeafWidget.Style(".class-1 .class-2 .class-3 .class-4 &") {
+        $0.property1 = 1
+      }
+    })
+
+    XCTAssertEqual(reference1.referenced!.appliedStyles.count, 1)
+ 
   }
 
   func testEmptySelectorNonMatchingStyleTypeIgnored() {
@@ -266,7 +305,6 @@ final class StyleTests: XCTestCase {
 
   func testComplexOverwritingSubStyles() {
     var reference1 = Reference<MockLeafWidget>()
-    let reference2 = Reference<MockContainerWidget>()
     
     let root = MockRoot(rootWidget: MockContainerWidget {
       MockContainerWidget {
@@ -288,18 +326,11 @@ final class StyleTests: XCTestCase {
             }
           }
         }
-      }.with(classes: ["container-class-1"]).connect(ref: reference2)
+      }.with(classes: ["container-class-1"])
       
-      // and some crazy nesting and backreferencing
-      MockContainerWidget.Style(".container-class-1") {
-        MockContainerWidget.Style("&") { 
-          MockLeafWidget.Style(".class-1.class-2") { 
-            MockLeafWidget.Style("&") {
-              $0.property3 = 1
-              $0.property4 = 1
-            }
-          }
-        }
+      MockLeafWidget.Style(".container-class-1 & .class-1.class-2 &") {
+        $0.property3 = 1
+        $0.property4 = 1
       }
     })
 
@@ -307,14 +338,15 @@ final class StyleTests: XCTestCase {
     XCTAssertEqual(reference1.referenced!.filledStyleProperties.property2, "")
     XCTAssertEqual(reference1.referenced!.filledStyleProperties.property3, 1)
     XCTAssertEqual(reference1.referenced!.filledStyleProperties.property4, 2)
-    XCTAssertEqual(reference2.referenced!.appliedStyles.count, 2)
   }
 
   static var allTests = [
     ("testStyleSelectorPartParsing", testStyleSelectorPartParsing),
     ("testStyleSelectorParsing", testStyleSelectorParsing),
     ("testStyleComparison", testStyleComparison),
-    ("testSimpleClassSelector", testSimpleClassSelector),
+    ("testSimpleSinglePartClassSelector", testSimpleSinglePartClassSelector),
+    ("testSimpleMultiPartSelector", testSimpleMultiPartSelector),
+    ("testMultiPartSelectorWithGaps", testMultiPartSelectorWithGaps),
     ("testEmptySelectorNonMatchingTypeIgnored", testEmptySelectorNonMatchingStyleTypeIgnored),
     ("testStyleOnDynamicallyInsertedWidget", testStyleOnDynamicallyInsertedWidget),
     ("testMultiParentStyleMergeOverwrite", testMultiParentStyleMergeOverwrite),
