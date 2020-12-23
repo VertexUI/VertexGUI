@@ -158,8 +158,17 @@ Is it feasible to have custom collection types that must be used instead of the 
 
 An option to circumvent this is could be to define the wrappers as classes, then make the wrappedValue of the reactive property immutable which will only allow modification of the underlying value by calling methods on the wrapper. Therefore something like a replace method would need to be added to the wrapper. However this does not reduce the number of steps the user has to take for a full replacement and adds the weight of a class data type for values that would probably better be structs.
 
-And what about optional values? How does a collection property handle optional types? How to reactive properties in general handle optional types?
+### Optionals
 
+And what about optional values? How does a collection property handle optional types? How do reactive properties in general handle optional types?
+
+For normal property types, optionals should not be any different from non optional types in the way they are handled (maybe there are differences for ComputedProperty). For collection property types, allowing optionals would mean that when the handlers on the proxy object would need to be reattached every time the value is set from nil to something. And how to define the optional type? The reactive collection property will define the type of the exposed value. Which will be the proxy type. And which will not be optional. It could be somehow possible however to let the wrapper handle optionals. But then, isn't the absence of any items in a collection enough to signify absence of a value?
+
+<br>
+
+### Computed properties
+
+<br>
 
 
 
