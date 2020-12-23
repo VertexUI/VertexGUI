@@ -160,6 +160,8 @@ An option to circumvent this is could be to define the wrappers as classes, then
 
 ### Optionals
 
+<br>
+
 And what about optional values? How does a collection property handle optional types? How do reactive properties in general handle optional types?
 
 For normal property types, optionals should not be any different from non optional types in the way they are handled (maybe there are differences for ComputedProperty). For collection property types, allowing optionals would mean that when the handlers on the proxy object would need to be reattached every time the value is set from nil to something. And how to define the optional type? The reactive collection property will define the type of the exposed value. Which will be the proxy type. And which will not be optional. It could be somehow possible however to let the wrapper handle optionals. But then, isn't the absence of any items in a collection enough to signify absence of a value?
@@ -170,5 +172,6 @@ For normal property types, optionals should not be any different from non option
 
 <br>
 
+A ComputedProperty can depend on other reactive properties or on any other type of value. In the case of reactive property dependencies it could be possible to perform automatic dependency tracking by invoking the calculation function and using a static flag defined through the framework to tell any instances of reactive properties to register as dependency for the computed property. This assumes that the calculation function can be called during the initialization function of the ComputedProperty. Later is probably not feasible because that would leave a gap in time where a change of any dependency would not trigger an update of the property. However there might be situations in which the calculation function can't be invoked in the ComputedProperties initialization function without producing an error. In these cases there should be an option to disable automatic dependency tracking and define the dependencies manually. Additionally there must be a way to either trigger an update of the property from the outside or define arbitrary values as dependencies and notify the ComputedProperty of their changes. Could reactive properties be used as such a wrapper? It would be possible to define another ComputedProperty which returns the arbitrary value and use the manual recompute trigger to notify all dependants of a change.
 
-
+What about MutableComputedProperties? The handling of dependencies should be the same as for MutableProperties. Additionally there is a set function which handles the application of a new value. The value should probably be not recomputed by the set function. Because probably the set function will update some of the dependencies of the compute function which in turn will trigger a recomputation. It is necessary to ensure that the recomputation happens only after the set function was executed. So the dependency change notifications should be buffered and evaluated after the set function. In case the set function does not update any dependencies which could trigger a recomputation, there still is the manual recompute trigger option.
