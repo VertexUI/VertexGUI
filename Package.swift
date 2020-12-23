@@ -55,6 +55,11 @@ let package = Package(
         ),
 
         .target(
+            name: "ExperimentalReactiveProperties",
+            dependencies: ["Events"]
+        ),
+
+        .target(
             name: "Events"
         ),
 
@@ -106,6 +111,6 @@ let package = Package(
         
         .testTarget(name: "WidgetGUITests", dependencies: ["SwiftGUI"]),
 
-        .testTarget(name: "ReactivePropertiesTests", dependencies: ["ReactiveProperties"])
+        .testTarget(name: "ReactivePropertiesTests", dependencies: ["ReactiveProperties", "ExperimentalReactiveProperties"])
     ]
 )
