@@ -5,10 +5,11 @@ public class MutableProperty<Value>: ReactiveProperty {
   public typealias Value = Value
 
   public let onChanged = EventHandlerManager<(old: Value, new: Value)>()
+  public let onAnyChanged = EventHandlerManager<(old: Any, new: Any)>()
 
   public var value: Value {
     didSet {
-      onChanged.invokeHandlers((old: oldValue, new: value))
+      invokeOnChangedHandlers(oldValue: oldValue, newValue: value)
     }
   }
 
