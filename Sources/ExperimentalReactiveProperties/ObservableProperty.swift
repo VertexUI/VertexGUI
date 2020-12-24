@@ -4,7 +4,7 @@ import Events
 public class ObservableProperty<Value>: ReactiveProperty {
   public typealias Value = Value
 
-  public let onChanged = EventHandlerManager<(old: Value?, new: Value)>()
+  public let onChanged = EventHandlerManager<(old: Value, new: Value)>()
 
   public var value: Value {
     fatalError("value not implemented")
