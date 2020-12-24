@@ -5,7 +5,8 @@ import XCTest
     [
       testCase(MutablePropertyTests.allTests),
       testCase(StaticPropertyTests.allTests),
-      testCase(ExperimentalMutablePropertyTests.allTests)
+      testCase(ExperimentalMutablePropertyTests.allTests),
+      testCase(UniDirectionalPropertyBindingTests.allTests),
     ]
   }
 #endif
