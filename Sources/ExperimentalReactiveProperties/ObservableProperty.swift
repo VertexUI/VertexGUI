@@ -10,10 +10,13 @@ public class ObservableProperty<Value>: ReactiveProperty {
   public var value: Value {
     fatalError("value not implemented")
   } 
+  public var hasValue: Bool = true
 
   public var wrappedValue: Value {
     value
   }
+  
+  public var sourceBindings: [PropertyBindingProtocol] = []
 
   public init() {}
 }

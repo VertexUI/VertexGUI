@@ -7,6 +7,9 @@ public class StaticProperty<Value>: ReactiveProperty {
   public let onAnyChanged = EventHandlerManager<(old: Any, new: Any)>()
 
   public let value: Value
+  public let hasValue: Bool = true
+
+  public var sourceBindings: [PropertyBindingProtocol] = []
 
   public init(_ value: Value) {
     self.value = value

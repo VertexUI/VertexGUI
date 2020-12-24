@@ -11,6 +11,11 @@ public class MutableProperty<Value>: MutablePropertyProtocol {
     didSet {
       if let oldValue = oldValue as? Value {
         invokeOnChangedHandlers(oldValue: oldValue, newValue: value)
+      } else {
+        hasValue = true
+        for binding in sourceBindings {
+          binding.update()
+        }
       }
     }
   }
@@ -23,6 +28,8 @@ public class MutableProperty<Value>: MutablePropertyProtocol {
       _value = newValue
     }
   }
+
+  public private(set) var hasValue: Bool
 
   public var wrappedValue: Value {
     get {
@@ -38,13 +45,15 @@ public class MutableProperty<Value>: MutablePropertyProtocol {
     self
   }
 
-  private var bindings: [PropertyBindingProtocol] = []
+  public var sourceBindings: [PropertyBindingProtocol] = []
+  private var sinkBindings: [PropertyBindingProtocol] = []
 
   public init() {
-
+    hasValue = false
   }
 
   public init(_ initialValue: Value) {
+    self.hasValue = true
     self.value = initialValue
   }
 
@@ -56,17 +65,24 @@ public class MutableProperty<Value>: MutablePropertyProtocol {
   Add a unidirectional binding to another property. The property bind is called on
   will take the value of the other property when the other property changes. 
   The other property will remain unaffected by any changes to the property bind is called on.
+  The value of the other property is immediately assigned to self by this function.
   */
   public func bind<Source: ReactiveProperty>(_ other: Source) where Source.Value == Value {
+    // maybe let the binding call registerAsSource, registerAsSink on the two
+    // properties instead of handling the adding of the binding here?
     let binding = UniDirectionalPropertyBinding(source: other, sink: self)
     _ = binding.onDestroyed { [unowned self] in
-      bindings.removeAll { $0 === binding }
+      sinkBindings.removeAll { $0 === binding }
     }
-    bindings.append(binding)
+    sinkBindings.append(binding)
+    other.sourceBindings.append(binding)
+    if other.hasValue {
+      binding.update()
+    }
   }
 
   public func destroy() {
-    for binding in bindings {
+    for binding in sourceBindings + sinkBindings {
       binding.destroy()
     }
   }
