@@ -62,12 +62,38 @@ final class ExperimentalMutablePropertyTests: XCTestCase {
     XCTAssertTrue(onChangedCalled)
   }
 
+  func testHasValueChanged() {
+    let property = MutableProperty<String>()
+    var handlerCallCount = 0
+    _ = property.onHasValueChanged {
+      handlerCallCount += 1
+    }
+    property.value = "test1"
+    XCTAssertEqual(handlerCallCount, 1)
+    property.value = "test2"
+    XCTAssertEqual(handlerCallCount, 1)
+  }
+
+  func testOptionalValueHasValueChanged() {
+    let property = MutableProperty<String?>()
+    var handlerCallCount = 0
+    _ = property.onHasValueChanged {
+      handlerCallCount += 1
+    }
+    property.value = "test1"
+    XCTAssertEqual(handlerCallCount, 1)
+    property.value = "test2"
+    XCTAssertEqual(handlerCallCount, 1)
+  }
+
   static let allTests = [
     ("testInstantiation", testInstantiation),
     ("testValueSet", testValueSet),
     ("testPrepopulatedOnChanged", testPrepopulatedOnChanged),
     ("testNotPrepopulatedOnChanged", testNotPrepopulatedOnChanged),
     ("testOnChangedHandlerRemove", testOnChangedHandlerRemove),
-    ("testOptionalOnChanged", testOptionalOnChanged)
+    ("testOptionalOnChanged", testOptionalOnChanged),
+    ("testHasValueChanged", testHasValueChanged),
+    ("testOptionalValueHasValueChanged", testOptionalValueHasValueChanged)
   ]
 }

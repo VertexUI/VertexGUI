@@ -4,12 +4,10 @@ import Events
 public class MutableProperty<Value>: MutablePropertyProtocol {
   public typealias Value = Value
 
-  public let onChanged = EventHandlerManager<(old: Value, new: Value)>()
-  public let onAnyChanged = EventHandlerManager<(old: Any, new: Any)>()
-
   private var _value: Value? {
     didSet {
       if let oldValue = oldValue as? Value {
+        hasValue = true
         invokeOnChangedHandlers(oldValue: oldValue, newValue: value)
       } else {
         hasValue = true
@@ -28,8 +26,17 @@ public class MutableProperty<Value>: MutablePropertyProtocol {
       _value = newValue
     }
   }
+  public let onChanged = EventHandlerManager<(old: Value, new: Value)>()
+  public let onAnyChanged = EventHandlerManager<(old: Any, new: Any)>()
 
-  public private(set) var hasValue: Bool
+  public private(set) var hasValue: Bool {
+    didSet {
+      if oldValue != hasValue {
+        onHasValueChanged.invokeHandlers(())
+      }
+    }
+  }
+  public let onHasValueChanged = EventHandlerManager<Void>()
 
   public var wrappedValue: Value {
     get {
@@ -70,6 +77,8 @@ public class MutableProperty<Value>: MutablePropertyProtocol {
   public func bind<Source: ReactiveProperty>(_ other: Source) where Source.Value == Value {
     // maybe let the binding call registerAsSource, registerAsSink on the two
     // properties instead of handling the adding of the binding here?
+    // TODO: don't store binding information in the properties, use handlers
+    // on the properties like onDestroy which are registered by the binding class
     let binding = UniDirectionalPropertyBinding(source: other, sink: self)
     _ = binding.onDestroyed { [unowned self] in
       sinkBindings.removeAll { $0 === binding }

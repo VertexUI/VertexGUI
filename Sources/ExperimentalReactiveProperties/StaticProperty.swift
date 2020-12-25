@@ -8,6 +8,7 @@ public class StaticProperty<Value>: ReactiveProperty {
 
   public let value: Value
   public let hasValue: Bool = true
+  public let onHasValueChanged = EventHandlerManager<Void>()
 
   public var sourceBindings: [PropertyBindingProtocol] = []
 
