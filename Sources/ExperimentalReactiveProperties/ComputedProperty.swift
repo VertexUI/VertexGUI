@@ -36,7 +36,9 @@ public class ComputedProperty<Value>: ReactiveProperty {
 
   public private(set) var hasValue: Bool = false {
     didSet {
-      onHasValueChanged.invokeHandlers(())
+      if oldValue != hasValue {
+        onHasValueChanged.invokeHandlers(())
+      }
     }
   }
   public let onHasValueChanged = EventHandlerManager<Void>()
