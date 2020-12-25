@@ -10,6 +10,7 @@ public class ComputedProperty<Value>: ReactiveProperty {
   
   private var _value: Value? {
     didSet {
+      valueCalculated = true
       if hasValue, oldValue != nil {
         hasValue = true
         invokeOnChangedHandlers(oldValue: oldValue as! Value, newValue: _value as! Value)
@@ -19,11 +20,16 @@ public class ComputedProperty<Value>: ReactiveProperty {
     }
   }
   public var value: Value {
-    if !hasValue {
+    if !hasValue || !valueCalculated {
       _value = compute()
       hasValue = true
+      valueCalculated = true
     }
-    return _value as! Value
+    if _value == nil {
+      return _value as! Value
+    } else {
+      return _value!
+    }
   }
   public let onChanged = EventHandlerManager<(old: Value, new: Value)>()
   public let onAnyChanged = EventHandlerManager<(old: Any, new: Any)>()
@@ -34,6 +40,8 @@ public class ComputedProperty<Value>: ReactiveProperty {
     }
   }
   public let onHasValueChanged = EventHandlerManager<Void>()
+  /** Further indicate that while a value might be theoretically available, it has also been calculated and stored. */
+  private var valueCalculated = false
 
   public var sourceBindings: [PropertyBindingProtocol] = []
 

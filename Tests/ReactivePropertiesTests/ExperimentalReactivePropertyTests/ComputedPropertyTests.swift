@@ -62,11 +62,9 @@ final class ComputedPropertyTests: XCTestCase {
     _ = computedProperty.onChanged { _ in
       handlerCallCount += 1
     }
-    print("HERE1")
     dependencyProperty.value = nil
     XCTAssertEqual(handlerCallCount, 0)
     XCTAssertNil(computedProperty.value)
-    print("HERE2")
     dependencyProperty.value = "test1"
     XCTAssertEqual(handlerCallCount, 1)
     XCTAssertEqual(computedProperty.value, "test1")

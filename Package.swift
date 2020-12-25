@@ -100,16 +100,16 @@ let package = Package(
             resources: [.process("Resources")]
         ),
 
-        .target(
+        /*.target(
             name: "CTestSDL"
-        ),
-        .target(
+        ),*/
+        /*.target(
             name: "TestSDLSwift", dependencies: ["CTestSDL", "CSDL2", "GL", .product(name: "CnanovgGL3", package: "Cnanovg"), "VisualAppBaseImplSDL2OpenGL3NanoVG"], linkerSettings: [LinkerSetting.linkedLibrary("SDL2")]
-        ),
+        ),*/
 
-        .testTarget(name: "VisualAppBaseTests", dependencies: ["VisualAppBase", "Events"]),
+        //.testTarget(name: "VisualAppBaseTests", dependencies: ["VisualAppBase", "Events"]),
         
-        .testTarget(name: "WidgetGUITests", dependencies: ["SwiftGUI"]),
+        .testTarget(name: "WidgetGUITests", dependencies: ["SwiftGUI", "ExperimentalReactiveProperties"]),
 
         .testTarget(name: "ReactivePropertiesTests", dependencies: ["ReactiveProperties", "ExperimentalReactiveProperties"])
     ]
