@@ -55,6 +55,9 @@ public class MutableProperty<Value>: MutablePropertyProtocol {
   public var sourceBindings: [PropertyBindingProtocol] = []
   private var sinkBindings: [PropertyBindingProtocol] = []
 
+  private var destroyed: Bool = false
+  public let onDestroyed = EventHandlerManager<Void>()
+
   public init() {
     hasValue = false
   }
@@ -91,9 +94,14 @@ public class MutableProperty<Value>: MutablePropertyProtocol {
   }
 
   public func destroy() {
+    if destroyed {
+      return
+    }
     for binding in sourceBindings + sinkBindings {
       binding.destroy()
     }
+    destroyed = true
+    onDestroyed.invokeHandlers(())
   }
 
   deinit {

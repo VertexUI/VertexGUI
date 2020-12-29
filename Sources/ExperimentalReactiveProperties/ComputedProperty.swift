@@ -47,6 +47,9 @@ public class ComputedProperty<Value>: ReactiveProperty {
 
   public var sourceBindings: [PropertyBindingProtocol] = []
 
+  private var destroyed: Bool = false
+  public let onDestroyed = EventHandlerManager<Void>()
+
   /**
   Dependencies of compute function will be automatically determind. This might not be 
   suitable for all types of compute functions. Use init(compute:, dependencies:) if you
@@ -94,7 +97,16 @@ public class ComputedProperty<Value>: ReactiveProperty {
     hasValue = dependencies.allSatisfy { $0.hasValue }
   }
 
-  deinit {
+  public func destroy() {
+    if destroyed {
+      return
+    }
     removeDependencyHandlers()
+    destroyed = true
+    onDestroyed.invokeHandlers(())
+  }
+
+  deinit {
+    destroy()
   }
 }

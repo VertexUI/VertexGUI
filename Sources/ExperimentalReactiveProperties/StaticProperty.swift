@@ -11,6 +11,9 @@ public class StaticProperty<Value>: ReactiveProperty {
   public let onHasValueChanged = EventHandlerManager<Void>()
 
   public var sourceBindings: [PropertyBindingProtocol] = []
+  
+  private var destroyed: Bool = false
+  public let onDestroyed = EventHandlerManager<Void>()
 
   public init(_ value: Value) {
     self.value = value

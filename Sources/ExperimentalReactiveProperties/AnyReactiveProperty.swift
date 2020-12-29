@@ -7,4 +7,6 @@ public protocol AnyReactiveProperty: class {
   var hasValue: Bool { get }
   
   var onHasValueChanged: EventHandlerManager<Void> { get }
+
+  var onDestroyed: EventHandlerManager<Void> { get }
 }
