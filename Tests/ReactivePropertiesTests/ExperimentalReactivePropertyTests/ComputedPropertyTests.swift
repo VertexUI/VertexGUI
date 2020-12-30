@@ -81,6 +81,7 @@ final class ComputedPropertyTests: XCTestCase {
     let computedProperty = ComputedProperty<String>(compute: {
       dependency1.value + dependency2.value + (dependency3.value ?? "")
     }, dependencies: [dependency1, dependency2, dependency3])
+    dependency1.value = "part0"
     dependency1.value = "part1"
     dependency2.value = "part2"
     dependency3.value = nil

@@ -90,7 +90,9 @@ public class ComputedProperty<Value>: ReactiveProperty {
   }
 
   private func updateValue() {
-    _value = compute()
+    if hasValue {
+      _value = compute()
+    }
   }
 
   private func checkUpdateHasValue() {

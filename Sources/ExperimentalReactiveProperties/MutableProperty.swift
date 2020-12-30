@@ -6,9 +6,8 @@ public class MutableProperty<Value>: MutablePropertyProtocol {
 
   private var _value: Value? {
     didSet {
-      if let oldValue = oldValue as? Value {
-        hasValue = true
-        invokeOnChangedHandlers(oldValue: oldValue, newValue: value)
+      if hasValue {
+        invokeOnChangedHandlers(oldValue: oldValue as! Value, newValue: _value!)
       } else {
         hasValue = true
         for binding in sourceBindings {
@@ -17,6 +16,7 @@ public class MutableProperty<Value>: MutablePropertyProtocol {
       }
     }
   }
+
   public var value: Value {
     get {
       _value!
@@ -64,7 +64,7 @@ public class MutableProperty<Value>: MutablePropertyProtocol {
 
   public init(_ initialValue: Value) {
     self.hasValue = true
-    self.value = initialValue
+    self._value = initialValue
   }
 
   public convenience init(wrappedValue: Value) {

@@ -55,10 +55,12 @@ final class ExperimentalMutablePropertyTests: XCTestCase {
     var onChangedCalled = false
     _ = property.onChanged {
       onChangedCalled = true
-      XCTAssertEqual($0.old, nil)
-      XCTAssertEqual($0.new, "test1")
+      XCTAssertEqual($0.old, "test1")
+      XCTAssertEqual($0.new, nil)
     }
     property.value = "test1"
+    XCTAssertFalse(onChangedCalled)
+    property.value = nil
     XCTAssertTrue(onChangedCalled)
   }
 
