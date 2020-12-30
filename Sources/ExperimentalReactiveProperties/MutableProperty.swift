@@ -81,6 +81,7 @@ public class MutableProperty<Value>: MutablePropertyProtocol {
     if destroyed {
       return
     }
+    registeredBindings = []
     destroyed = true
     onDestroyed.invokeHandlers(())
   }

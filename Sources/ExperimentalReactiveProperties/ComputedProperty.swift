@@ -104,6 +104,7 @@ public class ComputedProperty<Value>: ReactiveProperty {
       return
     }
     removeDependencyHandlers()
+    registeredBindings = []
     destroyed = true
     onDestroyed.invokeHandlers(())
   }
