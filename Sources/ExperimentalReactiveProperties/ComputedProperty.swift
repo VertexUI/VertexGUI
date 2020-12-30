@@ -1,6 +1,6 @@
 import Events
 
-public class ComputedProperty<Value>: ReactiveProperty {
+public class ComputedProperty<Value>: ReactiveProperty, EventfulObject {
   public typealias Value = Value
   public typealias ComputeFunction = () -> Value
 
@@ -107,6 +107,7 @@ public class ComputedProperty<Value>: ReactiveProperty {
     registeredBindings = []
     destroyed = true
     onDestroyed.invokeHandlers(())
+    removeAllEventHandlers()
   }
 
   deinit {

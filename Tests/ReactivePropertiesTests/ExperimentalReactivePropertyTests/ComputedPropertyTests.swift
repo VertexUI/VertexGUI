@@ -180,6 +180,52 @@ final class ComputedPropertyTests: XCTestCase {
     XCTAssertEqual(onChangedCallCount, 2)
   }
 
+  func testDestroy() {
+    let dependency = MutableProperty<String>()
+    let property = ComputedProperty(compute: {
+      dependency.value
+    }, dependencies: [dependency])
+    var onChangedCallCount = 0
+    var onAnyChangedCallCount = 0
+    var onHasValueChangedCallCount = 0
+    var onDestroyedCallCount = 0
+    _ = property.onChanged { _ in
+      onChangedCallCount += 1
+    }
+    _ = property.onAnyChanged { _ in
+      onAnyChangedCallCount += 1
+    }
+    _ = property.onHasValueChanged {
+      onHasValueChangedCallCount += 1
+    }
+    _ = property.onDestroyed {
+      onDestroyedCallCount += 1
+    }
+
+    property.destroy()
+    dependency.value = "test"
+
+    XCTAssertEqual(onChangedCallCount, 0)
+    XCTAssertEqual(onAnyChangedCallCount, 0)
+    XCTAssertEqual(onHasValueChangedCallCount, 0)
+    XCTAssertEqual(onDestroyedCallCount, 1)
+  }
+
+  func testOnDestroyedCalledOnDeinit() {
+    let dependency = MutableProperty<String>()
+    var property = Optional(ComputedProperty(compute: {
+      dependency.value
+    }, dependencies: [dependency]))
+    var onDestroyedCallCount = 0
+    _ = property!.onDestroyed {
+      onDestroyedCallCount += 1
+    }
+
+    property = nil
+
+    XCTAssertEqual(onDestroyedCallCount, 1)
+  }
+
   static var allTests = [
     ("testStaticCompute", testStaticCompute),
     ("testOptionalStaticCompute", testOptionalStaticCompute),
@@ -189,6 +235,8 @@ final class ComputedPropertyTests: XCTestCase {
     ("testMultiManualDependencyChange", testMultiManualDependencyChange),
     ("testSingleDependencyHasValueChanged", testSingleDependencyHasValueChanged),
     ("testSingleDependencyOptionalValueHasValueChanged", testSingleDependencyOptionalValueHasValueChanged),
-    ("testComputedPropertyDependencyOnChangedHasValueChanged", testComputedPropertyDependencyOnChangedHasValueChanged)
+    ("testComputedPropertyDependencyOnChangedHasValueChanged", testComputedPropertyDependencyOnChangedHasValueChanged),
+    ("testDestroy", testDestroy),
+    ("testOnDestroyedCalledOnDeinit", testOnDestroyedCalledOnDeinit)
   ]
 }

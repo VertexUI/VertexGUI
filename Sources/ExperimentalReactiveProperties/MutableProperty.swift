@@ -1,7 +1,7 @@
 import Events
 
 @propertyWrapper
-public class MutableProperty<Value>: MutablePropertyProtocol {
+public class MutableProperty<Value>: MutablePropertyProtocol, EventfulObject {
   public typealias Value = Value
 
   private var _value: Value? {
@@ -82,12 +82,9 @@ public class MutableProperty<Value>: MutablePropertyProtocol {
       return
     }
     registeredBindings = []
-    onChanged.removeAllHandlers()
-    onAnyChanged.removeAllHandlers()
-    onHasValueChanged.removeAllHandlers()
     destroyed = true
     onDestroyed.invokeHandlers(())
-    onDestroyed.removeAllHandlers()
+    removeAllEventHandlers()
   }
 
   deinit {
