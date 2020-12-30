@@ -45,7 +45,7 @@ public class ComputedProperty<Value>: ReactiveProperty {
   /** Further indicate that while a value might be theoretically available, it has also been calculated and stored. */
   private var valueCalculated = false
 
-  public var sourceBindings: [PropertyBindingProtocol] = []
+  public var registeredBindings = [PropertyBindingProtocol]()
 
   private var destroyed: Bool = false
   public let onDestroyed = EventHandlerManager<Void>()

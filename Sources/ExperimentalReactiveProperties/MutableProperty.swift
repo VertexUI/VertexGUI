@@ -10,9 +10,6 @@ public class MutableProperty<Value>: MutablePropertyProtocol {
         invokeOnChangedHandlers(oldValue: oldValue as! Value, newValue: _value!)
       } else {
         hasValue = true
-        for binding in sourceBindings {
-          binding.update()
-        }
       }
     }
   }
@@ -21,7 +18,6 @@ public class MutableProperty<Value>: MutablePropertyProtocol {
     get {
       _value!
     }
-
     set {
       _value = newValue
     }
@@ -42,7 +38,6 @@ public class MutableProperty<Value>: MutablePropertyProtocol {
     get {
       value
     }
-
     set {
       value = newValue
     }
@@ -51,9 +46,8 @@ public class MutableProperty<Value>: MutablePropertyProtocol {
   public var projectedValue: MutableProperty<Value> {
     self
   }
-
-  public var sourceBindings: [PropertyBindingProtocol] = []
-  private var sinkBindings: [PropertyBindingProtocol] = []
+ 
+  public var registeredBindings = [PropertyBindingProtocol]()
 
   private var destroyed: Bool = false
   public let onDestroyed = EventHandlerManager<Void>()
@@ -77,28 +71,15 @@ public class MutableProperty<Value>: MutablePropertyProtocol {
   The other property will remain unaffected by any changes to the property bind is called on.
   The value of the other property is immediately assigned to self by this function.
   */
-  public func bind<Source: ReactiveProperty>(_ other: Source) where Source.Value == Value {
-    // maybe let the binding call registerAsSource, registerAsSink on the two
-    // properties instead of handling the adding of the binding here?
-    // TODO: don't store binding information in the properties, use handlers
-    // on the properties like onDestroy which are registered by the binding class
+  @discardableResult
+  public func bind<Source: ReactiveProperty>(_ other: Source) -> UniDirectionalPropertyBinding where Source.Value == Value {
     let binding = UniDirectionalPropertyBinding(source: other, sink: self)
-    _ = binding.onDestroyed { [unowned self] in
-      sinkBindings.removeAll { $0 === binding }
-    }
-    sinkBindings.append(binding)
-    other.sourceBindings.append(binding)
-    if other.hasValue {
-      binding.update()
-    }
+    return binding
   }
 
   public func destroy() {
     if destroyed {
       return
-    }
-    for binding in sourceBindings + sinkBindings {
-      binding.destroy()
     }
     destroyed = true
     onDestroyed.invokeHandlers(())

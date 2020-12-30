@@ -6,8 +6,6 @@ public protocol ReactiveProperty: AnyReactiveProperty {
   var value: Value { get }
 
   var onChanged: EventHandlerManager<(old: Value, new: Value)> { get }
-
-  var sourceBindings: [PropertyBindingProtocol] { get set }
 }
 
 extension ReactiveProperty {

@@ -19,8 +19,23 @@ final class UniDirectionalPropertyBindingTests: XCTestCase {
     XCTAssertEqual(property1.value, "test")
   }
 
+  func testPropertyDestroyed() {
+    let property1 = MutableProperty<String>()
+    let property2 = MutableProperty<String>()
+    property2.bind(property1)
+    property1.value = "test1"
+
+    property1.destroy()
+    XCTAssertEqual(property1.registeredBindings.count, 0)
+    XCTAssertEqual(property2.registeredBindings.count, 0)
+
+    property1.value = "test2"
+    XCTAssertEqual(property2.value, "test1")
+  }
+
   static let allTests = [
     ("testMutableToMutableBinding", testMutableToMutableBinding),
-    ("testNotPrepopulatedMutableToMutableBinding", testNotPrepopulatedMutableToMutableBinding)
+    ("testNotPrepopulatedMutableToMutableBinding", testNotPrepopulatedMutableToMutableBinding),
+    ("testPropertyDestroyed", testPropertyDestroyed)
   ]
 }

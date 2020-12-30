@@ -21,8 +21,8 @@ public class ObservableProperty<Value>: ReactiveProperty {
     value
   }
   
-  public var sourceBindings: [PropertyBindingProtocol] = []
-  
+  public var registeredBindings = [PropertyBindingProtocol]()
+
   private var destroyed: Bool = false
   public let onDestroyed = EventHandlerManager<Void>()
 
