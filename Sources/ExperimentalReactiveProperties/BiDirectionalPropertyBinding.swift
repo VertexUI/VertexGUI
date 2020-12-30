@@ -1,6 +1,7 @@
-public class BiDirectionalPropertyBinding {
+public class BiDirectionalPropertyBinding: PropertyBindingProtocol {
 
   private var handlerRemovers = [() -> ()]()
+  private var unregisterFunctions = [() -> ()]()
   private var destroyed: Bool = false
 
   public init<P1: MutablePropertyProtocol, P2: MutablePropertyProtocol>(_ property1: P1, _ property2: P2) where P1.Value == P2.Value, P1.Value: Equatable {
@@ -30,11 +31,20 @@ public class BiDirectionalPropertyBinding {
     handlerRemovers.append(property2.onDestroyed { [unowned self] in
       destroy()
     })
+
+    unregisterFunctions.append(property1.registerBinding(self))
+    unregisterFunctions.append(property2.registerBinding(self))
   }
 
   public func destroy() {
     if destroyed {
       return
+    }
+    for remove in handlerRemovers {
+      remove()
+    }
+    for unregister in unregisterFunctions {
+      unregister()
     }
     destroyed = true
   }
