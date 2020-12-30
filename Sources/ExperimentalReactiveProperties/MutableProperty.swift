@@ -72,7 +72,7 @@ public class MutableProperty<Value>: MutablePropertyProtocol {
   The value of the other property is immediately assigned to self by this function.
   */
   @discardableResult
-  public func bind<Source: ReactiveProperty>(_ other: Source) -> UniDirectionalPropertyBinding where Source.Value == Value {
+  public func bind<Source: ReactiveProperty>(_ other: Source) -> UniDirectionalPropertyBinding where Source.Value == Value, Source.Value: Equatable {
     let binding = UniDirectionalPropertyBinding(source: other, sink: self)
     return binding
   }
@@ -82,8 +82,12 @@ public class MutableProperty<Value>: MutablePropertyProtocol {
       return
     }
     registeredBindings = []
+    onChanged.removeAllHandlers()
+    onAnyChanged.removeAllHandlers()
+    onHasValueChanged.removeAllHandlers()
     destroyed = true
     onDestroyed.invokeHandlers(())
+    onDestroyed.removeAllHandlers()
   }
 
   deinit {

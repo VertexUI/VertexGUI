@@ -87,6 +87,42 @@ final class ExperimentalMutablePropertyTests: XCTestCase {
     property.value = "test2"
     XCTAssertEqual(handlerCallCount, 1)
   }
+  
+  func testDestroy() {
+    var mutable = MutableProperty<String>()
+    var onChangedCallCount = 0
+    var onAnyChangedCallCount = 0
+    var onHasValueChangedCallCount = 0
+    var onDestroyedCallCount = 0
+    _ = mutable.onChanged { _ in
+      onChangedCallCount += 1
+    }
+    _ = mutable.onAnyChanged { _ in
+      onAnyChangedCallCount += 1
+    }
+    _ = mutable.onHasValueChanged {
+      onHasValueChangedCallCount += 1
+    }
+    _ = mutable.onDestroyed {
+      onDestroyedCallCount += 1
+    }
+    mutable.destroy()
+    mutable.value = "test"
+    XCTAssertEqual(onChangedCallCount, 0)
+    XCTAssertEqual(onAnyChangedCallCount, 0)
+    XCTAssertEqual(onHasValueChangedCallCount, 0)
+    XCTAssertEqual(onDestroyedCallCount, 1)
+  }
+
+  func testOnDestroyedCalledOnDeinit() {
+    var mutable = Optional(MutableProperty<String>())
+    var onDestroyedCallCount = 0
+    _ = mutable!.onDestroyed {
+      onDestroyedCallCount += 1
+    }
+    mutable = nil
+    XCTAssertEqual(onDestroyedCallCount, 1)
+  }
 
   static let allTests = [
     ("testInstantiation", testInstantiation),
@@ -96,6 +132,8 @@ final class ExperimentalMutablePropertyTests: XCTestCase {
     ("testOnChangedHandlerRemove", testOnChangedHandlerRemove),
     ("testOptionalOnChanged", testOptionalOnChanged),
     ("testHasValueChanged", testHasValueChanged),
-    ("testOptionalValueHasValueChanged", testOptionalValueHasValueChanged)
+    ("testOptionalValueHasValueChanged", testOptionalValueHasValueChanged),
+    ("testDestroy", testDestroy),
+    ("testOnDestroyedCalledOnDeinit", testOnDestroyedCalledOnDeinit)
   ]
 }
