@@ -2,7 +2,7 @@ public class BiDirectionalPropertyBinding: PropertyBindingProtocol {
 
   private var handlerRemovers = [() -> ()]()
   private var unregisterFunctions = [() -> ()]()
-  private var destroyed: Bool = false
+  public private(set) var destroyed: Bool = false
 
   public init<P1: MutablePropertyProtocol, P2: MutablePropertyProtocol>(_ property1: P1, _ property2: P2) where P1.Value == P2.Value, P1.Value: Equatable {
     handlerRemovers.append(property1.onChanged { _ in
@@ -19,12 +19,12 @@ public class BiDirectionalPropertyBinding: PropertyBindingProtocol {
       destroy()
     })
     handlerRemovers.append(property2.onChanged { _ in
-      if !property1.hasValue || (property1.value != property2.value) {
+      if !property1.hasValue || property1.value != property2.value {
         property1.value = property2.value
       }
     })
     handlerRemovers.append(property2.onHasValueChanged {
-      if !property1.hasValue || (property1.value != property2.value) {
+      if !property1.hasValue || property1.value != property2.value {
         property1.value = property2.value
       }
     })
