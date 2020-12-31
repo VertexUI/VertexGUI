@@ -304,6 +304,22 @@ final class ComputedPropertyTests: XCTestCase {
     XCTAssertEqual(onDestroyedCallCount, 1)
   }
 
+  func testDependenciesNotDestroyedEarly() {
+    var dependency = Optional(MutableProperty<String>("test"))
+    var property = Optional(ComputedProperty(compute: {
+      dependency!.value
+    }, dependencies: [dependency!]))
+    var dependencyOnDestroyedCallCount = 0
+    _ = dependency!.onDestroyed {
+      dependencyOnDestroyedCallCount += 1
+    }
+
+    dependency = nil
+    XCTAssertEqual(dependencyOnDestroyedCallCount, 0)
+    property = nil
+    XCTAssertEqual(dependencyOnDestroyedCallCount, 1)
+  }
+
   static var allTests = [
     ("testStaticCompute", testStaticCompute),
     ("testOptionalStaticCompute", testOptionalStaticCompute),
@@ -318,6 +334,7 @@ final class ComputedPropertyTests: XCTestCase {
     ("testSingleDependencyOptionalValueHasValueChanged", testSingleDependencyOptionalValueHasValueChanged),
     ("testComputedPropertyDependencyOnChangedHasValueChanged", testComputedPropertyDependencyOnChangedHasValueChanged),
     ("testDestroy", testDestroy),
-    ("testOnDestroyedCalledOnDeinit", testOnDestroyedCalledOnDeinit)
+    ("testOnDestroyedCalledOnDeinit", testOnDestroyedCalledOnDeinit),
+    ("testDependenciesNotDestroyedEarly", testDependenciesNotDestroyedEarly)
   ]
 }
