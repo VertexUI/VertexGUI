@@ -20,15 +20,15 @@ public class ComputedProperty<Value>: ReactiveProperty, EventfulObject {
     }
   }
   public var value: Value {
-    if !hasValue || !valueCalculated {
-      _value = compute()
-      hasValue = true
-      valueCalculated = true
-    }
-    if _value == nil {
-      return _value as! Value
-    } else {
+    if hasValue {
+      if !valueCalculated {
+        _value = compute()
+        valueCalculated = true
+      }
+
       return _value!
+    } else {
+      fatalError("no value present, because some dependency does not have a value")
     }
   }
   public let onChanged = EventHandlerManager<(old: Value, new: Value)>()
@@ -59,6 +59,7 @@ public class ComputedProperty<Value>: ReactiveProperty, EventfulObject {
     self.compute = compute
     self.dependencies = []
     setupDependencyHandlers()
+    checkUpdateHasValue()
   }
 
   /**
@@ -69,6 +70,7 @@ public class ComputedProperty<Value>: ReactiveProperty, EventfulObject {
     self.compute = compute
     self.dependencies = dependencies
     setupDependencyHandlers()
+    checkUpdateHasValue()
   }
 
   private func setupDependencyHandlers() {
