@@ -18,6 +18,85 @@ final class ComputedPropertyTests: XCTestCase {
     XCTAssertTrue(property.value is String?)
   }
 
+  func testVariableBackedNotifyDependenciesChanged() {
+    var storage = "test1"
+    let property = ComputedProperty(compute: {
+      storage
+    })
+    XCTAssertEqual(property.value, "test1")
+
+    storage = "test2"
+    XCTAssertEqual(property.value, "test1")
+
+    property.notifyDependenciesChanged()
+    XCTAssertEqual(property.value, "test2")
+  }
+
+  func testMixedVariablePropertyDependeciesNotifyDependenciesChanged() {
+    var variableDependency = "test1part1"
+    let propertyDependency = MutableProperty<String>()
+    let property = ComputedProperty(compute: {
+      variableDependency + propertyDependency.value
+    }, dependencies: [propertyDependency])
+    var onHasValueChangedCallCount = 0
+    var onAnyChangedCallCount = 0
+    var onChangedCallCount = 0
+    _ = property.onHasValueChanged {
+      onHasValueChangedCallCount += 1
+    }
+    _ = property.onAnyChanged { _ in
+      onAnyChangedCallCount += 1
+    }
+    _ = property.onChanged { _ in
+      onChangedCallCount += 1
+    }
+
+    XCTAssertFalse(property.hasValue)
+
+    variableDependency = "test2part1"
+    property.notifyDependenciesChanged()
+    XCTAssertFalse(property.hasValue)
+    XCTAssertEqual(onHasValueChangedCallCount, 0)
+    XCTAssertEqual(onChangedCallCount, 0)
+    XCTAssertEqual(onAnyChangedCallCount, 0)
+
+    propertyDependency.value = "test2part2"
+    XCTAssertTrue(property.hasValue)
+    XCTAssertEqual(onHasValueChangedCallCount, 1)
+    XCTAssertEqual(onChangedCallCount, 0)
+    XCTAssertEqual(onAnyChangedCallCount, 0)
+    XCTAssertEqual(property.value, "test2part1test2part2")
+
+    variableDependency = "test3part1"
+    property.notifyDependenciesChanged()
+    XCTAssertEqual(onHasValueChangedCallCount, 1)
+    XCTAssertEqual(onChangedCallCount, 1)
+    XCTAssertEqual(onAnyChangedCallCount, 1)
+    XCTAssertEqual(property.value, "test3part1test2part2")
+  }
+
+  func testOnChangedAndOnAnyChangedCalled() {
+    let dependencyProperty = MutableProperty<String>("test1")
+    let computedProperty = ComputedProperty(compute: {
+      dependencyProperty.value
+    }, dependencies: [dependencyProperty])
+
+    var onChangedCallCount = 0
+    var onAnyChangedCallCount = 0
+
+    _ = computedProperty.onChanged { _ in
+      onChangedCallCount += 1
+    }
+    _ = computedProperty.onAnyChanged { _ in
+      onAnyChangedCallCount += 1
+    }
+
+    dependencyProperty.value = "test2"
+
+    XCTAssertEqual(onChangedCallCount, 1)
+    XCTAssertEqual(onAnyChangedCallCount, 1)
+  }
+
   func testManualDependencyChange() {
     let dependencyProperty = MutableProperty<String>("test1")
     let computedProperty = ComputedProperty(compute: {
@@ -27,7 +106,6 @@ final class ComputedPropertyTests: XCTestCase {
     let removeHandler = computedProperty.onChanged { _ in
       handlerCallCount += 1
     }
-    XCTAssertEqual(computedProperty.value, "test1")
     dependencyProperty.value = "test2"
     XCTAssertEqual(computedProperty.value, "test2")
     XCTAssertEqual(handlerCallCount, 1)
@@ -229,6 +307,9 @@ final class ComputedPropertyTests: XCTestCase {
   static var allTests = [
     ("testStaticCompute", testStaticCompute),
     ("testOptionalStaticCompute", testOptionalStaticCompute),
+    ("testVariableBackedNotifyDependenciesChanged", testVariableBackedNotifyDependenciesChanged),
+    ("testMixedVariablePropertyDependeciesNotifyDependenciesChanged", testMixedVariablePropertyDependeciesNotifyDependenciesChanged),
+    ("testOnChangedAndOnAnyChangedCalled", testOnChangedAndOnAnyChangedCalled),
     ("testManualDependencyChange", testManualDependencyChange),
     ("testManualNonPrepopulatedDependencyChange", testManualNonPrepopulatedDependencyChange),
     ("testOptionalSelfManualOptionalDependencyChange", testOptionalSelfManualOptionalDependencyChange),
