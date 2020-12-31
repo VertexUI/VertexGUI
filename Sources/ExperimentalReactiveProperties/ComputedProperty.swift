@@ -6,7 +6,6 @@ public class ComputedProperty<Value>: ComputedPropertyProtocol, EventfulObject {
   
   internal var _value: Value? {
     didSet {
-      valueCalculated = true
       if hasValue, oldValue != nil {
         invokeOnChangedHandlers(oldValue: oldValue!, newValue: _value!)
       } else {
@@ -16,9 +15,8 @@ public class ComputedProperty<Value>: ComputedPropertyProtocol, EventfulObject {
   }
   public var value: Value {
     if hasValue {
-      if !valueCalculated {
+      if _value == nil {
         _value = compute()
-        valueCalculated = true
       }
 
       return _value!
@@ -40,8 +38,6 @@ public class ComputedProperty<Value>: ComputedPropertyProtocol, EventfulObject {
     }
   }
   public let onHasValueChanged = EventHandlerManager<Void>()
-  /** Further indicate that while a value might be theoretically available, it has also been calculated and stored. */
-  private var valueCalculated = false
 
   public var registeredBindings = [PropertyBindingProtocol]()
 
