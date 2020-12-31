@@ -1,14 +1,10 @@
 import Events
 
-public class ComputedProperty<Value>: ReactiveProperty, EventfulObject {
+public class ComputedProperty<Value>: ComputedPropertyProtocol, EventfulObject {
   public typealias Value = Value
   public typealias ComputeFunction = () -> Value
-
-  private let compute: ComputeFunction
-  private let dependencies: [AnyReactiveProperty]
-  private var dependencyHandlerRemovers = [() -> ()]()
   
-  private var _value: Value? {
+  internal var _value: Value? {
     didSet {
       valueCalculated = true
       if hasValue, oldValue != nil {
@@ -31,10 +27,13 @@ public class ComputedProperty<Value>: ReactiveProperty, EventfulObject {
       fatalError("no value present, because some dependency does not have a value")
     }
   }
+  internal let compute: ComputeFunction
+  internal let dependencies: [AnyReactiveProperty]
+  internal var dependencyHandlerRemovers = [() -> ()]()
   public let onChanged = EventHandlerManager<(old: Value, new: Value)>()
   public let onAnyChanged = EventHandlerManager<(old: Any, new: Any)>()
 
-  public private(set) var hasValue: Bool = false {
+  public internal(set) var hasValue: Bool = false {
     didSet {
       if oldValue != hasValue {
         onHasValueChanged.invokeHandlers(())
@@ -47,7 +46,7 @@ public class ComputedProperty<Value>: ReactiveProperty, EventfulObject {
 
   public var registeredBindings = [PropertyBindingProtocol]()
 
-  private var destroyed: Bool = false
+  public internal(set) var destroyed: Bool = false
   public let onDestroyed = EventHandlerManager<Void>()
 
   /**
@@ -71,45 +70,6 @@ public class ComputedProperty<Value>: ReactiveProperty, EventfulObject {
     self.dependencies = dependencies
     setupDependencyHandlers()
     checkUpdateHasValue()
-  }
-
-  private func setupDependencyHandlers() {
-    for dependency in dependencies {
-      dependencyHandlerRemovers.append(dependency.onAnyChanged { [unowned self] _ in
-        updateValue()
-      })
-      dependencyHandlerRemovers.append(dependency.onHasValueChanged { [unowned self] _ in
-        checkUpdateHasValue()
-      })
-    }
-  }
-
-  private func removeDependencyHandlers() {
-    for remove in dependencyHandlerRemovers {
-      remove()
-    }
-    dependencyHandlerRemovers = []
-  }
-
-  private func updateValue() {
-    if hasValue {
-      _value = compute()
-    }
-  }
-
-  private func checkUpdateHasValue() {
-    hasValue = dependencies.allSatisfy { $0.hasValue }
-  }
-
-  public func destroy() {
-    if destroyed {
-      return
-    }
-    removeDependencyHandlers()
-    registeredBindings = []
-    destroyed = true
-    onDestroyed.invokeHandlers(())
-    removeAllEventHandlers()
   }
 
   deinit {
