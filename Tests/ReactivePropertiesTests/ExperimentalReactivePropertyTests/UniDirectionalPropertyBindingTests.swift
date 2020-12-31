@@ -76,7 +76,7 @@ final class UniDirectionalPropertyBindingTests: XCTestCase {
   func testPropertyDestroyed() {
     let property1 = MutableProperty<String>()
     let property2 = MutableProperty<String>()
-    property2.bind(property1)
+    let binding = property2.bind(property1)
     property1.value = "test1"
 
     property1.destroy()
@@ -85,6 +85,8 @@ final class UniDirectionalPropertyBindingTests: XCTestCase {
 
     property1.value = "test2"
     XCTAssertEqual(property2.value, "test1")
+
+    XCTAssertTrue(binding.destroyed)
   }
 
   func testNotDestroyedEarly() {
@@ -100,22 +102,29 @@ final class UniDirectionalPropertyBindingTests: XCTestCase {
     XCTAssertEqual(property2.registeredBindings.count, 1)
   }
 
-  func testDestroyedAfterPropertiesDestroyed() {
+  func testDestroyedAfterPropertiesDeinitialized() {
     var property1 = Optional(MutableProperty<String>())
     var property2 = Optional(MutableProperty<String>())
-    var properties = [property1, property2]
 
-    withExtendedLifetime(properties) {
-      var binding = Optional(property1!.bind(property2!))
+    var binding = Optional(property1!.bind(property2!))
 
-      property2!.value = "test"
-      XCTAssertEqual(property2!.value, "test")
+    var bindingDestroyed = false
 
-      property1 = nil
-      property2 = nil
-
-      XCTAssertNil(binding)
+    _ = binding!.onDestroyed {
+      bindingDestroyed = true
     }
+
+    binding = nil
+
+    XCTAssertFalse(bindingDestroyed)
+
+    property2!.value = "test"
+    XCTAssertEqual(property2!.value, "test")
+
+    property1 = nil
+    property2 = nil
+
+    XCTAssertTrue(bindingDestroyed)
   }
 
   static let allTests = [
@@ -127,6 +136,6 @@ final class UniDirectionalPropertyBindingTests: XCTestCase {
     ("testTwoWayBinding", testTwoWayBinding),
     ("testPropertyDestroyed", testPropertyDestroyed),
     ("testNotDestroyedEarly", testNotDestroyedEarly),
-    ("testDestroyedAfterPropertiesDestroyed", testDestroyedAfterPropertiesDestroyed)
+    ("testDestroyedAfterPropertiesDeinitialized", testDestroyedAfterPropertiesDeinitialized)
   ]
 }

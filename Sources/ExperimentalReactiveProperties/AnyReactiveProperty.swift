@@ -18,8 +18,10 @@ public protocol AnyReactiveProperty: class {
 extension AnyReactiveProperty {
   public func registerBinding(_ binding: PropertyBindingProtocol) -> () -> () {
     registeredBindings.append(binding)
-    return { [unowned self] in
-      registeredBindings.removeAll { $0 === binding }
+    return { [weak self, weak binding] in
+      if let self = self, let binding = binding {
+        self.registeredBindings.removeAll { $0 === binding }
+      }
     }
   }
 }

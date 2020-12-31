@@ -1,16 +1,19 @@
-public class BiDirectionalPropertyBinding: PropertyBindingProtocol {
+import Events
 
+public class BiDirectionalPropertyBinding: PropertyBindingProtocol, EventfulObject {
   private var handlerRemovers = [() -> ()]()
   private var unregisterFunctions = [() -> ()]()
+
+  public let onDestroyed = EventHandlerManager<Void>()
   public private(set) var destroyed: Bool = false
 
   public init<P1: MutablePropertyProtocol, P2: MutablePropertyProtocol>(_ property1: P1, _ property2: P2) where P1.Value == P2.Value, P1.Value: Equatable {
-    handlerRemovers.append(property1.onChanged { _ in
+    handlerRemovers.append(property1.onChanged { [unowned property1, property2] _ in
       if !property2.hasValue || property2.value != property1.value {
         property2.value = property1.value
       }
     })
-    handlerRemovers.append(property1.onHasValueChanged {
+    handlerRemovers.append(property1.onHasValueChanged { [unowned property1, property2] in
       if !property2.hasValue || property2.value != property1.value {
         property2.value = property1.value
       }
@@ -18,12 +21,12 @@ public class BiDirectionalPropertyBinding: PropertyBindingProtocol {
     handlerRemovers.append(property1.onDestroyed { [unowned self] in
       destroy()
     })
-    handlerRemovers.append(property2.onChanged { _ in
+    handlerRemovers.append(property2.onChanged { [unowned property1, property2] _ in
       if !property1.hasValue || property1.value != property2.value {
         property1.value = property2.value
       }
     })
-    handlerRemovers.append(property2.onHasValueChanged {
+    handlerRemovers.append(property2.onHasValueChanged { [unowned property1, property2] in
       if !property1.hasValue || property1.value != property2.value {
         property1.value = property2.value
       }
@@ -47,6 +50,8 @@ public class BiDirectionalPropertyBinding: PropertyBindingProtocol {
       unregister()
     }
     destroyed = true
+    onDestroyed.invokeHandlers(())
+    removeAllEventHandlers()
   }
 
   deinit {

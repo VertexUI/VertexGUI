@@ -1,6 +1,6 @@
 import Events
 
-public class UniDirectionalPropertyBinding: PropertyBindingProtocol {
+public class UniDirectionalPropertyBinding: PropertyBindingProtocol, EventfulObject {
   private var handlerRemovers = [() -> ()]()
   private var unregisterFunctions = [() -> ()]()
 
@@ -8,12 +8,12 @@ public class UniDirectionalPropertyBinding: PropertyBindingProtocol {
   public let onDestroyed = EventHandlerManager<Void>()
 
   internal init<Source: ReactiveProperty, Sink: MutablePropertyProtocol>(source: Source, sink: Sink) where Source.Value == Sink.Value, Source.Value: Equatable {    
-    handlerRemovers.append(source.onChanged {
+    handlerRemovers.append(source.onChanged { [unowned sink] in
       if !sink.hasValue || sink.value != $0.new {
         sink.value = $0.new
       }
     })
-    handlerRemovers.append(source.onHasValueChanged {
+    handlerRemovers.append(source.onHasValueChanged { [unowned source, sink] in
       if !sink.hasValue || sink.value != source.value {
         sink.value = source.value
       }
@@ -45,7 +45,7 @@ public class UniDirectionalPropertyBinding: PropertyBindingProtocol {
     }
     destroyed = true
     onDestroyed.invokeHandlers(())
-    onDestroyed.removeAllHandlers()
+    removeAllEventHandlers()
   }
 
   deinit {

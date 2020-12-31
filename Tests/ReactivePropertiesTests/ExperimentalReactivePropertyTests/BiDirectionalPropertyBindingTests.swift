@@ -156,6 +156,26 @@ final class BiDirectionalPropertyBindingTests: XCTestCase {
     XCTAssertEqual(property2.value, "test")
   }
 
+  func testDestroyedAfterPropertiesDeinitialized() {
+    var property1 = Optional(MutableProperty<String>())
+    var property2 = Optional(MutableProperty<String>())
+    var binding = Optional(BiDirectionalPropertyBinding(property1!, property2!))
+
+    var bindingDestroyed = false
+    _ = binding!.onDestroyed {
+      bindingDestroyed = true
+    }
+
+    binding = nil
+
+    XCTAssertFalse(bindingDestroyed)
+
+    property1 = nil
+    property2 = nil
+
+    XCTAssertTrue(bindingDestroyed)
+  }
+
   static var allTests = [
     ("testEventHandlers", testEventHandlers),
     ("testChainedWithBiDirectionalBinding", testChainedWithBiDirectionalBinding),
@@ -163,6 +183,7 @@ final class BiDirectionalPropertyBindingTests: XCTestCase {
     ("testChainedWithUniDirectionalBinding", testChainedWithUniDirectionalBinding),
     ("testPropertyDestroyed", testPropertyDestroyed),
     ("testDestroy", testDestroy),
-    ("testNotDestroyedEarly", testNotDestroyedEarly)
+    ("testNotDestroyedEarly", testNotDestroyedEarly),
+    ("testDestroyedAfterPropertiesDeinitialized", testDestroyedAfterPropertiesDeinitialized)
   ]
 }
