@@ -8,8 +8,7 @@ public class ComputedProperty<Value>: ComputedPropertyProtocol, EventfulObject {
     didSet {
       valueCalculated = true
       if hasValue, oldValue != nil {
-        hasValue = true
-        invokeOnChangedHandlers(oldValue: oldValue as! Value, newValue: _value as! Value)
+        invokeOnChangedHandlers(oldValue: oldValue!, newValue: _value!)
       } else {
         hasValue = true
       }
@@ -59,6 +58,9 @@ public class ComputedProperty<Value>: ComputedPropertyProtocol, EventfulObject {
     self.dependencies = []
     setupDependencyHandlers()
     checkUpdateHasValue()
+    if hasValue {
+      _value = compute()
+    }
   }
 
   /**
@@ -70,6 +72,9 @@ public class ComputedProperty<Value>: ComputedPropertyProtocol, EventfulObject {
     self.dependencies = dependencies
     setupDependencyHandlers()
     checkUpdateHasValue()
+    if hasValue {
+      _value = compute()
+    }
   }
 
   deinit {
