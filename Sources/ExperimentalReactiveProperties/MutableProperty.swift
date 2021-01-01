@@ -65,18 +65,6 @@ public class MutableProperty<Value>: MutablePropertyProtocol, EventfulObject {
     self.init(wrappedValue)
   }
 
-  /**
-  Add a unidirectional binding to another property. The property bind is called on
-  will take the value of the other property when the other property changes. 
-  The other property will remain unaffected by any changes to the property bind is called on.
-  The value of the other property is immediately assigned to self by this function.
-  */
-  @discardableResult
-  public func bind<Source: ReactiveProperty>(_ other: Source) -> UniDirectionalPropertyBinding where Source.Value == Value, Source.Value: Equatable {
-    let binding = UniDirectionalPropertyBinding(source: other, sink: self)
-    return binding
-  }
-
   public func destroy() {
     if destroyed {
       return
