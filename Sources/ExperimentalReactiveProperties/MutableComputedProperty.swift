@@ -1,6 +1,6 @@
 import Events
 
-public class MutableComputedProperty<Value>: MutablePropertyProtocol, ComputedPropertyProtocol, EventfulObject {
+public class MutableComputedProperty<Value>: InternalMutablePropertyProtocol, ComputedPropertyProtocol, EventfulObject {
   public typealias Value = Value
 
   private var applyingValue = false
@@ -19,6 +19,8 @@ public class MutableComputedProperty<Value>: MutablePropertyProtocol, ComputedPr
   }
   public var value: Value {
     get {
+      handleDependencyRecording()
+
       if hasValue {
         if _value == nil {
           _value = compute()

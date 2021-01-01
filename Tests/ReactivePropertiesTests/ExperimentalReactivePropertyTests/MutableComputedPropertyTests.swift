@@ -402,6 +402,20 @@ class MutableComputedPropertyTests: XCTestCase {
     XCTAssertEqual(property2.value, "test2")
   }
 
+  func testRecordAsDependency() {
+    let recorder = DependencyRecorder.current
+    recorder.recording = true
+    let property = MutableComputedProperty(compute: {
+      "test"
+    }, apply: { _ in }, dependencies: [])
+    _ = property.value
+    recorder.recording = false
+
+    XCTAssertEqual(recorder.recordedProperties.count, 1)
+
+    recorder.reset()
+  }
+
   static var allTests = [
     ("testSingleVariableBacked", testSingleVariableBacked),
     ("testVariableAndPropertyBacked", testVariableAndPropertyBacked),
@@ -411,6 +425,7 @@ class MutableComputedPropertyTests: XCTestCase {
     ("testDependencyDestruction", testDependencyDestruction),
     ("testUniDirectionalBindingSource", testUniDirectionalBindingSource),
     ("testUniDirectionalBindingSink", testUniDirectionalBindingSink),
-    ("testBiDirectionalBindingWithOtherMutableComputedProperty", testBiDirectionalBindingWithOtherMutableComputedProperty)
+    ("testBiDirectionalBindingWithOtherMutableComputedProperty", testBiDirectionalBindingWithOtherMutableComputedProperty),
+    ("testRecordAsDependency", testRecordAsDependency)
   ]
 }

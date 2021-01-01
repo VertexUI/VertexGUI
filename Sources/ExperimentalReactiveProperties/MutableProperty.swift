@@ -1,13 +1,13 @@
 import Events
 
 @propertyWrapper
-public class MutableProperty<Value>: MutablePropertyProtocol, EventfulObject {
+public class MutableProperty<Value>: InternalMutablePropertyProtocol, EventfulObject {
   public typealias Value = Value
 
   private var _value: Value? {
     didSet {
       if hasValue {
-        invokeOnChangedHandlers(oldValue: oldValue as! Value, newValue: _value!)
+        invokeOnChangedHandlers(oldValue: oldValue!, newValue: _value!)
       } else {
         hasValue = true
       }
@@ -16,7 +16,13 @@ public class MutableProperty<Value>: MutablePropertyProtocol, EventfulObject {
 
   public var value: Value {
     get {
-      _value!
+      handleDependencyRecording()
+
+      if let value = _value {
+        return value
+      } else {
+        fatalError("no value present")
+      }
     }
     set {
       _value = newValue

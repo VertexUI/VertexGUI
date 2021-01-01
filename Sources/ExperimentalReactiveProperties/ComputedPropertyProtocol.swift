@@ -4,7 +4,7 @@ public protocol PublicComputedPropertyProtocol {
   func notifyDependenciesChanged()
 }
 
-internal protocol ComputedPropertyProtocol: PublicComputedPropertyProtocol, ReactiveProperty, EventfulObject {
+internal protocol ComputedPropertyProtocol: PublicComputedPropertyProtocol, InternalReactivePropertyProtocol, EventfulObject {
   var dependencies: [AnyReactiveProperty] { get }
   var dependencyHandlerRemovers: [() -> ()] { get set }
   var _value: Value? { get set }

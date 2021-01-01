@@ -320,6 +320,20 @@ final class ComputedPropertyTests: XCTestCase {
     XCTAssertEqual(dependencyOnDestroyedCallCount, 1)
   }
 
+  func testRecordAsDependency() {
+    let recorder = DependencyRecorder.current
+    recorder.recording = true
+    let property = ComputedProperty(compute: {
+      "test"
+    }, dependencies: [])
+    _ = property.value
+    recorder.recording = false
+
+    XCTAssertEqual(recorder.recordedProperties.count, 1)
+
+    recorder.reset()
+  }
+
   static var allTests = [
     ("testStaticCompute", testStaticCompute),
     ("testOptionalStaticCompute", testOptionalStaticCompute),
@@ -335,6 +349,7 @@ final class ComputedPropertyTests: XCTestCase {
     ("testComputedPropertyDependencyOnChangedHasValueChanged", testComputedPropertyDependencyOnChangedHasValueChanged),
     ("testDestroy", testDestroy),
     ("testOnDestroyedCalledOnDeinit", testOnDestroyedCalledOnDeinit),
-    ("testDependenciesNotDestroyedEarly", testDependenciesNotDestroyedEarly)
+    ("testDependenciesNotDestroyedEarly", testDependenciesNotDestroyedEarly),
+    ("testRecordAsDependency", testRecordAsDependency)
   ]
 }

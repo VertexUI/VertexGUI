@@ -6,8 +6,21 @@ final class StaticPropertyTests: XCTestCase {
     let property = StaticProperty("testString")
     XCTAssertEqual(property.value, "testString")
   }
+  
+  func testRecordAsDependency() {
+    let recorder = DependencyRecorder.current
+    recorder.recording = true
+    let property = StaticProperty("test")
+    _ = property.value
+    recorder.recording = false
+
+    XCTAssertEqual(recorder.recordedProperties.count, 1)
+
+    recorder.reset()
+  }
 
   static let allTests = [
-    ("testSimpleStaticProperty", testSimpleStaticProperty)
+    ("testSimpleStaticProperty", testSimpleStaticProperty),
+    ("testRecordAsDependecy", testRecordAsDependency)
   ]
 }

@@ -23,3 +23,5 @@ public extension MutablePropertyProtocol where Value: Equatable {
     return binding
   }
 }
+
+internal protocol InternalMutablePropertyProtocol: MutablePropertyProtocol, InternalReactivePropertyProtocol {}

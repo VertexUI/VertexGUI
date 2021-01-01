@@ -17,3 +17,19 @@ extension ReactiveProperty {
     onAnyChanged.invokeHandlers((old: oldValue, new: newValue))
   }
 }
+
+internal protocol InternalReactivePropertyProtocol: ReactiveProperty {
+
+}
+
+extension InternalReactivePropertyProtocol {
+  internal func handleDependencyRecording() {
+    if DependencyRecorder.current.recording {
+      if !hasValue {
+        fatalError("in order for properties to be recorded as dependencies automatically, an initial value has to be set")
+      } else {
+        DependencyRecorder.current.recordAccess(self)
+      }
+    }
+  }
+}

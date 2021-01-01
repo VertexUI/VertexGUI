@@ -1,3 +1,4 @@
+import Foundation
 import Events
 
 public class ComputedProperty<Value>: ComputedPropertyProtocol, EventfulObject {
@@ -14,6 +15,8 @@ public class ComputedProperty<Value>: ComputedPropertyProtocol, EventfulObject {
     }
   }
   public var value: Value {
+    handleDependencyRecording()
+
     if hasValue {
       if _value == nil {
         _value = compute()
@@ -25,7 +28,7 @@ public class ComputedProperty<Value>: ComputedPropertyProtocol, EventfulObject {
     }
   }
   internal let compute: ComputeFunction
-  internal let dependencies: [AnyReactiveProperty]
+  internal private(set) var dependencies: [AnyReactiveProperty]
   internal var dependencyHandlerRemovers = [() -> ()]()
   public let onChanged = EventHandlerManager<(old: Value, new: Value)>()
   public let onAnyChanged = EventHandlerManager<(old: Any, new: Any)>()
@@ -52,6 +55,7 @@ public class ComputedProperty<Value>: ComputedPropertyProtocol, EventfulObject {
   public init(compute: @escaping ComputeFunction) {
     self.compute = compute
     self.dependencies = []
+    recordDependencies()
     setupDependencyHandlers()
     checkUpdateHasValue()
     if hasValue {
@@ -71,6 +75,13 @@ public class ComputedProperty<Value>: ComputedPropertyProtocol, EventfulObject {
     if hasValue {
       _value = compute()
     }
+  }
+
+  internal func recordDependencies() {
+    DependencyRecorder.current.recording = true
+    _ = self.compute()
+    DependencyRecorder.current.recording = false
+    self.dependencies = DependencyRecorder.current.recordedProperties
   }
 
   deinit {

@@ -123,6 +123,18 @@ final class ExperimentalMutablePropertyTests: XCTestCase {
     mutable = nil
     XCTAssertEqual(onDestroyedCallCount, 1)
   }
+ 
+  func testRecordAsDependency() {
+    let recorder = DependencyRecorder.current
+    recorder.recording = true
+    let property = MutableProperty("test")
+    _ = property.value
+    recorder.recording = false
+
+    XCTAssertEqual(recorder.recordedProperties.count, 1)
+
+    recorder.reset()
+  }
 
   static let allTests = [
     ("testInstantiation", testInstantiation),
@@ -134,6 +146,7 @@ final class ExperimentalMutablePropertyTests: XCTestCase {
     ("testHasValueChanged", testHasValueChanged),
     ("testOptionalValueHasValueChanged", testOptionalValueHasValueChanged),
     ("testDestroy", testDestroy),
-    ("testOnDestroyedCalledOnDeinit", testOnDestroyedCalledOnDeinit)
+    ("testOnDestroyedCalledOnDeinit", testOnDestroyedCalledOnDeinit),
+    ("testRecordAsDependency", testRecordAsDependency)
   ]
 }
