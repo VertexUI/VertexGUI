@@ -16,4 +16,10 @@ public extension MutablePropertyProtocol where Value: Equatable {
     let binding = UniDirectionalPropertyBinding(source: other, sink: self)
     return binding
   }
+
+  @discardableResult
+  func bindBidirectional<Other: MutablePropertyProtocol>(_ other: Other) -> BiDirectionalPropertyBinding where Other.Value == Value {
+    let binding = BiDirectionalPropertyBinding(self, other)
+    return binding
+  }
 }

@@ -7,7 +7,7 @@ public class BiDirectionalPropertyBinding: PropertyBindingProtocol, EventfulObje
   public let onDestroyed = EventHandlerManager<Void>()
   public private(set) var destroyed: Bool = false
 
-  public init<P1: MutablePropertyProtocol, P2: MutablePropertyProtocol>(_ property1: P1, _ property2: P2) where P1.Value == P2.Value, P1.Value: Equatable {
+  internal init<P1: MutablePropertyProtocol, P2: MutablePropertyProtocol>(_ property1: P1, _ property2: P2) where P1.Value == P2.Value, P1.Value: Equatable {
     handlerRemovers.append(property1.onChanged { [unowned property1, property2] _ in
       if !property2.hasValue || property2.value != property1.value {
         property2.value = property1.value

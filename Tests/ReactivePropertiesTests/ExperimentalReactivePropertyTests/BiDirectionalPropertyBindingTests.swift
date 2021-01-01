@@ -24,14 +24,16 @@ final class BiDirectionalPropertyBindingTests: XCTestCase {
     }
 
     property1.value = "test1"
+    XCTAssertEqual(property1.value, "test1")
     XCTAssertEqual(property2.value, "test1")
     XCTAssertEqual(property1HasValueCallCount, 1)
     XCTAssertEqual(property2HasValueCallCount, 1)
     XCTAssertEqual(property1ChangedCallCount, 0)
     XCTAssertEqual(property2ChangedCallCount, 0)
 
-    property2.value = "test2"
+    property1.value = "test2"
     XCTAssertEqual(property1.value, "test2")
+    XCTAssertEqual(property2.value, "test2")
     XCTAssertEqual(property1HasValueCallCount, 1)
     XCTAssertEqual(property2HasValueCallCount, 1)
     XCTAssertEqual(property1ChangedCallCount, 1)
