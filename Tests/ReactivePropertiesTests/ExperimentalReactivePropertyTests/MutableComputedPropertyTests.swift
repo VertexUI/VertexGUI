@@ -274,15 +274,132 @@ class MutableComputedPropertyTests: XCTestCase {
   }
 
   func testUniDirectionalBindingSource() {
+    let dependency = MutableProperty<String>()
+    let sourceProperty = MutableComputedProperty(compute: {
+      dependency.value
+    }, apply: {
+      dependency.value = $0
+    }, dependencies: [dependency])
+    let sinkProperty = MutableProperty<String>()
+    let binding = sinkProperty.bind(sourceProperty)
+    var onChangedCallCount = 0
+    var onAnyChangedCallCount = 0
+    var onHasValueChangedCallCount = 0
+    _ = sinkProperty.onChanged { _ in
+      onChangedCallCount += 1
+    }
+    _ = sinkProperty.onAnyChanged { _ in
+      onAnyChangedCallCount += 1
+    }
+    _ = sinkProperty.onHasValueChanged { _ in
+      onHasValueChangedCallCount += 1
+    }
 
+    XCTAssertFalse(sinkProperty.hasValue)
+
+    dependency.value = "test1"
+    XCTAssertEqual(onChangedCallCount, 0)
+    XCTAssertEqual(onAnyChangedCallCount, 0)
+    XCTAssertEqual(onHasValueChangedCallCount, 1)
+    XCTAssertEqual(sinkProperty.value, "test1")
+    
+    sinkProperty.value = "test2"
+    XCTAssertEqual(onChangedCallCount, 1)
+    XCTAssertEqual(onAnyChangedCallCount, 1)
+    XCTAssertEqual(onHasValueChangedCallCount, 1)
+    XCTAssertEqual(sourceProperty.value, "test1")
+
+    sourceProperty.value = "test3"
+    XCTAssertEqual(onChangedCallCount, 2)
+    XCTAssertEqual(onAnyChangedCallCount, 2)
+    XCTAssertEqual(onHasValueChangedCallCount, 1)
+    XCTAssertEqual(sourceProperty.value, "test3")
   }
 
   func testUniDirectionalBindingSink() {
+    let sourceProperty = MutableProperty<String?>()
+    let dependency = MutableProperty<String?>()
+    let sinkProperty = MutableComputedProperty(compute: {
+      dependency.value
+    }, apply: {
+      dependency.value = $0
+    }, dependencies: [dependency])
+    let binding = sinkProperty.bind(sourceProperty)
+    var onChangedCallCount = 0
+    var onAnyChangedCallCount = 0
+    var onHasValueChangedCallCount = 0
+    _ = sinkProperty.onChanged { _ in
+      onChangedCallCount += 1
+    }
+    _ = sinkProperty.onAnyChanged { _ in
+      onAnyChangedCallCount += 1
+    }
+    _ = sinkProperty.onHasValueChanged { _ in
+      onHasValueChangedCallCount += 1
+    }
 
+    XCTAssertFalse(sinkProperty.hasValue)
+
+    sourceProperty.value = "test1"
+    XCTAssertTrue(sinkProperty.hasValue)
+    XCTAssertEqual(onChangedCallCount, 0)
+    XCTAssertEqual(onAnyChangedCallCount, 0)
+    XCTAssertEqual(onHasValueChangedCallCount, 1)
+    XCTAssertEqual(sinkProperty.value, "test1")
+
+    sinkProperty.value = "test2"
+    XCTAssertTrue(sinkProperty.hasValue)
+    XCTAssertEqual(onChangedCallCount, 1)
+    XCTAssertEqual(onAnyChangedCallCount, 1)
+    XCTAssertEqual(onHasValueChangedCallCount, 1)
+    XCTAssertEqual(sinkProperty.value, "test2")
+    XCTAssertEqual(sourceProperty.value, "test1")
   }
 
   func testBiDirectionalBindingWithOtherMutableComputedProperty() {
+    let dependency1 = MutableProperty<String>()
+    let property1 = MutableComputedProperty(compute: {
+      dependency1.value
+    }, apply: {
+      dependency1.value = $0
+    }, dependencies: [dependency1])
+    let dependency2 = MutableProperty<String>()
+    let property2 = MutableComputedProperty(compute: {
+      dependency2.value
+    }, apply: {
+      dependency2.value = $0
+    }, dependencies: [dependency2])
+    let binding = property1.bindBidirectional(property2)
+    var onChangedCallCount = 0
+    var onAnyChangedCallCount = 0
+    var onHasValueChangedCallCount = 0
+    _ = property1.onChanged { _ in
+      onChangedCallCount += 1
+    }
+    _ = property1.onAnyChanged { _ in
+      onAnyChangedCallCount += 1
+    }
+    _ = property1.onHasValueChanged { _ in
+      onHasValueChangedCallCount += 1
+    }
 
+    XCTAssertFalse(property1.hasValue)
+
+    property1.value = "test1"
+    XCTAssertTrue(property1.hasValue)
+    XCTAssertEqual(onChangedCallCount, 0)
+    XCTAssertEqual(onAnyChangedCallCount, 0)
+    XCTAssertEqual(onHasValueChangedCallCount, 1)
+    XCTAssertEqual(property1.value, "test1")
+    XCTAssertEqual(property2.value, "test1")
+
+    property1.value = "test2"
+    XCTAssertTrue(property1.hasValue)
+    XCTAssertEqual(onChangedCallCount, 1)
+    XCTAssertEqual(onAnyChangedCallCount, 1)
+    XCTAssertEqual(onHasValueChangedCallCount, 1)
+    XCTAssertEqual(property1.value, "test2")
+    XCTAssertEqual(property2.value, "test2")
   }
 
   static var allTests = [
