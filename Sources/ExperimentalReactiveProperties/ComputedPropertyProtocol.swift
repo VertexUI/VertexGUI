@@ -5,14 +5,15 @@ public protocol PublicComputedPropertyProtocol {
 }
 
 internal protocol ComputedPropertyProtocol: PublicComputedPropertyProtocol, InternalReactivePropertyProtocol, EventfulObject {
-  var dependencies: [AnyReactiveProperty] { get }
+  var dependencies: [AnyReactiveProperty] { get set }
   var dependencyHandlerRemovers: [() -> ()] { get set }
   var _value: Value? { get set }
   var hasValue: Bool { get set }
   var compute: () -> Value { get }
 
   var destroyed: Bool { get set }
- 
+  
+  func recordDependencies()
   func setupDependencyHandlers()
   func removeDependencyHandlers()
   func checkUpdateHasValue()
@@ -21,6 +22,13 @@ internal protocol ComputedPropertyProtocol: PublicComputedPropertyProtocol, Inte
 }
 
 extension ComputedPropertyProtocol {
+  func recordDependencies() {
+    DependencyRecorder.current.recording = true
+    _ = self.compute()
+    DependencyRecorder.current.recording = false
+    dependencies = DependencyRecorder.current.recordedProperties
+  }
+
   public func notifyDependenciesChanged() {
     checkUpdateHasValue()
     if dependencies.count == 0 {

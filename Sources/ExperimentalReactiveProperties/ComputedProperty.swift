@@ -28,7 +28,7 @@ public class ComputedProperty<Value>: ComputedPropertyProtocol, EventfulObject {
     }
   }
   internal let compute: ComputeFunction
-  internal private(set) var dependencies: [AnyReactiveProperty]
+  internal var dependencies: [AnyReactiveProperty]
   internal var dependencyHandlerRemovers = [() -> ()]()
   public let onChanged = EventHandlerManager<(old: Value, new: Value)>()
   public let onAnyChanged = EventHandlerManager<(old: Any, new: Any)>()
@@ -75,13 +75,6 @@ public class ComputedProperty<Value>: ComputedPropertyProtocol, EventfulObject {
     if hasValue {
       _value = compute()
     }
-  }
-
-  internal func recordDependencies() {
-    DependencyRecorder.current.recording = true
-    _ = self.compute()
-    DependencyRecorder.current.recording = false
-    self.dependencies = DependencyRecorder.current.recordedProperties
   }
 
   deinit {

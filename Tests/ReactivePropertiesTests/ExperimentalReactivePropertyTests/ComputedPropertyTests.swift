@@ -321,17 +321,53 @@ final class ComputedPropertyTests: XCTestCase {
   }
 
   func testRecordAsDependency() {
-    let recorder = DependencyRecorder.current
-    recorder.recording = true
+    let expectation = XCTestExpectation()
+    let thread = IsolationThread {
+      let recorder = DependencyRecorder.current
+      recorder.recording = true
+      let property = ComputedProperty(compute: {
+        "test"
+      }, dependencies: [])
+      _ = property.value
+      recorder.recording = false
+
+      XCTAssertEqual(recorder.recordedProperties.count, 1)
+      XCTAssertEqual(recorder.recordedProperties.map(ObjectIdentifier.init), [ObjectIdentifier(property)])
+
+      recorder.reset()
+      expectation.fulfill()
+    }
+    thread.start()
+    wait(for: [expectation], timeout: 1)
+  }
+
+  func testAutomaticDependencyRecording() {
+    let dependency1 = MutableProperty("test1part1")
+    let dependency2 = MutableProperty("test1part2")
     let property = ComputedProperty(compute: {
-      "test"
-    }, dependencies: [])
-    _ = property.value
-    recorder.recording = false
+      dependency1.value + dependency2.value
+    })
+    var onChangedCallCount = 0
+    var onAnyChangedCallCount = 0
+    _ = property.onChanged { _ in
+      onChangedCallCount += 1
+    }
+    _ = property.onAnyChanged { _ in
+      onAnyChangedCallCount += 1
+    }
 
-    XCTAssertEqual(recorder.recordedProperties.count, 1)
+    XCTAssertTrue(property.hasValue)
+    XCTAssertEqual(property.value, "test1part1test1part2")
 
-    recorder.reset()
+    dependency1.value = "test2part1"
+    XCTAssertEqual(onChangedCallCount, 1)
+    XCTAssertEqual(onAnyChangedCallCount, 1)
+    XCTAssertEqual(property.value, "test2part1test1part2")
+
+    dependency2.value = "test2part2"
+    XCTAssertEqual(onChangedCallCount, 2)
+    XCTAssertEqual(onAnyChangedCallCount, 2)
+    XCTAssertEqual(property.value, "test2part1test2part2")
   }
 
   static var allTests = [
@@ -350,6 +386,7 @@ final class ComputedPropertyTests: XCTestCase {
     ("testDestroy", testDestroy),
     ("testOnDestroyedCalledOnDeinit", testOnDestroyedCalledOnDeinit),
     ("testDependenciesNotDestroyedEarly", testDependenciesNotDestroyedEarly),
-    ("testRecordAsDependency", testRecordAsDependency)
+    ("testRecordAsDependency", testRecordAsDependency),
+    ("testAutomaticDependencyRecording", testAutomaticDependencyRecording)
   ]
 }

@@ -46,7 +46,7 @@ public class MutableComputedProperty<Value>: InternalMutablePropertyProtocol, Co
       }
     }
   }
-  internal let dependencies: [AnyReactiveProperty]
+  internal var dependencies: [AnyReactiveProperty]
   internal var dependencyHandlerRemovers = [() -> ()]()
   internal let compute: () -> Value
   internal let apply: (Value) -> ()
@@ -82,6 +82,7 @@ public class MutableComputedProperty<Value>: InternalMutablePropertyProtocol, Co
     self.compute = compute
     self.apply = apply
     self.dependencies = []
+    recordDependencies()
     setupDependencyHandlers()
     checkUpdateHasValue()
     if hasValue {
