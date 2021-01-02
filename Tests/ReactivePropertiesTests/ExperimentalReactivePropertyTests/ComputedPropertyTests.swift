@@ -370,6 +370,50 @@ final class ComputedPropertyTests: XCTestCase {
     XCTAssertEqual(property.value, "test2part1test2part2")
   }
 
+  func testReinit() {
+    let property = ComputedProperty<String>()
+    var onChangedCallCount = 0
+    var onAnyChangedCallCount = 0
+    var onHasValueChangedCallCount = 0
+    _ = property.onChanged { _ in
+      onChangedCallCount += 1
+    }
+    _ = property.onAnyChanged { _ in
+      onAnyChangedCallCount += 1 
+    }
+    _ = property.onHasValueChanged {
+      onHasValueChangedCallCount += 1
+    }
+
+    XCTAssertFalse(property.hasValue)
+
+    let dependency1 = MutableProperty("test1")
+    property.reinit(compute: {
+      dependency1.value
+    })
+    XCTAssertTrue(property.hasValue)
+    XCTAssertEqual(onChangedCallCount, 0)
+    XCTAssertEqual(onAnyChangedCallCount, 0)
+    XCTAssertEqual(onHasValueChangedCallCount, 1)
+    XCTAssertEqual(property.value, "test1")
+
+    dependency1.value = "test2"
+    XCTAssertEqual(onChangedCallCount, 1)
+    XCTAssertEqual(onAnyChangedCallCount, 1)
+    XCTAssertEqual(onHasValueChangedCallCount, 1)
+    XCTAssertEqual(property.value, "test2")
+
+    let dependency2 = MutableProperty("test3")
+    property.reinit(compute: {
+      dependency2.value
+    }, dependencies: [dependency2])
+    XCTAssertTrue(property.hasValue)
+    XCTAssertEqual(onChangedCallCount, 2)
+    XCTAssertEqual(onAnyChangedCallCount, 2)
+    XCTAssertEqual(onHasValueChangedCallCount, 1)
+    XCTAssertEqual(property.value, "test3")
+  }
+
   static var allTests = [
     ("testStaticCompute", testStaticCompute),
     ("testOptionalStaticCompute", testOptionalStaticCompute),
@@ -387,6 +431,7 @@ final class ComputedPropertyTests: XCTestCase {
     ("testOnDestroyedCalledOnDeinit", testOnDestroyedCalledOnDeinit),
     ("testDependenciesNotDestroyedEarly", testDependenciesNotDestroyedEarly),
     ("testRecordAsDependency", testRecordAsDependency),
-    ("testAutomaticDependencyRecording", testAutomaticDependencyRecording)
+    ("testAutomaticDependencyRecording", testAutomaticDependencyRecording),
+    ("testReinit", testReinit)
   ]
 }

@@ -27,7 +27,7 @@ public class ComputedProperty<Value>: ComputedPropertyProtocol, EventfulObject {
       fatalError("no value present, because some dependency does not have a value")
     }
   }
-  internal let compute: ComputeFunction
+  internal var compute: ComputeFunction
   internal var dependencies: [AnyReactiveProperty]
   internal var dependencyHandlerRemovers = [() -> ()]()
   public let onChanged = EventHandlerManager<(old: Value, new: Value)>()
@@ -47,15 +47,25 @@ public class ComputedProperty<Value>: ComputedPropertyProtocol, EventfulObject {
   public internal(set) var destroyed: Bool = false
   public let onDestroyed = EventHandlerManager<Void>()
 
-  /**
-  Dependencies of compute function will be automatically determind. This might not be 
-  suitable for all types of compute functions. Use init(compute:, dependencies:) if you
-  want to specify the dependencies manually.
-  */
-  public init(compute: @escaping ComputeFunction) {
-    self.compute = compute
+  public init() {
+    self.compute = { fatalError("tried to call compute() on a property that has not been fully initialized") }
     self.dependencies = []
-    recordDependencies()
+  }
+
+  /**
+  If the dependencies are not specified, they will be automatically registered based on the
+  accesses that happen in the compute function. That means the compute function needs to be
+  able to execute without error right away. If this is not possible in a specific case, provide
+  the dependencies manually.
+  */
+  public init(compute: @escaping ComputeFunction, dependencies: [AnyReactiveProperty]? = nil) {
+    self.compute = compute
+    if let dependencies = dependencies {
+      self.dependencies = dependencies
+    } else {
+      self.dependencies = []
+      recordDependencies()
+    }
     setupDependencyHandlers()
     checkUpdateHasValue()
     if hasValue {
@@ -63,13 +73,15 @@ public class ComputedProperty<Value>: ComputedPropertyProtocol, EventfulObject {
     }
   }
 
-  /**
-  Initialize with manual dependency definition. No further lookup or is performed
-  on dependencies of the compute function.
-  */
-  public init(compute: @escaping ComputeFunction, dependencies: [AnyReactiveProperty]) {
+  public func reinit(compute: @escaping ComputeFunction, dependencies: [AnyReactiveProperty]? = nil) {
+    self.removeDependencyHandlers()
     self.compute = compute
-    self.dependencies = dependencies
+    if let dependencies = dependencies {
+      self.dependencies = dependencies
+    } else {
+      self.dependencies = []
+      recordDependencies()
+    }
     setupDependencyHandlers()
     checkUpdateHasValue()
     if hasValue {

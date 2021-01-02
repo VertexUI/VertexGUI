@@ -82,8 +82,8 @@ public class MutableComputedProperty<Value>: InternalMutablePropertyProtocol, Co
   public let onDestroyed = EventHandlerManager<Void>()
 
   public init() {
-    self.compute = { fatalError("called compute() on uninitialized property") }
-    self.apply = { _ in fatalError("called apply() on uninitialized property") }
+    self.compute = { fatalError("called compute() on a property that has not been fully initialized") }
+    self.apply = { _ in fatalError("called apply() on a property that has not been fully initialized") }
     self.dependencies = []
   }
 
@@ -107,10 +107,10 @@ public class MutableComputedProperty<Value>: InternalMutablePropertyProtocol, Co
     removeDependencyHandlers()
     self.compute = compute
     self.apply = apply
-    self.dependencies = []
     if let dependencies = dependencies {
       self.dependencies = dependencies
     } else {
+      self.dependencies = []
       recordDependencies()
     }
     setupDependencyHandlers()

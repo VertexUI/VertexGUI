@@ -502,7 +502,7 @@ class MutableComputedPropertyTests: XCTestCase {
       dependency2.value
     }, apply: {
       dependency2.value = $0
-    })
+    }, dependencies: [dependency2])
     XCTAssertEqual(onChangedCallCount, 2)
     XCTAssertEqual(onAnyChangedCallCount, 2)
     XCTAssertEqual(onHasValueChangedCallCount, 1)
