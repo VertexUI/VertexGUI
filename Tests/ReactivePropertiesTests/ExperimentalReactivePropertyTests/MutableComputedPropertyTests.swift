@@ -463,6 +463,59 @@ class MutableComputedPropertyTests: XCTestCase {
     XCTAssertEqual(dependency2.value, "test3part2")
   }
 
+  func testReinit() {
+    var property = MutableComputedProperty<String>()
+    var onChangedCallCount = 0
+    var onAnyChangedCallCount = 0
+    var onHasValueChangedCallCount = 0
+    _ = property.onChanged { _ in
+      onChangedCallCount += 1 
+    }
+    _ = property.onAnyChanged { _ in
+      onAnyChangedCallCount += 1
+    }
+    _ = property.onHasValueChanged { _ in
+      onHasValueChangedCallCount += 1
+    }
+
+    let dependency1 = MutableProperty("test1")
+    property.reinit(compute: {
+      dependency1.value
+    }, apply: {
+      dependency1.value = $0
+    })
+    XCTAssertTrue(property.hasValue)
+    XCTAssertEqual(onChangedCallCount, 0)
+    XCTAssertEqual(onAnyChangedCallCount, 0)
+    XCTAssertEqual(onHasValueChangedCallCount, 1)
+    XCTAssertEqual(property.value, "test1")
+
+    property.value = "test2"
+    XCTAssertEqual(onChangedCallCount, 1)
+    XCTAssertEqual(onAnyChangedCallCount, 1)
+    XCTAssertEqual(onHasValueChangedCallCount, 1)
+    XCTAssertEqual(property.value, "test2")
+    XCTAssertEqual(dependency1.value, "test2")
+
+    let dependency2 = MutableProperty("test3")
+    property.reinit(compute: {
+      dependency2.value
+    }, apply: {
+      dependency2.value = $0
+    })
+    XCTAssertEqual(onChangedCallCount, 2)
+    XCTAssertEqual(onAnyChangedCallCount, 2)
+    XCTAssertEqual(onHasValueChangedCallCount, 1)
+    XCTAssertTrue(property.hasValue)
+    XCTAssertEqual(property.value, "test3")
+
+    dependency2.value = "test4" 
+    XCTAssertEqual(onChangedCallCount, 3)
+    XCTAssertEqual(onAnyChangedCallCount, 3)
+    XCTAssertEqual(onHasValueChangedCallCount, 1)
+    XCTAssertEqual(property.value, "test4")
+  }
+
   static var allTests = [
     ("testSingleVariableBacked", testSingleVariableBacked),
     ("testVariableAndPropertyBacked", testVariableAndPropertyBacked),
@@ -474,6 +527,7 @@ class MutableComputedPropertyTests: XCTestCase {
     ("testUniDirectionalBindingSink", testUniDirectionalBindingSink),
     ("testBiDirectionalBindingWithOtherMutableComputedProperty", testBiDirectionalBindingWithOtherMutableComputedProperty),
     ("testRecordAsDependency", testRecordAsDependency),
-    ("testAutomaticDependencyRecording", testAutomaticDependencyRecording)
+    ("testAutomaticDependencyRecording", testAutomaticDependencyRecording),
+    ("testReinit", testReinit)
   ]
 }

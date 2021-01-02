@@ -11,7 +11,7 @@ public class MutableComputedProperty<Value>: InternalMutablePropertyProtocol, Co
         return
       }
 
-      if hasValue, oldValue != nil {
+      if oldValue != nil {
         invokeOnChangedHandlers(oldValue: oldValue!, newValue: _value!)
       } else {
         hasValue = true
@@ -49,8 +49,8 @@ public class MutableComputedProperty<Value>: InternalMutablePropertyProtocol, Co
   }
   internal var dependencies: [AnyReactiveProperty]
   internal var dependencyHandlerRemovers = [() -> ()]()
-  internal let compute: () -> Value
-  internal let apply: (Value) -> ()
+  internal var compute: () -> Value
+  internal var apply: (Value) -> ()
   public let onChanged = EventHandlerManager<(old: Value, new: Value)>()
   public let onAnyChanged = EventHandlerManager<(old: Any, new: Any)>()
 
@@ -62,7 +62,6 @@ public class MutableComputedProperty<Value>: InternalMutablePropertyProtocol, Co
       value = newValue
     }
   }
-
 
   public var projectedValue: MutableComputedProperty<Value> {
     self
@@ -82,10 +81,21 @@ public class MutableComputedProperty<Value>: InternalMutablePropertyProtocol, Co
   public internal(set) var destroyed: Bool = false
   public let onDestroyed = EventHandlerManager<Void>()
 
-  public init(compute: @escaping () -> Value, apply: @escaping (Value) -> (), dependencies: [AnyReactiveProperty]) {
+  public init() {
+    self.compute = { fatalError("called compute() on uninitialized property") }
+    self.apply = { _ in fatalError("called apply() on uninitialized property") }
+    self.dependencies = []
+  }
+
+  public init(compute: @escaping () -> Value, apply: @escaping (Value) -> (), dependencies: [AnyReactiveProperty]? = nil) {
     self.compute = compute
     self.apply = apply
-    self.dependencies = dependencies
+    if let dependencies = dependencies {
+      self.dependencies = dependencies
+    } else {
+      self.dependencies = []
+      recordDependencies()
+    }
     setupDependencyHandlers()
     checkUpdateHasValue()
     if hasValue {
@@ -93,11 +103,16 @@ public class MutableComputedProperty<Value>: InternalMutablePropertyProtocol, Co
     }
   }
 
-  public init(compute: @escaping () -> Value, apply: @escaping (Value) -> ()) {
+  public func reinit(compute: @escaping () -> Value, apply: @escaping (Value) -> (), dependencies: [AnyReactiveProperty]? = nil) {
+    removeDependencyHandlers()
     self.compute = compute
     self.apply = apply
     self.dependencies = []
-    recordDependencies()
+    if let dependencies = dependencies {
+      self.dependencies = dependencies
+    } else {
+      recordDependencies()
+    }
     setupDependencyHandlers()
     checkUpdateHasValue()
     if hasValue {
