@@ -1,5 +1,6 @@
 import Events
 
+@propertyWrapper
 public class MutableComputedProperty<Value>: InternalMutablePropertyProtocol, ComputedPropertyProtocol, EventfulObject {
   public typealias Value = Value
 
@@ -52,6 +53,20 @@ public class MutableComputedProperty<Value>: InternalMutablePropertyProtocol, Co
   internal let apply: (Value) -> ()
   public let onChanged = EventHandlerManager<(old: Value, new: Value)>()
   public let onAnyChanged = EventHandlerManager<(old: Any, new: Any)>()
+
+  public var wrappedValue: Value {
+    get {
+      value
+    }
+    set {
+      value = newValue
+    }
+  }
+
+
+  public var projectedValue: MutableComputedProperty<Value> {
+    self
+  }
 
   public internal(set) var hasValue: Bool = false {
     didSet {
