@@ -7,7 +7,20 @@ public class BiDirectionalPropertyBinding: PropertyBindingProtocol, EventfulObje
   public let onDestroyed = EventHandlerManager<Void>()
   public private(set) var destroyed: Bool = false
 
+  /**
+  If either of the two properties does not have a value yet, but the other does, this value is assigned to the other.
+  If both do have a value, the value of the first property passed in is assigned to the second property.
+  If neither of them do have a value, nothing is done.
+  */
   internal init<P1: MutablePropertyProtocol, P2: MutablePropertyProtocol>(_ property1: P1, _ property2: P2) where P1.Value == P2.Value, P1.Value: Equatable {
+    if property1.hasValue && !property2.hasValue {
+      property2.value = property1.value
+    } else if property2.hasValue && !property1.hasValue {
+      property1.value = property2.value
+    } else if property1.hasValue && property2.hasValue {
+      property2.value = property1.value
+    }
+
     handlerRemovers.append(property1.onChanged { [unowned property1, property2] _ in
       if !property2.hasValue || property2.value != property1.value {
         property2.value = property1.value

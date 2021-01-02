@@ -2,6 +2,38 @@ import XCTest
 @testable import ExperimentalReactiveProperties
 
 final class BiDirectionalPropertyBindingTests: XCTestCase {
+  func testInitialValueApplication() {
+    var property1 = MutableProperty<String>()
+    var property2 = MutableProperty<String>("initial")
+    var binding = BiDirectionalPropertyBinding(property1, property2)
+    XCTAssertTrue(property1.hasValue)
+    XCTAssertTrue(property2.hasValue)
+    XCTAssertEqual(property1.value, "initial")
+    XCTAssertEqual(property2.value, "initial")
+
+    property1 = MutableProperty<String>()
+    property2 = MutableProperty<String>("initial")
+    binding = BiDirectionalPropertyBinding(property2, property1)
+    XCTAssertTrue(property1.hasValue)
+    XCTAssertTrue(property2.hasValue)
+    XCTAssertEqual(property1.value, "initial")
+    XCTAssertEqual(property2.value, "initial")
+
+    property1 = MutableProperty<String>("initial1")
+    property2 = MutableProperty<String>("initial2")
+    binding = BiDirectionalPropertyBinding(property1, property2)
+    XCTAssertTrue(property1.hasValue)
+    XCTAssertTrue(property2.hasValue)
+    XCTAssertEqual(property1.value, "initial1")
+    XCTAssertEqual(property2.value, "initial1")
+
+    property1 = MutableProperty<String>()
+    property2 = MutableProperty<String>()
+    binding = BiDirectionalPropertyBinding(property1, property2)
+    XCTAssertFalse(property1.hasValue)
+    XCTAssertFalse(property2.hasValue)
+  }
+
   func testEventHandlers() {
     let property1 = MutableProperty<String>()
     let property2 = MutableProperty<String>()
@@ -179,6 +211,7 @@ final class BiDirectionalPropertyBindingTests: XCTestCase {
   }
 
   static var allTests = [
+    ("testInitialValueApplication", testInitialValueApplication),
     ("testEventHandlers", testEventHandlers),
     ("testChainedWithBiDirectionalBinding", testChainedWithBiDirectionalBinding),
     ("testRedundantBindings", testRedundantBindings),
