@@ -184,11 +184,44 @@ final class ReactivePropertyTests: XCTestCase {
   }
 
   func testWidgetTreeDefinitionWithOnTheFlyMutableComputedProperty() {
+    let dependency = ExperimentalReactiveProperties.MutableProperty("test1")
+    let reference = Reference<BiDirectionalBindingWidget>()
+    let root = MockRoot(rootWidget: MockContainerWidget {
+      MockContainerWidget {
+        BiDirectionalBindingWidget(property1: MutableComputedProperty(compute: {
+          dependency.value
+        }, apply: {
+          dependency.value = $0
+        })).connect(ref: reference)
+      }
+    })
+    XCTAssertTrue(reference.referenced!.$property1.hasValue)
+    XCTAssertEqual(reference.referenced!.property1, "test1")
 
+    dependency.value = "test2" 
+    XCTAssertEqual(reference.referenced!.property1, "test2")
+
+    reference.referenced!.property1 = "test3"
+    XCTAssertEqual(dependency.value, "test3")
   }
 
   func testWidgetDeinitializedIfSelfCapturedInPropertyHandlers() {
+    let reference = Reference<MutableComputedPropertyWithDelayedDependencyAvailabilityWidget>()
+    var root = Optional(MockRoot(rootWidget: DependencyProvider(provide: [
+      Dependency(ExperimentalReactiveProperties.MutableProperty("test"))]) {
+        MutableComputedPropertyWithDelayedDependencyAvailabilityWidget().connect(ref: reference)
+    }))
 
+    XCTAssertNotNil(reference.referenced)
+
+    var widgetDestroyed = false
+    _ = reference.referenced!.onDestroy {
+      widgetDestroyed = true
+    }
+    root = nil
+
+    XCTAssertTrue(widgetDestroyed)
+    XCTAssertNil(reference.referenced)
   }
 
   static var allTests = [
@@ -197,6 +230,8 @@ final class ReactivePropertyTests: XCTestCase {
     ("testBiDirectionalBindingWithWidget", testBiDirectionalBindingWithWidget),
     ("testBiDirectionalBindingWidgetBindingPropertyDestroyed", testBiDirectionalBindingWidgetBindingPropertyDestroyed),
     ("testMutableComputedPropertyWidgetOperatingOnPassedInProperty", testMutableComputedPropertyWidgetOperatingOnPassedInProperty),
-    ("testMutableComputedPropertyWithDelayedDependencyAvailabilityWidget", testMutableComputedPropertyWithDelayedDependencyAvailabilityWidget)
+    ("testMutableComputedPropertyWithDelayedDependencyAvailabilityWidget", testMutableComputedPropertyWithDelayedDependencyAvailabilityWidget),
+    ("testWidgetTreeDefinitionWithOnTheFlyMutableComputedProperty", testWidgetTreeDefinitionWithOnTheFlyMutableComputedProperty),
+    ("testWidgetDeinitializedIfSelfCapturedInPropertyHandlers", testWidgetDeinitializedIfSelfCapturedInPropertyHandlers)
   ]
 }
