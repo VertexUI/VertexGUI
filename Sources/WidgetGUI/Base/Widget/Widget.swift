@@ -262,6 +262,7 @@ open class Widget: Bounded, Parent, Child {
     public internal(set) var onParentChanged = EventHandlerManager<Parent?>()
     public let onDependenciesInjected = WidgetEventHandlerManager<Void>()
     public internal(set) var onMounted = EventHandlerManager<Void>()
+    public let onBuildInvalidated = WidgetEventHandlerManager<Void>()
     public internal(set) var onTick = WidgetEventHandlerManager<Tick>()
     public internal(set) var onBoxConfigInvalidated = WidgetEventHandlerManager<Void>()
     public internal(set) var onBoxConfigChanged = EventHandlerManager<BoxConfigChangedEvent>()
@@ -563,6 +564,8 @@ open class Widget: Bounded, Parent, Child {
         #if DEBUG
         context.inspectionBus.publish(WidgetInspectionMessage(sender: self, content: .BuildInvalidated))
         #endif
+
+        onBuildInvalidated.invokeHandlers()
     }
 
     private final func handleChildBoxConfigChanged(child: Widget) {

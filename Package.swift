@@ -66,7 +66,7 @@ let package = Package(
         .target(
                 // TODO: maybe rename to SwiftApplicationFramework or so...? or split to SwiftApplicationFramework and SwiftUIFramework
             name: "WidgetGUI",
-            dependencies: ["VisualAppBase", "Events", "ReactiveProperties", "GfxMath", "Runtime", "ColorizeSwift", "Easing"],
+            dependencies: ["VisualAppBase", "Events", "ReactiveProperties", "ExperimentalReactiveProperties", "GfxMath", "Runtime", "ColorizeSwift", "Easing"],
             resources: [.process("Resources")]
         ),
 

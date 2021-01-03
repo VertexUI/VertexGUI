@@ -5,7 +5,8 @@ import XCTest
     [
       testCase(FlexTests.allTests),
       testCase(StyleTests.allTests),
-      testCase(ReactivePropertyTests.allTests)
+      testCase(ReactivePropertyTests.allTests),
+      testCase(BuildTests.allTests)
     ]
   }
 #endif
