@@ -47,6 +47,7 @@ open class Root: Parent {
     }
   }
 
+  public private(set) var destroyed = false
   private var onDestroy = EventHandlerManager<Void>()
 
   public init(rootWidget contentRootWidget: Widget) {
@@ -318,17 +319,21 @@ open class Root: Parent {
     }
   }
   /*
-    End Event Propagation
-    ----------------------
-    */
+  End Event Propagation
+  ----------------------
+  */
 
   open func destroy() {
+    if destroyed {
+      return
+    }
     rootWidget.destroy()
     onDestroy.invokeHandlers(())
   }
 
   deinit {
     print("DEINITIALIZED ROOT")
+    destroy()
   }
 }
 
