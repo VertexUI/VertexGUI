@@ -1,7 +1,7 @@
 import ExperimentalReactiveProperties
 
 extension Experimental {
-  public class Build: Widget {
+  public class Build: ComposedWidget {
     private let childBuilder: () -> ChildBuilder.Result
 
     public init<P1: ReactiveProperty>(_ property: P1, @ChildBuilder child childBuilder: @escaping () -> ChildBuilder.Result) {
@@ -18,7 +18,7 @@ extension Experimental {
     override public func performBuild() {
       let result = childBuilder()
       providedStyles.append(contentsOf: result.styles)
-      children = [result.child]
+      rootChild = result.child
     }
   }
 }

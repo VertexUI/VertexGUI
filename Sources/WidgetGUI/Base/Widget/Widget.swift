@@ -336,7 +336,7 @@ open class Widget: Bounded, Parent, Child {
     
     private final func undoContextSetup() {
       if contextOnTickHandlerRemover == nil {
-        fatalError("CALLED UNDOCONTEXTSETUP when remove handler is nil")
+        fatalError("called undoContextSetup when remove handler is nil")
       }
       if let remove = contextOnTickHandlerRemover {
         remove()
