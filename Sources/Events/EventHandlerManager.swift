@@ -67,6 +67,12 @@ open class EventHandlerManager<Data>: AnyEventHandlerManager {
   }
 }
 
+extension EventHandlerManager where Data == Void {
+  public func invokeHandlers() {
+    invokeHandlers(Void())
+  }
+}
+
 //@available(*, deprecated, message: "Just use EventHandlerManager (probably)!")
 public class ThrowingEventHandlerManager<Data>: AnyEventHandlerManager {
   public typealias Handler = (Data) throws -> Void
