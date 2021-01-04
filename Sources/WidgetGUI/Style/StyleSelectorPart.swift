@@ -72,6 +72,9 @@ public struct StyleSelectorPart: Equatable, Hashable, ExpressibleByStringLiteral
 
     public static func == (lhs: Self, rhs: Self) -> Bool {
         lhs.extendsParent == rhs.extendsParent && 
+        ((lhs.type != nil && rhs.type != nil && ObjectIdentifier(lhs.type!) == ObjectIdentifier(rhs.type!)) ||
+        (lhs.typeName != nil && rhs.typeName != nil && lhs.typeName == rhs.typeName) ||
+        (lhs.typeName == nil && lhs.type == nil && rhs.typeName == nil && rhs.type == nil)) &&
         lhs.classes.count == rhs.classes.count &&
         lhs.pseudoClasses.count == rhs.pseudoClasses.count && 
         lhs.classes.sorted() == rhs.classes.sorted() && 

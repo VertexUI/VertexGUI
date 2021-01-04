@@ -81,6 +81,66 @@ final class StyleTests: XCTestCase {
     XCTAssertEqual(selector.parts, parts)
   }
 
+  func testStyleSelectorComparison() {
+    let selector1: StyleSelector = "&.class-1:pseudoClass-1"
+    let selector2: StyleSelector = "&.class-1:pseudoClass-1"
+    XCTAssertEqual(selector1, selector2)
+
+    let selector3: StyleSelector = "&.class-1"
+    XCTAssertNotEqual(selector1, selector3)
+
+    let selector4: StyleSelector = "&.class-1:pseudoClass-1 &:pseudoClass-2"
+    XCTAssertNotEqual(selector1, selector4)
+
+    let selector5: StyleSelector = "&.class-1:pseudoClass-1 &:pseudoClass-2"
+    XCTAssertEqual(selector4, selector5)
+
+    let selector6: StyleSelector = "&Type1.class-1:pseudoClass-1 &:pseudoClass-2"
+    XCTAssertNotEqual(selector5, selector6)
+
+    let selector7: StyleSelector = "&Type1.class-1:pseudoClass-1 &:pseudoClass-2"
+    XCTAssertEqual(selector6, selector7)
+
+    let selector8: StyleSelector = "&Type1.class-1:pseudoClass-1 &:pseudoClass-2 &"
+    XCTAssertNotEqual(selector7, selector8)
+
+    let selector9: StyleSelector = ""
+    let selector10: StyleSelector = ""
+    XCTAssertEqual(selector9, selector10)
+
+    let selector11: StyleSelector = ":pseudoClass-1"
+    let selector12: StyleSelector = ":pseudoClass-1"
+    let selector13: StyleSelector = ""
+    XCTAssertEqual(selector11, selector12)
+    XCTAssertNotEqual(selector11, selector13)
+
+    let selector14: StyleSelector = "&"
+    let selector15: StyleSelector = "&"
+    let selector16: StyleSelector = ""
+    XCTAssertEqual(selector14, selector15)
+    XCTAssertNotEqual(selector14, selector16)
+
+    let selector17: StyleSelector = ".class-1"
+    let selector18: StyleSelector = ".class-1"
+    let selector19: StyleSelector = ""
+    let selector20: StyleSelector = ":pseudoClass-1"
+    XCTAssertEqual(selector17, selector18)
+    XCTAssertNotEqual(selector17, selector19)
+    XCTAssertNotEqual(selector17, selector20)
+
+    let selector21: StyleSelector = "Type1"
+    let selector22: StyleSelector = "Type1"
+    let selector23: StyleSelector = ""
+    let selector24: StyleSelector = "&Type1"
+    let selector25: StyleSelector = "Type2"
+    let selector26: StyleSelector = "Type2.class-1"
+    XCTAssertEqual(selector21, selector22)
+    XCTAssertNotEqual(selector21, selector23)
+    XCTAssertNotEqual(selector21, selector24)
+    XCTAssertNotEqual(selector21, selector25)
+    XCTAssertNotEqual(selector25, selector26)
+  }
+
   func testStyleComparison() {
     let style1 = ExperimentalText.Style(".class-1") {
       $0.fontSize = 30
@@ -133,6 +193,39 @@ final class StyleTests: XCTestCase {
     XCTAssertFalse(style1 == style7)
     XCTAssertFalse(style1 == style8)
     XCTAssertFalse(style1 == style9)
+
+    let style10 = MockLeafWidget.Style("&.class-1:pseudoClass-1") {
+      $0.property1 = 1
+    }
+
+    let style11 = MockLeafWidget.Style("&.class-1:pseudoClass-1") {
+      $0.property1 = 1
+    }
+ 
+    XCTAssertTrue(style10 == style11)
+    
+    let style12 = MockLeafWidget.Style("&.class-1:pseudoClass-1") {
+      $0.property1 = 1
+      $0.property2 = "1"
+    }
+
+    XCTAssertFalse(style10 == style12)
+
+    let style13 = MockLeafWidget.Style("&.class-1 &Type1.class-2 &:pseudoClass-1") {
+      $0.property3 = 1
+    }
+
+    let style14 = MockLeafWidget.Style("&.class-1 &Type1.class-2 &:pseudoClass-1") {
+      $0.property3 = 1
+    }
+
+    XCTAssertTrue(style13 == style14)
+
+    let style15 = MockLeafWidget.Style("&.class-1 .class-2 &") {
+      $0.property3 = 1
+    }
+
+    XCTAssertFalse(style13 == style15)
   }
 
   func testSimpleSinglePartClassSelector() {
@@ -479,6 +572,7 @@ final class StyleTests: XCTestCase {
   static var allTests = [
     ("testStyleSelectorPartParsing", testStyleSelectorPartParsing),
     ("testStyleSelectorParsing", testStyleSelectorParsing),
+    ("testStyleSelectorComparison", testStyleSelectorComparison),
     ("testStyleComparison", testStyleComparison),
     ("testSimpleSinglePartClassSelector", testSimpleSinglePartClassSelector),
     ("testSimpleSinglePartPseudoClassSelector", testSimpleSinglePartPseudoClassSelector),
