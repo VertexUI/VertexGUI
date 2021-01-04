@@ -449,6 +449,41 @@ final class StyleTests: XCTestCase {
     XCTAssertEqual(widget1.filledStyleProperties.fontWeight, .black)
   }
 
+  func testRootLevelStyleExtendsParentAppliedToContainingWidget() {
+    let widget = MockLeafWidget()
+    widget.provideStyles {
+      MockLeafWidget.Style("&") {
+        $0.property1 = 1
+      }
+
+      MockLeafWidget.Style("&MockLeafWidget") {
+        $0.property1 = 1
+      }
+    }
+    let root = MockRoot(rootWidget: widget)
+    XCTAssertEqual(widget.appliedStyles.count, 2)
+  }
+
+  func testRootLevelStyleExtendsParentAppliedOnlyToContainingWidgetAndNotChildren() {
+    let reference1 = Reference<MockContainerWidget>()
+    let reference2 = Reference<MockContainerWidget>()
+    let root = MockRoot(rootWidget: MockContainerWidget {
+      MockContainerWidget.Style("&") {
+        $0.property1 = 1
+      }
+
+      MockContainerWidget.Style("&MockContainerWidget") {
+        $0.property1 = 1
+      }
+
+      MockContainerWidget {
+      }.connect(ref: reference2)
+    }.connect(ref: reference1))
+
+    XCTAssertEqual(reference1.referenced!.appliedStyles.count, 2)
+    XCTAssertEqual(reference2.referenced!.appliedStyles.count, 0)
+  }
+
   func testSimpleSubStyles() {
     let widget1 = ExperimentalText("Text1").with(classes: ["class-1"])
     let rootWidget = Column {
@@ -487,7 +522,7 @@ final class StyleTests: XCTestCase {
     }
     let root = MockRoot(rootWidget: widget)
 
-    XCTAssertEqual(widget.filledStyleProperties.property1, 4)
+    XCTAssertEqual(widget.filledStyleProperties.property1, 2)
   }
 
   func testComplexOverwritingSubStyles() {
@@ -582,6 +617,8 @@ final class StyleTests: XCTestCase {
     ("testEmptySelectorNonMatchingTypeIgnored", testEmptySelectorNonMatchingStyleTypeIgnored),
     ("testStyleOnDynamicallyInsertedWidget", testStyleOnDynamicallyInsertedWidget),
     ("testMultiParentStyleMergeOverwrite", testMultiParentStyleMergeOverwrite),
+    ("testRootLevelStyleExtendsParentAppliedToContainingWidget", testRootLevelStyleExtendsParentAppliedToContainingWidget),
+    ("testRootLevelStyleExtendsParentAppliedOnlyToContainingWidgetAndNotChildren", testRootLevelStyleExtendsParentAppliedOnlyToContainingWidgetAndNotChildren),
     ("testSimpleSubStyles", testSimpleSubStyles),
     ("testSimpleOverwritingSubStyles", testSimpleOverwritingSubStyles),
     ("testComplexOverwritingSubStyles", testComplexOverwritingSubStyles),

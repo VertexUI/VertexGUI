@@ -18,31 +18,44 @@ public class StyleManager {
   public func distributeStylesInTree(_ initialWidget: Widget) {
     var parentStyles = [AnyStyle]()
 
-    var nextParent = Optional(initialWidget)
+    var nextParent = initialWidget.parent as? Widget
     while let currentParent = nextParent {
-      parentStyles.append(contentsOf: currentParent.providedStyles)
-      parentStyles.append(contentsOf: getFreedSubStyles(parentStyles, currentParent))
+      let stylesApplicableToParent = parentStyles + currentParent.providedStyles
+      let freedParentStyles = getFreedSubStyles(stylesApplicableToParent, currentParent)
+      parentStyles.append(contentsOf: currentParent.providedStyles.filter {
+        !$0.extendsParent
+      })
+      parentStyles.append(contentsOf: freedParentStyles)
       nextParent = currentParent.parent as? Widget 
     }
 
     initialWidget.appliedStyles = []
-    applyStyles(parentStyles, to: initialWidget)
+    let stylesApplicableToInitialWidget = parentStyles + initialWidget.providedStyles
+    applyStyles(stylesApplicableToInitialWidget, to: initialWidget)
 
-    var iterators: [(iterator: Widget.ChildIterator, branchStyles: [AnyStyle])] = [(iterator: initialWidget.visitChildren(), branchStyles: parentStyles)]
+    let initialWidgetFreedStyles = getFreedSubStyles(stylesApplicableToInitialWidget, initialWidget)
+    let initialBranchStyles = parentStyles + 
+      initialWidget.providedStyles.filter { !$0.extendsParent } +
+      initialWidgetFreedStyles
+
+    var iterators: [(iterator: Widget.ChildIterator, branchStyles: [AnyStyle])] = [(iterator: initialWidget.visitChildren(), branchStyles: initialBranchStyles)]
 
     while var (iterator, branchStyles) = iterators.first {
       while let widget = iterator.next() {
         widget.appliedStyles = []
         
-        let widgetProvidedStyles = widget.providedStyles
-        let allAvailableStyles = branchStyles + widgetProvidedStyles
+        let stylesApplicableToWidget = branchStyles + widget.providedStyles
 
         if let widget = widget as? StylableWidget {
-          applyStyles(allAvailableStyles, to: widget)
-        } 
+          applyStyles(stylesApplicableToWidget, to: widget)
+        }
 
-        let freedSubStyles = getFreedSubStyles(allAvailableStyles, widget)
-        iterators.append((iterator: widget.visitChildren(), branchStyles: allAvailableStyles + freedSubStyles))
+        let freedSubStyles = getFreedSubStyles(stylesApplicableToWidget, widget)
+        let stylesApplicableToWidgetThatCanBePassedDown = widget.providedStyles.filter {
+          !$0.extendsParent
+        }
+        let allStylesThatCanBePassedDown = branchStyles + stylesApplicableToWidgetThatCanBePassedDown + freedSubStyles
+        iterators.append((iterator: widget.visitChildren(), branchStyles: allStylesThatCanBePassedDown))
       }
       iterators.removeFirst()
     }
