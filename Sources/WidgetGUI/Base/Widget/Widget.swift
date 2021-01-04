@@ -211,16 +211,15 @@ open class Widget: Bounded, Parent, Child {
     public internal(set) var destroyed = false
 
 
-    public var providedStyles: [AnyStyle] = [] {
+    public var providedStyles: [AnyStyle] = [] /*{
         willSet {
             for style in newValue {
                 if style.extendsParent {
-                    // TODO: improve this error message: provide the full path of the style type
                     fatalError("a root level style cannot extend a parent style, style: \(style.selector) \(type(of: style)) in widget: \(self)")
                 }   
             }
         }
-    }
+    }*/
     internal var appliedStyles: [AnyStyle] = []
 
 

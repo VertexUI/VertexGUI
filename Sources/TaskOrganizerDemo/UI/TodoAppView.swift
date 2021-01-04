@@ -52,13 +52,17 @@ public class TodoAppView: SingleChildWidget {
               buildSearch()
             }
 
-            Padding(all: 32) {
-              Button {
+            Experimental.Container {
+              Experimental.Container.Style("&") {
+                $0.background = .red
+              }
+
+              Experimental.Button {
                 ExperimentalText("New List").with(properties: ExperimentalText.StyleProperties {
                   $0.foreground = Color.black
                   $0.fontWeight = .bold
                 })
-              } onClick: { [unowned self] _ in
+              } onClick: { [unowned self] in
                 handleNewListClick()
               }.provideStyles {
                 ExperimentalText.Style {

@@ -1,13 +1,11 @@
 import VisualAppBase
 import GfxMath
 
-public protocol BackgroundStyleProperties: StyleProperties {
+public protocol AnyBackgroundStyleProperties: AnyStyleProperties {
   var background: Color? { get set }
 }
 
-public struct AnyBackgroundStyleProperties: BackgroundStyleProperties {
-  public var selector: StyleSelector? = nil
-  public var subStyles: [AnyStyle]? = nil
+public struct BackgroundStyleProperties: StyleProperties, AnyBackgroundStyleProperties {
   @StyleProperty
   public var background: Color?
 
