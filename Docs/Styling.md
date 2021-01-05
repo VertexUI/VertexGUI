@@ -175,7 +175,75 @@ Thinking through the composing architecture with a focus on styling.
         - **are other approaches than a struct with variables approach possible?**
           - that allow for adding global properties that can be applied to any Widget
           - and provide a way to create specific properties which apply to specific Widgets
-        - 
+          - an other approach could be to use enum keys with a dictionary
+            - style properties are dictionaries, keyed by enum properties and the values are of type StyleValue (Protocol) and need to be cast to the respective types by some other logic
+            - the enum keys should resolve back to strings, there could be an enum for default properties that can be applied to any Widget by providing a global enum
+            - ~~such an enum could also later be extended with extensions~~
+            - no, extending enums with keys is not possible, one can either use static values on some struct, but this makes it hard to check whether a key is supported by doing backwards querying, or by using many enums, which makes it hard to check whether a key actually exists as well
+            - for styles that only apply to specific widgets, an enum could be added to that Widget which contains the keys for the specific properties
+            - by using enums, one can use autocomplete to find available properties quicker
+            - since the keys are strings and the values conform to a special protocol, serialization should be easy, and reading style sheets from plain text is possible
+            - having the split between default properties and and special Widget properties seems reasonable
+              - a user will first access defaultEnum.case for all the common styling options
+              - and if he wants to style something that seems to be tied to the functionality of that specific Widget and he hasn't seen in other Widgets, he will look at Widget.StyleEnum to find appropriate properties
+            - maybe there is no necessity to provide a default enum?
+              - maybe all keys can belong to Widgets, such as the layout Widget which the current Widget is inside, or the Container Widget which applies things like background, padding, etc.
+              - determine this in the code/syntax example
+            - a disadvantage could be that the values for the properties are not fully checked by the compiler as any value conforming to StyleValue is accepted
+            - a question is how much complexity to add to the logic for accepting and applying the styles
+            - the values need to be read according to their specific keys at the place they are necessary, checked for their type and then applied
+            - if the type isn't right, a question is whether to crash or to simply ignore the value and provide a warning
+              - in debug mode it would probably be good to crash
+              - and in production to simply provide a warning
+            - reading: the values might be read by the Widget the styles are applied to, in order to change it's own appearance
+            - or it might be read by a parent Widget, e.g. a layout Widget which wants to know how the Widget wants to be positioned 
+            - it could be useful to allow for multi specification of property values, by providing each property as a tuple of key and value and creating an array instead of using a dictionary directly
+              - when could this be useful?
+              - **continue here**
+            - could associated values be used as well? associated values would make merging and serializing more difficult, because special functions would need to be provided to handle newly added associated value cases
+            - a question is whether the style properties should be wrapped in dedicated structs for each Widget or the pure dictionaries in combination with a selector and sub styles would be sufficient
+            - how could the syntax be the most user friendly?:
+
+    Column {
+      Style(".action-button", [
+        (.background, Color.red),
+        (.foreground, Color.)
+      ])
+
+      Button(class: "action-button") {
+        Text("some action")
+      }
+
+      Button(class: "support-button") {
+        Text("some supporting action")
+      }
+    }
+
+- there should be an option to use enum cases as classes, so the value for class should be a protocol of type ClassKey or something which String and the Enums conform to
+- where should the styles be provided?
+  - inside the Widget tree?
+    - inside the child builders
+    - or by calling another function / using another builder on the Widgets
+  - or outside?
+- should every Widget accept styles?
+  - probably yes, because every Widget needs to be layouted and can for example receive style properties relevant for positioning in flex contexts
+- how to check for whether a key is supported or not in this approach?
+  - this would be necessary to enable notifying the developer that a cetrain property does not exist ==> going with the string key/enum value or wherever the keys come from can reduce the automatic checking for errors / non existing things when nothing is done to take care of this
+  - to check for the existance of a key, all existing keys need to be known to the framework (when the checking is done by the framework)
+    - the checking could also be done by each Widget, the author of the Widget could write a function which tests each key for existance
+    - but it would probably be enough to give the framework a bucket of keys which are all accepted and let the framework handle the checking
+    - if the approach of letting parents access styling properties on the child is taken, the accepted keys are also determind by the parent
+    - so either the child accesses the "accepted child keys" from the parent during the checking/the framework does it automatically
+    - or the parent passes the accepted style properties to the child when it is mounted/some other time
+    - this would allow for per-child defined accepted properties --> more flexibility
+  - so where do the style keys come from? one could create enums, for each Widget, which define the properties which the Widget itself will use, **these enums might conform to protocols to match the available properties with some defaults(need to check whether this is possible)**, so the work of supporting some standard properties is off-loaded to Widget autors
+  - and then all enum cases could be passed in as arrays of strings, all property keys which are in this string array are accepted
+  - here is a possible way to enforce support for certain properties on a framework level: by providing an array of strings that represent supported property keys like "foreground", "effect: blur()" or something like that which might not depend on a special Widget nor on the parent, although it would be possible to implement filters with a wrapping Filter Widget, but the foreground property will probably be applicable to any Widget and trickle down to children
+  - if the Widget authors does forget to add any global supported property to the enum with supported properties, these properties will not be available in autocomplete, but maybe these properties can be enforced with a protocol
+  - plugins to the framework, everyhthing that uses the framework could add supported properties through an initialization hook, which adds Strings to the supported properties array 
+  - when doing it this way it would also be possible to add global properties to all Widget property enums with static extensions on the StyleKey or so protocol, because the global keys are anyway added to the array manually, they do not need to appear as enum cases
+  - the array of the Widgets properties is merged with the array of accepted properties which the parent provides
+  - and how are the types checked?
 
 ## Is an intricate styling system like this even necessary?
 
@@ -183,15 +251,22 @@ Thinking through the composing architecture with a focus on styling.
 - having a style system enables more customization, faster changes, makes applications look better, that way it should also be easier to mimick specific platform styles by applying themes
 - it's awesome how web pages can be styled with css, and even desktop apps when using electron, see VSCode, the theming ability is a really handy feature
 
+## Whether and how to handle inheritance of properties --> like the foreground property?
 
+## Wrap the style properties in a dedicated struct or use plain key, value pairs?
 
 ## Handling pseudo-elements
+
+## Handling media queries (are they even needed?)
+
+## Handling reactive styles
 
 ## Handling layout relevant properties like margin, flex-grow etc.
 
 ## Theming and updating styles when theme variables change (during runtime)
 
 ## Handling styles that change the size and layout of Widgets
+
 
 <br>
 
