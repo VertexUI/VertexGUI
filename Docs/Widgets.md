@@ -38,8 +38,23 @@ Thinking through the composing architecture with a focus on styling.
       - maybe the StyleProperties protocol can be changed to enforce every implementation to define a property dictionary, keyed by a string name and accept any value and then implement every property as a computed property, in that way, the default shared properties could be added to every implementation by providing default implementations in the protocol extension
       - another approach could be to define sets of shared properties, which implementations can conform to if the developer thinks, that this Widget whould accept certain default properties
       - the default properties could then be set, regardless of the specific StyleProperties implementation, with a default implementation which defines all kinds of shared properties, the merging logic will then filter away any properties that are not present in the specific StyleProperties
-      - if the layout relevant properties are as well included in the style properties and the approach of adding some default properties to all implementations is taken, it might be necessary to extend the set of default properties if a developer defines a cusotm layout and wants to add it's specific properties to all existing implementations of StyleProperties
+      - if the layout relevant properties are as well included in the style properties and the approach of adding some default properties to all implementations is taken, it might be necessary to extend the set of default properties if a developer defines a custom layout and wants to add it's specific properties to all existing implementations of StyleProperties
         - can this be done with protocol extensions?
+        - after some tests, implementing this with protocol extensions would bring up the need to write a dedicated property getter and setter referencing the shared storage for every new property, which would propbably be ok
+        - this would only be necessary for properties that need to be added to every type of StyleProperties
+        - for StyleProperties that only need to work for a specific kind of Widget, it would be ok to continue to use variables with property wrappers in structs, when iterating through the properties, to merge them, the check for whether it is a property wrapper would have to be modified to also include the pure getter, setter implementations and leave out the storage variable
+
+        - **are other approaches than a struct with variables approach possible?**
+          - that allow for adding global properties that can be applied to any Widget
+          - and provide a way to create specific properties which apply to specific Widgets
+        - 
+
+## Is an intricate styling system like this even necessary?
+
+- alternatives would be to allow styling only by setting properties on Widgets directly, but this would probably lead to many users writing their own style distribution systems
+- having a style system enables more customization, faster changes, makes applications look better, that way it should also be easier to mimick specific platform styles by applying themes
+- it's awesome how web pages can be styled with css, and even desktop apps when using electron, see VSCode, the theming ability is a really handy feature
+
 
 
 ## Handling pseudo-elements
