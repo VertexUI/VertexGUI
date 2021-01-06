@@ -321,6 +321,18 @@ string-key-approach:
 
 ## Can the two approaches be combined? Would it have any advantages?
 
+- it might be possible to create structs inside the Widgets which provide simple access to the properties by defining getters into a shared property storage
+- would that have an advantage?
+- it would be an optional thing only used by developers for convenient access without having to parse the properties everywhere they are used
+- it could also be used to provide defaults
+- it probably should be left to the Widget author to decide whether to use such an approach or not, because the properties will mainly be used inside the Widget
+- do the properties also need to be accessed outside of the Widget?
+  - layouts need to access the properties of children, but this can be solved by taking all the childs properties and passing them to a struct which the layout Wiget governs, this struct then only takes out / provides access to the properties needed for the layouting
+  - for some hacky stuff it might be handy to be able to access the styles of a Widget in a convenient way already parsed to the correct type and maybe with defaults
+  - using a protocol and getter based approach this can be realised, every Widget could define a struct which conforms to a global protocol (which can be extended by plugins) which exposes the properties, for Widgets that do not provide any special properties, a default struct implementation would probably be possible
+  - other Widgets might define their own
+  - figure out how to solve this, however accessing by key value and then parsing is still possible without this, even from the outside, just not as convenient, but usually not a problem because the type of a property will usually not change later, a property which is a color will probably stay a color type, so it is not necessary to have the type checking system involved, as there are not many opportunities for wrong types to appear (if some wrong types are there the app will probably crash)
+
 ## Is an intricate styling system like this even necessary?
 
 - alternatives would be to allow styling only by setting properties on Widgets directly, but this would probably lead to many users writing their own style distribution systems
