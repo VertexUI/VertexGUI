@@ -369,9 +369,57 @@ string-key-approach:
   - however the SettingsPage might have a Container as the first child, and then either the same thing as for Button can be done, or Container can be inherited directly or the Container Widget gets a class like .inner-container or so and background, padding can be added that way
   - the SettingsPage might get a class assigned by the code that instantiates it, and it can appear in the selectors, but the probably only really global properties like foreground or the properties that are relevant for the parent can be added to it (if Container properties are not forwarded)
 
-## Handling reactive styles
+## Reactive styles
+
+- reactive properties are useful for changing the style of the application after user actions or other events
+- they may be used to provide feedback to the user
+- or for example to let the user change the layout of something, maybe switch something from horizontal to vertical layout
+- or have some size/percentage values be calculated through multiple stylesheets, for example when the user moves a tiling separator -> multiple tiles need to update their widths
+- reactivity of styles is probably mainly needed when values need to change after an event
+- simple things can be done by using classes
+- complex style changing behavior which involves computing values out of other values and hacky stuff, and non-hacky stuff like passing the properties that a button shares with container to the child container after a state change, would need reactive styles
+- how can they actually be implemented?
+- first of all: what can trigger a style update?
+  - any event => maybe have something like: every EventHandlerManager exposes a handler which is invoked without data, like onFired or something
+  - some ReactiveProperty changes, going with the former point, that would be the onChange event on a ReactiveProperty
+  - maybe a reactive property is used in the calculation of the style
+  - then it would be possible to use the DependencyRecorder to find out which these are and also provide a way to specify the dependencies manually
+  - provide a function to invoke a style update manually from the outside, e.g. the defining widget could access the style instance and invoke an update
+- implementation specifics:
+  - it might be that only one property in one block is calculated and only that block needs to be reactive
+  - for every reactivity the smallest possible recalculation should be done, so every block of style (that which is under a selector) should be individually reactive and only the properties
+  - the sub styles should not be recalculated every time some property in the parent block needs to update
+  - sub styles should get their own reactivity
+  - of course they get their own reactivity as a block
+  - but the whole sub style definition can be reactive as well
+  - it should be possible to make a single property reactive and make the ReactiveProperty protocol conform to the StyleValue protocol whenever the value of the proeprty conforms to the StyleValue protocol
+  - how to provide the triggers for updating?
+  - can probably heavily use result builders to allow throwing in the triggers into each block
+  - some code examples for defining styles **need to test whether it can work like that**
+
+    Column {
+      (".action-button", Button.Style {
+        ($0.someButtonProperty, someButtonPropertyValue),
+        ($0.background, Color.red)
+
+        (Selector("Text"), Text.Style {
+          ($0.fontSize, 12)
+        })
+      })
+
+      Button(class: "action-button") {
+        Text()
+      }
+    }
+
+## Should styles be able to access their own and parent properties?
+
+- this could be possible, since the styles are applied in a top down approach all parents should be guaranteed to be available and fully calculated whenever a new style is added to a Widget
+- acessing the values would probably be done on a per property basis, using closures
 
 ## Whether and how to handle inheritance of properties --> like the foreground property?
+
+## Animations, transitions or something else?
 
 ## How to handle scoping/non-scoping, hiding the internal structure of a Widget/making it stylable only with a special selector syntax, is this even necessary?
 
@@ -384,7 +432,6 @@ string-key-approach:
 ## Theming and updating styles when theme variables change (during runtime)
 
 ## Handling styles that change the size and layout of Widgets
-
 
 <br>
 
