@@ -236,7 +236,7 @@ Thinking through the composing architecture with a focus on styling.
     - so either the child accesses the "accepted child keys" from the parent during the checking/the framework does it automatically
     - or the parent passes the accepted style properties to the child when it is mounted/some other time
     - this would allow for per-child defined accepted properties --> more flexibility
-  - so where do the style keys come from? one could create enums, for each Widget, which define the properties which the Widget itself will use, **these enums might conform to protocols to match the available properties with some defaults(need to check whether this is possible)**, so the work of supporting some standard properties is off-loaded to Widget autors
+  - so where do the style keys come from? one could create enums, for each Widget, which define the properties which the Widget itself will use, these enums might conform to protocols to match the available properties with some defaults(need to check whether this is possible), so the work of supporting some standard properties is off-loaded to Widget autors
   - and then all enum cases could be passed in as arrays of strings, all property keys which are in this string array are accepted
   - here is a possible way to enforce support for certain properties on a framework level: by providing an array of strings that represent supported property keys like "foreground", "effect: blur()" or something like that which might not depend on a special Widget nor on the parent, although it would be possible to implement filters with a wrapping Filter Widget, but the foreground property will probably be applicable to any Widget and trickle down to children
   - if the Widget authors does forget to add any global supported property to the enum with supported properties, these properties will not be available in autocomplete, but maybe these properties can be enforced with a protocol
@@ -244,6 +244,24 @@ Thinking through the composing architecture with a focus on styling.
   - when doing it this way it would also be possible to add global properties to all Widget property enums with static extensions on the StyleKey or so protocol, because the global keys are anyway added to the array manually, they do not need to appear as enum cases
   - the array of the Widgets properties is merged with the array of accepted properties which the parent provides
   - and how are the types checked?
+  - types can be checked by having a dictionary of type checks, keyed by style keys, even better, a dictionary of value assertions can be created, or both, one to check whether the basic type is ok (because for any property, any type conforming StyleValue is accepted) and then some assertion tests to check whether the given values make sense, and generate necessary evalution output, like error messages
+  - the TypeCheck could be an enum value providing options like direct (compare ObjectIdentifier of the type with the given type), function (provide an arbitrary function that checks the given type), maybe even an error message for a type check failure should be provided with each TypeCheck, so make TypeCheck a struct with the checks as enum cases and provide a pattern based approach for creating error messages (this would be very useful, for example, when parsing textual styling information, or at any time really, since there are no type constraints on the values even in code)
+  - the value validators could be done in the same way, a validator is not necessary everywhere
+  - also: there may be situation where a StyleValue has an initializer that throws, and if it is initialized from a text based style definition, this alone might create an error, the validators are focused on the individual properties for specific Widgets which have constraints on the value, which are not included in the types initializer
+  - how should these things be provided?
+  - probably by providing dictionaries of StyleKey: Validators on different levels of the framework
+  - a global dictionary which can extended by plugins and which defines any properties that are accepted anywhere
+  - a per Widget dictionary which defines the properties that are accepted by the Widget, if any keys conflict with the global dictionary, there has to either be a crash or things need to be overwritten, crashing is probably safer
+  - the parent of each Widget provides a dictionary of properties as well, and in the definition of styles, the keys are then accessed via ParentWidget.Styles.styleKey1 or something similar, this makes it clear that some properties come from the parent and others come from the Widget itself
+  - if the parent dictionary keys conflict with any key of the other dictionaries, throwing an error is probably the correct thing to do
+
+## Compare the advantages, disadvantages of the two approaches again
+
+There are a few areas in which they can be compared:
+1. user-friendliness (how convenient are styles to declare, how good is hinting of available properties, how good is type checking)
+2. creating, how difficult is it to create new style properties, types
+3. extensibility, how well can the default framework properties be modified by outside
+4. parsing, how can parsing of text be implemented, how good is key and value checking when parsing
 
 ## Is an intricate styling system like this even necessary?
 
