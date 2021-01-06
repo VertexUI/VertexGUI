@@ -1,3 +1,14 @@
+# Styling
+
+- let the application styles be adjustable by algorithms
+  - could implement something that takes a picture of another application and then tries to apply that theme / do a style transfer to the current application by trying out different values, could train some dl models on that and ship them with applications
+  - or take the system style and let the application mimic the system style with all changes the user has made to the system design (themes, background images, etc.)
+
+# UX
+
+- could implement functionality to predict users actions into the framework, to speed up processes --> a quick action command
+- could implement functionality to record actions and perform automatically into the framework --> automation
+
 # configs
 
 - use function builders to create deeply nested and constrained (receiver constrained) widget configs (--> like css)
