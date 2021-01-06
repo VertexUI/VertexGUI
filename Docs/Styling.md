@@ -254,14 +254,72 @@ Thinking through the composing architecture with a focus on styling.
   - a per Widget dictionary which defines the properties that are accepted by the Widget, if any keys conflict with the global dictionary, there has to either be a crash or things need to be overwritten, crashing is probably safer
   - the parent of each Widget provides a dictionary of properties as well, and in the definition of styles, the keys are then accessed via ParentWidget.Styles.styleKey1 or something similar, this makes it clear that some properties come from the parent and others come from the Widget itself
   - if the parent dictionary keys conflict with any key of the other dictionaries, throwing an error is probably the correct thing to do
+  - this approach offloads a lot of responsibility for checking and validating on framework and user code, instead of on the type system, which can also bring flexibility, and some types of checks cannot be performed by the type system, such as ensuring that values are within a range etc., validators would be needed anyway
+  - whoever authors a Widget that should be stylable in a non standard way needs to define the available properties, checks and provide intellisense support by having something like an enum with the available keys at a known location for each Widget, these things can probably be enforced with protocols
+  - for Widgets that do not require specialized styling, but instead act as containers for other Widgets, it might be good to forward the style properties of the first child by using generics or by wrapping the children in one default container and the wrapping Widget then always exposes these properties of the default container, the Widgets inside can be styled 
 
 ## Compare the advantages, disadvantages of the two approaches again
 
 There are a few areas in which they can be compared:
-1. user-friendliness (how convenient are styles to declare, how good is hinting of available properties, how good is type checking)
+1. user-friendliness (how convenient are styles to declare, how good is hinting of available properties, how good is type checking, how easy are the styles to access wherever they are needed)
 2. creating, how difficult is it to create new style properties, types
 3. extensibility, how well can the default framework properties be modified by outside
 4. parsing, how can parsing of text be implemented, how good is key and value checking when parsing
+
+<br>
+
+1.
+
+struct-property-approach:
+- need to instantiate a different struct for each Widget
+- probably would need multiple structs per Widget in certain cases
+- if properties need to be applied to serveral Widgets which share them, a shared default struct needs to be used
+- using $0. syntax for accessing properties, simple, but not very informative, repetitive
+- it is clear which properties are available when the correct struct was found
+- it is clear which types of values are accepted
+- validation of the values can happen immediately after the value on the style was set (could use computed property set function)
+- access of styles is very easy once the structs are instantiated by simply writing styleStruct.property
+
+string-key-approach:
+- the values can be accessed by accessing the dictionary of key: value pairs that were assigned to the Widget based on the selectors of styles
+- the values need to be cast to whatever is needed, this should work, because the values havev been already tested to conform to the requirements earlier
+
+2.
+
+struct-property-approach:
+- create new styles by defining a new struct, add StyleProperties to it, as well as the default style properties which could be enforced by certain protocols but would have to be added manually to each new struct
+- or use multiple structs and the Widget specific structs really only contain the Widget specific stuff, when layout styles are added, would use a different struct to specify the layout styles on the Widget
+
+string-key-approach:
+
+- create by defining the keys as something like an enum and the checks and validators and available keys as a Key: Checks dictionary on a new Widget
+
+3.
+
+struct-property-approach:
+
+- extend default styles by extending protocols and adding properties as computed properties
+
+string-key-approach:
+
+- extend the global dictionary of available properties and add the property keys to some global protocol to enable intellisense
+
+4.
+
+struct-property-approach:
+
+- would need to define the structs which contain the properties in plain text as well, if not all properties are added to the Widget struct
+- parsing would need to happen with type lookup for the structs, so the types in the plain text would need to use the correct struct type names with library prefix (probably)
+- creating style sheets that look like css would probably be difficult
+- it would be necessary to take all the properties in the stylesheet, parse them as key value pairs, then follow the selector and then let the Widget handle how these key-value pairs are translated into the right structs and then let every struct pick the values from the key value pairs of which the keys appear in the struct or a similar approach
+
+string-key-approach:
+
+- parsing can happen by parsing everything as key value pairs and passing everything to the Widget that matches the selector
+- the Widget has all the info about which property keys are accepted and how to check their types and values
+- the checking can probably be automated in big parts by the framework
+
+## Can the two approaches be combined? Would it have any advantages?
 
 ## Is an intricate styling system like this even necessary?
 
@@ -269,7 +327,13 @@ There are a few areas in which they can be compared:
 - having a style system enables more customization, faster changes, makes applications look better, that way it should also be easier to mimick specific platform styles by applying themes
 - it's awesome how web pages can be styled with css, and even desktop apps when using electron, see VSCode, the theming ability is a really handy feature
 
+## Things to consider when developing a syntax
+
+- the styles need to be checked in such a way that when an error occurs, it needs to be clear to the user which style threw that error --> the styles should be checked right after the instance is created --> crash immediately, another approach would be to provide a debugger for the framework, a view of the Widget tree where all the styles can be inspected and errors are shown there, the user can then figure out where that Widget and the corresponding styles were defined in the code, so tracking the origin of a style in the tree is necessary
+
 ## Whether and how to handle inheritance of properties --> like the foreground property?
+
+## How to handle scoping/non-scoping, hiding the internal structure of a Widget/making it stylable only with a special selector syntax, is this even necessary?
 
 ## Wrap the style properties in a dedicated struct or use plain key, value pairs?
 
