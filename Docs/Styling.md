@@ -343,17 +343,41 @@ string-key-approach:
 
 - the styles need to be checked in such a way that when an error occurs, it needs to be clear to the user which style threw that error --> the styles should be checked right after the instance is created --> crash immediately, another approach would be to provide a debugger for the framework, a view of the Widget tree where all the styles can be inspected and errors are shown there, the user can then figure out where that Widget and the corresponding styles were defined in the code, so tracking the origin of a style in the tree is necessary
 
+## How to distribute styles within composed Widgets?
+
+- a composed Widget like a button may contain a Container as a Child, a Row to layout it's children, a Text and Icon as children
+  - which properties does the button expose?
+  - it would be reasonable to let it expose a background property, a foreground property, a padding, filters like blur would be possible but can also be implemented with wrappers
+  - the insides of the button should also be available for styling
+  - for example, setting the margin between the two children should be possible from the outside, since the button is a core Widget and any application developer will want to style the button
+  - the flex layout should be accessible as well, on the other hand, maybe the flex layout should not be included in the button in the first place, because application developers might want to distribute the children differently
+  - so maybe the Button Widget should extend the Container Widget and provide mouse click functionality and state handling!
+  - the state handling would be a difference here between button and container, but this difference would probably only show inside the selector, yet the button would have to overwrite the current active pseudo class of the container
+  - maybe instead of going into overwriting, keep the composition approach and forward properties to the container
+  - the properties of container could be manually defined on button or the enums could be typealiased and the dictionary with key: validators could be copied / provided as a computed property
+  - the properties could then be passed to the container Widget directly, and even define the styles as reactive and update them whenever the styles on the button change
+  - the style properties are passed to the container Widget directly
+  - it could be useful to take the Container Widget out of the Widgets that can be styled from the outside, hide that Widget from the selectors, maybe with a flag that can be set on the Widget which forces the style distribution logic to skip that Widget
+  - copying the properties of Container onto Button might be tedious and if a Container property changes in the future, that property will be missing from the Button properties (in the key enum), so it would be better to create a protocol for the Container Widget which defines all the property keys and then let the button key provider conform to that protocol, the protocol extension then always provide the latest version of the properties of the Container Widget
+- a Widget like a ScrollView, which is a core Widget provided by the framework, has a child and enhances that child with the rendered output of scroll bars, these scroll bars are probably not Widgets, since many very small Widgets would be needed and the performance might decrease, so direct rendered output is used, selecting the scroll bars by classes is therefore, in the current setup, not possible, this is a case where pseudo elements should be used
+- a completely custom implemented Widget which acts as a semantic wrapper for a certain tree of Widgets might also need to be styled, for example, a SettingsPage Widget, might receive a set of settings during instantiation and displays a ui accordings to these settings, whatever is necessary to modify them
+  - this page can define an internal structure of classes, like wrapping each setting in a container Widget with the class .setting, which allows adding padding, background etc. from the inside of the Widget (there might be a default style) as well as from the outside if the class structure is known as well as the underlying types of the Widgets which have these classes
+  - there might also be a layout Widget like Column, which should be stylable, e.g. for defining the space between the settings
+  - the settings page itself may or may not expose any properties by itself, it could make sense to allow container styling properties
+  - but this may not be necessary as a Container Widget can be added from the outside
+  - well, but this would mean that a background cannot be added to all SettingsPages through some theme, because this would depend on the SettingsPage Widget being wrapped inside a Container
+  - however the SettingsPage might have a Container as the first child, and then either the same thing as for Button can be done, or Container can be inherited directly or the Container Widget gets a class like .inner-container or so and background, padding can be added that way
+  - the SettingsPage might get a class assigned by the code that instantiates it, and it can appear in the selectors, but the probably only really global properties like foreground or the properties that are relevant for the parent can be added to it (if Container properties are not forwarded)
+
+## Handling reactive styles
+
 ## Whether and how to handle inheritance of properties --> like the foreground property?
 
 ## How to handle scoping/non-scoping, hiding the internal structure of a Widget/making it stylable only with a special selector syntax, is this even necessary?
 
-## Wrap the style properties in a dedicated struct or use plain key, value pairs?
-
 ## Handling pseudo-elements
 
 ## Handling media queries (are they even needed?)
-
-## Handling reactive styles
 
 ## Handling layout relevant properties like margin, flex-grow etc.
 
