@@ -9,6 +9,10 @@ extension Widget {
       Result(children: widget != nil ? [widget!] : [])
     }
 
+    public static func buildExpression(_ style: Experimental.Style) -> Result {
+      Result(experimentalStyles: [style])
+    }
+
     public static func buildEither(first: Result) -> Result {
       first
     }
@@ -25,12 +29,14 @@ extension Widget {
       results.reduce(into: Result()) {
         $0.children.append(contentsOf: $1.children)
         $0.styles.append(contentsOf: $1.styles)
+        $0.experimentalStyles.append(contentsOf: $1.experimentalStyles)
       }
     }
 
     public struct Result {
       public var children: [Widget] = []
       public var styles: [AnyStyle] = []
+      public var experimentalStyles: [Experimental.Style] = []
     }
   }
 }

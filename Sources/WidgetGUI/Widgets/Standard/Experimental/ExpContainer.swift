@@ -30,9 +30,9 @@ extension Experimental {
     }
 
     public struct StyleProperties: WidgetGUI.StyleProperties, AnyPaddingStyleProperties, AnyBackgroundStyleProperties {
-      @StyleProperty
+      @WidgetGUI.StyleProperty
       public var padding: Insets?
-      @StyleProperty
+      @WidgetGUI.StyleProperty
       public var background: Color? 
 
       public init() {}
