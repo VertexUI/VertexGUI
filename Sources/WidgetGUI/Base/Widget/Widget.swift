@@ -210,18 +210,41 @@ open class Widget: Bounded, Parent, Child {
     public internal(set) var layoutInvalid = false
     public internal(set) var destroyed = false
 
+    /* style */
+    public var providedStyles: [AnyStyle] = []
+    /** Styles which can be applied to this Widget instance or any of 
+    it's children (deep) according to their selector. */
+    public var experimentalProvidedStyles: [Experimental.Style] = []
 
-    public var providedStyles: [AnyStyle] = [] /*{
-        willSet {
-            for style in newValue {
-                if style.extendsParent {
-                    fatalError("a root level style cannot extend a parent style, style: \(style.selector) \(type(of: style)) in widget: \(self)")
-                }   
+    internal var appliedStyles: [AnyStyle] = []
+    /** Styles whose selectors match this Widget instance. */
+    internal var experimentalMatchedStyles: [Experimental.Style] = []
+    /** Style properties that are applied to this Widget instance directly
+    without any selector based testing. */
+    public var experimentalDirectStyleProperties: [Experimental.StyleProperty] = []
+    
+    /** Style property support declared by the Widget instance's context. */
+    public var experimentalSupportedGlobalStyleProperties: Experimental.StylePropertySupportDefinitions {
+        []
+    }
+    /** Style property support declared for this Widget instance as the child of it's parent. */
+    public var experimentalSupportedParentStyleProperties: Experimental.StylePropertySupportDefinitions = []
+    /** Style property support declared by this Widget instance. */
+    public var experimentalSupportedStyleProperties: Experimental.StylePropertySupportDefinitions = []
+    /** */
+    public var experimentalMergedSupportedStyleProperties: Experimental.StylePropertySupportDefinitions {
+            do {
+                return try Experimental.StylePropertySupportDefinitions(merge: experimentalSupportedGlobalStyleProperties, 
+                    experimentalSupportedParentStyleProperties, experimentalSupportedStyleProperties)
+            } catch {
+                fatalError("error while merging style property support definitions in Widget: \(self), error: \(error)")
             }
         }
-    }*/
-    internal var appliedStyles: [AnyStyle] = []
 
+    /** All properties from matched styles and direct properties merged,
+    validated and filtered according to the support definitions.  */
+    public internal(set) var experimentalAppliedStyleProperties: [Experimental.StyleProperty] = []
+    /* end style */
 
     @usableFromInline internal var reference: AnyReferenceProtocol? {
         didSet {

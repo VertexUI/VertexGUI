@@ -1,8 +1,6 @@
 extension Experimental.Style {
   @_functionBuilder
   public struct StyleBuilder {
-    public typealias PropertyTuple = (StyleKey, StyleValue)
-
     public struct IntermediateResult {
       public var properties: [Experimental.StyleProperty]
       public var children: [Experimental.Style]
@@ -13,7 +11,7 @@ extension Experimental.Style {
       }
     }
 
-    public static func buildExpression(_ expression: PropertyTuple) -> IntermediateResult {
+    public static func buildExpression(_ expression: Experimental.StyleProperty.SpecificInitTuple) -> IntermediateResult {
       IntermediateResult(properties: [Experimental.StyleProperty(key: expression.0, value: expression.1)])
     } 
 
