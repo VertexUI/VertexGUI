@@ -10,5 +10,11 @@ extension Experimental {
       self.properties = content.properties
       self.children = content.children
     }
+
+    init(selector: StyleSelector, properties: [StyleProperty], children: [Style]) {
+      self.selector = selector
+      self.properties = properties
+      self.children = children
+    }
   }
 }
