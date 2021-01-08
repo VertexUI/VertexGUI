@@ -7,6 +7,7 @@ import XCTest
       testCase(StyleSelectorTests.allTests),
       testCase(StyleTests.allTests),
       testCase(ExperimentalStylePropertySupportDefinitionsTests.allTests),
+      testCase(ExperimentalStylePropertyTests.allTests),
       testCase(ExperimentalWidgetStyleApiTests.allTests),
       testCase(StylableWidgetTests.allTests),
       testCase(ReactivePropertyTests.allTests),

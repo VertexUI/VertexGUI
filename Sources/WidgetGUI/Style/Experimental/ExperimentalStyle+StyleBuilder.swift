@@ -1,3 +1,5 @@
+import ExperimentalReactiveProperties
+
 extension Experimental.Style {
   @_functionBuilder
   public struct StyleBuilder {
@@ -11,9 +13,13 @@ extension Experimental.Style {
       }
     }
 
-    public static func buildExpression(_ expression: Experimental.StyleProperty.SpecificInitTuple) -> IntermediateResult {
+    public static func buildExpression(_ expression: (StyleKey, StyleValue)) -> IntermediateResult {
       IntermediateResult(properties: [Experimental.StyleProperty(key: expression.0, value: expression.1)])
     } 
+
+    public static func buildExpression<P: ReactiveProperty>(_ expression: (StyleKey, P)) -> IntermediateResult where P.Value: StyleValue {
+      IntermediateResult(properties: [Experimental.StyleProperty(key: expression.0, value: expression.1)])
+    }
 
     public static func buildExpression(_ expression: Experimental.Style) -> IntermediateResult {
       IntermediateResult(children: [expression])
