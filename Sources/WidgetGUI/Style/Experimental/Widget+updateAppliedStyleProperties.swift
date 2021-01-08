@@ -12,8 +12,6 @@ extension Widget {
       result[property.key.asString] = property
     }
 
-    
-
     // TODO: check whether properties have the same order as in matched styles
     experimentalAppliedStyleProperties = Array(result.values)
   }

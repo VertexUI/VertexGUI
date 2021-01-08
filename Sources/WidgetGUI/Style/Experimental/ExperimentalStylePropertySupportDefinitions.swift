@@ -1,7 +1,10 @@
 extension Experimental {
   public struct StylePropertySupportDefinitions: ExpressibleByArrayLiteral, Sequence {
     public var definitions: [StylePropertySupportDefinition]
-    public var source: StylePropertySupportDefinition.Source = .unknown {
+    public var definitionsByKey: [String: StylePropertySupportDefinition] {
+      definitions.reduce(into: [:]) { $0[$1.key.asString] = $1 }
+    }
+    public private(set) var source: StylePropertySupportDefinition.Source = .unknown {
       didSet {
         for i in 0..<definitions.count {
           definitions[i].source = source
@@ -63,10 +66,14 @@ extension Experimental {
       var validProperties = [Experimental.StyleProperty]()
 
       for property in properties {
-        
+        if let definition = definitionsByKey[property.key.asString] {
+          validProperties.append(property)
+        } else {
+          validationResults[property.key.asString] = .unsupported
+        }
       }
 
-      return (validProperties: properties, results: validationResults)
+      return (validProperties: validProperties, results: validationResults)
     }
 
     public enum MergingError: Error {

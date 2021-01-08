@@ -70,6 +70,7 @@ class ExperimentalWidgetStyleApiTests: XCTestCase {
     
     widget.with(styleProperties: {
       ($0.foreground, 1)
+      ($0.specialProperty1, 1)
     })
     widget.with(Experimental.StyleProperties(WidgetWithSpecialStyleProperties.StyleKeys.self) {
       ($0.foreground, 1)
@@ -77,6 +78,11 @@ class ExperimentalWidgetStyleApiTests: XCTestCase {
     widget.with(Experimental.StyleProperties(WidgetWithSpecialStyleProperties.self) {
       ($0.specialProperty1, 1)
     })
+
+    widget.updateAppliedStyleProperties()
+
+    XCTAssertEqual(widget.experimentalAppliedStyleProperties.count, 2)
+    // TODO: test in more depth!
   }
 
   static var allTests = [

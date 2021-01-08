@@ -34,7 +34,18 @@ class ExperimentalStylePropertySupportDefinitionsTests: XCTestCase {
     }
   }
 
+  func testValidationAndFiltering() {
+    let definitions = Experimental.StylePropertySupportDefinitions {
+      ("property1", type: .specific(Double.self))
+    }
+    let (validProperties, validationResults) = definitions.process([
+      Experimental.StyleProperty(key: "property1", value: 1.0)
+    ])
+    XCTAssertEqual(validProperties.count, 1)
+  }
+
   static var allTests = [
-    ("testMerging", testMerging)
+    ("testMerging", testMerging),
+    ("testValidationAndFiltering", testValidationAndFiltering)
   ]
 }
