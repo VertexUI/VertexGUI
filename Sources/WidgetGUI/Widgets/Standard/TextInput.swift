@@ -8,7 +8,7 @@ public final class TextInput: SingleChildWidget, StatefulWidget, ConfigurableWid
 {
   public static let defaultConfig = Config(
     textConfig: Text.PartialConfig {
-      $0.fontConfig = PartialFontConfig(size: 24, weight: .regular, style: .Normal)
+      $0.fontConfig = PartialFontConfig(size: 24, weight: .regular, style: .normal)
       $0.wrap = false
     },
     caretColor: Color(80, 80, 255, 255))

@@ -1,20 +1,20 @@
 public enum TextTransform {
-    case Uppercase
-    case Lowercase
-    case Capitalize
-    case None
+    case uppercase
+    case lowercase
+    case capitalize
+    case none
 
     func apply(to string: String) -> String {
         switch self {
-        case .Uppercase:
+        case .uppercase:
             return string.uppercased()
-        case .Lowercase:
+        case .lowercase:
             return string.lowercased()
-        case .Capitalize:
+        case .capitalize:
             return string.split(separator: " ").map {
                 $0.count > 0 ? $0[0].uppercased() + $0[1...] : ""
             }.joined(separator: " ")
-        case .None:
+        case .none:
             return string
         }
     }

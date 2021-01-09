@@ -12,7 +12,7 @@ public class MaterialIcon: SingleChildWidget {
       FontFace(
         path: Bundle.module.path(forResource: "materialdesignicons-webfont", ofType: "ttf")!,
         weight: .regular,
-        style: .Normal
+        style: .normal
       )
     ])
 

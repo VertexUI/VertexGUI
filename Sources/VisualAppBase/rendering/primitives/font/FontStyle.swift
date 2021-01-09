@@ -1,3 +1,3 @@
 public enum FontStyle {
-    case Normal, Italic
+    case normal, italic
 }

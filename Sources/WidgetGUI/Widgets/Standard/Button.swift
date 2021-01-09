@@ -60,8 +60,8 @@ public final class Button: SingleChildWidget, StatefulWidget, ConfigurableWidget
 
     private static let defaultTextConfig = Text.PartialConfig(
         fontConfig: PartialFontConfig(
-            family: defaultFontFamily, size: 16, weight: .bold, style: .Normal),
-        transform: .Uppercase,
+            family: defaultFontFamily, size: 16, weight: .bold, style: .normal),
+        transform: .uppercase,
         color: .black,
         wrap: false)
 

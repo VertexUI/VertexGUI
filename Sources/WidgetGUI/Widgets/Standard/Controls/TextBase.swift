@@ -25,8 +25,8 @@ open class TextBase: Widget, SimpleStylableWidget {
     $0.fontFamily = defaultFontFamily
     $0.fontSize = 16
     $0.fontWeight = .regular
-    $0.fontStyle = .Normal
-    $0.transform = .None
+    $0.fontStyle = .normal
+    $0.transform = TextTransform.none
     $0.foreground = .black
     $0.wrap = true
   }
