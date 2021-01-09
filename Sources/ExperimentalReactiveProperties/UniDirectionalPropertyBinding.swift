@@ -33,6 +33,32 @@ public class UniDirectionalPropertyBinding: PropertyBindingProtocol, EventfulObj
     unregisterFunctions.append(sink.registerBinding(self))
   }
 
+  internal init<Source: ReactiveProperty, Value>(source: Source, sink: ObservableProperty<Value>) where Value == Source.Value, Value: Equatable {
+    handlerRemovers.append(source.onChanged { [unowned sink] in
+      if !sink.hasValue || sink.value != $0.new {
+        sink.value = $0.new
+      }
+    })
+    handlerRemovers.append(source.onHasValueChanged { [unowned source, sink] in
+      if !sink.hasValue || sink.value != source.value {
+        sink.value = source.value
+      }
+    })
+    handlerRemovers.append(source.onDestroyed { [unowned self] in
+      destroy()
+    })
+    handlerRemovers.append(sink.onDestroyed { [unowned self] in
+      destroy()
+    })
+
+    if source.hasValue {
+      sink.value = source.value
+    }
+    
+    unregisterFunctions.append(source.registerBinding(self))
+    unregisterFunctions.append(sink.registerBinding(self))
+  }
+
   public func destroy() {
     if destroyed {
       return

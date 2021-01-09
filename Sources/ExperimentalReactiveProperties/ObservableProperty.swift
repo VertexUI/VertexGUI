@@ -1,11 +1,23 @@
 import Events
 
 @propertyWrapper
+// TODO: need to test ObservableProperty
 public class ObservableProperty<Value>: ReactiveProperty {
   public typealias Value = Value
 
-  public var value: Value {
-    fatalError("value not implemented")
+  private var _value: Value? {
+    didSet {
+      hasValue = true
+    }
+  }
+  public internal(set) var value: Value {
+    get {
+      _value!
+    }
+
+    set {
+      _value = newValue
+    }
   } 
   public let onChanged = EventHandlerManager<(old: Value, new: Value)>()
   public let onAnyChanged = EventHandlerManager<(old: Any, new: Any)>()
@@ -27,4 +39,9 @@ public class ObservableProperty<Value>: ReactiveProperty {
   public let onDestroyed = EventHandlerManager<Void>()
 
   public init() {}
+
+  @discardableResult
+  public func bind<Other: ReactiveProperty>(_ other: Other) -> UniDirectionalPropertyBinding where Other.Value == Value, Value: Equatable {
+    UniDirectionalPropertyBinding(source: other, sink: self)
+  }
 }
