@@ -1,11 +1,11 @@
 import GfxMath
 
 extension Experimental {
-  public class Container: ComposedWidget, ExperimentalStylableWidget {
+  public class Padding: ComposedWidget, ExperimentalStylableWidget {
     private let childBuilder: () -> ChildBuilder.Result
 
-    private var padding: Insets {
-      stylePropertyValue(StyleKeys.padding, as: Insets.self) ?? Insets(all: 0)
+    private var insets: Insets {
+      stylePropertyValue(StyleKeys.insets, as: Insets.self) ?? Insets(all: 0)
     }
 
     public init(
@@ -29,9 +29,9 @@ extension Experimental {
           self.classes = classes
         }
     }
- 
+
     public init(
-      configure: ((Experimental.Container) -> ())? = nil,
+      configure: ((Experimental.Padding) -> ())? = nil,
       @ChildBuilder child childBuilder: @escaping () -> ChildBuilder.Result) {
         self.childBuilder = childBuilder
         super.init()
@@ -42,27 +42,38 @@ extension Experimental {
 
     override public func performBuild() {
       let result = childBuilder()
-      rootChild = Background() { [unowned self] in
-        Experimental.Background(configure: {
-          $0.with(styleProperties: {
-            ($0.fill, stylePropertyValue(StyleKeys.backgroundFill) ?? Color.transparent)
-          })
-        }) {
-          Experimental.Padding(configure: {
-            $0.with(styleProperties: {
-              ($0.insets, self.padding)
-            })
-          }) {
-            result.child
-          }
-        }
-      }
+      rootChild = result.child
       experimentalProvidedStyles.append(contentsOf: result.experimentalStyles)
     }
 
+    override public func getBoxConfig() -> BoxConfig {
+      guard let rootChild = self.rootChild else {
+        fatalError("rootChild must be available during layout")
+      }
+      let childConfig = rootChild.boxConfig
+      return BoxConfig(
+        preferredSize: childConfig.preferredSize + insets.aggregateSize,
+        minSize: childConfig.minSize + insets.aggregateSize,
+        maxSize: childConfig.maxSize + insets.aggregateSize)
+    }
+
+    override public func performLayout(constraints: BoxConstraints) -> DSize2 {
+      guard let rootChild = self.rootChild else {
+        fatalError("rootChild must be available during layout")
+      }
+      let childConstraints = BoxConstraints(
+        minSize: constraints.minSize - insets.aggregateSize,
+        maxSize: constraints.maxSize - insets.aggregateSize
+      )
+      rootChild.layout(constraints: childConstraints)
+      rootChild.position = DPoint2(insets.left, insets.top)
+      let childSize = rootChild.size
+      let selfSize = childSize + insets.aggregateSize
+      return constraints.constrain(selfSize)
+    }
+
     public enum StyleKeys: String, StyleKey, ExperimentalDefaultStyleKeys {
-      case padding
-      case backgroundFill
+      case insets
     }
   }
 }

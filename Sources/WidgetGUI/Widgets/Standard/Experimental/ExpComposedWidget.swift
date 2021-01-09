@@ -19,7 +19,7 @@ extension Experimental {
 
     override open func performLayout(constraints: BoxConstraints) -> DSize2 {
       rootChild?.layout(constraints: constraints)
-      return rootChild?.size ?? .zero
+      return constraints.constrain(rootChild?.size ?? .zero)
     }
 
     override public func renderContent() -> RenderObject? {
