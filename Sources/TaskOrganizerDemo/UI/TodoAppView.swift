@@ -60,10 +60,11 @@ public class TodoAppView: SingleChildWidget {
               Experimental.Button(styleProperties: {
                 ($0.backgroundFill, Color.red)
               }) {
-                ExperimentalText("New List").with(properties: ExperimentalText.StyleProperties {
-                  $0.foreground = Color.black
-                  $0.fontWeight = .bold
-                })
+                Experimental.Text(styleProperties: {
+                  ($0.fontWeight, FontWeight.bold)
+                  ($0.fontSize, 20.0)
+                  ($0.textColor, Color.white)
+                }, "New List")
               } onClick: { [unowned self] in
                 handleNewListClick()
               }.provideStyles {
