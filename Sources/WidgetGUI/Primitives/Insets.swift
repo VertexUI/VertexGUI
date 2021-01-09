@@ -1,8 +1,13 @@
+import GfxMath
+
 public struct Insets: Equatable {
     public var top: Double
     public var right: Double
     public var bottom: Double
     public var left: Double
+    public var aggregateSize: DSize2 {
+        DSize2(right + left, top + bottom)
+    }
 
     public init(top: Double = 0, right: Double = 0, bottom: Double = 0, left: Double = 0) {
         self.top = top

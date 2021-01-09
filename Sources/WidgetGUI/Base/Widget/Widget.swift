@@ -221,7 +221,12 @@ open class Widget: Bounded, Parent, Child {
     internal var experimentalMatchedStyles: [Experimental.Style] = []
     /** Style properties that are applied to this Widget instance directly
     without any selector based testing. */
-    public var experimentalDirectStyleProperties: [Experimental.StyleProperty] = []
+    public var experimentalDirectStyleProperties: [Experimental.StyleProperty] = [] {
+        didSet {
+            // TODO: when to call this?
+            updateAppliedStyleProperties()
+        }
+    }
     
     /** Style property support declared by the Widget instance's context. */
     public var experimentalSupportedGlobalStyleProperties: Experimental.StylePropertySupportDefinitions {

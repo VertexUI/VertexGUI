@@ -11,13 +11,12 @@ public struct BoxConstraints: Equatable, CustomDebugStringConvertible {
 
   // TODO: maybe add overflow property to indicate whether overflowing is allowed instead of using infinity in maxSize?
   public init(minSize: DSize2, maxSize: DSize2) {
-    self.minSize = minSize
-    self.maxSize = maxSize
+    self.minSize = max(.zero, minSize)
+    self.maxSize = max(.zero, maxSize)
   }
 
   public init(size: DSize2) {
-    self.minSize = size
-    self.maxSize = size
+    self.init(minSize: size, maxSize: size)
   }
 
   public var minWidth: Double {

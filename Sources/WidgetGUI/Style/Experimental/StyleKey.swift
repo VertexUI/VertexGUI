@@ -3,7 +3,7 @@ public protocol StyleKey {
 }
 
 extension RawRepresentable where RawValue == String {
-  var asString: String {
+  public var asString: String {
     rawValue
   }
 }

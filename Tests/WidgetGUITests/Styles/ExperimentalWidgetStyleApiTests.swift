@@ -52,17 +52,16 @@ class ExperimentalWidgetStyleApiTests: XCTestCase {
     let root = MockRoot(rootWidget: widget)
   }
 
-  func testWithAppliedStyleProperties() {
+  func testWidgetWithoutSpecialStyleProperties() {
     let widget = WidgetWithoutSpecialStyleProperties()
 
     widget.with(styleProperties: {
-      ("nonExistentProperty1", 1)
-      (WidgetWithoutSpecialStyleProperties.StyleKeys.foreground, 1)
+      ($0.foreground, 1)
     })
-    XCTAssertEqual(widget.experimentalDirectStyleProperties.count, 2)
 
     widget.updateAppliedStyleProperties()
-    XCTAssertEqual(widget.experimentalAppliedStyleProperties.count, 2)
+
+    XCTAssertEqual(widget.experimentalAppliedStyleProperties.count, 1)
   }
 
   func testWidgetWithSpecialStyleProperties() {
@@ -87,7 +86,7 @@ class ExperimentalWidgetStyleApiTests: XCTestCase {
 
   static var allTests = [
     ("testSimple", testSimple),
-    ("testWithAppliedStyleProperties", testWithAppliedStyleProperties),
+    ("testWidgetWithoutSpecialStyleProperties", testWidgetWithoutSpecialStyleProperties),
     ("testWidgetWithSpecialStyleProperties", testWidgetWithSpecialStyleProperties)
   ]
 }
