@@ -10,7 +10,7 @@ extension Experimental {
 
     public init(
       classes: [String]? = nil,
-      @Experimental.StylePropertiesBuilder styleProperties stylePropertiesBuilder: (StyleKeys.Type) -> [Experimental.StyleProperty],
+      @Experimental.StylePropertiesBuilder styleProperties stylePropertiesBuilder: (StyleKeys.Type) -> [Experimental.StyleProperty] = { _ in [] },
       @ChildBuilder child childBuilder: @escaping () -> ChildBuilder.Result) {
         self.childBuilder = childBuilder
         super.init()
@@ -18,16 +18,6 @@ extension Experimental {
           self.classes = classes
         }
         self.experimentalDirectStyleProperties.append(contentsOf: stylePropertiesBuilder(StyleKeys.self))
-    }
-
-    public init(
-      classes: [String]? = nil,
-      @ChildBuilder child childBuilder: @escaping () -> ChildBuilder.Result) {
-        self.childBuilder = childBuilder
-        super.init()
-        if let classes = classes {
-          self.classes = classes
-        }
     }
 
     public init(

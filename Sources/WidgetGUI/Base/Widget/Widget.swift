@@ -276,7 +276,7 @@ open class Widget: Bounded, Parent, Child {
     }*/
     @MutableProperty
     public var layoutDebuggingColor = Color.red
-    private let layoutDebuggingTextFontConfig = FontConfig(family: defaultFontFamily, size: 16, weight: .regular, style: .Normal)
+    private let layoutDebuggingTextFontConfig = FontConfig(family: defaultFontFamily, size: 16, weight: .regular, style: .normal)
     // if true, highlight the Widget when bursts of calls to functions such as layout or render occur
     public var burstHighlightEnabled = true
     @usableFromInline

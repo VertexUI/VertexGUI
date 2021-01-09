@@ -4,16 +4,9 @@ extension Experimental {
 
     public let onClick = WidgetEventHandlerManager<Void>()
 
-    public init(@ChildBuilder child childBuilder: @escaping () -> ChildBuilder.Result, onClick onClickHandler: (() -> ())? = nil) {
-      self.childBuilder = childBuilder
-      if let handler = onClickHandler {
-        self.onClick.addHandler(handler)
-      }
-    } 
-    
     public init(
       classes: [String]? = nil,
-      @Experimental.StylePropertiesBuilder styleProperties stylePropertiesBuilder: (StyleKeys.Type) -> [Experimental.StyleProperty],
+      @Experimental.StylePropertiesBuilder styleProperties stylePropertiesBuilder: (StyleKeys.Type) -> [Experimental.StyleProperty] = { _ in [] },
       @ChildBuilder child childBuilder: @escaping () -> ChildBuilder.Result,
       onClick onClickHandler: (() -> ())? = nil) {
         self.childBuilder = childBuilder
