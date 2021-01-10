@@ -33,7 +33,7 @@ extension Experimental {
         properties.append(StyleProperty(key: key, value: unwrappedValue))
       }
 
-      return [Experimental.Style(selector: selector, properties: properties, children: [])]
+      return [Experimental.Style(selector: selector, properties: StyleProperties(properties), children: [])]
     }
 
     public var valueParsers = [
