@@ -417,7 +417,57 @@ string-key-approach:
 - this could be possible, since the styles are applied in a top down approach all parents should be guaranteed to be available and fully calculated whenever a new style is added to a Widget
 - acessing the values would probably be done on a per property basis, using closures
 
-## Whether and how to handle inheritance of properties --> like the foreground property?
+## Whether and how to handle inheritance of properties?
+
+- is it necessary to have property inheritance?
+- css has the inherit value for properties, which will fetch the property value from the styles of the parent element (not the parent style!)
+- which properties could benefit from something like that?
+  - in css this is probably mainly used for color which is named foreground in this framework
+  - this property controls the color of text, icons, anything else which can be defined as foreground
+  - so there are some Widgets which do not use this property themselves, but it might be used by some of it's children
+  - there might be other properties, which Widget authors might want inherit which are not there by default and need to somehow be registered with the framework
+  - or maybe instead of doing this with concrete properties, maybe enable defining the property value as a computation with access to parents, one could then access any property of parents and would not have to rely on name equality
+- without a function like that: the color of text would have to be set with a selector matching Text objects, however there may be different Widgets which are Text and Widgets which are not part of the core library of Widgets which can be used in places where a Text can be used as well (e.g. inside a Button), so having a property which is inherited by all these, even new Widgets would be practical for writing styles, because the author of the styles might not know in advance which exact Widgets will be used somewhere
+- this applies to properties such as fontFamily, fontSize etc. as well
+- another option would be to use something like generic types/protocols in selectors as well, check whether a type conform to a certain protocol, well this is probably not that easy when doing it all with pure swift types, the conforming protocols would probably need to be declared as variables inside each Widget instance
+- maybe pseudo classes could be used and the Widgets which all can receive text relevant properties could be selected like "*:textual" or similar
+- however this does somehow still make the assumption that all of these properties are consumed by some Widgets, there may however be Widgets which only use parts of these properties and mix them with other properties
+- additionally one would have to remember which different generic types are there and which properties they support
+- simply specifying the properties like normal ones would make things easier and look more familiar since this is how it is done in css as well
+- how should it be implemented?
+  - first of all: which properties can be inherited?
+    - probably only those which are for sure applicable to every parent Widget
+    - there should probably be defaults for all of these properties on the root level
+  - how to register such properties?
+    - register them globally on a framework variable / with a framework function or via the WidgetContext
+    - either can put defaults there
+    - or maybe global defaults can be omitted and providing default values is the task for each Widget authro
+    - this might however lead to a non unified default appearance
+    - so, add the option to provide defaults with the definition of a property
+      - since properties could still be nil, each Widget author should probably still provide custom defaults for each property, just in case there is no value given by the parent, but in normal cases the global default will always be available and automatically passed down
+    - maybe only certain properties should be defined as inheritable
+  - when using a pure name based approach:
+    - the properties should probably be fetched directly from the parent
+    - this means that not the whole tree branch will be traversed up until a value for the property is found, which should help to increase performance
+    - to ensure that the properties which are defined as inheritable are available on the parent directly even when the parent's own property value is inherit, the property values need to always be passed down to children with an actual property value, they should however probably not be merged into the applied properties unless the property with the value inherit has been explicitly specified on the Widget
+    - or maybe they should be applied?
+    - maybe there should be a differentiation made between the applied properties (that have been declared and merged through style definitions) and all property values available on a Widget
+    - this might be useful to preserve properties with a value of inherit in the applied properties variable, while also making it easy to access the real value, which would be the value of the parent, through another dictionary
+    - this dictionary might get all globally inheritable properties of it's parent merged in by default and then after evaluating the properties defined by the applied styles, potentially overwrite some properties which were fetched from the parent, this mix of properties still equal to the parents properties and properties defined by the Widgets's styles are then passed to the Widget's children which in turn, first inherit all values and later may overwrite some of them with their own
+    - again: should there be a distinction between properties that are inheritable and not inheritable? probably all properties can be inheritable, but when assuming that the inherited value is taken from the "computed/resolved property values dictionary", for most properties inheriting over many levels will not be possible, instead an inherited value will only be present if the direct parent defines a property with the same name and also has a value for it
+    - for the global properties: should they all be passed to every widget in every case?
+      - they can be defined on every Widget
+      - every Widget can receive a value
+      - the default for global properties might be to inherit the parent's value
+      - other defaults may be possible as well
+      - since it is assumed that the property can be defined on every Widget, it can also be assumed that the property should be accessible in every Widget
+      - so if the values would not be applied by default, it would be necessary to redefine the global property on the specific Widget, which kinda goes against the point probably
+      - again about the defaults: if the default is inherit, every Widget will have a value of inherit, but there will be no value to inherit, so either for each global property there can be an additional value specified, under a name like rootValue, which is optional, but will provide the base value for inheritance
+  - when using a manual access based approach?
+    -it would be more like a computed property with access to a context which gives access to the parents resolved property values and other values, so this might be a thing to have on top of the inherit approach
+    - the property values which are computed that way can in turn be inherited by children
+    - it is practical to be able to simple specify inherit without needing to write a closure for each property
+  - when the closure approach is there as well, values might be fetched from farther away parents, there may be utility functions and a convenient api to do this, e.g. to fetch a property of any parent of type T etc.
 
 ## Animations, transitions or something else?
 
