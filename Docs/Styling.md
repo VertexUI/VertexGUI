@@ -395,28 +395,23 @@ string-key-approach:
   - it should be possible to make a single property reactive and make the ReactiveProperty protocol conform to the StyleValue protocol whenever the value of the proeprty conforms to the StyleValue protocol
   - how to provide the triggers for updating?
   - can probably heavily use result builders to allow throwing in the triggers into each block
-  - some code examples for defining styles **need to test whether it can work like that**
-
-    Column {
-      (".action-button", Button.Style {
-        ($0.someButtonProperty, someButtonPropertyValue),
-        ($0.background, Color.red)
-
-        (Selector("Text"), Text.Style {
-          ($0.fontSize, 12)
-        })
-      })
-
-      Button(class: "action-button") {
-        Text()
-      }
-    }
+  - **evaluate different levels of reactivity: property, block, ...**
+  
 
 ## Should styles be able to access their own and parent properties?
 
 - this could be possible, since the styles are applied in a top down approach all parents should be guaranteed to be available and fully calculated whenever a new style is added to a Widget
-- acessing the values would probably be done on a per property basis, using closures
-- **more details needed**
+- accessing the values would probably be done on a per property basis, using closures
+- there could be a context variable passed in to those closures
+- this context variable may give access to the already resolved peer property values, the resolved property value dictionary of the parent and maybe even access to properties higher in the tree
+- the resolving of the properties could then automatically be made reactive, since the property depends on some resolved properties which can change, e.g. when some pseudo class of a parent changes and the property references the resolved parent properties
+- dependencies might be tracked automatically, by providing a mechanism to record accesses to the resolved properties, maybe through a custom ResolvedProperties type with a subscript syntax that can record accesses
+- a way of disabling reactivity and a way for specifying manual recalculation triggers should be implemented as well and maybe even prior to the automatic tracking
+- maybe the default should be non-reactivity?
+- resolving the properties needs to be done in a way that puts the properties with dependencies on other properties at the end (at least for properties that depend on siblings, the parent properties should all be resolved when the children are starting to be resolved), the properties may then simply be resolved, starting with any one, and if the property accesses a sibling which has not yet been resolved, that one should be resolved immediately, if the resolving of the sibling accesses the initial property currently in resolving, an error should be thrown
+- this might be implemented using a custom type which has dictionary access and a resolve all function, and could be the same type passed to the context for the dependent properties, the type might receive all the given properties, from all styles, then merge them, check with the available properties and validate the values, then provide access to the values via a subscript, if a value has not yet been accessed, but the key is available/there are property instances with that key, calculate it (or just read it in case of a static property) and store the value for future access
+- or maybe that logic should be put into the Widget class directly? each Widget could have a simple dictionary with all property values, well, then the access can't be realized in an on demand calculation/potential recording way
+- so there should probably be some kind of StyleStore (or other name) for each Widget, which receives the widget instance and does all the style work, so that in the Widget itself, the style values can be easily accessed via a subscript with the appropriate style keys on that type
 
 ## Whether and how to handle inheritance of properties?
 
