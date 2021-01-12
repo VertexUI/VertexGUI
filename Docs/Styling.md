@@ -479,6 +479,24 @@ string-key-approach:
 
 ## Animations, transitions or something else?
 
+- how could values that change over time be included in styles?
+  - could use the same syntax like css
+  - transitions:
+    - transitions would be used to provide a simple way to morph a single properties value to add some reactivity to an application, e.g. after an event, like hovering a button -> change the background color
+    - specify by property name, how the value changes over time (duration, easing)
+    - if a value in the resolved properties of a Widget changes and the current transition property includes a transition definition for that property, a transition from the previous value to the new value might be automatically started
+    - the values could be changed right on the resolved properties storage
+    - however the values need to get into the render objects somehow
+    - the Widget might have a handler on the properties storage which fires if a value is updated and then the render objects could be updated
+    - another way to handle it would be to let the property storage always provide the current value as defined by the transition, by not storing the value once computed, but always recalculating it when it is accessed
+    - the render object might then receive some notification about the ongoing transition, during instantiation of the render object, the property on the render object might be defined as an autoclosure and update on every frame, accessing the the value in the property value storage will will recalculate that value on demand
+    - how to notify the render object of the transition? there might be a sub dictionary in the property values store which outputs transition information for a specific property or nil, if no transition is running
+    - this information could then be used in the render function of a widget to construct RenderValues from this information, maybe the transition can even be passed to the RenderObject directly?, but the RenderValue approach should be usable as well, RenderValues can be fixed and timed, so the RenderValue to make should be decided in a switch statement and then simply passed to the RenderObject
+    - and since the easing and calculation is all handled by the style system, these things can be removed from the RenderValue, simplifying it, it only needs to access the current property value on every frame and also know when the value won't change anymore to stop requesting a new value at some point to improve the performance of the application
+    - there might be default strategies to calculate intermediate values for the standard types such as double and Color
+    - other strategies might be added to the property definitions on a per property basis or on a per property value basis, maybe every StyleValue should have a default function to calculate intermediate values, if the style value conforms to TransitionableStyleValue or something, which would also signal to the property that it is transitionable by default, but the property may overwrite the default behavior and be defined as non transitionable, or with a custom intermediate calculation function
+- **how could larger effects (big parts moving, fading, expanding, transitioning into one another etc.) be realized?**
+
 ## How to handle scoping/non-scoping, hiding the internal structure of a Widget/making it stylable only with a special selector syntax, is this even necessary?
 
 ## Handling pseudo-elements
