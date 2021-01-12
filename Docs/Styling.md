@@ -532,11 +532,45 @@ string-key-approach:
     - if an animation would start after a transition has ended, this should simply work, the transition first transitions to the fixed value given for the property key and then the animation takes over with it's keyframes values
     - when a transition and an animation are present and the animation has a delay at the start, the timing information output to the render function needs to unify both of these timed update definitions -> find the real start and end points by looking at both
   - **should a single path be calculated for each property over time out of the transition and animation properties, which could then as well be exposed to the render function?**
-  - **can animations and transitions be started manually?**
+  - can animations and transitions be started manually?
+    - if the animations and transitions are somehow exposed by the property store, or maybe even a unified update path for every property, it might be possible to call some function on these exposed objects to rerun the whole thing
+    - another way would be to use classes or pseudo classes as triggers, after a transition/animation is over (there should be events emitted by the value storage for each property to indicate that a dynamic update process has started or ended), change some class or pseudo class, remove it and then add it again, this should restart transitions, animations, this is however an inefficient approach as it triggers a reevaluation of styles and properties just to rerun the same timed updates
+    - if the updating of property values is handled by passing an object to the styles which is retained outside of the styles, this object might be used to restart updates
   - **are the values of transition and animation definitions inherited and overwritten by child definitions, or are child definitions appended to the parents definitions, can this be made configurable on a per property basis, how?**
+  - should transition and animation properties be overwritten if they occur multiple times in a block or should they be appended --> maybe define a merge strategy for certain properties?
   - **how are such changing values inherited? --> e.g. color transition on a parent, how is the value efficiently passed to the children**
-  - **could there be other approaches? maybe not two separate timing types but a unified one?**
-- **how could larger effects (big parts moving, fading, expanding, transitioning into one another etc.) be realized?**
+  - could there be other approaches? maybe not two separate timing types but a unified one?
+    - everywhere where a property value is accepted, a definition of a timed updating value could be accepted as well, there could be a type such as UpdatingPropertyValue which can output a value based on some timestamp
+      - the type checking would need to be done by accessing the first value output or maybe even on every output, although that will probably not be an option because of performance penalties
+      - the property storage would then notice that instead of a fixed value, an update definition was provided and setup the necessary callbacks and whatever to always refer to the update definition (as long as it's not arrived at a fixed definition) when a property is accessed on it (the store) through it's key
+      - such an update definition may also be stored somewhere, e.g. in the wrapping Widget and functions could then be called on it to restart it etc.
+      - however with this approach it would not be simple to transition from a previous style value to a new style value, since the update definition is the property value itself, there might be an old value which is where the old definition was when the property value changed, but the new definition does not have a separate target value, because it occupies the place of the property value, the target value would need to be included in the definition
+      - also, by passing one definition per property, controlling or defining multiple properties changing in the same way becomes more work, because either there needs to be a kind of wrapper which then outputs the individual property change definitions, or the same durations, timings etc. need to be repeated for all properties
+      - and it is not similar to css
+      - but could potentially provide a lot of flexibility
+      - well there could be some default initializers for common tasks like transitioning from an old value of a certain type to a new value
+      - and the wrapper for multiple properties at once would essentially be like a keyframes definition
+      - but it seems like this would achieve the same things like the css approach without the familiarity
+    - **there might be more approaches to consider**
+- how could larger effects (big parts moving, fading, expanding, transitioning into one another etc.) be realized?
+  - a fading transition, fading a big block of composed widgets can be achieved by wrapping the block into a functional Widget, which wraps the render output of the other Widgets in some kind of Opacity RenderObject, this Widget could expose an Opacity property, and then either transitions or animations could be used to change the opacity over time
+  - a big move transition could as well be realized with a wrapper Widget which wraps everything in a translation RenderObject and exposes a translation (or maybe directly do everything with transform) property which can be updated through transition or animation, the target value would be calculated somewhere in the Widget and stored, maybe as a property of the Widget (composed Widget) and then added to the styles on some event, e.g. when a button is pressed the containers translation property changes (maybe a reactive style property value, or maybe update the whole style block) is set and a transition automatically moves it there
+    - the translation property can be made reactive as a single property which could increase performance of the update/starting of the transition, because not the whole style block needs to be reevaluated
+    - the animation could be used to provide a more fine grained path for the animation, instead of the linear transition interpolation, the animation property could be defined as reactive and an animation definition provided when the animation should start, the keyframes would have to be calculated on demand/before adding the animation to the property, using values available through the Widget instance
+  - maybe opacity, translation etc. should be added to the Container Widget as well
+  - how to do an effect where a Widget expands into another Widget, e.g. press a button, that Button expands to a new Page with content
+    - one could create a special Widget which performs these kinds of transitions
+    - this Widget could either contain the two Widgets which should transform into each other
+    - but because their are probably not semantically/structurally linked in the application, this will probably not be possible
+    - instead when the transition should happen, the larger parent Widget, a composed Widget containing the two Widgets to be transitioned as well as the transition effect Widget, should take the render output of the first Widget, maybe rasterize it into a pixel graphic/or ensure that it is a Container Widget, so that the background property can be accessed as well as the shape of the background
+    - then it should take this initial shape and color and create a new path below the first Widget, then fade out the first Widget to hide it's content, then modify the path into the shape of the second Widget and then fade in the second Widget
+    - the path update could be done completely manually, calculated in the Widget, without relying on styles and animations, transitions and the Widget could expose some special properties to control the effect
+    - or when animation, transition should be used, on could use a path Widget to provide the intermediary visualization between the two Widgets and make the path segments a style property that is transitionable, animatable automatically
+    - then either could the path segments be specified in multiple Keyframes and the exact shape of the blow up determind by calculations made by the Widget
+    - or there are generic calculations to transition any path into another, using a transition
+- **could this be implemented at a later point?, what preparations have to be made to keep this an option?**
+
+## Should a special merging strategy be defined for certain properties, e.g. transition, animation?
 
 ## How to handle scoping/non-scoping, hiding the internal structure of a Widget/making it stylable only with a special selector syntax, is this even necessary?
 
