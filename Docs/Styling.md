@@ -395,8 +395,20 @@ string-key-approach:
   - it should be possible to make a single property reactive and make the ReactiveProperty protocol conform to the StyleValue protocol whenever the value of the proeprty conforms to the StyleValue protocol
   - how to provide the triggers for updating?
   - can probably heavily use result builders to allow throwing in the triggers into each block
-  - **evaluate different levels of reactivity: property, block, ...**
-  
+  - maybe the triggers should be added to the constructor
+  - and should only count for the properties of a style -> only the properties of a style are reevaluated when one trigger is triggered
+  - however the way to define a style usually includes a function builder, meaning that the properties of a style and it's sub blocks will be output by the same function
+  - an if statement might conditionally add properties and blocks
+  - maybe, reactive properties and blocks can be separated by the functions of the style builder? so that only properties can be made reactive
+  - on the other hand it could be useful to be able to add blocks on demand/only if a condition is fulfilled
+  - styles are probably added into the Widget tree by just specifying them alongside the Widget instantiations, but most Widgets do not feature reactive children as of now, instead, special Widgets which listen to manully specified triggers can be used to update a tree on an event
+  - so the style instances that are created right in the tree will in most cases not be conditionally output
+  - if reactivity is needed in those, the whole content of the style should be output conditionally, the style is an own reactive system, regardless of whether the root style object is output in a reactive of one-time static context
+  - can reactivity be implemented later?
+    - property reactiveness can be implemented additionally by either providing a flag or triggers during the definition of a property value as a closure/computation, the reactivity handling could then be done inside the property value store
+    - the option to specify triggers for updates would need to be added, which should be an additional change, if triggers are specified, that would mean the style is reactive
+    - if the applied styles of a Widget change, the property value store needs to be rebuilt
+    - these changes should be additional
 
 ## Should styles be able to access their own and parent properties?
 
