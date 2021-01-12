@@ -538,6 +538,18 @@ string-key-approach:
     - if the updating of property values is handled by passing an object to the styles which is retained outside of the styles, this object might be used to restart updates
   - **are the values of transition and animation definitions inherited and overwritten by child definitions, or are child definitions appended to the parents definitions, can this be made configurable on a per property basis, how?**
   - should transition and animation properties be overwritten if they occur multiple times in a block or should they be appended --> maybe define a merge strategy for certain properties?
+    - it could be useful to be able to merge these properties instead of overwriting them, to be able to add a transition reactively, maybe wrap it in an if statement
+    - or maybe merge transitions from different style blocks, a block might get applied after a class has been added to the Widget dynamically, extending the list of transitions
+    - this might lead to transitions for the same property being defined multiple times, in that case, the last transition defined for a specific property key should probably be taken
+    - the merging should probably only happen to the properties that are declared to match the Widget directly, parents properties should not automatically be merged in at all times, since the transitions depend on the properties available on every Widget
+    - but transitions could be pulled in from the parent
+    - but could transitions be overwritten at all? it would be useful to overwrite them, e.g. to change the duration of a certain transition for a specific property key between hover and active pseudo class
+    - this overwriting would be possible when the later transition for a specific key overwrites the former, so the styles for active need to be as specific as the styles for hover and be declared later, then they will overwrite
+    - but can transitions be disabled?, it could be done by allowing to pass in a no-transition value with a property key, maybe the transition value should be a list of enum values (.none(key), .some(key, duration, easing)) or maybe not to be able to provide convenient default values, maybe a struct like Transition(key:) should be used, with some static function like Transition.none(key:) which outputs a no-transition value
+    - what about animations?
+    - animations are resolved on a per property basis --> an animation path is generated, and probably the last animation defining values for a certain property defines that animation path
+    - so overwriting should behave just like it does for transitions
+    - if a value is overwritten, it will probably trigger a replay of the animation/all animations defined would probably restart, since it is kind of complex to check which animation path really changed and which didn't
   - **how are such changing values inherited? --> e.g. color transition on a parent, how is the value efficiently passed to the children**
   - could there be other approaches? maybe not two separate timing types but a unified one?
     - everywhere where a property value is accepted, a definition of a timed updating value could be accepted as well, there could be a type such as UpdatingPropertyValue which can output a value based on some timestamp
