@@ -495,6 +495,47 @@ string-key-approach:
     - and since the easing and calculation is all handled by the style system, these things can be removed from the RenderValue, simplifying it, it only needs to access the current property value on every frame and also know when the value won't change anymore to stop requesting a new value at some point to improve the performance of the application
     - there might be default strategies to calculate intermediate values for the standard types such as double and Color
     - other strategies might be added to the property definitions on a per property basis or on a per property value basis, maybe every StyleValue should have a default function to calculate intermediate values, if the style value conforms to TransitionableStyleValue or something, which would also signal to the property that it is transitionable by default, but the property may overwrite the default behavior and be defined as non transitionable, or with a custom intermediate calculation function
+  - animations:
+    - an animation would be used where precise control over the value at a point in time (relative to the duration of the animation) is needed
+    - and if multiple values need to be changed together
+    - like in css, the value at certain points in time might be controlled by providing concrete values on specific key frames (maybed keyed by percentage value of time passed), and the intermediate value calculation function of each property would be used to connect the key frames
+    - a dedicated structure is necessary to define animations
+    - it might be called Keyframes
+    - a Keyframe struct may in turn accept the same property: value definitions as a pure style block, but it also has a timing property
+    - there can be multiple keyframes with the same timing in an animation, the properties will then be merged in the order the Keyframes are added
+    - the Keyframes object should then be passed as a property value to a property called animations, an optional easing, a duration, a delay and a repetition are specified as well
+    - maybe there should be a whole Animation struct containing the keyframes and the just mentioned properties
+    - multiple animations can be passed to the animations property
+    - how are the animations executed?
+    - the start time of an animation should probably be the time of merging the property into the resolved styles or the first read access or something like that/maybe the first access in the render function or any first access after the merging
+    - the style property value storage should probably go through all animations, and find out which properties are being animated, and separate out one internal animation definition for each animated property, collecting the values at different points in time and all other relevant properties for an animation
+    - if a value is changed through multiple animations, the last animation defining that value should be the animation taken for that value
+    - maybe the property values for the keyframes should be limited to non-reactive properties, to avoid even more complex resolution of properties, at the start
+    - this function can however be added in a non-breaking way for the user, only some things in the backend need to be adjusted, the property storage which would go through the animations property to generate the per property animation definition should already have access to the whole context and also to all other properties, because the resolving of properties is probably done before the animation property is evaluated
+    - so actually it should be possible to provide computed keyframe values with a context
+    - should the property values also be made reactive?
+    - there could be very fun interactions between transition and animation if this would be possible
+    - each single property animation definition would need to update itself if any of the property values extracted from the keyframes changes
+    - when the animation is running, the current output value could abruptly change, or the previous animation path can be merged with the new animation path by the transition definition (so the merging of the two animation paths would happen over the duration time specified for the transition)
+    - that way it could be possible to even merge two animation paths with different durations and different key frames times
+    - so the keyframes could be made reactive as well
+    - a key frames definition could receive a context as well and based on this compute the keyframes
+    - every animation definition used in the animation property probably has one keyframes definition, but it might even be possible to pass in multiple and merge them all together
+    - the keyframes definition would have to be resolved after all properties when the individual property animation paths are to be determined
+    - if a reactive keyframes definition is updated, a new animation path would have to be determind for the properties which contain values from that keyframes definition
+    - so this can get kind of complex, probably limit keyframes to non-reactive conrete values
+    - can the keyframes definition be reused? 
+      - by simply storing the instance (it should be a struct) somewhere manually, this should be possible
+    - the animation definition might then also be exposed to be used in the Widget's render function to generate render values
+    - however there may as well be a simpler output for the render function which only defines that the property's value is changing, when it starts changing and when it stops changing in order to perform more efficient rendering updates
+    - if a transition would be running at the same time as an animation, the animation should probably overwrite transition values, since it is more function heavy
+    - if an animation would start after a transition has ended, this should simply work, the transition first transitions to the fixed value given for the property key and then the animation takes over with it's keyframes values
+    - when a transition and an animation are present and the animation has a delay at the start, the timing information output to the render function needs to unify both of these timed update definitions -> find the real start and end points by looking at both
+  - **should a single path be calculated for each property over time out of the transition and animation properties, which could then as well be exposed to the render function?**
+  - **can animations and transitions be started manually?**
+  - **are the values of transition and animation definitions inherited and overwritten by child definitions, or are child definitions appended to the parents definitions, can this be made configurable on a per property basis, how?**
+  - **how are such changing values inherited? --> e.g. color transition on a parent, how is the value efficiently passed to the children**
+  - **could there be other approaches? maybe not two separate timing types but a unified one?**
 - **how could larger effects (big parts moving, fading, expanding, transitioning into one another etc.) be realized?**
 
 ## How to handle scoping/non-scoping, hiding the internal structure of a Widget/making it stylable only with a special selector syntax, is this even necessary?
