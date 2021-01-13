@@ -723,11 +723,48 @@ string-key-approach:
 
 ## Handling media queries (are they even needed?)
 
-## Handling layout relevant properties like margin, flex-grow etc.
-
 ## Theming and updating styles when theme variables change (during runtime)
 
 ## Handling styles that change the size and layout of Widgets
+- especially the style properties which originate from layout Widgets have an influence on the size and position of Widgets
+- when these style properties change, e.g. because a class is changed and other styles match a Widget, a relayout or maybe more needs to happen
+- look at the Flex layout Widget:
+  - there might be a property flex-direction on the Flex Widget itself which can change the box config, layout and size of the Flex Widget and it's children
+  - there might be a property cross-alignment on a child Widget, which can change the position (start, middle, end) and size (stretch) of the child Widget
+  - so these properties need to be listened to and the correct lifecycle triggers emitted
+  - for the Flex layout Widget:
+    - this can probably be done if there are variables for the relevant flex properties on the Widget which might get a default value
+    - and the values for these properties are also extracted from the resolved styles, a handler is attached to the event that is triggered when the resolved style properties change and overwrite the values of the class variables
+    - the property values should conform to equatable, the class variables can the test for a change in the didSet handler and if the values did change, trigger a corresponding update, lifecycle function based on which property changed
+    - for the children in the Flex layout, the update has to be done in the Flex Widget as well, since the layouting and everything is done by the Flex Widget
+    - the box config of the children should stay unaffected
+    - for the cross-alignment property, a relayout of the parent is necessary
+    - an internal representation, one per child Widget should contain the relevant flex properties, define a default and overwrite them with values from the resolved style properties + add a change handler to the style properties
+    - and then check in the didSet handler whether the value has actually changed and trigger the correct functions on the Flex layout parent
+    -  the parent instance may be directly passed to these managing objects
+- so this is something to be handled by every Widget itself, probably
+- since the styles should by default change the appearance of a Widget, the default could be to invoke a rerendering of the Widget
+- since the evaluation of life cycle hooks happens on a per tick basis, the default invcation of a rerendering should not interfere with calling any lifecycle method that needs to be executed earlier and will itself trigger a rerender, such as relayout
+- there might be changes of the style which don't affect anything, like removing a class which caused some property values and adding a class which leads to the addition of the same exact property values
+- for efficiency reasons it might be useful to force a compare function on StyleValue on an instance basis, to avoid having to use Self in the protocol
+- the compare function should take any other StyleValue and check for equality, most values will first try to cast the StyleValue to their own specific type and then perform an equality check
+- the compare function could then be used to compare the previous resolved style properties with the new ones and trigger a rerender only if something actually changed
+- however it has to be taken into account that if a transition or animation is running and previously it wasn't, the rerender has to be done even if the starting value in the resolved property values dictionary equals the previous value, and also the other way around, since the presence of an animation can influence the way the render objects are defined
+- maybe the correct life cycle hook to be triggered can be included in the property definitions, since it might be the case that some layout relevant property changes, but the layout and size does not actually changed, in such a case a rerender is unnecessary and the default rerender call would be inefficient
+- having the call in the definitions is useful to avoid that for every Widget, every property needs to manually be tied to some lifecycle call by using handlers and if statements, this can cause lots of bugs because a property could easily be forgotten
+- an enum value defining the lifecycle call to be made could be added to the property definitions
+- it may be optional to allow disabling the default lifecycle invocation logic and letting the Widget author handle it manually
+- should multiple different lifecycle invocations be allowed per property?
+  - probably not, and if this should be the case, this is probably better handled manually
+  - it is also a small thing to change, should it become necessary
+- what about the global defintions, should they define a lifecycle call as well?
+- there are properties such as foreground, which are candidates for a rerender of the Widgets on which this property changed
+- not all Widgets might make active use of these properties though, because they may be passed down to children but not affect the parent directly
+- if new global properties are added by a user, these properties cannot have any affect on the core Widgets, since those were not designed to use these properties
+- but it might be possible to define these properties on them, because they are passed down to their children which may be affected by them
+- a solution might be to define a lifecycle call on global properties as well, but to only use it when the Widget receiving the properties has defined that it actively uses a global property, a new variable might be added to Widget which defines the keys of the globally defined properties that are actively used by the Widget
+- then how can the lifecycle calls of the global properties be overwritten or disabled and handled manually?
+- just don't specify the key of the property in the variable indicating the automatic lifecycle management
 
 <br>
 
