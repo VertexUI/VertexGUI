@@ -721,7 +721,19 @@ string-key-approach:
     - the algorithm to apply the styles would need to be updated to check whether a selector selects a Widget and then check whether the selector selects a pseudo element inside that Widget, or just let the select match logic check on a Widget and it's pseudo elements from the start and only return true if the pseudo element matches as well, the applying process of the styles (maybe inside the Widget itself) could then handle the distribution of pseudo element properties to the property holders for the pseudo elements
     - so probably mostly additive changes would need to be done on the style distribution logic
 
-## Handling media queries (are they even needed?)
+## Media queries
+- media queries should probably be added to the Style selector without providing a string parsing syntax in the code
+- because this would make the non-swift language checked parts quite long sometimes
+- what do media queries do?
+- change styles based on properties of them medium being used
+- there might be more useful queries, like testing for a property on the parent, or a parent size or something like that
+- actually these things could be realized with a context passed into a style, some reactivity triggers and some if statements
+- so it's questionable whether such a feature would be very useful in code
+- it's more useful when writing text styles, since there is no parent to access
+- a special syntax for declaring conditional styles might be needed for textual styles
+- after parsing this would probably resolve to some conditionals using the context and reactivity
+- should a media query feature be needed in code as well, can it be added later?
+- yes, it would probably be non breaking for most of the code not using it, in the backend of resolving the styles it should mainly resolve to some additional checks whether the query is fulfilled before testing the selector
 
 ## Theming and updating styles when theme variables change (during runtime)
 
