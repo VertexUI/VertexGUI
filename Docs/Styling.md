@@ -585,6 +585,60 @@ string-key-approach:
 ## Should a special merging strategy be defined for certain properties, e.g. transition, animation?
 
 ## How to handle scoping/non-scoping, hiding the internal structure of a Widget/making it stylable only with a special selector syntax, is this even necessary?
+- scoping might be useful to prevent styles from accidentally changing something inside a composed Widget which is not intended
+- for example, the a style might be applied to a class based on it's selector, this class may conincidentally be used in a composed Widget as well, that Widget may even come from a Widget library, so an application of that style to the Widget would be an unforseen sideeffect and it will not immediately be clear to the user which style is causing it
+- so it might be useful to hide Widgets in a subtree under some specific syntax, if the sub structure is to be styled
+- this might apply to all composed Widgets
+- the styles that are defined inside the composed Widget should only be able to style the Widgets that are instantiated within that composed Widget and not any children of those
+  - are there exceptions to this rule? is there a situation where the sub structure should not be hidden?
+    - yes, for example a simple structural Widget which is used to instantiate some Widgets to display some data or something, but the styling should happen where the Widget is used
+  - any exception could probably be implemented by setting a flag on the Widget
+- how could this be realized?
+- somehow a distinction needs to be made between the Widgets that are visible to the composing Widget and those which are hidden
+- maybe it could be done if Widgets were instantiated right away, and the sub Widget's instantiation would be delayed
+- another way would be to either define a sub class of Widget, which indicates that this is a scoped container, or set a flag on a Widget instance to indicate that it is a scope container
+- an identifier for the scope should also be given, the id of the Widget could be used, or a special identifier for the scope could be implemented
+- when going through the tree to apply the styles, the last Widget which was a scoping container could be tracked, the styles would then immediately be appended an information about which scope they came from, whenever a style is to be checked to be applied to a Widget, it must then be checked that the Widget is in the same scope the style came from, if fetching styles and application happen in the same loop, it should be checked whether the current scope is different from the scope of the style checked for application and if yes, take that style out of the array of possible styles for application
+- the root node of any scoped tree should still be stylable, only the children should not be accessible with normal selector syntax
+- actually children that are instatiated in a composed Widget and are passed to a scoped child should probably be stylable from the scope of the composed Widget and not the scoped Widget that in the end contains it
+- so maybe the instantiation and tracking approach is necessary
+  - during the build function of each Widget, the instantiated Widgets might be checked, and the scope they came from recorded -> set scope information on this Widget
+  - this should be possible without the children of these Widgets interfering, because when the parent builds, only the direct children are instantiated, children of the children are only instantiated when their own build function is called
+  - currently most Widgets which take a child as an argument, will store the build function for that child and not instantiate it right away
+  - this should probably change in order to be able to assign the correct scope to these children (which is the scope which defined these children and not the direct parent)
+  - it would also not be a problem, since the build function is usually only used once during the initial build
+  - but there might be Widgets where the build function is called again and at a later point in time
+  - for example a Build Widget which rebuilds it's child with the help of a builder function after a property has changed
+  - would it be enough to assign the containing scope of the Build Widget to these Widgets?
+  - the question is: does the build function always come from the scope which contains the Build Widget?
+    - the function might not be defined in that scope always
+    - but from the definition of the Widget tree it will be obvious that every child the build function creates should belong to the scope that contains the Build Widget
+  - actually the Build Widget should probably not be a scoping container, so there would not be a problem here
+  - then what about for example a List Widget
+    - a List Widget receives the data items it should display and a build function to build the child for a specific data item
+    - but the direct children of the List can be build right away in the constructor
+    - on the other hand, if the List has the ability to dynamically update it's children when the data property changes, the build function might be invoked at a later point in time
+    - but the List Widget should probably not define a scope by itself, because it is only a functional Widget
+    - so anyway the new children will get the scope assigned which the List Widget is in
+    - but assume that the List Widget does something more than just instantiate the children and defines it own scope to hide some extra Widget it instantiates from the scope using it
+    - then the List Widget can still simply apply the scope containing the List Widget to the newly instantiated children, because it will be clear, that the children originate from the containing scope
+  - or is it so?
+  - what if there is a composed Widget which contains a Widget defining a new scope which takes a child and the child also defines a new scope and takes a child?
+    - will the last child correctly be assigned the scope of the composed Widget?
+    - the first scoping Widget will be instantiated within the build function of the composed Widget, so itself will be scoped to the composed Widget, and the child passed in will also be, since it is instantiated right away
+    - the other children which the first scoped Widget may define will be instantiated later and be scoped to the scoped Widget
+    - the second scoped Widget is the child of the first and is already instantiated with the first one and will by that get the scope of the composed Widget, as well as it's child which is instantiated right away as well
+    - so in this case the last child would receive the correct scope
+    - what if the second scoped Widget would rebuild the child (it saved the build function)?
+      - since the second scoped Widget is scoped to the composed Widget, it will assign this scope to the newly build child (if it is implemented correctly)
+  - maybe it would be possible to let the Widget builders
+- so the scope information should be handled by the Widget tree/Widget tree building logic, because this is where the belonging to a certain scope can be determind, and not by the style application logic, when the later runs, the scope information should already be fully available
+- what syntax could be used to style scoped Widgets with a style defined in a different scope?
+  - **continue here**
+- again: how to enable scoping on a Widget?
+  - probably simply set a flag on the Widget --> widget.scoped
+  - to identify the scope, use the Widgets id
+- **can this be implemented later?**
 
 ## Handling pseudo-elements
 - pseudo elements would be used for visual output that is not directly describes as a Widget by itself but instead generated by a Widget as a part of it's appearance, e.g. the scrollbars in a scroll view are not separate Widgets (probably) and therefore cannot be selected and styled with normal type, class, etc. selector syntax
