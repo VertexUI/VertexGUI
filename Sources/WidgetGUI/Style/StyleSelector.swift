@@ -1,4 +1,4 @@
-public struct StyleSelector: Equatable, ExpressibleByStringLiteral {
+public struct StyleSelector: Equatable, Sequence, ExpressibleByStringLiteral {
   public var source: String?
   public var parts: [StyleSelectorPart]
 
@@ -21,6 +21,18 @@ public struct StyleSelector: Equatable, ExpressibleByStringLiteral {
       return first.extendsParent
     } 
     return false
+  }
+
+  public func makeIterator() -> Array<StyleSelectorPart>.Iterator {
+    parts.makeIterator()
+  }
+
+  public var partCount: Int {
+    parts.count
+  }
+
+  public subscript(part index: Int) -> StyleSelectorPart {
+    parts[index]
   }
 
   public static func == (lhs: Self, rhs: Self) -> Bool {
