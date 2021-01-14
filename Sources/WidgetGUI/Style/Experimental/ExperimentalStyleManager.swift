@@ -82,6 +82,106 @@ extension Experimental {
                 - reduce the importance thing to: closer matches win, else closer defined to widget wins
                 this should probably be the result of how the styles are processed
       */
+
+      // read and match the styles of everything down to initialWidget without applying
+      var initialParents = [initialWidget]
+      while let parent = initialParents.last!.parent as? Widget {
+        initialParents.append(parent)
+      }
+      initialParents.reverse()
+
+      var availableStyles = [Experimental.Style]()
+      var partialMatches = [PartialMatch]()
+
+      for (index, parent) in initialParents.enumerated() {
+        var availableStylesForParent = availableStyles
+
+        for style in parent.experimentalProvidedStyles {
+          if style.selector.extendsParent {
+            availableStylesForParent.append(style)
+          } else {
+            availableStyles.append(style)
+            availableStylesForParent.append(style)
+          }
+        }
+
+        let (newPartialMatches, fullMatchesForParent) = continueMatching(
+          previousPartialMatches: partialMatches,
+          availableStyles: availableStylesForParent,
+          widget: parent)
+
+        let newAvailableStylesForChildren: [Experimental.Style]
+        if index < initialParents.count - 1 {
+          newAvailableStylesForChildren = applyStyles(fullMatchesForParent, to: parent, dryRun: true)
+        } else {
+          newAvailableStylesForChildren = applyStyles(fullMatchesForParent, to: parent, dryRun: false)
+        }
+
+        partialMatches.append(contentsOf: newPartialMatches)
+        // TODO: this might not work as expected, since the freed sub styles might need
+        // to be added right behind their parent to ensure correct overwriting
+        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        availableStyles.append(contentsOf: newAvailableStylesForChildren)
+      }
+
+      // apply what can be applied to the initial widget
+
+      var queue = [QueueEntry]()
+    }
+
+    private func continueMatching(previousPartialMatches: [PartialMatch], availableStyles: [Experimental.Style], widget: Widget) -> (partialMatches: [PartialMatch], fullMatches: [Experimental.Style]) {
+      var partialMatches = [PartialMatch]()
+      var fullMatches = [Experimental.Style]()
+
+      for previousPartialMatch in previousPartialMatches {
+        let selectorPartToCheck = previousPartialMatch.style.selector[part: previousPartialMatch.matchIndex + 1]
+
+        if selectorPartToCheck.selects(widget) {
+          if previousPartialMatch.style.selector.partCount - 1 > previousPartialMatch.matchIndex + 1 {
+            partialMatches.append(previousPartialMatch.incremented())
+          } else {
+            fullMatches.append(previousPartialMatch.style)
+          }
+        } else {
+          // TODO: when direct parent > child syntax is there
+          // (meaning no unknown number of Widgets inbetween)
+          // then need to check whether the part is of this kind
+          // and if yes remove the whole partial match
+          partialMatches.append(previousPartialMatch)
+        }
+      }
+
+      return (partialMatches: partialMatches, fullMatches: fullMatches)
+    }
+
+    /**
+    - Parameter dryRun: Don't set any styles on the widget,
+    Use to get the returned value without modifying the widget.
+    - Returns: The sub styles of the applied styles.
+    */
+    private func applyStyles(_ styles: [Experimental.Style], to widget: Widget, dryRun: Bool = false) -> [Experimental.Style] {
+      var freedStyles = [Experimental.Style]()
+
+      for style in styles {
+
+      }
+
+      return freedStyles
+    }
+
+    private struct QueueEntry {
+      let iterator: Widget.ChildIterator
+      let availableStyles: [Experimental.Style]
+      let partialMatches: [PartialMatch]
+    }
+
+    private struct PartialMatch {
+      let style: Experimental.Style
+      let matchIndex: Int
+
+      func incremented() -> PartialMatch {
+        PartialMatch(style: style, matchIndex: matchIndex + 1)
+      }
     }
   }
 }
