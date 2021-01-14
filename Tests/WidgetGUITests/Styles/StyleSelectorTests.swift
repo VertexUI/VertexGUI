@@ -2,7 +2,7 @@ import XCTest
 @testable import WidgetGUI
 
 class StyleSelectorTests: XCTestCase {
-  func testStyleSelectorPartParsing() {
+  func testPartParsing() {
     var part: StyleSelectorPart = ".class1"
     XCTAssertFalse(part.extendsParent)
     XCTAssertNil(part.typeName)
@@ -74,13 +74,13 @@ class StyleSelectorTests: XCTestCase {
     XCTAssertEqual(part.pseudoClasses, [])
   }
 
-  func testStyleSelectorParsing() {
-    let selector: StyleSelector = ".class1 &.class2 Type1.class3:pseudoClass1"
-    let parts: [StyleSelectorPart] = [".class1", "&.class2", "Type1.class3:pseudoClass1"]
+  func testParsing() {
+    let selector: StyleSelector = "&.class1 .class2 Type1.class3:pseudoClass1"
+    let parts: [StyleSelectorPart] = ["&.class1", ".class2", "Type1.class3:pseudoClass1"]
     XCTAssertEqual(selector.parts, parts)
   }
 
-  func testStyleSelectorComparison() {
+  func testComparison() {
     let selector1: StyleSelector = "&.class-1:pseudoClass-1"
     let selector2: StyleSelector = "&.class-1:pseudoClass-1"
     XCTAssertEqual(selector1, selector2)
@@ -101,7 +101,7 @@ class StyleSelectorTests: XCTestCase {
     XCTAssertEqual(selector6, selector7)
 
     let selector8: StyleSelector = "&Type1.class-1:pseudoClass-1 &:pseudoClass-2 &"
-    XCTAssertNotEqual(selector7, selector8)
+    XCTAssertEqual(selector7, selector8)
 
     let selector9: StyleSelector = ""
     let selector10: StyleSelector = ""
@@ -140,9 +140,19 @@ class StyleSelectorTests: XCTestCase {
     XCTAssertNotEqual(selector25, selector26)
   }
 
+  func testSimplification() {
+    let selector1 = StyleSelector("&.class-1 &.class-2:pseudo-class-1 .class-1 &")
+    let selector2 = StyleSelector("&.class-1.class-2:pseudo-class-1 .class-1")
+    let selector3 = StyleSelector(["&.class-1.class-2:pseudo-class-1", ".class-1"])
+
+    XCTAssertEqual(selector1, selector2)
+    XCTAssertEqual(selector1, selector3)
+  }
+
   static var allTests = [
-    ("testStyleSelectorPartParsing", testStyleSelectorPartParsing),
-    ("testStyleSelectorParsing", testStyleSelectorParsing),
-    ("testStyleSelectorComparison", testStyleSelectorComparison)
+    ("testPartParsing", testPartParsing),
+    ("testParsing", testParsing),
+    ("testComparison", testComparison),
+    ("testSimplification", testSimplification)
   ]
 }
