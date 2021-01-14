@@ -1,12 +1,15 @@
 public struct StyleSelector: Equatable, ExpressibleByStringLiteral {
+  public var source: String?
   public var parts: [StyleSelectorPart]
 
   public init(_ parts: [StyleSelectorPart]) {
-    self.parts = parts
+    // TODO: maybe this should be a throwing function?
+    self.parts = try! StyleSelector.simplify(parts: parts)
   }
 
   public init(parse literal: String) throws {
     self.init(try literal.split(separator: " ").map { try StyleSelectorPart(parse:String($0)) })
+    self.source = literal
   }
 
   public init(stringLiteral: String) {
@@ -18,6 +21,10 @@ public struct StyleSelector: Equatable, ExpressibleByStringLiteral {
       return first.extendsParent
     } 
     return false
+  }
+
+  public static func == (lhs: Self, rhs: Self) -> Bool {
+    lhs.parts == rhs.parts
   }
 
   /**
@@ -52,5 +59,40 @@ public struct StyleSelector: Equatable, ExpressibleByStringLiteral {
       }
     }
     return true
+  }
+
+  /** 
+  Merges parts referencing their parent with their parent.
+  */
+  private static func simplify(parts: [StyleSelectorPart]) throws -> [StyleSelectorPart] {
+    var merged = [StyleSelectorPart]()
+
+    for part in parts {
+      if part.extendsParent && merged.count > 0 {
+        var previous = merged[merged.count - 1]
+        previous.classes.append(contentsOf: part.classes)
+
+        previous.pseudoClasses.append(contentsOf: part.pseudoClasses)
+
+        if (previous.type != nil || previous.typeName != nil) &&
+          (part.type != nil || part.typeName != nil) {
+            throw PartMergingError.typeOverwrite(previous, part)
+        } else if part.type != nil {
+          previous.type = part.type
+        } else if part.typeName != nil {
+          previous.typeName = part.typeName
+        }
+
+        merged[merged.count - 1] = previous
+      } else {
+        merged.append(part)
+      }
+    }
+
+    return merged
+  }
+
+  public enum PartMergingError: Error {
+    case typeOverwrite(StyleSelectorPart, StyleSelectorPart)
   }
 }
