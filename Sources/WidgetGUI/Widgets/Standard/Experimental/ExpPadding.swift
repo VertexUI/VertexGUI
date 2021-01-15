@@ -2,38 +2,41 @@ import GfxMath
 
 extension Experimental {
   public class Padding: ComposedWidget, ExperimentalStylableWidget {
-    private let childBuilder: () -> ChildBuilder.Result
+    private let childBuilder: () -> Widget
 
     private var insets: Insets {
       stylePropertyValue(StyleKeys.insets, as: Insets.self) ?? Insets(all: 0)
     }
 
-    public init(
+    private init(contentBuilder: () -> ChildBuilder.Result) {
+        let content = contentBuilder()
+        self.childBuilder = content.child
+        super.init()
+        self.experimentalProvidedStyles.append(contentsOf: content.experimentalStyles)
+    }
+
+    public convenience init(
       classes: [String]? = nil,
       @Experimental.StylePropertiesBuilder styleProperties stylePropertiesBuilder: (StyleKeys.Type) -> [Experimental.StyleProperty] = { _ in [] },
-      @ChildBuilder child childBuilder: @escaping () -> ChildBuilder.Result) {
-        self.childBuilder = childBuilder
-        super.init()
+      @ChildBuilder content contentBuilder: @escaping () -> ChildBuilder.Result) {
+        self.init(contentBuilder: contentBuilder)
         if let classes = classes {
           self.classes = classes
         }
         self.experimentalDirectStyleProperties.append(contentsOf: stylePropertiesBuilder(StyleKeys.self))
     }
 
-    public init(
+    public convenience init(
       configure: ((Experimental.Padding) -> ())? = nil,
-      @ChildBuilder child childBuilder: @escaping () -> ChildBuilder.Result) {
-        self.childBuilder = childBuilder
-        super.init()
+      @ChildBuilder content contentBuilder: @escaping () -> ChildBuilder.Result) {
+        self.init(contentBuilder: contentBuilder)
         if let configure = configure {
           configure(self)
         }
     }
 
     override public func performBuild() {
-      let result = childBuilder()
-      rootChild = result.child
-      experimentalProvidedStyles.append(contentsOf: result.experimentalStyles)
+      rootChild = childBuilder()
     }
 
     override public func getBoxConfig() -> BoxConfig {

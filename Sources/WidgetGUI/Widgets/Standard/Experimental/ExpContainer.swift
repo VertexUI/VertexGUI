@@ -2,46 +2,39 @@ import GfxMath
 
 extension Experimental {
   public class Container: ComposedWidget, ExperimentalStylableWidget {
-    private let childBuilder: () -> ChildBuilder.Result
+    private let childBuilder: () -> Widget
 
     private var padding: Insets {
       stylePropertyValue(StyleKeys.padding, as: Insets.self) ?? Insets(all: 0)
     }
 
-    public init(
-      classes: [String]? = nil,
-      @Experimental.StylePropertiesBuilder styleProperties stylePropertiesBuilder: (StyleKeys.Type) -> [Experimental.StyleProperty],
-      @ChildBuilder child childBuilder: @escaping () -> ChildBuilder.Result) {
-        self.childBuilder = childBuilder
+    private init(contentBuilder: () -> ChildBuilder.Result) {
+        let content = contentBuilder()
+        self.childBuilder = content.child
         super.init()
+        self.experimentalProvidedStyles.append(contentsOf: content.experimentalStyles)
+    }
+
+    public convenience init(
+      classes: [String]? = nil,
+      @Experimental.StylePropertiesBuilder styleProperties stylePropertiesBuilder: (StyleKeys.Type) -> [Experimental.StyleProperty] = { _ in [] },
+      @ChildBuilder content contentBuilder: @escaping () -> ChildBuilder.Result) {
+        self.init(contentBuilder: contentBuilder)
         if let classes = classes {
           self.classes = classes
         }
         self.experimentalDirectStyleProperties.append(contentsOf: stylePropertiesBuilder(StyleKeys.self))
     }
 
-    public init(
-      classes: [String]? = nil,
-      @ChildBuilder child childBuilder: @escaping () -> ChildBuilder.Result) {
-        self.childBuilder = childBuilder
-        super.init()
-        if let classes = classes {
-          self.classes = classes
-        }
-    }
- 
-    public init(
-      configure: ((Experimental.Container) -> ())? = nil,
-      @ChildBuilder child childBuilder: @escaping () -> ChildBuilder.Result) {
-        self.childBuilder = childBuilder
-        super.init()
-        if let configure = configure {
-          configure(self)
-        }
+    public convenience init(
+      configure: (Experimental.Container) -> (),
+      @ChildBuilder content contentBuilder: @escaping () -> ChildBuilder.Result) {
+        self.init(contentBuilder: contentBuilder)
+        configure(self)
     }
 
     override public func performBuild() {
-      let result = childBuilder()
+      let builtChild = childBuilder()
       rootChild = Background() { [unowned self] in
         Experimental.Background(configure: {
           $0.with(styleProperties: {
@@ -53,11 +46,10 @@ extension Experimental {
               ($0.insets, self.padding)
             })
           }) {
-            result.child
+            builtChild
           }
         }
       }
-      experimentalProvidedStyles.append(contentsOf: result.experimentalStyles)
     }
 
     public enum StyleKeys: String, StyleKey, ExperimentalDefaultStyleKeys {

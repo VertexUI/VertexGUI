@@ -2,9 +2,9 @@ import ExperimentalReactiveProperties
 
 extension Experimental {
   public class Build: ComposedWidget {
-    private let childBuilder: () -> ChildBuilder.Result
+    private let childBuilder: () -> Widget
 
-    public init<P1: ReactiveProperty>(_ property: P1, @ChildBuilder child childBuilder: @escaping () -> ChildBuilder.Result) {
+    public init<P1: ReactiveProperty>(_ property: P1, @BuildChildBuilder child childBuilder: @escaping () -> Widget) {
       self.childBuilder = childBuilder
       super.init()
       _ = property.onHasValueChanged {
@@ -16,9 +16,26 @@ extension Experimental {
     }
 
     override public func performBuild() {
-      let result = childBuilder()
-      providedStyles.append(contentsOf: result.styles)
-      rootChild = result.child
+      rootChild = childBuilder() 
+    }
+
+    @_functionBuilder
+    public struct BuildChildBuilder {
+      public static func buildExpression(_ widget: Widget) -> Widget {
+        widget
+      }
+
+      public static func buildEither(first widget: Widget) -> Widget {
+        widget
+      }
+
+      public static func buildEither(second widget: Widget) -> Widget {
+        widget
+      }
+
+      public static func buildBlock(_ widget: Widget) -> Widget {
+        widget
+      }
     }
   }
 }

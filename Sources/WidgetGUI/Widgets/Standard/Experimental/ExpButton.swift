@@ -1,16 +1,23 @@
 extension Experimental {
   public class Button: ComposedWidget, ExperimentalStylableWidget, GUIMouseEventConsumer {
-    private let childBuilder: () -> ChildBuilder.Result
+    private let childBuilder: () -> Widget
 
     public let onClick = WidgetEventHandlerManager<Void>()
+
+    private var hovered: Bool = false
+    override public var pseudoClasses: [String] {
+      hovered ? ["hover"] : []
+    }
 
     public init(
       classes: [String]? = nil,
       @Experimental.StylePropertiesBuilder styleProperties stylePropertiesBuilder: (StyleKeys.Type) -> [Experimental.StyleProperty] = { _ in [] },
-      @ChildBuilder child childBuilder: @escaping () -> ChildBuilder.Result,
+      @ChildBuilder content contentBuilder: @escaping () -> ChildBuilder.Result,
       onClick onClickHandler: (() -> ())? = nil) {
-        self.childBuilder = childBuilder
+        let result = contentBuilder()
+        self.childBuilder = result.child
         super.init()
+        self.experimentalProvidedStyles.append(contentsOf: result.experimentalStyles)
         if let handler = onClickHandler {
           self.onClick.addHandler(handler)
         }
@@ -21,15 +28,13 @@ extension Experimental {
     }
 
     override public func performBuild() {
-      let result = childBuilder()
-      providedStyles.append(contentsOf: result.styles)
       rootChild = Experimental.Container(configure: { [unowned self] in
         $0.with(styleProperties: {
           ($0.padding, stylePropertyValue(StyleKeys.padding) ?? Insets(all: 16))
           ($0.backgroundFill, stylePropertyValue(StyleKeys.backgroundFill) ?? Insets(all: 16))
         })
-      }) {
-        result.child
+      }) { [unowned self] in
+        childBuilder()
       }
     }
 
@@ -40,6 +45,10 @@ extension Experimental {
     public func consume(_ event: GUIMouseEvent) {
       if let _ = event as? GUIMouseButtonClickEvent {
         onClick.invokeHandlers()
+      } else if let _ = event as? GUIMouseEnterEvent {
+        hovered = true
+      } else if let _ = event as? GUIMouseLeaveEvent {
+        hovered = false
       }
     }
 

@@ -3,7 +3,7 @@ import GfxMath
 
 extension Experimental {
   public class Background: ComposedWidget, ExperimentalStylableWidget {
-    private let childBuilder: () -> ChildBuilder.Result
+    private let childBuilder: () -> Widget
 
     private var fill: Color {
       stylePropertyValue(StyleKeys.fill, as: Color.self) ?? Color.transparent
@@ -11,18 +11,18 @@ extension Experimental {
 
     public init(
       configure: ((Experimental.Background) -> ())? = nil,
-      @ChildBuilder child childBuilder: @escaping () -> ChildBuilder.Result) {
-        self.childBuilder = childBuilder
+      @ChildBuilder content contentBuilder: @escaping () -> ChildBuilder.Result) {
+        let content = contentBuilder()
+        self.childBuilder = content.child
         super.init()
+        self.experimentalProvidedStyles.append(contentsOf: content.experimentalStyles)
         if let configure = configure {
           configure(self)
         }
     }
     
     override public func performBuild() {
-      let result = childBuilder()
-      rootChild = result.child
-      experimentalProvidedStyles.append(contentsOf: result.experimentalStyles)
+      rootChild = childBuilder() 
     }
 
     override public func renderContent() -> RenderObject? {
