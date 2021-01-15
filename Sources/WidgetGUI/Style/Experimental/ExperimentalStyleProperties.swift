@@ -17,5 +17,9 @@ extension Experimental {
     public func makeIterator() -> Array<Experimental.StyleProperty>.Iterator {
       properties.makeIterator()
     }
+
+    public var count: Int {
+      properties.count
+    }
   }
 }

@@ -38,6 +38,7 @@ open class Root: Parent {
   private var mouseMoveEventBurstLimiter = BurstLimiter(minDelay: 0.015)
 
   lazy private var styleManager = StyleManager(rootWidget: rootWidget)
+  lazy private var experimentalStyleManager = Experimental.StyleManager()
 
   public var debugLayout = false {
     didSet {
@@ -68,6 +69,7 @@ open class Root: Parent {
     //rootWidget.focusContext = focusContext
 
     styleManager.setup()
+    experimentalStyleManager.processTree(rootWidget)
   }
   
   open func layout() {

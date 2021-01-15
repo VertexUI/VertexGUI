@@ -232,6 +232,11 @@ open class Widget: Bounded, Parent, Child {
     public var experimentalSupportedGlobalStyleProperties: Experimental.StylePropertySupportDefinitions {
         []
     }
+    /** For which globally defined properties should the lifecycle management of this Widget be done automatically.
+    Example: rerendering if a color property changes. */
+    public var globalPropertyKeysWithAutomaticLifecycleManagement: [StyleKey] {
+        []
+    }
     /** Style property support declared for this Widget instance as the child of it's parent. */
     public var experimentalSupportedParentStyleProperties: Experimental.StylePropertySupportDefinitions = []
     /** Style property support declared by this Widget instance. */
@@ -363,7 +368,7 @@ open class Widget: Bounded, Parent, Child {
     
     private final func undoContextSetup() {
       if contextOnTickHandlerRemover == nil {
-        fatalError("called undoContextSetup when remove handler is nil")
+        print("warn: called undoContextSetup when remove handler is nil")
       }
       if let remove = contextOnTickHandlerRemover {
         remove()

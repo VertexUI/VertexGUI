@@ -57,6 +57,12 @@ public class TodoAppView: SingleChildWidget {
                 ($0.padding, Insets(all: 64))
               })
             }) {
+              Experimental.Style("Button:hover") {
+                Experimental.StyleProperties(Experimental.Button.self) {
+                  ($0.backgroundFill, Color.yellow)
+                }
+              }
+
               Experimental.Button(styleProperties: {
                 ($0.backgroundFill, Color.red)
               }) {

@@ -90,38 +90,17 @@ extension Experimental {
       }
       initialParents.reverse()
 
-      var availableStyles = [Experimental.Style]()
       var partialMatches = [PartialMatch]()
 
       for (index, parent) in initialParents.enumerated() {
-        var availableStylesForParent = availableStyles
+        let (updatedPartialMatches, fullMatches) = continueMatching(previousPartialMatches: partialMatches, widget: parent)
 
-        for style in parent.experimentalProvidedStyles {
-          if style.selector.extendsParent {
-            availableStylesForParent.append(style)
-          } else {
-            availableStyles.append(style)
-            availableStylesForParent.append(style)
-          }
+        // the initialWidget is the first widget to actually receive matched styles
+        if index == initialParents.count - 1 {
+          initialWidget.experimentalMatchedStyles = fullMatches 
         }
 
-        let (newPartialMatches, fullMatchesForParent) = continueMatching(
-          previousPartialMatches: partialMatches,
-          availableStyles: availableStylesForParent,
-          widget: parent)
-
-        let newAvailableStylesForChildren: [Experimental.Style]
-        if index < initialParents.count - 1 {
-          newAvailableStylesForChildren = applyStyles(fullMatchesForParent, to: parent, dryRun: true)
-        } else {
-          newAvailableStylesForChildren = applyStyles(fullMatchesForParent, to: parent, dryRun: false)
-        }
-
-        partialMatches.append(contentsOf: newPartialMatches)
-        // TODO: this might not work as expected, since the freed sub styles might need
-        // to be added right behind their parent to ensure correct overwriting
-        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        availableStyles.append(contentsOf: newAvailableStylesForChildren)
+        partialMatches = updatedPartialMatches
       }
 
       // apply what can be applied to the initial widget
@@ -129,29 +108,58 @@ extension Experimental {
       var queue = [QueueEntry]()
     }
 
-    private func continueMatching(previousPartialMatches: [PartialMatch], availableStyles: [Experimental.Style], widget: Widget) -> (partialMatches: [PartialMatch], fullMatches: [Experimental.Style]) {
-      var partialMatches = [PartialMatch]()
-      var fullMatches = [Experimental.Style]()
+    /**
+    - Returns: a tuple of:
+      - the partial matches that are to be checked on the children of widget
+      - the styles matched on widget
+      - the styles available to the children of widget, containing all styles that were sub styles of styles that got applied to widget
+    */
+    private func continueMatching(previousPartialMatches: [PartialMatch], widget: Widget) -> 
+      (partialMatches: [PartialMatch], fullMatches: [Experimental.Style]) {
+        var partialMatchesToCheck = previousPartialMatches
 
-      for previousPartialMatch in previousPartialMatches {
-        let selectorPartToCheck = previousPartialMatch.style.selector[part: previousPartialMatch.matchIndex + 1]
-
-        if selectorPartToCheck.selects(widget) {
-          if previousPartialMatch.style.selector.partCount - 1 > previousPartialMatch.matchIndex + 1 {
-            partialMatches.append(previousPartialMatch.incremented())
-          } else {
-            fullMatches.append(previousPartialMatch.style)
-          }
-        } else {
-          // TODO: when direct parent > child syntax is there
-          // (meaning no unknown number of Widgets inbetween)
-          // then need to check whether the part is of this kind
-          // and if yes remove the whole partial match
-          partialMatches.append(previousPartialMatch)
+        for style in widget.experimentalProvidedStyles {
+          partialMatchesToCheck.append(PartialMatch(style: style, matchIndex: -1))
         }
-      }
 
-      return (partialMatches: partialMatches, fullMatches: fullMatches)
+        var fullMatches = [Experimental.Style]()
+        var newPartialMatches = [PartialMatch]()
+
+        var partialMatchIndex = 0
+        while partialMatchIndex < partialMatchesToCheck.count {
+          let checkPartialMatch = partialMatchesToCheck[partialMatchIndex]
+
+          if checkPartialMatch.style.selector.partCount == 0 ||
+            checkPartialMatch.style.selector[part: checkPartialMatch.matchIndex + 1].selects(widget) {
+              if checkPartialMatch.style.selector.partCount - 1 > checkPartialMatch.matchIndex + 1 {
+                newPartialMatches.append(checkPartialMatch.incremented())
+              } else {
+                fullMatches.append(checkPartialMatch.style)
+                // the sub styles of the matched style
+                // can can now match the current widget and the children as well
+                partialMatchesToCheck.insert(contentsOf: checkPartialMatch.style.children.map {
+                  PartialMatch(style: $0, matchIndex: -1)
+                }, at: partialMatchIndex + 1)
+              }
+          } else {
+            // TODO: when direct parent > child syntax is there
+            // (meaning no unknown number of Widgets inbetween)
+            // then need to check whether the part is of this kind
+            // and if yes remove the whole partial match
+          }
+
+          partialMatchIndex += 1
+        }
+
+        // styles which extend their parent, can start matching only on their direct parent
+        // if the style is a root style (has no style parent) it can only start matching on the widget it came from
+        // if the style is a sub style which extends it's parent, the first match can only happen after
+        // the parent had a full match
+        let updatedPartialMatches = (partialMatchesToCheck + newPartialMatches).filter {
+          !($0.matchIndex == -1 && $0.style.selector.extendsParent)
+        }
+
+        return (partialMatches: updatedPartialMatches, fullMatches: fullMatches)
     }
 
     /**
@@ -159,15 +167,16 @@ extension Experimental {
     Use to get the returned value without modifying the widget.
     - Returns: The sub styles of the applied styles.
     */
-    private func applyStyles(_ styles: [Experimental.Style], to widget: Widget, dryRun: Bool = false) -> [Experimental.Style] {
+ /*   private func applyStyles(_ styles: [Experimental.Style], to widget: Widget, dryRun: Bool = false) -> [Experimental.Style] {
+      widget.experimentalMatchedStyles = [] 
       var freedStyles = [Experimental.Style]()
 
       for style in styles {
-
+        widget.experimentalMatchedStyles.append(style)
       }
 
       return freedStyles
-    }
+    }*/
 
     private struct QueueEntry {
       let iterator: Widget.ChildIterator

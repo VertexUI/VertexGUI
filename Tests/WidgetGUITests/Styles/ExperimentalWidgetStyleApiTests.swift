@@ -27,15 +27,14 @@ class ExperimentalWidgetStyleApiTests: XCTestCase {
   }
 
   class ComposedOneChildTestWidget: Widget {
-    let childBuilder: () -> ChildBuilder.Result
+    let childBuilder: () -> Widget
 
-    public init(@ChildBuilder child childBuilder: @escaping () -> ChildBuilder.Result) {
-      self.childBuilder = childBuilder
+    public init(@ChildBuilder content contentBuilder: @escaping () -> ChildBuilder.Result) {
+      self.childBuilder = contentBuilder().child
     }
 
     override public func performBuild() {
-      let result = childBuilder()
-      self.children = [result.child]
+      self.children = [childBuilder()]
     }
   }
 
