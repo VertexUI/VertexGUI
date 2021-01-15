@@ -103,9 +103,18 @@ extension Experimental {
         partialMatches = updatedPartialMatches
       }
 
-      // apply what can be applied to the initial widget
-
       var queue = [QueueEntry]()
+      queue.append(QueueEntry(iterator: initialWidget.visitChildren(), partialMatches: partialMatches))
+
+      while queue.count > 0 {
+        var entry = queue.removeFirst()
+
+        while let widget = entry.iterator.next() {
+          let (newPartialMatches, fullMatches) = continueMatching(previousPartialMatches: entry.partialMatches, widget: widget)
+          widget.experimentalMatchedStyles = fullMatches
+          queue.append(QueueEntry(iterator: widget.visitChildren(), partialMatches: newPartialMatches))
+        }
+      }
     }
 
     /**
@@ -119,7 +128,10 @@ extension Experimental {
         var partialMatchesToCheck = previousPartialMatches
 
         for style in widget.experimentalProvidedStyles {
-          partialMatchesToCheck.append(PartialMatch(style: style, matchIndex: -1))
+          // use match index -2 to delay matching of non extending styles
+          // to the children of the current widget
+          partialMatchesToCheck.append(PartialMatch(
+            style: style, matchIndex: style.selector.extendsParent ? -1 : -2))
         }
 
         var fullMatches = [Experimental.Style]()
@@ -128,17 +140,22 @@ extension Experimental {
         var partialMatchIndex = 0
         while partialMatchIndex < partialMatchesToCheck.count {
           let checkPartialMatch = partialMatchesToCheck[partialMatchIndex]
-
-          if checkPartialMatch.style.selector.partCount == 0 ||
+          
+          if checkPartialMatch.matchIndex == -2 {
+            partialMatchesToCheck[partialMatchIndex] = checkPartialMatch.incremented()
+          } else if checkPartialMatch.style.selector.partCount == 0 ||
             checkPartialMatch.style.selector[part: checkPartialMatch.matchIndex + 1].selects(widget) {
               if checkPartialMatch.style.selector.partCount - 1 > checkPartialMatch.matchIndex + 1 {
                 newPartialMatches.append(checkPartialMatch.incremented())
               } else {
                 fullMatches.append(checkPartialMatch.style)
                 // the sub styles of the matched style
-                // can can now match the current widget and the children as well
+                // can can now match the current widget (if they extend their parent)
+                // and the children as well
                 partialMatchesToCheck.insert(contentsOf: checkPartialMatch.style.children.map {
-                  PartialMatch(style: $0, matchIndex: -1)
+                  // use match index -2 to delay matching of non extending styles
+                  // to the children of the current widget
+                  PartialMatch(style: $0, matchIndex: $0.selector.extendsParent ? -1 : -2)
                 }, at: partialMatchIndex + 1)
               }
           } else {
@@ -162,25 +179,8 @@ extension Experimental {
         return (partialMatches: updatedPartialMatches, fullMatches: fullMatches)
     }
 
-    /**
-    - Parameter dryRun: Don't set any styles on the widget,
-    Use to get the returned value without modifying the widget.
-    - Returns: The sub styles of the applied styles.
-    */
- /*   private func applyStyles(_ styles: [Experimental.Style], to widget: Widget, dryRun: Bool = false) -> [Experimental.Style] {
-      widget.experimentalMatchedStyles = [] 
-      var freedStyles = [Experimental.Style]()
-
-      for style in styles {
-        widget.experimentalMatchedStyles.append(style)
-      }
-
-      return freedStyles
-    }*/
-
     private struct QueueEntry {
-      let iterator: Widget.ChildIterator
-      let availableStyles: [Experimental.Style]
+      var iterator: Widget.ChildIterator
       let partialMatches: [PartialMatch]
     }
 

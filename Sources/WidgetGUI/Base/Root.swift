@@ -25,7 +25,7 @@ open class Root: Parent {
       rootWidget.context = widgetContext!
     }
   }
-  private let widgetLifecycleBus = WidgetBus<WidgetLifecycleMessage>()
+  public let widgetLifecycleBus = WidgetBus<WidgetLifecycleMessage>()
   private var widgetLifecycleMessages = WidgetBus<WidgetLifecycleMessage>.MessageBuffer()
   private var rebuildWidgets = WidgetBuffer()
   private var reboxConfigWidgets = WidgetBuffer()
