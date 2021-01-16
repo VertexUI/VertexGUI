@@ -1,10 +1,10 @@
 extension Widget { 
   /**
-  TODO: might rename to something like ContentBuilder / SingleChildContentBuilder ...
+  TODO: might rename to something like SingleChildContentBuilder / SingleChildContentBuilder ...
   because it can build styles as well
   */
   @_functionBuilder
-  public struct ChildBuilder {
+  public struct SingleChildContentBuilder {
     private static func mergeIntermediates(_ intermediates: [IntermediateResult]) -> IntermediateResult {
       var resultChild: (() -> Widget)?
       var resultStyles: [AnyStyle] = []
@@ -46,11 +46,14 @@ extension Widget {
     }
 
     public static func buildFinalResult(_ intermediate: IntermediateResult) -> Result {
-      guard let unwrappedChild = intermediate.child else {
+      guard let unwrappedChildBuildFunction = intermediate.child else {
         fatalError("did not provide a child for a parent which expects exactly one child")
       }
 
-      return Result(child: unwrappedChild, styles: intermediate.styles, experimentalStyles: intermediate.experimentalStyles)
+      let childBuilder = ChildBuilder(associatedStyleScope: Widget.activeStyleScope,
+        build: unwrappedChildBuildFunction)
+
+      return Result(child: childBuilder, styles: intermediate.styles, experimentalStyles: intermediate.experimentalStyles)
     }
 
     public struct IntermediateResult {
@@ -66,9 +69,23 @@ extension Widget {
     }
 
     public struct Result {
-      public var child: () -> Widget
+      public var child: ChildBuilder
       public var styles: [AnyStyle]
       public var experimentalStyles: [Experimental.Style]
+    }
+
+    public struct ChildBuilder {
+      private let associatedStyleScope: UInt?
+      private let build: () -> Widget
+
+      public init(associatedStyleScope: UInt?, build: @escaping () -> Widget) {
+        self.associatedStyleScope = associatedStyleScope
+        self.build = build
+      }
+
+      public func callAsFunction() -> Widget {
+        Widget.inStyleScope(associatedStyleScope, block: build)
+      }
     }
   }
 }

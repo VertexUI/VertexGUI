@@ -1,6 +1,6 @@
 extension Experimental {
   public class Button: ComposedWidget, ExperimentalStylableWidget, GUIMouseEventConsumer {
-    private let childBuilder: () -> Widget
+    private let childBuilder: SingleChildContentBuilder.ChildBuilder
 
     public let onClick = WidgetEventHandlerManager<Void>()
 
@@ -12,7 +12,7 @@ extension Experimental {
     public init(
       classes: [String]? = nil,
       @Experimental.StylePropertiesBuilder styleProperties stylePropertiesBuilder: (StyleKeys.Type) -> [Experimental.StyleProperty] = { _ in [] },
-      @ChildBuilder content contentBuilder: @escaping () -> ChildBuilder.Result,
+      @SingleChildContentBuilder content contentBuilder: @escaping () -> SingleChildContentBuilder.Result,
       onClick onClickHandler: (() -> ())? = nil) {
         let result = contentBuilder()
         self.childBuilder = result.child

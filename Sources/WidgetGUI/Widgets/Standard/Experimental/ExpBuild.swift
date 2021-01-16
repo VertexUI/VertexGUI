@@ -2,10 +2,10 @@ import ExperimentalReactiveProperties
 
 extension Experimental {
   public class Build: ComposedWidget {
-    private let childBuilder: () -> Widget
+    private let childBuilder: SingleChildContentBuilder.ChildBuilder
 
     public init<P1: ReactiveProperty>(_ property: P1, @BuildChildBuilder child childBuilder: @escaping () -> Widget) {
-      self.childBuilder = childBuilder
+      self.childBuilder = SingleChildContentBuilder.ChildBuilder(associatedStyleScope: Widget.activeStyleScope, build: childBuilder)
       super.init()
       _ = property.onHasValueChanged {
         self.invalidateBuild()
