@@ -27,9 +27,9 @@ class ExperimentalWidgetStyleApiTests: XCTestCase {
   }
 
   class ComposedOneChildTestWidget: Widget {
-    let childBuilder: () -> Widget
+    let childBuilder: SingleChildContentBuilder.ChildBuilder
 
-    public init(@ChildBuilder content contentBuilder: @escaping () -> ChildBuilder.Result) {
+    public init(@SingleChildContentBuilder content contentBuilder: @escaping () -> SingleChildContentBuilder.Result) {
       self.childBuilder = contentBuilder().child
     }
 

@@ -15,6 +15,10 @@ open class Widget: Bounded, Parent, Child {
         public var keyedWidgets: [String: Widget]
     }
 
+    /* tree properties
+    ------------------------
+    anything that is related to identification, navigation, messaging, etc. in a tree
+    */
     open var id: UInt = UInt.random(in: 0..<UInt.max)
     // TODO: is this even used?
     open var key: String?
@@ -25,15 +29,6 @@ open class Widget: Bounded, Parent, Child {
     }
     open var pseudoClasses: [String] {
         []
-    }
-
-    open var visibility: Visibility = .Visible {
-        didSet {
-            if oldValue != visibility {
-                // TODO: should invalidation of lifecycle happen inside didSet?
-                invalidateRenderState()
-            }
-        }
     }
 
     open var _context: WidgetContext?
@@ -61,27 +56,7 @@ open class Widget: Bounded, Parent, Child {
     internal var inspectionBus: WidgetBus<WidgetInspectionMessage> {
         context.inspectionBus
     }
-
     public internal(set) var lifecycleBus = WidgetBus<WidgetLifecycleMessage>()
-
-    /*private var _focusContext: FocusContext?
-    open var focusContext: FocusContext {
-        get {
-            _focusContext!
-        }
-
-        set {
-            _focusContext = newValue
-            for child in children {
-                child.focusContext = newValue
-            }
-        }
-    }*/
-
-    @available(*, deprecated, message: "Constraints is now passed as a parameter to layout(constraints:)")
-    open var constraints: BoxConstraints? = nil
-
-    public lazy var children: [Widget] = []
 
     weak open var parent: Parent? = nil {
         willSet {
@@ -102,9 +77,13 @@ open class Widget: Bounded, Parent, Child {
             }
         }*/
     }
+    // TODO: switch to overriding visitChildren() approach instead of children array
+    public lazy var children: [Widget] = []
+    /* end tree properties */
 
+    @available(*, deprecated, message: "Constraints is now passed as a parameter to layout(constraints:)")
+    open var constraints: BoxConstraints? = nil
     lazy open internal(set) var boxConfig = getBoxConfig()
-
     /// bridge boxConfig for use in @inlinable functions
     @usableFromInline internal var _boxConfig: BoxConfig {
         get {
@@ -130,7 +109,6 @@ open class Widget: Bounded, Parent, Child {
     open var width: Double {
         size.width
     }
-
     open var height: Double {
         size.height
     }
@@ -210,7 +188,9 @@ open class Widget: Bounded, Parent, Child {
     public internal(set) var layoutInvalid = false
     public internal(set) var destroyed = false
 
-    /* style */
+    /* style
+    -----------------
+    */
     public var providedStyles: [AnyStyle] = []
     /** Styles which can be applied to this Widget instance or any of 
     it's children (deep) according to their selector. */
@@ -254,7 +234,35 @@ open class Widget: Bounded, Parent, Child {
     /** All properties from matched styles and direct properties merged,
     validated and filtered according to the support definitions.  */
     public internal(set) var experimentalAppliedStyleProperties: [Experimental.StyleProperty] = []
+
+    /** whether this Widget creates a new scope for the children which it itself instantiates */
+    public var createsStyleScope: Bool = false {
+        didSet {
+            if mounted {
+                fatalError("tried to set createsStyleScope at the wrong time, can only set it during init")
+            }
+        }
+    }
+    /** the scope this Widget belongs to */
+    public var styleScope: UInt? = nil
+    internal private(set) static var activeStyleScope: UInt? = nil
+    @discardableResult
+    public static func inStyleScope<T>(_ scope: UInt?, block: () -> T) -> T {
+        let previousActiveStyleScope = Widget.activeStyleScope
+        Widget.activeStyleScope = scope
+        defer { Widget.activeStyleScope = previousActiveStyleScope }
+        return block()
+    }
     /* end style */
+
+    open var visibility: Visibility = .Visible {
+        didSet {
+            if oldValue != visibility {
+                // TODO: should invalidation of lifecycle happen inside didSet?
+                invalidateRenderState()
+            }
+        }
+    }
 
     @usableFromInline internal var reference: AnyReferenceProtocol? {
         didSet {
@@ -307,9 +315,10 @@ open class Widget: Bounded, Parent, Child {
     public internal(set) var onDestroy = EventHandlerManager<Void>()
     
     private var unregisterAnyParentChangedHandler: EventHandlerManager<Parent?>.UnregisterCallback?
-			    
+	
     public init(children: [Widget] = []) {
         self.children = children
+        self.styleScope = Widget.activeStyleScope
         setupWidgetEventHandlerManagers()
         _ = onDestroy(_debugLayout.onChanged { [unowned self] _ in
             invalidateRenderState()
@@ -476,7 +485,9 @@ open class Widget: Bounded, Parent, Child {
             oldChild.destroy()
         }
 
-        performBuild()
+        Widget.inStyleScope(self.createsStyleScope ? self.id : self.styleScope) {
+            performBuild()
+        }
 
         // TODO: should mountChildren be called by build?
         mountChildren(oldChildren: oldChildren)
