@@ -72,11 +72,17 @@ class StyleSelectorTests: XCTestCase {
     XCTAssertNil(part.type)
     XCTAssertEqual(part.classes, ["class-1"])
     XCTAssertEqual(part.pseudoClasses, [])
+
+    part = ".class-1<"
+    XCTAssertTrue(part.opensScope)
+
+    part = "&<"
+    XCTAssertTrue(part.opensScope)
   }
 
   func testParsing() {
-    let selector: StyleSelector = "&.class1 .class2 Type1.class3:pseudoClass1"
-    let parts: [StyleSelectorPart] = ["&.class1", ".class2", "Type1.class3:pseudoClass1"]
+    let selector: StyleSelector = "&.class1 .class2< Type1.class3:pseudoClass1"
+    let parts: [StyleSelectorPart] = ["&.class1", ".class2<", "Type1.class3:pseudoClass1"]
     XCTAssertEqual(selector.parts, parts)
   }
 
@@ -138,6 +144,12 @@ class StyleSelectorTests: XCTestCase {
     XCTAssertNotEqual(selector21, selector24)
     XCTAssertNotEqual(selector21, selector25)
     XCTAssertNotEqual(selector25, selector26)
+
+    let selector27: StyleSelector = "&< .class-1<"
+    let selector28: StyleSelector = "&< .class-1<"
+    let selector29: StyleSelector = "& .class-1<"
+    XCTAssertEqual(selector27, selector28)
+    XCTAssertNotEqual(selector27, selector29)
   }
 
   func testSimplification() {
@@ -147,6 +159,10 @@ class StyleSelectorTests: XCTestCase {
 
     XCTAssertEqual(selector1, selector2)
     XCTAssertEqual(selector1, selector3)
+
+    let selector4 = StyleSelector("&< &< .class-1 &<")
+    let selector5 = StyleSelector(["&<", ".class-1<"])
+    XCTAssertEqual(selector4, selector5)
   }
 
   static var allTests = [

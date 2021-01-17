@@ -2,6 +2,7 @@ import Foundation
 
 public struct StyleSelectorPart: Equatable, Hashable, ExpressibleByStringLiteral {
     public var extendsParent: Bool
+    public var opensScope: Bool
 
     public var typeName: String? {
         willSet {
@@ -22,19 +23,22 @@ public struct StyleSelectorPart: Equatable, Hashable, ExpressibleByStringLiteral
 
     public init() {
         self.extendsParent = false
+        self.opensScope = false
         self.classes = []
         self.pseudoClasses = []
     }
 
-    public init(extendsParent: Bool = false, typeName: String? = nil, classes: [String] = [], pseudoClasses: [String] = []) {
+    public init(extendsParent: Bool = false, opensScope: Bool = false, typeName: String? = nil, classes: [String] = [], pseudoClasses: [String] = []) {
         self.extendsParent = extendsParent
+        self.opensScope = opensScope
         self.typeName = typeName
         self.classes = classes
         self.pseudoClasses = pseudoClasses
     }
 
-    public init(extendsParent: Bool = false, type: Any.Type? = nil, classes: [String] = [], pseudoClasses: [String] = []) {
+    public init(extendsParent: Bool = false, opensScope: Bool = false, type: Any.Type? = nil, classes: [String] = [], pseudoClasses: [String] = []) {
         self.extendsParent = extendsParent
+        self.opensScope = opensScope
         self.type = type
         self.classes = classes
         self.pseudoClasses = pseudoClasses
@@ -72,6 +76,7 @@ public struct StyleSelectorPart: Equatable, Hashable, ExpressibleByStringLiteral
 
     public static func == (lhs: Self, rhs: Self) -> Bool {
         lhs.extendsParent == rhs.extendsParent && 
+        lhs.opensScope == rhs.opensScope &&
         ((lhs.type != nil && rhs.type != nil && ObjectIdentifier(lhs.type!) == ObjectIdentifier(rhs.type!)) ||
         (lhs.typeName != nil && rhs.typeName != nil && lhs.typeName == rhs.typeName) ||
         (lhs.typeName == nil && lhs.type == nil && rhs.typeName == nil && rhs.type == nil)) &&
@@ -92,6 +97,7 @@ public struct StyleSelectorPart: Equatable, Hashable, ExpressibleByStringLiteral
 
 extension StyleSelectorPart {
     private static let parentExtensionSymbol = Character("&")
+    private static let openScopeSymbol = Character("<")
     private static let classSymbol = Character(".")
     private static let pseudoClassSymbol = Character(":")
     private static let allowedIdentifierCharacters = CharacterSet.letters
@@ -125,6 +131,8 @@ extension StyleSelectorPart {
             for (index, character) in string.enumerated() {
                 if index == 0 && character == StyleSelectorPart.parentExtensionSymbol {
                     result.extendsParent = true
+                } else if index == string.count - 1 && character == StyleSelectorPart.openScopeSymbol {
+                    result.opensScope = true
                 } else if character == StyleSelectorPart.classSymbol {
                     flushCurrentBuffer()
                     nextResultType = .class

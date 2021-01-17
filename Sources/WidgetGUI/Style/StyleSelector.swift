@@ -82,6 +82,13 @@ public struct StyleSelector: Equatable, Sequence, ExpressibleByStringLiteral {
     for part in parts {
       if part.extendsParent && merged.count > 0 {
         var previous = merged[merged.count - 1]
+
+        if previous.opensScope && !part.opensScope {
+          throw PartMergingError.opensScopeOverwrite(previous, part)
+        } else if !previous.opensScope && part.opensScope {
+          previous.opensScope = true
+        }
+
         previous.classes.append(contentsOf: part.classes)
 
         previous.pseudoClasses.append(contentsOf: part.pseudoClasses)
@@ -106,5 +113,6 @@ public struct StyleSelector: Equatable, Sequence, ExpressibleByStringLiteral {
 
   public enum PartMergingError: Error {
     case typeOverwrite(StyleSelectorPart, StyleSelectorPart)
+    case opensScopeOverwrite(StyleSelectorPart, StyleSelectorPart)
   }
 }
