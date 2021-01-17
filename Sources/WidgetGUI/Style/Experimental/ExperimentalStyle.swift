@@ -3,12 +3,14 @@ extension Experimental {
     public var selector: StyleSelector
     public var properties: StyleProperties
     public var children: [Style]
+    public var sourceScope: UInt
     public private(set) var parent: Experimental.Style?
     
     private init(_ selector: StyleSelector, _ properties: StyleProperties, _ children: [Experimental.Style]) {
       self.selector = selector
       self.properties = properties
       self.children = children
+      self.sourceScope = Widget.activeStyleScope
       applyAsParent()
     }
 

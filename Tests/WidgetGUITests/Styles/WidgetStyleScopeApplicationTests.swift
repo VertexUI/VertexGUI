@@ -19,6 +19,7 @@ class WidgetStyleScopeApplicationTests: XCTestCase {
         self.buildInternal = buildInternal
         super.init()
         self.createsStyleScope = createsStyleScope
+        self.experimentalProvidedStyles.append(contentsOf: content.experimentalStyles)
     }
 
   init(_ createsStyleScope: Bool,
@@ -147,11 +148,38 @@ class WidgetStyleScopeApplicationTests: XCTestCase {
     XCTAssertEqual(reference8.referenced!.styleScope, root.rootWidget.id)
   }
 
+  func testNestedWidgetsScopeAppliedToStyles() {
+    let reference1 = Reference<TestWidget>()
+    let reference2 = Reference<TestWidget>()
+    let reference3 = Reference<TestWidget>()
+    let root = MockRoot(rootWidget: TestWidget(true, buildInternal: nil) {
+      Experimental.Style("") {}
+
+      TestWidget(true, buildInternal: { _ in
+        [
+          TestWidget(true, buildInternal: nil) {
+            Experimental.Style("") {
+              Experimental.Style("") {}
+            }
+          }.connect(ref: reference3)
+        ]
+      }).provideStyles([
+        Experimental.Style("") {}
+      ]).connect(ref: reference2)
+    }.connect(ref: reference1))
+
+    XCTAssertEqual(reference1.referenced!.experimentalProvidedStyles[0].sourceScope, Widget.rootStyleScope)
+    XCTAssertEqual(reference2.referenced!.experimentalProvidedStyles[0].sourceScope, Widget.rootStyleScope)
+    XCTAssertEqual(reference3.referenced!.experimentalProvidedStyles[0].sourceScope, reference2.referenced!.id)
+    XCTAssertEqual(reference3.referenced!.experimentalProvidedStyles[0].children[0].sourceScope, reference2.referenced!.id)
+  }
+
   static var allTests = [
     ("testSingleScopingWidget", testSingleScopingWidget),
     ("testSingleLayerNestingWithoutScope", testSingleLayerNestingWithoutScope),
     ("testSingleLayerNestingWithScope", testSingleLayerNestingWithScope),
     ("testThreeLayerNestingWithScope", testThreeLayerNestingWithScope),
-    ("testMultiChildComplexNestingWithScope", testMultiChildComplexNestingWithScope)
+    ("testMultiChildComplexNestingWithScope", testMultiChildComplexNestingWithScope),
+    ("testNestedWidgetsScopeAppliedToStyles", testNestedWidgetsScopeAppliedToStyles)
   ]
 }
