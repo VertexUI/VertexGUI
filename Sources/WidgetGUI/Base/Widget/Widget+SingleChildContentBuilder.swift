@@ -75,10 +75,10 @@ extension Widget {
     }
 
     public struct ChildBuilder {
-      private let associatedStyleScope: UInt?
+      private let associatedStyleScope: UInt
       private let build: () -> Widget
 
-      public init(associatedStyleScope: UInt?, build: @escaping () -> Widget) {
+      public init(associatedStyleScope: UInt, build: @escaping () -> Widget) {
         self.associatedStyleScope = associatedStyleScope
         self.build = build
       }

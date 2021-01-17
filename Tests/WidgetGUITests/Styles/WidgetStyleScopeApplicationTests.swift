@@ -49,7 +49,7 @@ class WidgetStyleScopeApplicationTests: XCTestCase {
 
   func testSingleScopingWidget() {
     let widget = TestWidget(true)
-    XCTAssertNil(widget.styleScope)
+    XCTAssertEqual(widget.styleScope, Widget.rootStyleScope)
   }
 
   func testSingleLayerNestingWithoutScope() {
@@ -59,8 +59,8 @@ class WidgetStyleScopeApplicationTests: XCTestCase {
       TestWidget(true).connect(ref: reference2)
     }.connect(ref: reference1))
 
-    XCTAssertNil(reference1.referenced!.styleScope)
-    XCTAssertNil(reference2.referenced!.styleScope)
+    XCTAssertEqual(reference1.referenced!.styleScope, Widget.rootStyleScope)
+    XCTAssertEqual(reference2.referenced!.styleScope, Widget.rootStyleScope)
   }
 
   func testSingleLayerNestingWithScope() {
@@ -70,7 +70,7 @@ class WidgetStyleScopeApplicationTests: XCTestCase {
       [TestWidget(true).connect(ref: reference2)]
     }).connect(ref: reference1))
 
-    XCTAssertNil(reference1.referenced!.styleScope)
+    XCTAssertEqual(reference1.referenced!.styleScope, Widget.rootStyleScope)
     XCTAssertEqual(reference2.referenced!.styleScope, reference1.referenced!.id)
   }
 
@@ -86,9 +86,9 @@ class WidgetStyleScopeApplicationTests: XCTestCase {
       TestWidget(true).connect(ref: reference3)
     }.connect(ref: reference1))
 
-    XCTAssertNil(reference1.referenced!.styleScope)
+    XCTAssertEqual(reference1.referenced!.styleScope, Widget.rootStyleScope)
     XCTAssertEqual(reference2.referenced!.styleScope, reference1.referenced!.id)
-    XCTAssertNil(reference3.referenced!.styleScope)
+    XCTAssertEqual(reference3.referenced!.styleScope, Widget.rootStyleScope)
   }
 
   func testMultiChildComplexNestingWithScope() {

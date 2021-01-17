@@ -52,7 +52,7 @@ extension Widget {
 
     public struct ChildrenBuilder {
       public let buildFunctions: [() -> [Widget]]
-      public let associatedStyleScope: UInt?
+      public let associatedStyleScope: UInt
 
       public func callAsFunction() -> [Widget] {
         Widget.inStyleScope(associatedStyleScope) {

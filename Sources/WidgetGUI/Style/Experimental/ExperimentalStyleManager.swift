@@ -131,7 +131,9 @@ extension Experimental {
           // use match index -2 to delay matching of non extending styles
           // to the children of the current widget
           partialMatchesToCheck.append(PartialMatch(
-            style: style, matchIndex: style.selector.extendsParent ? -1 : -2))
+            style: style,
+            matchIndex: style.selector.extendsParent ? -1 : -2,
+            openScopes: []/* TODO: should every style have a sourceScope attribute? */))
         }
 
         var fullMatches = [Experimental.Style]()
@@ -155,7 +157,7 @@ extension Experimental {
                 partialMatchesToCheck.insert(contentsOf: checkPartialMatch.style.children.map {
                   // use match index -2 to delay matching of non extending styles
                   // to the children of the current widget
-                  PartialMatch(style: $0, matchIndex: $0.selector.extendsParent ? -1 : -2)
+                  PartialMatch(style: $0, matchIndex: $0.selector.extendsParent ? -1 : -2, openScopes: [])
                 }, at: partialMatchIndex + 1)
               }
           } else {
@@ -187,9 +189,10 @@ extension Experimental {
     private struct PartialMatch {
       let style: Experimental.Style
       let matchIndex: Int
+      let openScopes: [UInt]
 
       func incremented() -> PartialMatch {
-        PartialMatch(style: style, matchIndex: matchIndex + 1)
+        PartialMatch(style: style, matchIndex: matchIndex + 1, openScopes: openScopes)
       }
     }
   }

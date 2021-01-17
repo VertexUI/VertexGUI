@@ -244,10 +244,12 @@ open class Widget: Bounded, Parent, Child {
         }
     }
     /** the scope this Widget belongs to */
-    public var styleScope: UInt? = nil
-    internal private(set) static var activeStyleScope: UInt? = nil
+    public var styleScope: UInt = 0
+    public static let rootStyleScope: UInt = 1
+    internal private(set) static var activeStyleScope: UInt = rootStyleScope
+
     @discardableResult
-    public static func inStyleScope<T>(_ scope: UInt?, block: () -> T) -> T {
+    public static func inStyleScope<T>(_ scope: UInt, block: () -> T) -> T {
         let previousActiveStyleScope = Widget.activeStyleScope
         Widget.activeStyleScope = scope
         defer { Widget.activeStyleScope = previousActiveStyleScope }

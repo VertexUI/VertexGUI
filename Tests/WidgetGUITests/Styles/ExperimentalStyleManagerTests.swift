@@ -10,6 +10,42 @@ class ExperimentalStyleManagerTests: XCTestCase {
     }
   }
 
+  class ScopeTestWidget: Widget, ExperimentalStylableWidget {
+    private let buildInternal: (() -> [Widget])?
+    private let childrenBuilder: MultiChildContentBuilder.ChildrenBuilder?
+
+    init(_ createsStyleScope: Bool, buildInternal: (() -> [Widget])?, @MultiChildContentBuilder content buildContent: () -> MultiChildContentBuilder.Result) {
+      let content = buildContent()
+      self.childrenBuilder = content.childrenBuilder
+      self.buildInternal = buildInternal 
+      super.init()
+      self.createsStyleScope = createsStyleScope
+      self.experimentalProvidedStyles.append(contentsOf: content.experimentalStyles)
+    }
+
+    init(_ createsStyleScope: Bool, buildInternal: @escaping () -> [Widget]) {
+      self.buildInternal = buildInternal
+      self.childrenBuilder = nil
+      super.init()
+      self.createsStyleScope = createsStyleScope
+    }
+
+    init(_ createsStyleScope: Bool) {
+      self.buildInternal = nil
+      self.childrenBuilder = nil
+      super.init()
+      self.createsStyleScope = createsStyleScope
+    }
+
+    override func performBuild() {
+      if let buildInternal = self.buildInternal {
+        children = buildInternal()
+      } else if let childrenBuilder = self.childrenBuilder {
+        children = childrenBuilder()
+      }
+    }
+  }
+
   class MockRoot: Root {
     override public init(rootWidget: Widget) {
       super.init(rootWidget: rootWidget)
@@ -201,6 +237,33 @@ class ExperimentalStyleManagerTests: XCTestCase {
     XCTAssertEqual(reference4.referenced!.experimentalMatchedStyles.count, 4)
   }
 
+  func testSimpleScoping() {
+    let reference1 = Reference<ScopeTestWidget>()
+    let reference2 = Reference<ScopeTestWidget>()
+    let reference3 = Reference<ScopeTestWidget>()
+    let root = MockRoot(rootWidget: ScopeTestWidget(true, buildInternal: nil) {
+      Experimental.Style("&") {
+        Experimental.Style(".class-3") {}
+      }
+      Experimental.Style(".class-1") {}
+
+      ScopeTestWidget(true, buildInternal: {
+        [
+          ScopeTestWidget(true).with(classes: ["class-1", "class-2"]).connect(ref: reference3)
+        ]
+      }).provideStyles([
+        Experimental.Style(".class-2") {}
+      ]).with(classes: ["class-3"]).connect(ref: reference2)
+    }.connect(ref: reference1))
+    let styleManager = Experimental.StyleManager()
+
+    styleManager.processTree(root.rootWidget)
+    XCTAssertEqual(reference1.referenced!.experimentalMatchedStyles.count, 1)
+    XCTAssertEqual(reference2.referenced!.experimentalMatchedStyles.count, 1)
+    XCTAssertEqual(reference3.referenced!.styleScope, reference2.referenced!.id)
+    XCTAssertEqual(reference3.referenced!.experimentalMatchedStyles.count, 1)
+  }
+
   static var allTests = [
     ("testSingleWidget", testSingleWidget),
     ("testSingleWidgetInContainerWithStylesProcessChild", testSingleWidgetInContainerWithStylesProcessChild),
@@ -208,6 +271,7 @@ class ExperimentalStyleManagerTests: XCTestCase {
     ("testMultipleWidgetsInNestedContainersWithStylesProcessRoot", testMultipleWidgetsInNestedContainersWithStylesProcessRoot),
     ("testMultipleWidgetsInNestedContainersWithStylesProcessChild", testMultipleWidgetsInNestedContainersWithStylesProcessChild),
     ("testSingleWidgetWithNestedStyles", testSingleWidgetWithNestedStyles),
-    ("testMultipleWidgetsInNestedContainersWithNestedStylesProcessRoot", testMultipleWidgetsInNestedContainersWithNestedStylesProcessRoot)
+    ("testMultipleWidgetsInNestedContainersWithNestedStylesProcessRoot", testMultipleWidgetsInNestedContainersWithNestedStylesProcessRoot),
+    ("testSimpleScoping", testSimpleScoping)
   ]
 }
