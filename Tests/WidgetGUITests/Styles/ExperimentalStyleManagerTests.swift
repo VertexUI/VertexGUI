@@ -11,10 +11,10 @@ class ExperimentalStyleManagerTests: XCTestCase {
   }
 
   class ScopeTestWidget: Widget, ExperimentalStylableWidget {
-    private let buildInternal: (() -> [Widget])?
+    private let buildInternal: ((MultiChildContentBuilder.ChildrenBuilder?) -> [Widget])?
     private let childrenBuilder: MultiChildContentBuilder.ChildrenBuilder?
 
-    init(_ createsStyleScope: Bool, buildInternal: (() -> [Widget])?, @MultiChildContentBuilder content buildContent: () -> MultiChildContentBuilder.Result) {
+    init(_ createsStyleScope: Bool, buildInternal: ((MultiChildContentBuilder.ChildrenBuilder?) -> [Widget])?, @MultiChildContentBuilder content buildContent: () -> MultiChildContentBuilder.Result) {
       let content = buildContent()
       self.childrenBuilder = content.childrenBuilder
       self.buildInternal = buildInternal 
@@ -23,7 +23,7 @@ class ExperimentalStyleManagerTests: XCTestCase {
       self.experimentalProvidedStyles.append(contentsOf: content.experimentalStyles)
     }
 
-    init(_ createsStyleScope: Bool, buildInternal: @escaping () -> [Widget]) {
+    init(_ createsStyleScope: Bool, buildInternal: @escaping (MultiChildContentBuilder.ChildrenBuilder?) -> [Widget]) {
       self.buildInternal = buildInternal
       self.childrenBuilder = nil
       super.init()
@@ -39,7 +39,7 @@ class ExperimentalStyleManagerTests: XCTestCase {
 
     override func performBuild() {
       if let buildInternal = self.buildInternal {
-        children = buildInternal()
+        children = buildInternal(self.childrenBuilder)
       } else if let childrenBuilder = self.childrenBuilder {
         children = childrenBuilder()
       }
@@ -247,9 +247,11 @@ class ExperimentalStyleManagerTests: XCTestCase {
       }
       Experimental.Style(".class-1") {}
 
-      ScopeTestWidget(true, buildInternal: {
+      ScopeTestWidget(true, buildInternal: { _ in
         [
-          ScopeTestWidget(true).with(classes: ["class-1", "class-2"]).connect(ref: reference3)
+          ScopeTestWidget(true, buildInternal: nil) {
+            Experimental.Style("&.class-2") {}
+          }.with(classes: ["class-1", "class-2"]).connect(ref: reference3)
         ]
       }).provideStyles([
         Experimental.Style(".class-2") {}
@@ -264,6 +266,49 @@ class ExperimentalStyleManagerTests: XCTestCase {
     XCTAssertEqual(reference3.referenced!.experimentalMatchedStyles.count, 1)
   }
 
+  func testComplexScoping() {
+    let reference1 = Reference<ScopeTestWidget>()
+    let reference2 = Reference<ScopeTestWidget>()
+    let reference3 = Reference<ScopeTestWidget>()
+    let reference4 = Reference<ScopeTestWidget>()
+    let root = MockRoot(rootWidget: ScopeTestWidget(true, buildInternal: {
+      $0!() + [
+        ScopeTestWidget(true, buildInternal: nil) {
+          Experimental.Style("&.class-1") {
+            Experimental.Style("& .class-2") {}
+          }
+
+          ScopeTestWidget(true).with(classes: ["class-2"]).connect(ref: reference4)
+        }.with(classes: ["class-1"]).connect(ref: reference3)
+      ]
+    }) {
+      Experimental.Style("& &<") {
+        Experimental.Style("&.class-0") {}
+
+        Experimental.Style(".class-3") {}
+
+        Experimental.Style(".class-1") {
+          Experimental.Style(".class-2") {}
+        }
+      }
+
+      Experimental.Style("&") {
+        Experimental.Style(".class-1") {}
+
+        Experimental.Style(".class-3") {}
+      }
+
+      ScopeTestWidget(true).with(classes: ["class-3"]).connect(ref: reference2)
+    }.with(classes: ["class-0"]).connect(ref: reference1))
+    let styleManager = Experimental.StyleManager()
+
+    styleManager.processTree(root.rootWidget)
+    XCTAssertEqual(reference1.referenced!.experimentalMatchedStyles.count, 3)
+    XCTAssertEqual(reference2.referenced!.experimentalMatchedStyles.count, 2)
+    XCTAssertEqual(reference3.referenced!.experimentalMatchedStyles.count, 2)
+    XCTAssertEqual(reference4.referenced!.experimentalMatchedStyles.count, 2)
+  }
+
   static var allTests = [
     ("testSingleWidget", testSingleWidget),
     ("testSingleWidgetInContainerWithStylesProcessChild", testSingleWidgetInContainerWithStylesProcessChild),
@@ -272,6 +317,7 @@ class ExperimentalStyleManagerTests: XCTestCase {
     ("testMultipleWidgetsInNestedContainersWithStylesProcessChild", testMultipleWidgetsInNestedContainersWithStylesProcessChild),
     ("testSingleWidgetWithNestedStyles", testSingleWidgetWithNestedStyles),
     ("testMultipleWidgetsInNestedContainersWithNestedStylesProcessRoot", testMultipleWidgetsInNestedContainersWithNestedStylesProcessRoot),
-    ("testSimpleScoping", testSimpleScoping)
+    ("testSimpleScoping", testSimpleScoping),
+    ("testComplexScoping", testComplexScoping)
   ]
 }

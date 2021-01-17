@@ -133,7 +133,7 @@ extension Experimental {
           partialMatchesToCheck.append(PartialMatch(
             style: style,
             matchIndex: style.selector.extendsParent ? -1 : -2,
-            openScopes: []/* TODO: should every style have a sourceScope attribute? */))
+            openScopes: [style.sourceScope]))
         }
 
         var fullMatches = [Experimental.Style]()
@@ -145,10 +145,18 @@ extension Experimental {
           
           if checkPartialMatch.matchIndex == -2 {
             partialMatchesToCheck[partialMatchIndex] = checkPartialMatch.incremented()
-          } else if checkPartialMatch.style.selector.partCount == 0 ||
-            checkPartialMatch.style.selector[part: checkPartialMatch.matchIndex + 1].selects(widget) {
+
+          } else if checkPartialMatch.openScopes.contains(widget.styleScope) &&
+            (checkPartialMatch.style.selector.partCount == 0 || checkPartialMatch.style.selector[part: checkPartialMatch.matchIndex + 1].selects(widget)) {
+              
+              var nextOpenScopes = checkPartialMatch.openScopes
+              if checkPartialMatch.style.selector.partCount > checkPartialMatch.matchIndex + 1 &&
+                checkPartialMatch.style.selector[part: checkPartialMatch.matchIndex + 1].opensScope {
+                  nextOpenScopes.append(widget.id)
+              }
+
               if checkPartialMatch.style.selector.partCount - 1 > checkPartialMatch.matchIndex + 1 {
-                newPartialMatches.append(checkPartialMatch.incremented())
+                newPartialMatches.append(checkPartialMatch.incremented(openScopes: nextOpenScopes))
               } else {
                 fullMatches.append(checkPartialMatch.style)
                 // the sub styles of the matched style
@@ -157,7 +165,7 @@ extension Experimental {
                 partialMatchesToCheck.insert(contentsOf: checkPartialMatch.style.children.map {
                   // use match index -2 to delay matching of non extending styles
                   // to the children of the current widget
-                  PartialMatch(style: $0, matchIndex: $0.selector.extendsParent ? -1 : -2, openScopes: [])
+                  PartialMatch(style: $0, matchIndex: $0.selector.extendsParent ? -1 : -2, openScopes: nextOpenScopes)
                 }, at: partialMatchIndex + 1)
               }
           } else {
@@ -191,8 +199,8 @@ extension Experimental {
       let matchIndex: Int
       let openScopes: [UInt]
 
-      func incremented() -> PartialMatch {
-        PartialMatch(style: style, matchIndex: matchIndex + 1, openScopes: openScopes)
+      func incremented(openScopes: [UInt]? = nil) -> PartialMatch {
+        PartialMatch(style: style, matchIndex: matchIndex + 1, openScopes: openScopes ?? self.openScopes)
       }
     }
   }
