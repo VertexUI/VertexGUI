@@ -190,24 +190,7 @@ open class Widget: Bounded, Parent, Child {
 
     /* style
     -----------------
-    */
-    public var providedStyles: [AnyStyle] = []
-    /** Styles which can be applied to this Widget instance or any of 
-    it's children (deep) according to their selector. */
-    public var experimentalProvidedStyles: [Experimental.Style] = []
-
-    internal var appliedStyles: [AnyStyle] = []
-    /** Styles whose selectors match this Widget instance. */
-    internal var experimentalMatchedStyles: [Experimental.Style] = []
-    /** Style properties that are applied to this Widget instance directly
-    without any selector based testing. */
-    public var experimentalDirectStyleProperties: [Experimental.StyleProperty] = [] {
-        didSet {
-            // TODO: when to call this?
-            updateAppliedStyleProperties()
-        }
-    }
-    
+    */   
     /** Style property support declared by the Widget instance's context. */
     public var experimentalSupportedGlobalStyleProperties: Experimental.StylePropertySupportDefinitions {
         []
@@ -255,6 +238,31 @@ open class Widget: Bounded, Parent, Child {
         defer { Widget.activeStyleScope = previousActiveStyleScope }
         return block()
     }
+
+    public var providedStyles: [AnyStyle] = []
+    /** Styles which can be applied to this Widget instance or any of 
+    it's children (deep) according to their selector. */
+    public var experimentalProvidedStyles: [Experimental.Style] = []
+
+    internal var appliedStyles: [AnyStyle] = []
+    /** Styles whose selectors match this Widget instance. */
+    internal var experimentalMatchedStyles: [Experimental.Style] = [] {
+        didSet {
+            stylePropertiesResolver.styles = experimentalMatchedStyles
+        }
+    }
+    /** Style properties that are applied to this Widget instance directly
+    without any selector based testing. */
+    public internal(set) var experimentalDirectStyleProperties: [Experimental.StyleProperties] = [] {
+        didSet {
+            // TODO: when to call this?
+            updateAppliedStyleProperties()
+            stylePropertiesResolver.directProperties = experimentalDirectStyleProperties
+        }
+    }
+
+    lazy private var stylePropertiesResolver = Experimental.StylePropertiesResolver(
+        propertySupportDefinitions: experimentalMergedSupportedStyleProperties)
     /* end style */
 
     open var visibility: Visibility = .Visible {

@@ -6,6 +6,7 @@ public protocol StyleValue {
 
 extension Int: StyleValue {}
 extension Double: StyleValue {}
+extension String: StyleValue {}
 extension Bool: StyleValue {}
 extension Insets: StyleValue {}
 extension GfxMath.Color: StyleValue {}

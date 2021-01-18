@@ -52,20 +52,20 @@ public class TodoAppView: SingleChildWidget {
               buildSearch()
             }
 
-            Experimental.Container(configure: {
-              $0.with(styleProperties: {
-                ($0.padding, Insets(all: 64))
-              })
+            Experimental.Container(styleProperties: {
+              ($0.padding, Insets(all: 64))
             }) {
+              Experimental.Style(".button", Experimental.Button.self) {
+                ($0.backgroundFill, Color.yellow)
+              }
+
               Experimental.Style("Button:hover") {
                 Experimental.StyleProperties(Experimental.Button.self) {
                   ($0.backgroundFill, Color.yellow)
                 }
               }
 
-              Experimental.Button(styleProperties: {
-                ($0.backgroundFill, Color.red)
-              }) {
+              Experimental.Button(classes: ["button"]) {
                 Experimental.Text(styleProperties: {
                   ($0.fontWeight, FontWeight.bold)
                   ($0.fontSize, 20.0)
@@ -73,10 +73,6 @@ public class TodoAppView: SingleChildWidget {
                 }, "New List")
               } onClick: { [unowned self] in
                 handleNewListClick()
-              }.provideStyles {
-                ExperimentalText.Style {
-                  $0.fontSize = 30
-                }
               }
             }
 

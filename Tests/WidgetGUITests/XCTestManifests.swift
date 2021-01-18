@@ -12,6 +12,7 @@ import XCTest
       testCase(WidgetStyleScopeApplicationTests.allTests),
       testCase(ExperimentalWidgetStyleApiTests.allTests),
       testCase(ExperimentalStyleManagerTests.allTests),
+      testCase(ExperimentalStylePropertiesResolverTests.allTests),
       testCase(ExperimentalStyleParserTests.allTests),
       testCase(StylableWidgetTests.allTests),
       testCase(ReactivePropertyTests.allTests),

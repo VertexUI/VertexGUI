@@ -10,6 +10,10 @@ extension Experimental {
       self = build(widget.StyleKeys)
     }
 
+    public init(@StylePropertiesBuilder _ build: () -> Experimental.StyleProperties) {
+      self = build()
+    }
+
     public init(_ properties: [Experimental.StyleProperty]) {
       self.properties = properties
     }

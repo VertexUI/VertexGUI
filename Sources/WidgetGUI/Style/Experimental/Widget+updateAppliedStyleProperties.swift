@@ -9,7 +9,7 @@ extension Widget {
     }
 
     for property in experimentalDirectStyleProperties {
-      result[property.key.asString] = property
+      //result[property.key.asString] = property
     }
 
     // TODO: check whether properties have the same order as in matched styles

@@ -25,7 +25,7 @@ extension Experimental {
     }
 
     public enum TypeValidator {
-      case specific(_ type: Any.Type)
+      case specific(_ type: StyleValue.Type)
       case function(_ validate: (Any) -> Bool)
     }
 
