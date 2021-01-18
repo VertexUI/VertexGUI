@@ -31,28 +31,28 @@ extension Experimental {
 
     public init<P: ReactiveProperty>(
       classes: [String]? = nil,
-      @Experimental.StylePropertiesBuilder styleProperties stylePropertiesBuilder: (StyleKeys.Type) -> [Experimental.StyleProperty] = { _ in [] },
+      @Experimental.StylePropertiesBuilder styleProperties stylePropertiesBuilder: (StyleKeys.Type) -> Experimental.StyleProperties = { _ in [] },
       _ textProperty: P) where P.Value == String {
         super.init()
 
         if let classes = classes {
           self.classes = classes
         }
-        self.experimentalDirectStyleProperties.append(contentsOf: stylePropertiesBuilder(StyleKeys.self))
+        self.with(stylePropertiesBuilder(StyleKeys.self))
 
         self._text.bind(textProperty)
     }
 
     public init(
       classes: [String]? = nil,
-      @Experimental.StylePropertiesBuilder styleProperties stylePropertiesBuilder: (StyleKeys.Type) -> [Experimental.StyleProperty] = { _ in [] },
+      @Experimental.StylePropertiesBuilder styleProperties stylePropertiesBuilder: (StyleKeys.Type) -> Experimental.StyleProperties = { _ in [] },
       _ text: String) {
         super.init()
         
         if let classes = classes {
           self.classes = classes
         }
-        self.experimentalDirectStyleProperties.append(contentsOf: stylePropertiesBuilder(StyleKeys.self))
+        self.with(stylePropertiesBuilder(StyleKeys.self))
 
         self._text.bind(StaticProperty(text))
     }

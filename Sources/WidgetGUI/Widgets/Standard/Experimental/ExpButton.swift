@@ -1,3 +1,5 @@
+import GfxMath
+
 extension Experimental {
   public class Button: ComposedWidget, ExperimentalStylableWidget, GUIMouseEventConsumer {
     private let childBuilder: SingleChildContentBuilder.ChildBuilder
@@ -11,7 +13,7 @@ extension Experimental {
 
     public init(
       classes: [String]? = nil,
-      @Experimental.StylePropertiesBuilder styleProperties stylePropertiesBuilder: (StyleKeys.Type) -> [Experimental.StyleProperty] = { _ in [] },
+      @Experimental.StylePropertiesBuilder styleProperties stylePropertiesBuilder: (StyleKeys.Type) -> Experimental.StyleProperties = { _ in [] },
       @SingleChildContentBuilder content contentBuilder: @escaping () -> SingleChildContentBuilder.Result,
       onClick onClickHandler: (() -> ())? = nil) {
         let result = contentBuilder()
@@ -24,14 +26,14 @@ extension Experimental {
         if let classes = classes {
           self.classes = classes
         }
-        self.experimentalDirectStyleProperties.append(contentsOf: stylePropertiesBuilder(StyleKeys.self))
+        self.with(stylePropertiesBuilder(StyleKeys.self))
     }
 
     override public func performBuild() {
       rootChild = Experimental.Container(configure: { [unowned self] in
         $0.with(styleProperties: {
           ($0.padding, stylePropertyValue(StyleKeys.padding) ?? Insets(all: 16))
-          ($0.backgroundFill, stylePropertyValue(StyleKeys.backgroundFill) ?? Insets(all: 16))
+          ($0.backgroundFill, stylePropertyValue(StyleKeys.backgroundFill) ?? Color.blue)
         })
       }) { [unowned self] in
         childBuilder()

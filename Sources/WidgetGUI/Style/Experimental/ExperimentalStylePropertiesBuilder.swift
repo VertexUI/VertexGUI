@@ -14,5 +14,9 @@ extension Experimental {
     public static func buildBlock(_ properties: Experimental.StyleProperty...) -> [Experimental.StyleProperty] {
       properties
     }
+
+    public static func buildFinalResult(_ properties: [Experimental.StyleProperty]) -> Experimental.StyleProperties {
+      Experimental.StyleProperties(properties)
+    }
   }
 }

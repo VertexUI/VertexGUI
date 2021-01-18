@@ -1,11 +1,13 @@
 extension Widget {
-  public func with(@Experimental.StylePropertiesBuilder styleProperties: (StyleKeys.Type) -> [Experimental.StyleProperty]) -> Widget {
-    experimentalDirectStyleProperties.append(contentsOf: styleProperties(StyleKeys.self))
+  @discardableResult
+  public func with(@Experimental.StylePropertiesBuilder styleProperties: (StyleKeys.Type) -> Experimental.StyleProperties) -> Widget {
+    experimentalDirectStyleProperties.append(styleProperties(StyleKeys.self))
     return self
   }
 
+  @discardableResult
   public func with(_ styleProperties: Experimental.StyleProperties) -> Widget {
-    experimentalDirectStyleProperties.append(contentsOf: styleProperties.properties)
+    experimentalDirectStyleProperties.append(styleProperties)
     return self
   }
 }

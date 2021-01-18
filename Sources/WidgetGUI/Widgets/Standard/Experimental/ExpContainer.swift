@@ -17,13 +17,13 @@ extension Experimental {
 
     public convenience init(
       classes: [String]? = nil,
-      @Experimental.StylePropertiesBuilder styleProperties stylePropertiesBuilder: (StyleKeys.Type) -> [Experimental.StyleProperty] = { _ in [] },
+      @Experimental.StylePropertiesBuilder styleProperties stylePropertiesBuilder: (StyleKeys.Type) -> Experimental.StyleProperties = { _ in [] },
       @SingleChildContentBuilder content contentBuilder: @escaping () -> SingleChildContentBuilder.Result) {
         self.init(contentBuilder: contentBuilder)
         if let classes = classes {
           self.classes = classes
         }
-        self.experimentalDirectStyleProperties.append(contentsOf: stylePropertiesBuilder(StyleKeys.self))
+        self.with(stylePropertiesBuilder(StyleKeys.self))
     }
 
     public convenience init(
