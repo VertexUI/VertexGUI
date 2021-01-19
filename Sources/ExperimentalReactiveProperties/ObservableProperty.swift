@@ -2,7 +2,7 @@ import Events
 
 @propertyWrapper
 // TODO: need to test ObservableProperty
-public class ObservableProperty<Value>: ReactiveProperty {
+public class ObservableProperty<Value>: ReactiveProperty, InternalValueSettableReactivePropertyProtocol {
   public typealias Value = Value
 
   private var _value: Value? {
@@ -41,7 +41,7 @@ public class ObservableProperty<Value>: ReactiveProperty {
   public init() {}
 
   @discardableResult
-  public func bind<Other: ReactiveProperty>(_ other: Other) -> UniDirectionalPropertyBinding where Other.Value == Value, Value: Equatable {
+  public func bind<Other: ReactiveProperty>(_ other: Other) -> UniDirectionalPropertyBinding where Other.Value == Value {
     UniDirectionalPropertyBinding(source: other, sink: self)
   }
 }

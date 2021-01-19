@@ -7,42 +7,24 @@ public class UniDirectionalPropertyBinding: PropertyBindingProtocol, EventfulObj
   public private(set) var destroyed: Bool = false
   public let onDestroyed = EventHandlerManager<Void>()
 
-  internal init<Source: ReactiveProperty, Sink: MutablePropertyProtocol>(source: Source, sink: Sink) where Source.Value == Sink.Value, Source.Value: Equatable {    
+  internal init<Source: ReactiveProperty, Sink: InternalValueSettableReactivePropertyProtocol>(source: Source, sink: Sink) where Source.Value == Sink.Value {    
+    var performingSinkUpdate = false
+
     handlerRemovers.append(source.onChanged { [unowned sink] in
-      if !sink.hasValue || sink.value != $0.new {
-        sink.value = $0.new
+      if performingSinkUpdate {
+        return
       }
+      performingSinkUpdate = true
+      sink.value = $0.new
+      performingSinkUpdate = false
     })
     handlerRemovers.append(source.onHasValueChanged { [unowned source, sink] in
-      if !sink.hasValue || sink.value != source.value {
-        sink.value = source.value
+      if performingSinkUpdate {
+        return
       }
-    })
-    handlerRemovers.append(source.onDestroyed { [unowned self] in
-      destroy()
-    })
-    handlerRemovers.append(sink.onDestroyed { [unowned self] in
-      destroy()
-    })
-
-    if source.hasValue {
+      performingSinkUpdate = true
       sink.value = source.value
-    }
-    
-    unregisterFunctions.append(source.registerBinding(self))
-    unregisterFunctions.append(sink.registerBinding(self))
-  }
-
-  internal init<Source: ReactiveProperty, Value>(source: Source, sink: ObservableProperty<Value>) where Value == Source.Value, Value: Equatable {
-    handlerRemovers.append(source.onChanged { [unowned sink] in
-      if !sink.hasValue || sink.value != $0.new {
-        sink.value = $0.new
-      }
-    })
-    handlerRemovers.append(source.onHasValueChanged { [unowned source, sink] in
-      if !sink.hasValue || sink.value != source.value {
-        sink.value = source.value
-      }
+      performingSinkUpdate = false
     })
     handlerRemovers.append(source.onDestroyed { [unowned self] in
       destroy()
