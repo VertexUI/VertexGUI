@@ -8,6 +8,7 @@ import XCTest
       testCase(ExperimentalMutablePropertyTests.allTests),
       testCase(ComputedPropertyTests.allTests),
       testCase(MutableComputedPropertyTests.allTests),
+      testCase(ExperimentalObservablePropertyTests.allTests),
       testCase(UniDirectionalPropertyBindingTests.allTests),
       testCase(BiDirectionalPropertyBindingTests.allTests),
       testCase(DependencyRecorderTests.allTests)

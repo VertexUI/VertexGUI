@@ -8,6 +8,9 @@ public class ObservableProperty<Value>: ReactiveProperty, InternalValueSettableR
   private var _value: Value? {
     didSet {
       hasValue = true
+      if let oldValue = oldValue {
+        onChanged.invokeHandlers((old: oldValue, new: _value!))
+      }
     }
   }
   public internal(set) var value: Value {
@@ -22,9 +25,11 @@ public class ObservableProperty<Value>: ReactiveProperty, InternalValueSettableR
   public let onChanged = EventHandlerManager<(old: Value, new: Value)>()
   public let onAnyChanged = EventHandlerManager<(old: Any, new: Any)>()
 
-  public var hasValue: Bool = true {
+  public var hasValue: Bool = false {
     didSet {
-      onHasValueChanged.invokeHandlers(())
+      if oldValue != hasValue {
+        onHasValueChanged.invokeHandlers(())
+      }
     }
   }
   public let onHasValueChanged = EventHandlerManager<Void>()
