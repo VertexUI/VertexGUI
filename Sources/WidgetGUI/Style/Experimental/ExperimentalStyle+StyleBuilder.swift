@@ -17,7 +17,7 @@ extension Experimental.Style {
       IntermediateResult(properties: [Experimental.StyleProperty(key: expression.0, value: expression.1)])
     } 
 
-    public static func buildExpression<P: ReactiveProperty>(_ expression: (StyleKey, P)) -> IntermediateResult where P.Value: StyleValue {
+    public static func buildExpression<P: ReactiveProperty>(_ expression: (StyleKey, P)) -> IntermediateResult where P.Value == StyleValue? {
       IntermediateResult(properties: [Experimental.StyleProperty(key: expression.0, value: expression.1)])
     }
 

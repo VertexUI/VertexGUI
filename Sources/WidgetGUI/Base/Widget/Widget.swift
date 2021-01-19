@@ -261,7 +261,7 @@ open class Widget: Bounded, Parent, Child {
         }
     }
 
-    lazy private var stylePropertiesResolver = Experimental.StylePropertiesResolver(
+    lazy internal var stylePropertiesResolver = Experimental.StylePropertiesResolver(
         propertySupportDefinitions: experimentalMergedSupportedStyleProperties)
     /* end style */
 

@@ -4,12 +4,6 @@ extension Widget {
   }
 
   public func stylePropertyValue(_ key: StyleKey) -> StyleValue? {
-    for property in experimentalAppliedStyleProperties {
-      if property.key.asString == key.asString {
-        return property.value
-      }
-    }
-
-    return nil
+    stylePropertiesResolver[key]
   }
 }

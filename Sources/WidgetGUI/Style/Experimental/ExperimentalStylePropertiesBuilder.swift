@@ -7,6 +7,10 @@ extension Experimental {
       Experimental.StyleProperty(key: expression.0, value: expression.1)
     }
     
+    public static func buildExpression<P: ReactiveProperty>(_ expression: (StyleKey, P)) -> Experimental.StyleProperty where P.Value == StyleValue? {
+      Experimental.StyleProperty(key: expression.0, value: expression.1)
+    }
+
     public static func buildExpression<P: ReactiveProperty>(_ expression: (StyleKey, P)) -> Experimental.StyleProperty where P.Value: StyleValue {
       Experimental.StyleProperty(key: expression.0, value: expression.1)
     }
