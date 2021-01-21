@@ -118,6 +118,9 @@ open class Root: Parent {
     // TODO: check whether any parent of the widget was already processed (which automatically leads to a reprocessing of the styles)
     // TODO: or rather follow the pattern of invalidate...()? --> invalidateStyle()
     styleManager.refresh(Array(selectorChangedWidgets))
+    for widget in selectorChangedWidgets {
+      experimentalStyleManager.processTree(widget)
+    }
     selectorChangedWidgets.clear()
 
     for widget in rebuildWidgets {

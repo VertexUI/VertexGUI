@@ -249,7 +249,7 @@ open class Widget: Bounded, Parent, Child {
     /** Styles whose selectors match this Widget instance. */
     internal var experimentalMatchedStyles: [Experimental.Style] = [] {
         didSet {
-            if !experimentalMatchedStyles.allSatisfy({ style in oldValue.contains { $0 === style } }) {
+            if experimentalMatchedStyles.count != oldValue.count || !experimentalMatchedStyles.allSatisfy({ style in oldValue.contains { $0 === style } }) {
                 stylePropertiesResolver.styles = experimentalMatchedStyles
                 stylePropertiesResolver.resolve()
             }

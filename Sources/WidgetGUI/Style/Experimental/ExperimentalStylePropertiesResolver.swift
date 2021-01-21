@@ -30,7 +30,7 @@ extension Experimental {
     public let onResolvedPropertyValuesChanged = EventHandlerManager<[String: StyleValue?]>()
 
     private static var loggingPrefix = "RESOLVER::::::"
-    private static var loggingEnabled = true
+    private static var loggingEnabled = false
     private var widget: Widget?
     private var widgetIdentifier: String {
       if let widget = widget {

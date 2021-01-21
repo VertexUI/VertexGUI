@@ -8,6 +8,15 @@ class ExperimentalWidgetTreeStyleTests: XCTestCase {
     var buildInternal: ((MultiChildContentBuilder.ChildrenBuilder?) -> [Widget])?
     var childrenBuilder: MultiChildContentBuilder.ChildrenBuilder?
 
+    var pseudoClass1Enabled: Bool = false {
+      didSet {
+        notifySelectorChanged()
+      }
+    }
+    override var pseudoClasses: [String] {
+      pseudoClass1Enabled ? ["pseudo-class-1"] : []
+    }
+
     init(_ createsStyleScope: Bool, buildInternal: ((MultiChildContentBuilder.ChildrenBuilder?) -> [Widget])?,
       @MultiChildContentBuilder content buildContent: () -> MultiChildContentBuilder.Result) {
         self.buildInternal = buildInternal
@@ -66,38 +75,6 @@ class ExperimentalWidgetTreeStyleTests: XCTestCase {
 
     inputProperty.value = 1.0
     XCTAssertEqual(outputProperty.value, 1.0)
-  }
-
-  func testRealWidgets() {
-    let reference1 = Reference<Experimental.Button>()
-    var property: ObservableProperty<StyleValue?>? = nil
-    let root = MockRoot(rootWidget: TestWidget(true, buildInternal: nil) {
-      Experimental.Style(".button", Experimental.Button.self) {
-        ($0.backgroundFill, Color.red)
-      }
-
-      Experimental.Button() {
-        Experimental.Text("test")
-      }.with(classes: ["button"]).connect(ref: reference1).with { button in
-        property = button.stylePropertyValue(reactive: Experimental.Button.StyleKeys.backgroundFill)
-        _ = property!.onChanged { _ in
-          print("TEST::::::::: Button Reactive Observable Background FIll HCanged ------------------------")
-        }
-
-        _ = button.stylePropertiesResolver.onResolvedPropertyValuesChanged {
-          print("TEST::::::::: Button:       Resolved Prop Values Changed", $0)
-        }
-
-        _ = button.onMounted {
-          _ = button.children[0].stylePropertiesResolver.onResolvedPropertyValuesChanged {
-            print("TEST:::::::: Button Child: Resolved Prop Values Changed", $0)
-          }
-        }
-      }
-    })
-
-    XCTAssertEqual(reference1.referenced!.stylePropertyValue(Experimental.Button.StyleKeys.backgroundFill) as? Color, Color.red)
-    XCTAssertEqual(reference1.referenced!.children[0].stylePropertyValue(Experimental.Container.StyleKeys.backgroundFill) as? Color, Color.red)
   }
 
   func testFullTree() {
@@ -159,10 +136,52 @@ class ExperimentalWidgetTreeStyleTests: XCTestCase {
     XCTAssertEqual(reference4.referenced!.stylePropertyValue(TestWidget.StyleKeys.property2) as? Double, -2.0)
   }
 
+  func testSimpleRealWidgets() {
+    let reference1 = Reference<Experimental.Button>()
+    let root = MockRoot(rootWidget: TestWidget(true, buildInternal: nil) {
+      Experimental.Style(".button", Experimental.Button.self) {
+        ($0.backgroundFill, Color.red)
+      }
+
+      Experimental.Button() {
+        Experimental.Text("test")
+      }.with(classes: ["button"]).connect(ref: reference1)
+    })
+
+    XCTAssertEqual(reference1.referenced!.stylePropertyValue(Experimental.Button.StyleKeys.backgroundFill) as? Color, Color.red)
+    XCTAssertEqual(reference1.referenced!.children[0].stylePropertyValue(Experimental.Container.StyleKeys.backgroundFill) as? Color, Color.red)
+  }
+
+  func testPseudoClassUpdate() {
+    let reference1 = Reference<TestWidget>()
+    let root = MockRoot(rootWidget: TestWidget(true, buildInternal: nil) {
+      Experimental.Style(".class-1", TestWidget.self) {
+        ($0.property1, 1.0)
+      }
+
+      Experimental.Style(".class-1:pseudo-class-1", TestWidget.self) {
+        ($0.property1, 2.0)
+      }
+
+      TestWidget(true).with(classes: ["class-1"]).connect(ref: reference1)
+    })
+
+    XCTAssertEqual(reference1.referenced!.stylePropertyValue(TestWidget.StyleKeys.property1) as? Double, 1.0)
+
+    reference1.referenced!.pseudoClass1Enabled = true
+    root.mockTick()
+    XCTAssertEqual(reference1.referenced!.stylePropertyValue(TestWidget.StyleKeys.property1) as? Double, 2.0)
+
+    reference1.referenced!.pseudoClass1Enabled = false
+    root.mockTick()
+    XCTAssertEqual(reference1.referenced!.stylePropertyValue(TestWidget.StyleKeys.property1) as? Double, 1.0)
+  }
+
   static var allTests = [
     ("testSimpleOneWidget", testSimpleOneWidget),
     ("testOneWidgetWithReactiveInputOutput", testOneWidgetWithReactiveInputOutput),
-    ("testRealWidgets", testRealWidgets),
-    ("testFullTree", testFullTree)
+    ("testFullTree", testFullTree),
+    ("testSimpleRealWidgets", testSimpleRealWidgets),
+    ("testPseudoClassUpdate", testPseudoClassUpdate)
   ]
 }

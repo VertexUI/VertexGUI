@@ -6,7 +6,11 @@ extension Experimental {
 
     public let onClick = WidgetEventHandlerManager<Void>()
 
-    private var hovered: Bool = false
+    private var hovered: Bool = false {
+      didSet {
+        notifySelectorChanged()
+      }
+    }
     override public var pseudoClasses: [String] {
       hovered ? ["hover"] : []
     }

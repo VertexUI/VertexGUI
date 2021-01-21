@@ -15,9 +15,9 @@ extension Experimental {
         super.init()
         self.experimentalProvidedStyles.append(contentsOf: content.experimentalStyles)
         self._fill = stylePropertiesResolver[reactive: StyleKeys.fill]
-        /*_ = self.$fill.onChanged {
-          print("FILL CHANGED", $0)
-        }*/
+        _ = self.$fill.onChanged { [unowned self] _ in
+          invalidateRenderState()
+        }
     }
 
     public convenience init(
