@@ -21,6 +21,10 @@ extension Experimental.Style {
       IntermediateResult(properties: [Experimental.StyleProperty(key: expression.0, value: expression.1)])
     }
 
+    public static func buildExpression<P: ReactiveProperty>(_ expression: (StyleKey, P)) -> IntermediateResult where P.Value: StyleValue {
+      IntermediateResult(properties: [Experimental.StyleProperty(key: expression.0, value: expression.1)])
+    }
+
     public static func buildExpression(_ properties: Experimental.StyleProperties) -> IntermediateResult {
       // TODO: maybe use properties object directly instead of unwrapping it?
       IntermediateResult(properties: properties.properties)

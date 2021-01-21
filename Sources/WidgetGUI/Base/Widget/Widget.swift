@@ -19,7 +19,8 @@ open class Widget: Bounded, Parent, Child {
     ------------------------
     anything that is related to identification, navigation, messaging, etc. in a tree
     */
-    open var id: UInt = UInt.random(in: 0..<UInt.max)
+    public static var nextId: UInt = 2
+    public let id: UInt
     // TODO: is this even used?
     open var key: String?
     open var classes: [String] = [] {
@@ -248,21 +249,24 @@ open class Widget: Bounded, Parent, Child {
     /** Styles whose selectors match this Widget instance. */
     internal var experimentalMatchedStyles: [Experimental.Style] = [] {
         didSet {
-            stylePropertiesResolver.styles = experimentalMatchedStyles
+            if !experimentalMatchedStyles.allSatisfy({ style in oldValue.contains { $0 === style } }) {
+                stylePropertiesResolver.styles = experimentalMatchedStyles
+                stylePropertiesResolver.resolve()
+            }
         }
     }
     /** Style properties that are applied to this Widget instance directly
     without any selector based testing. */
     public internal(set) var experimentalDirectStyleProperties: [Experimental.StyleProperties] = [] {
         didSet {
-            // TODO: when to call this?
-            updateAppliedStyleProperties()
             stylePropertiesResolver.directProperties = experimentalDirectStyleProperties
+            stylePropertiesResolver.resolve()
         }
     }
 
     lazy internal var stylePropertiesResolver = Experimental.StylePropertiesResolver(
-        propertySupportDefinitions: experimentalMergedSupportedStyleProperties)
+        propertySupportDefinitions: experimentalMergedSupportedStyleProperties,
+        widget: self)
     /* end style */
 
     open var visibility: Visibility = .Visible {
@@ -327,6 +331,8 @@ open class Widget: Bounded, Parent, Child {
     private var unregisterAnyParentChangedHandler: EventHandlerManager<Parent?>.UnregisterCallback?
 	
     public init(children: [Widget] = []) {
+        self.id = Self.nextId
+        Self.nextId += 1
         self.children = children
         self.styleScope = Widget.activeStyleScope
         setupWidgetEventHandlerManagers()

@@ -35,19 +35,19 @@ extension Experimental {
     public init<P: ReactiveProperty>(key: StyleKey, value valueProperty: P) where P.Value == StyleValue? {
       self.key = key
       
-      let computedWrapperProperty = ComputedProperty<StyleValue?>(compute: {
+      /*let computedWrapperProperty = ComputedProperty<StyleValue?>(compute: {
         valueProperty.value
-      }, dependencies: [valueProperty])
+      }, dependencies: [valueProperty])*/
 
       let derivedObservableProperty = ObservableProperty<StyleValue?>()
-      derivedObservableProperty.bind(computedWrapperProperty)
+      derivedObservableProperty.bind(valueProperty)
 
       self._value = .reactive(derivedObservableProperty)
 
       _ = derivedObservableProperty.onChanged { _ in
         self.onChanged.invokeHandlers()
       }
-      self.ownedObjects.append(computedWrapperProperty)
+      //self.ownedObjects.append(computedWrapperProperty)
     }
 
     public init<P: ReactiveProperty>(key: StyleKey, value valueProperty: P) where P.Value: StyleValue {
