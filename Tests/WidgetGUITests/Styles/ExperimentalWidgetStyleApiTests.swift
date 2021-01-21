@@ -55,32 +55,28 @@ class ExperimentalWidgetStyleApiTests: XCTestCase {
     let widget = WidgetWithoutSpecialStyleProperties()
 
     widget.with(styleProperties: {
-      ($0.foreground, 1)
+      ($0.foreground, 1.0)
     })
 
-    widget.updateAppliedStyleProperties()
-
-    XCTAssertEqual(widget.experimentalAppliedStyleProperties.count, 1)
+    XCTAssertEqual(widget.stylePropertyValue(WidgetWithoutSpecialStyleProperties.StyleKeys.foreground) as? Double, 1.0)
   }
 
   func testWidgetWithSpecialStyleProperties() {
     let widget = WidgetWithSpecialStyleProperties()
     
     widget.with(styleProperties: {
-      ($0.foreground, 1)
-      ($0.specialProperty1, 1)
+      ($0.foreground, 1.0)
+      ($0.specialProperty1, 1.0)
     })
     widget.with(Experimental.StyleProperties(WidgetWithSpecialStyleProperties.StyleKeys.self) {
-      ($0.foreground, 1)
+      ($0.foreground, 2.0)
     })
     widget.with(Experimental.StyleProperties(WidgetWithSpecialStyleProperties.self) {
-      ($0.specialProperty1, 1)
+      ($0.specialProperty1, 3.0)
     })
 
-    widget.updateAppliedStyleProperties()
-
-    XCTAssertEqual(widget.experimentalAppliedStyleProperties.count, 2)
-    // TODO: test in more depth!
+    XCTAssertEqual(widget.stylePropertyValue(WidgetWithSpecialStyleProperties.StyleKeys.foreground) as? Double, 2.0)
+    XCTAssertEqual(widget.stylePropertyValue(WidgetWithSpecialStyleProperties.StyleKeys.specialProperty1) as? Double, 3.0)
   }
 
   static var allTests = [
