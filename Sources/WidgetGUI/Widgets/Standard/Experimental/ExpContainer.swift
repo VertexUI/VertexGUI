@@ -36,14 +36,12 @@ extension Experimental {
     override public func performBuild() {
       let builtChild = childBuilder()
       rootChild = Background() { [unowned self] in
-        Experimental.Background(configure: {
-          $0.with(styleProperties: {
-            ($0.fill, stylePropertyValue(StyleKeys.backgroundFill) ?? Color.transparent)
-          })
+        Experimental.Background(styleProperties: {
+          ($0.fill, stylePropertyValue(reactive: StyleKeys.backgroundFill))
         }) {
           Experimental.Padding(configure: {
             $0.with(styleProperties: {
-              ($0.insets, self.padding)
+              ($0.insets, stylePropertyValue(reactive: StyleKeys.padding))
             })
           }) {
             builtChild
