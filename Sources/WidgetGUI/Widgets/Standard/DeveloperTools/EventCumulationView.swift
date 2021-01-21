@@ -1,4 +1,5 @@
 import Foundation
+import ExperimentalReactiveProperties
 import GfxMath
 import VisualAppBase
 import Path
@@ -15,34 +16,17 @@ public class EventCumulationView: SingleChildWidget {
     .BuildInvalidated, .BoxConfigInvalidated, .LayoutInvalidated, .RenderStateInvalidated
   ]
 
-  private var canvases: [Event: Reference<PixelCanvas>] = [:]
-  @Reference
-  private var xLegendSpace: Space
-  @Reference
-  private var yLegendSpace: Space
-
   private var data = CumulationData()
-  private let minDuration: Double = 40
-  private var startTimestamp: Double = -1
-  private var endTimestamp: Double = -1
+  lazy private var barChartData: [Event: ExperimentalReactiveProperties.MutableProperty<Experimental.BarChart.Data>] =
+    Dictionary(uniqueKeysWithValues: cumulatedEvents.map { ($0, ExperimentalReactiveProperties.MutableProperty([])) })
 
-  private var images: [Event: VisualAppBase.Image] = [:]
   private var lastUpdateTimestamp = 0.0
   private let updateInterval = 0.5
   private var imageUpdateRunning = false
 
-  private let graphTitleFontConfig = Text.defaultConfig.fontConfig
-  private let scaleTickFontConfig = Text.defaultConfig.fontConfig
-
   public init(_ inspectedRoot: Root) {
     self.inspectedRoot = inspectedRoot
     super.init()
-
-    for event in cumulatedEvents {
-      canvases[event] = Reference()
-      images[event] = Image(width: 600, height: 200, value: 0)
-    }
-
 
     _ = onDestroy(self.inspectedRoot.widgetContext!.inspectionBus.pipe(into: messages))
     _ = onTick { [unowned self] _ in
@@ -56,22 +40,23 @@ public class EventCumulationView: SingleChildWidget {
   
   override public func buildChild() -> Widget {
     Row { [unowned self] in
-      Space(context.getTextBoundsSize("1000", fontConfig: scaleTickFontConfig)).connect(ref: $yLegendSpace)
-
       Column {
-        cumulatedEvents.map { event in
-          //Text("Counts for event: \(event)")
-          ConstrainedSize(minSize: DSize2(200, 100)) {
-            PixelCanvas(DSize2(300, 200)).connect(ref: canvases[event]!).with {
-              $0.debugLayout = true
-            }
-          }
+        cumulatedEvents.flatMap { event in
+          [
+            Experimental.Padding(classes: ["event-name-label-container"]) {
+              Experimental.Text(classes: ["event-name-label"], event.rawValue)
+            },
+            Experimental.BarChart(barChartData[event]!)
+          ]
         }
-
-        Column.Item(margins: Margins(top: 16)) {
-          Space(context.getTextBoundsSize("WOWO", fontConfig: scaleTickFontConfig)).connect(ref: $xLegendSpace)
+      }.provideStyles([
+        Experimental.Style(".event-name-label-container", Experimental.Padding.self) {
+          ($0.insets, Insets(all: 16))
+        },
+        Experimental.Style(".event-name-label", Experimental.Text.self) {
+          ($0.fontSize, 24.0)
         }
-      }
+      ])
     }
   }
 
@@ -81,45 +66,27 @@ public class EventCumulationView: SingleChildWidget {
     }
     imageUpdateRunning = true
     let previousData = data
-    let imageSizes: [Event: SIMD2<Int>] = canvases.mapValues { SIMD2([Int($0.referenced!.width), Int($0.referenced!.height)]) }
+    //let imageSizes: [Event: SIMD2<Int>] = canvases.mapValues { SIMD2([Int($0.referenced!.width), Int($0.referenced!.height)]) }
     DispatchQueue.global().async { [weak self] in
       if let self = self {
         self.processMessages()
         if self.data != previousData {
-          self.draw(imageSizes)
+          //self.draw(imageSizes)
           DispatchQueue.main.async { [weak self] in
             if let self = self {
               self.messages.clear()
               self.imageUpdateRunning = false
-              self.nextTick { _ in
+              /*self.nextTick { _ in
                 for event in self.cumulatedEvents {
                   self.canvases[event]!.referenced!.setContent(self.images[event]!)
                   self.canvases[event]!.referenced!.invalidateRenderState()
                 }
-              }
-              self.invalidateRenderState()
+              }*/
+              //self.invalidateRenderState()
             }
           }
         } else {
           self.imageUpdateRunning = false
-        }
-      }
-    }
-  }
-
-  private func draw(_ imageSizes: [Event: SIMD2<Int>]) {
-    let dataDuration = max(minDuration, data.maxTimestamp - data.minTimestamp)
-    for event in cumulatedEvents {
-      images[event] = Image(width: imageSizes[event]!.x, height: imageSizes[event]!.y, value: 0)
-      
-      let eventData = data[event]
-
-      for (timestamp, count) in eventData.timeCounts {
-        let relativeX = dataDuration > 0 ? (timestamp - data.minTimestamp) / dataDuration : 0
-        let relativeY = eventData.maxCount > 0 ? Double(count) / Double(eventData.maxCount) : 1
-        let position = SIMD2<Int>(SIMD2<Double>([images[event]!.width - 1, images[event]!.height - 1]) * [relativeX, relativeY])
-        for y in stride(from: images[event]!.height - 1, to: position.y, by: -1) {
-          images[event]![position.x, y] = Swim.Color<RGBA, UInt8>(r: 255, g: 255, b: 0, a: 255)
         }
       }
     }
@@ -134,72 +101,11 @@ public class EventCumulationView: SingleChildWidget {
         }
       }
     }
-  }
 
-  override public func renderContent() -> RenderObject {
-    var timestampLabels = [(timestamp: Double, x: Double)]()
-        
-    let minTimestamp = 0
-    let maxTimestamp = max(minDuration, data.maxTimestamp - data.minTimestamp)
-
-    let labelSize = context.getTextBoundsSize(String(maxTimestamp), fontConfig: scaleTickFontConfig)
-
-    let labelCount = max(2, Int(xLegendSpace.width / labelSize.width / 2))
-
-    for i in 0..<labelCount {
-      let factor = Double(i) / Double(labelCount - 1)
-      let timestamp = round(maxTimestamp * factor * 100) / 100
-      let labelSize = context.getTextBoundsSize(String(timestamp), fontConfig: scaleTickFontConfig)
-      timestampLabels.append((timestamp: timestamp, x: factor * xLegendSpace.width - labelSize.width / 2))
-    }
-
-    var yLabels = [(label: String, position: DPoint2)]()
     for event in cumulatedEvents {
-      let eventData = data[event]
-      let canvas = canvases[event]!.referenced!
-
-      let labelSize = context.getTextBoundsSize(String(1000), fontConfig: scaleTickFontConfig)
-
-      let yMin = canvas.globalPosition.y + labelSize.height / 2
-      let yMax = canvas.globalPosition.y + canvas.height - labelSize.height / 2
-      let yDelta = yMax - yMin
-
-      let labelCount = max(Int(yDelta / labelSize.height), 2)
-
-      for i in 0..<labelCount {
-        let factor = Double(i) / Double(labelCount - 1)
-        let label = String(Int(Double(eventData.maxCount) * factor))
-        let y = yMin + (yDelta - labelSize.height) * factor
-        yLabels.append((label: label, position: DPoint2(yLegendSpace.globalPosition.x, y)))
-      }
+      let rawBarChartData = data[event]
+      barChartData[event]!.value = rawBarChartData.timeCounts.map { (String($0.0), Double($0.1)) }
     }
-
-    var graphLabels = [(label: String, position: DPoint2)]()
-    for event in cumulatedEvents {
-      let canvas = canvases[event]!.referenced!
-      let labelPosition = canvas.globalPosition + DVec2(16, 16)
-      graphLabels.append((label: String(describing: event), position: labelPosition))
-    }
-
-    return ContainerRenderObject {
-      super.renderContent() 
-      
-      timestampLabels.map {
-        TextRenderObject(String($0.timestamp), fontConfig: scaleTickFontConfig, color: .black, topLeft: xLegendSpace.globalPosition + DVec2($0.x, 0))
-      }
-
-      yLabels.map {
-        TextRenderObject($0.label, fontConfig: scaleTickFontConfig, color: .black, topLeft: $0.position)
-      }
-
-      graphLabels.map {
-        TextRenderObject(String($0.label), fontConfig: scaleTickFontConfig, color: .black, topLeft: $0.position)
-      }
-    }
-  }
-
-  override public func destroySelf() {
-    super.destroySelf()
   }
 }
 
