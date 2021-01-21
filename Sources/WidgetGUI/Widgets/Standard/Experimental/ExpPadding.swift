@@ -2,17 +2,12 @@ import GfxMath
 
 extension Experimental {
   public class Padding: ComposedWidget, ExperimentalStylableWidget {
-    private let childBuilder: SingleChildContentBuilder.ChildBuilder
-
     private var insets: Insets {
       stylePropertyValue(StyleKeys.insets, as: Insets.self) ?? Insets(all: 0)
     }
 
-    private init(contentBuilder: () -> SingleChildContentBuilder.Result) {
-        let content = contentBuilder()
-        self.childBuilder = content.child
-        super.init()
-        self.experimentalProvidedStyles.append(contentsOf: content.experimentalStyles)
+    override private init(contentBuilder: () -> SingleChildContentBuilder.Result) {
+        super.init(contentBuilder: contentBuilder)
     }
 
     public convenience init(
@@ -33,10 +28,6 @@ extension Experimental {
         if let configure = configure {
           configure(self)
         }
-    }
-
-    override public func performBuild() {
-      rootChild = childBuilder()
     }
 
     override public func getBoxConfig() -> BoxConfig {

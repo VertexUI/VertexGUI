@@ -8,7 +8,7 @@ extension Experimental {
       stylePropertyValue(StyleKeys.padding, as: Insets.self) ?? Insets(all: 0)
     }
 
-    private init(contentBuilder: () -> SingleChildContentBuilder.Result) {
+    override private init(contentBuilder: () -> SingleChildContentBuilder.Result) {
         let content = contentBuilder()
         self.childBuilder = content.child
         super.init()

@@ -4,16 +4,11 @@ import GfxMath
 
 extension Experimental {
   public class Background: ComposedWidget, ExperimentalStylableWidget {
-    private let childBuilder: SingleChildContentBuilder.ChildBuilder
-
     @ObservableProperty
     private var fill: Color?
     
-    private init(contentBuilder: () -> SingleChildContentBuilder.Result) {
-        let content = contentBuilder()
-        self.childBuilder = content.child
-        super.init()
-        self.experimentalProvidedStyles.append(contentsOf: content.experimentalStyles)
+    override private init(contentBuilder: () -> SingleChildContentBuilder.Result) {
+        super.init(contentBuilder: contentBuilder)
         self._fill = stylePropertiesResolver[reactive: StyleKeys.fill]
         _ = self.$fill.onChanged { [unowned self] _ in
           invalidateRenderState()
@@ -38,10 +33,6 @@ extension Experimental {
           self.classes = classes
         }
         self.with(stylePropertiesBuilder(StyleKeys.self))
-    }
-    
-    override public func performBuild() {
-      rootChild = childBuilder()
     }
 
     override public func renderContent() -> RenderObject? {

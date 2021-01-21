@@ -92,7 +92,7 @@ public struct WidgetInspectionMessage: Equatable {
     return lhs.sender === rhs.sender && lhs.timestamp == rhs.timestamp && lhs.content == rhs.content
   }
 
-  public enum MessageContent: Hashable {
+  public enum MessageContent: String, Hashable {
     case BuildInvalidated
     case BuildStarted
     case BuildFinished

@@ -1,6 +1,6 @@
 import SwiftGUI
 
-public class MinmalDemoApp: WidgetsApp {
+public class MinimalDemoApp: WidgetsApp {
   public init() {
     super.init(baseApp: SDL2OpenGL3NanoVGVisualApp())
   }
@@ -12,7 +12,7 @@ public class MinmalDemoApp: WidgetsApp {
   }
 }
 
-let app = MinmalDemoApp()
+let app = MinimalDemoApp()
 
 do {
   try app.start()

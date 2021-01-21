@@ -497,9 +497,9 @@ open class Widget: Bounded, Parent, Child {
         let oldChildren = children
         
         // TODO: should probably not call destroy here as these children might be mounted somewhere else, maybe have something like unmount()
-        for oldChild in oldChildren {
+        /*for oldChild in oldChildren {
             oldChild.destroy()
-        }
+        }*/
 
         Widget.inStyleScope(self.createsStyleScope ? self.id : self.styleScope) {
             performBuild()

@@ -13,6 +13,15 @@ extension Experimental {
       }
     }
 
+    public init() {}
+
+    public init(contentBuilder: () -> SingleChildContentBuilder.Result) {
+      let content = contentBuilder()
+      self.rootChild = content.child()
+      super.init()
+      self.experimentalProvidedStyles.append(contentsOf: content.experimentalStyles)
+    }
+
     override open func getBoxConfig() -> BoxConfig {
       rootChild!.getBoxConfig()
     }
@@ -23,7 +32,8 @@ extension Experimental {
     }
 
     override public func renderContent() -> RenderObject? {
-      rootChild?.render()
+      print("ROOT CHILD RENDER", self, rootChild)
+      return rootChild?.render()
     }
   }
 }
