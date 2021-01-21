@@ -10,6 +10,7 @@ public class ObservableProperty<Value>: ReactiveProperty, InternalValueSettableR
       hasValue = true
       if let oldValue = oldValue {
         onChanged.invokeHandlers((old: oldValue, new: _value!))
+        onAnyChanged.invokeHandlers((old: oldValue, new: _value!))
       }
     }
   }
@@ -36,6 +37,9 @@ public class ObservableProperty<Value>: ReactiveProperty, InternalValueSettableR
 
   public var wrappedValue: Value {
     value
+  }
+  public var projectedValue: ObservableProperty<Value> {
+    self
   }
   
   public var registeredBindings = [PropertyBindingProtocol]()
