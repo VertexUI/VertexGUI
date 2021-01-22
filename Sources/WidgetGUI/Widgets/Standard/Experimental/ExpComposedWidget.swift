@@ -22,6 +22,17 @@ extension Experimental {
       self.experimentalProvidedStyles.append(contentsOf: content.experimentalStyles)
     }
 
+    public convenience init(
+      classes: [String]? = nil,
+      @Experimental.StylePropertiesBuilder styleProperties stylePropertiesBuilder: (StyleKeys.Type) -> Experimental.StyleProperties = { _ in [] },
+      @SingleChildContentBuilder content contentBuilder: @escaping () -> SingleChildContentBuilder.Result) {
+        self.init(contentBuilder: contentBuilder)
+        if let classes = classes {
+          self.classes = classes
+        }
+        self.with(stylePropertiesBuilder(StyleKeys.self))
+    }
+
     override open func getBoxConfig() -> BoxConfig {
       rootChild!.getBoxConfig()
     }
@@ -32,7 +43,6 @@ extension Experimental {
     }
 
     override public func renderContent() -> RenderObject? {
-      print("ROOT CHILD RENDER", self, rootChild)
       return rootChild?.render()
     }
   }

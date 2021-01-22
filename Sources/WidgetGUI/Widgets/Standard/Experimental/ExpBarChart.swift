@@ -12,6 +12,11 @@ extension Experimental {
     public init<P: ReactiveProperty>(_ dataProperty: P) where P.Value == Data {
       super.init()
       self.$data.bind(dataProperty)
+      _ = $data.onChanged { [unowned self] change in
+        if change.old.count != change.new.count || !change.old.allSatisfy({ oldItem in change.new.contains { $0 == oldItem } }) {
+          invalidateRenderState()
+        }
+      }
     }
 
     override public func getBoxConfig() -> BoxConfig {

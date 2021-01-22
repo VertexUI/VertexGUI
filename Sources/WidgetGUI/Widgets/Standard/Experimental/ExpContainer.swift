@@ -39,18 +39,23 @@ extension Experimental {
         Experimental.Background(styleProperties: {
           ($0.fill, stylePropertyValue(reactive: StyleKeys.backgroundFill))
         }) {
-          Experimental.Padding(configure: {
-            $0.with(styleProperties: {
-              ($0.insets, stylePropertyValue(reactive: StyleKeys.padding))
-            })
+          Experimental.ConstrainedSizeBox(styleProperties: {
+            ($0.width, stylePropertyValue(reactive: StyleKeys.width))
+            ($0.height, stylePropertyValue(reactive: StyleKeys.height))
           }) {
-            builtChild
+            Experimental.Padding(styleProperties: {
+              ($0.insets, stylePropertyValue(reactive: StyleKeys.padding))
+            }) {
+              builtChild
+            }
           }
         }
       }
     }
 
     public enum StyleKeys: String, StyleKey, ExperimentalDefaultStyleKeys {
+      case width
+      case height
       case padding
       case backgroundFill
     }

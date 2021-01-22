@@ -8,6 +8,7 @@ extension Int: StyleValue {}
 extension Double: StyleValue {}
 extension String: StyleValue {}
 extension Bool: StyleValue {}
+extension DSize2: StyleValue {}
 extension Insets: StyleValue {}
 extension GfxMath.Color: StyleValue {}
 extension TextTransform: StyleValue {}

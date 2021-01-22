@@ -40,14 +40,18 @@ public class EventCumulationView: SingleChildWidget {
   
   override public func buildChild() -> Widget {
     Row { [unowned self] in
-      Column {
-        cumulatedEvents.flatMap { event in
-          [
+      Experimental.SimpleColumn {
+        cumulatedEvents.map { event in
+          Experimental.SimpleColumn {
             Experimental.Padding(classes: ["event-name-label-container"]) {
               Experimental.Text(classes: ["event-name-label"], event.rawValue)
-            },
-            Experimental.BarChart(barChartData[event]!)
-          ]
+            }
+            Experimental.Container(classes: ["bar-chart-container"]) {
+              Experimental.BarChart(barChartData[event]!)
+            }.with {
+              $0.debugLayout = true
+            }
+          }
         }
       }.provideStyles([
         Experimental.Style(".event-name-label-container", Experimental.Padding.self) {
@@ -55,6 +59,11 @@ public class EventCumulationView: SingleChildWidget {
         },
         Experimental.Style(".event-name-label", Experimental.Text.self) {
           ($0.fontSize, 24.0)
+        },
+        Experimental.Style(".bar-chart-container", Experimental.Container.self) {
+          ($0.padding, Insets(all: 32))
+          ($0.width, 600.0)
+          ($0.height, 200.0)
         }
       ])
     }
@@ -101,10 +110,11 @@ public class EventCumulationView: SingleChildWidget {
         }
       }
     }
+    messages.clear()
 
     for event in cumulatedEvents {
       let rawBarChartData = data[event]
-      barChartData[event]!.value = rawBarChartData.timeCounts.map { (String($0.0), Double($0.1)) }
+      barChartData[event]!.value = rawBarChartData.timeCounts.sorted(by: { $0.0 < $1.0 }).map { (String($0.0), Double($0.1)) }
     }
   }
 }
