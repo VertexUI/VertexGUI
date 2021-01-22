@@ -116,7 +116,9 @@ open class Widget: Bounded, Parent, Child {
     
     open var position = DPoint2(0, 0) {
         didSet {
-            invalidateRenderState(deep: true)
+            if oldValue != position {
+                invalidateRenderState(deep: true)
+            }
         }
     }
 

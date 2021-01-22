@@ -18,6 +18,8 @@ let package = Package(
 
         .executable(name: "MinimalDemo", targets: ["MinimalDemo"]),
 
+        .executable(name: "DevApp", targets: ["DevApp"]),
+
         .executable(
             name: "TaskOrganizerDemo",
             targets: ["TaskOrganizerDemo"]),
@@ -91,6 +93,11 @@ let package = Package(
 
         .target(
             name: "MinimalDemo",
+            dependencies: ["SwiftGUI"]
+        ),
+
+        .target(
+            name: "DevApp",
             dependencies: ["SwiftGUI"]
         ),
 
