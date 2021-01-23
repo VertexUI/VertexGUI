@@ -7,6 +7,10 @@ public struct StyleSelector: Equatable, Sequence, ExpressibleByStringLiteral {
     self.parts = try! StyleSelector.simplify(parts: parts)
   }
 
+  public init(_ parts: StyleSelectorPart...) {
+    self.init(parts)
+  }
+
   public init(parse literal: String) throws {
     self.init(try literal.split(separator: " ").map { try StyleSelectorPart(parse:String($0)) })
     self.source = literal
