@@ -6,7 +6,7 @@ extension Experimental {
     public var sourceScope: UInt
     public private(set) var parent: Experimental.Style?
     
-    private init(_ selector: StyleSelector, _ properties: StyleProperties, _ children: [Experimental.Style]) {
+    public init(_ selector: StyleSelector, _ properties: StyleProperties, _ children: [Experimental.Style]) {
       self.selector = selector
       self.properties = properties
       self.children = children
