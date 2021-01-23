@@ -44,55 +44,59 @@ open class SDL2OpenGL3NanoVGRenderObjectTreeSliceRenderer: RenderObjectTreeSlice
     GLVertexArray.unbind()
   }
 
+  private func renderImage(image: Image, bounds: DRect) {
+      imageShader.use()
+      imageVao.bind()
+
+      let relativeSize = FVec2(bounds.size) / FVec2(context.window.size) * FVec2(context.window.resolution)
+      let relativePosition = FVec2(bounds.min) / FVec2(context.window.size)
+
+      let glPosition = (FVec2(relativePosition.x, 1 - relativePosition.y)) * 2 - FVec2(1, 1)
+      let glSize = relativeSize * 2
+
+      let glTopLeft = glPosition
+      let glTopRight = glPosition + FVec2(glSize.x, 0)
+      let glBottomRight = glPosition + glSize * FVec2(1, -1)
+      let glBottomLeft = glPosition + FVec2(0, -glSize.y)
+
+      let vertices = [
+        glBottomLeft, FVec2(0, 0),
+        glBottomRight, FVec2(1, 0),
+        glTopRight, FVec2(1, 1),
+        glBottomLeft, FVec2(0, 0),
+        glTopRight, FVec2(1, 1),
+        glTopLeft, FVec2(0, 1)
+      ].flatMap { $0.elements }
+
+      imageVbo.bind(.arrayBuffer)
+      imageVbo.store(vertices)
+
+      glBindTexture(GLMap.TEXTURE_2D, imageTexture)
+      glTexImage2D(
+        GLMap.TEXTURE_2D,
+        0,
+        GLMap.RGBA,
+        GLMap.Size(image.width),
+        GLMap.Size(image.height),
+        0,
+        GLMap.RGBA,
+        GLMap.UNSIGNED_BYTE,
+        image.getData())
+      glGenerateMipmap(GLMap.TEXTURE_2D)
+
+      glDrawArrays(GLMap.TRIANGLES, 0, 6)
+  }
+
   override open func renderLeaf(node: RenderObject, with backendRenderer: Renderer) {
-    if let node = node as? VideoRenderObject {
-      if let frame = node.stream.getCurrentFrame() {
-        //glViewport(0, 0, 600, 600)
-        imageShader.use()
-        //imageShader.setUniform()
-        imageVao.bind()
-
-        let relativeSize = FVec2(node.bounds.size) / FVec2(context.window.size)
-        let relativePosition = FVec2(node.bounds.min) / FVec2(context.window.size)
-
-        let glPosition = (FVec2(relativePosition.x, 1 - relativePosition.y)) * 2 - FVec2(1, 1)
-        let glSize = relativeSize * 0.5
-
-        let glTopLeft = glPosition
-        let glTopRight = glPosition + FVec2(glSize.x, 0)
-        let glBottomRight = glPosition + glSize * FVec2(1, -1)
-        let glBottomLeft = glPosition + FVec2(0, -glSize.y)
-
-        let vertices = [
-          glBottomLeft, FVec2(0, 0),
-          glBottomRight, FVec2(1, 0),
-          glTopRight, FVec2(1, 1),
-          glBottomLeft, FVec2(0, 0),
-          glTopRight, FVec2(1, 1),
-          glTopLeft, FVec2(0, 1)
-        ].flatMap { $0.elements }
-
-        imageVbo.bind(.arrayBuffer)
-        imageVbo.store(vertices)
-
-        glBindTexture(GLMap.TEXTURE_2D, imageTexture)
-        glTexImage2D(
-          GLMap.TEXTURE_2D,
-          0,
-          GLMap.RGB,
-          GLMap.Size(node.stream.size.width),
-          GLMap.Size(node.stream.size.height),
-          0,
-          GLMap.RGB,
-          GLMap.UNSIGNED_BYTE,
-          frame.data)
-        glGenerateMipmap(GLMap.TEXTURE_2D)
-
-        glDrawArrays(GLMap.TRIANGLES, 0, 6)
+    switch node {
+    case let node as VideoRenderObject:
+      if let frame = node.stream.getCurrentFrameImageRGBA() {
+        renderImage(image: frame, bounds: node.bounds)
       }
-      return
+    case let node as ImageRenderObject:
+      renderImage(image: node.image, bounds: node.bounds)
+    default:
+      super.renderLeaf(node: node, with: backendRenderer)
     }
-    
-    super.renderLeaf(node: node, with: backendRenderer)
   }
 }

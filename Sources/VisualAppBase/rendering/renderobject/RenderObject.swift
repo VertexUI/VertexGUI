@@ -663,6 +663,38 @@ open class RectangleRenderObject: RenderObject {
     }
 }
 
+open class ImageRenderObject: RenderObject {
+    public var image: Image
+    public var bounds: DRect
+
+    override open var hasTimedRenderValue: Bool {
+        false
+    }
+
+    override open var debugDescription: String {
+        "ImageRenderObject"
+    }
+
+    override open var individualHash: Int {
+        var hasher = Hasher()
+        //hasher.combine(image)
+        hasher.combine(bounds)
+        return hasher.finalize()
+    }
+
+    public init(image: Image, bounds: DRect) {
+        self.image = image
+        self.bounds = bounds
+    }
+
+    override public func objectsAt(point: DPoint2) -> [ObjectAtPointResult] {
+        if bounds.contains(point: point) {
+            return [ObjectAtPointResult(object: self, transformedPoint: point)]
+        }
+        return []
+    }
+}
+
 open class VideoRenderObject: RenderObject {
     public var stream: VideoStream
     public var bounds: DRect

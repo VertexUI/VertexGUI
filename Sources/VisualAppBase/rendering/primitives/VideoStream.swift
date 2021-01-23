@@ -1,5 +1,6 @@
 import GfxMath
 import Events
+import Swim
 
 open class VideoStream: EventfulObject {
   open var size: ISize2 {
@@ -18,6 +19,13 @@ open class VideoStream: EventfulObject {
 
   open func getCurrentFrame() -> Frame? {
     fatalError("getCurrentFrame() not implemented")
+  }
+
+  open func getCurrentFrameImageRGBA() -> Image? {
+    if let frame = getCurrentFrame() {
+      return Swim.Image<Swim.RGB, UInt8>(width: size.width, height: size.height, rgb: frame.data).toRGBA(with: 255)
+    }
+    return nil
   }
 
   open class Frame {

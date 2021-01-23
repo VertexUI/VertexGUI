@@ -38,14 +38,12 @@ extension Experimental {
         let datumHeight = datum.value / maxValue * Double(image.height)
         let x0 = Int(Double(index) * datumWidth)
         let x1 = Int(Double(x0) + datumWidth)
-        let y0 = Int(Double(image.height) - datumHeight)
-        let y1 = image.height
+        let y0 = 0
+        let y1 = Int(datumHeight)
         image.drawRect(x0..<x1, y0..<y1, color: .green)
       } 
 
-      return RenderStyleRenderObject(fill: FixedRenderValue(.Image(image, position: globalBounds.min))) {
-        RectangleRenderObject(globalBounds)
-      }
+      return ImageRenderObject(image: image, bounds: globalBounds)
     }
   }
 }
