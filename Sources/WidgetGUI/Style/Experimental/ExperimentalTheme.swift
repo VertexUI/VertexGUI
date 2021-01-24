@@ -3,7 +3,7 @@ import GfxMath
 extension Experimental {
   public class Theme: Experimental.Style {
     public init(styles: [Experimental.Style]) {
-      super.init("", [], styles)
+      super.init(StyleSelector(StyleSelectorPart(extendsParent: true)), [], styles)
     }
   }
 
