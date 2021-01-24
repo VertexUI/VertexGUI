@@ -206,7 +206,7 @@ open class Widget: Bounded, Parent, Child {
     /** Style property support declared for this Widget instance as the child of it's parent. */
     public var experimentalSupportedParentStyleProperties: Experimental.StylePropertySupportDefinitions = []
     /** Style property support declared by this Widget instance. */
-    public var experimentalSupportedStyleProperties: Experimental.StylePropertySupportDefinitions = []
+    public var experimentalSupportedStyleProperties: Experimental.StylePropertySupportDefinitions { [] }
     /** */
     public var experimentalMergedSupportedStyleProperties: Experimental.StylePropertySupportDefinitions {
             do {
@@ -248,6 +248,7 @@ open class Widget: Bounded, Parent, Child {
     public var experimentalProvidedStyles: [Experimental.Style] = []
 
     internal var appliedStyles: [AnyStyle] = []
+    internal var matchedStylesInvalid = false
     /** Styles whose selectors match this Widget instance. */
     internal var experimentalMatchedStyles: [Experimental.Style] = [] {
         didSet {
@@ -447,6 +448,8 @@ open class Widget: Bounded, Parent, Child {
                 mounted = true
 
                 onMounted.invokeHandlers(Void())
+
+                invalidateMatchedStyles()
     }
 
     private final func resolveDependencies() {
@@ -725,6 +728,7 @@ open class Widget: Bounded, Parent, Child {
     internal final func _layout(constraints: BoxConstraints) {
         if constraints.minWidth.isInfinite || constraints.minHeight.isInfinite {
             fatalError("Widget received constraints that contain infinite value in min size: \(self)")
+
         }
 
         #if (DEBUG)

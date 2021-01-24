@@ -104,12 +104,12 @@ public struct WidgetInspectionMessage: Equatable {
     case LayoutingStarted
     case LayoutingFinished
 
+    case SelectorChanged
+
     case RenderStateInvalidated
     case RenderBurstThresholdExceeded
     case RenderingStarted
     case RenderingFinished
-
-    case SelectorChanged
   }
 }
 
@@ -124,10 +124,9 @@ public struct WidgetLifecycleMessage {
 
   public enum MessageContent {
     case BuildInvalidated
+    case MatchedStylesInvalidated
     case BoxConfigInvalidated
     case LayoutInvalidated
     case RenderStateInvalidated
-
-    case SelectorChanged
   }
 }
