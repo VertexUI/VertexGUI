@@ -45,7 +45,7 @@ public class DeveloperToolsView: SingleChildWidget {
             Space(.zero)
           }
           
-          LiveText { "fps: \(self.context.realFps)" }
+          //LiveText { "fps: \(self.context.realFps)" }
         }
 
         ObservingBuilder($activeTab) {

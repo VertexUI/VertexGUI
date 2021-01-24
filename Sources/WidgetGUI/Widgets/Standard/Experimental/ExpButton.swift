@@ -1,4 +1,5 @@
 import GfxMath
+import VisualAppBase
 
 extension Experimental {
   public class Button: ComposedWidget, ExperimentalStylableWidget, GUIMouseEventConsumer {
@@ -13,6 +14,13 @@ extension Experimental {
     }
     override public var pseudoClasses: [String] {
       hovered ? ["hover"] : []
+    }
+
+    override public var experimentalSupportedStyleProperties: Experimental.StylePropertySupportDefinitions {
+      Experimental.StylePropertySupportDefinitions {
+        (StyleKeys.padding, type: .specific(Insets.self))
+        (StyleKeys.backgroundFill, type: .specific(Color.self))
+      }
     }
 
     public init(

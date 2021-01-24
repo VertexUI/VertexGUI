@@ -31,7 +31,7 @@ open class Root: Parent {
   private var reboxConfigWidgets = WidgetBuffer()
   private var relayoutWidgets = WidgetBuffer()
   private var rerenderWidgets = WidgetBuffer()
-  private var selectorChangedWidgets = WidgetBuffer()
+  private var matchedStylesInvalidatedWidgets = WidgetBuffer()
   //private var focusContext = FocusContext()
 
   private var mouseEventManager = WidgetTreeMouseEventManager()
@@ -115,14 +115,6 @@ open class Root: Parent {
       processLifecycleMessage($0)
     }
 
-    // TODO: check whether any parent of the widget was already processed (which automatically leads to a reprocessing of the styles)
-    // TODO: or rather follow the pattern of invalidate...()? --> invalidateStyle()
-    styleManager.refresh(Array(selectorChangedWidgets))
-    for widget in selectorChangedWidgets {
-      experimentalStyleManager.processTree(widget)
-    }
-    selectorChangedWidgets.clear()
-
     for widget in rebuildWidgets {
       if !widget.destroyed {
         widget.build()
@@ -130,6 +122,16 @@ open class Root: Parent {
     }
     styleManager.refresh(Array(rebuildWidgets))
     rebuildWidgets.clear()
+
+    // TODO: check whether any parent of the widget was already processed (which automatically leads to a reprocessing of the styles)
+    // TODO: or rather follow the pattern of invalidate...()? --> invalidateStyle()
+    styleManager.refresh(Array(matchedStylesInvalidatedWidgets))
+    for widget in matchedStylesInvalidatedWidgets {
+      if !widget.destroyed && widget.mounted {
+        experimentalStyleManager.processTree(widget)
+      }
+    }
+    matchedStylesInvalidatedWidgets.clear()
 
     for widget in reboxConfigWidgets {
       if widget.mounted {
@@ -168,14 +170,14 @@ open class Root: Parent {
     switch message.content {
     case .BuildInvalidated:
       rebuildWidgets.append(message.sender)
+    case .MatchedStylesInvalidated:
+      matchedStylesInvalidatedWidgets.append(message.sender)
     case .BoxConfigInvalidated:
       reboxConfigWidgets.append(message.sender)
     case .LayoutInvalidated:
       relayoutWidgets.append(message.sender)
     case .RenderStateInvalidated:
       rerenderWidgets.append(message.sender)
-    case .SelectorChanged:
-      selectorChangedWidgets.append(message.sender)
     }
   }
 

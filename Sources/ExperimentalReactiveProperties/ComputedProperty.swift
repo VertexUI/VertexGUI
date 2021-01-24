@@ -1,6 +1,7 @@
 import Foundation
 import Events
 
+@propertyWrapper
 public class ComputedProperty<Value>: ComputedPropertyProtocol, EventfulObject {
   public typealias Value = Value
   public typealias ComputeFunction = () -> Value
@@ -27,6 +28,14 @@ public class ComputedProperty<Value>: ComputedPropertyProtocol, EventfulObject {
       fatalError("no value present, because some dependency does not have a value")
     }
   }
+  public var wrappedValue: Value {
+    value
+  }
+
+  public var projectedValue: ComputedProperty<Value> {
+    self
+  }
+
   internal var compute: ComputeFunction
   internal var dependencies: [AnyReactiveProperty]
   internal var dependencyHandlerRemovers = [() -> ()]()

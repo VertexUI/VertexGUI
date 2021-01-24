@@ -1,24 +1,75 @@
 import ExperimentalReactiveProperties
 import SwiftGUI 
-import GfxMath
 
-public class MainView: SingleChildWidget {
-  @ExperimentalReactiveProperties.MutableProperty
-  private var items = [0]
+public class MainView: Experimental.ComposedWidget {
+  /*@ExperimentalReactiveProperties.MutableProperty
+  private var items = [0]*/
 
-  override public func buildChild() -> Widget {
-    Experimental.SimpleColumn { [unowned self] in
-      Button {
-        Text("add item")
-      } onClick: { _ in
+  struct NestedData: Equatable {
+    var content: String
+    var children: [NestedData]
+  }
+  class NestedWidget: Experimental.ComposedWidget {
+    @ExperimentalReactiveProperties.MutableProperty
+    var data: NestedData
+    @ExperimentalReactiveProperties.ComputedProperty
+    var childData: [NestedData]
+
+    public init(_ data: NestedData) {
+      self.data = data
+      super.init()
+      self._childData.reinit(compute: { [unowned self] in
+        self.data.children
+      }, dependencies: [$data])
+    }
+
+    override func performBuild() {
+      rootChild = Experimental.Container(styleProperties: {
+        ($0.padding, Insets(left: 16))
+      }) { [unowned self] in
+        Experimental.SimpleColumn {
+          Experimental.Text(styleProperties: {
+            ($0.textColor, Color.white)
+          }, data.content)
+
+          Experimental.Button() {
+            Experimental.Text("add child content")
+          } onClick: {
+            data.children.append(NestedData(content: "child", children: []))
+          }
+
+          Experimental.List($childData) {
+            NestedWidget($0)
+          }
+        }
+      }
+    }
+
+    override func renderContent() -> RenderObject? {
+      print("Render Nested Widget", id)
+      return super.renderContent()
+    }
+  }
+
+  override public func performBuild() {
+    rootChild = Experimental.SimpleColumn { [unowned self] in
+      Experimental.DefaultTheme()
+
+      NestedWidget(NestedData(content: "level1", children: []))
+
+      /*Experimental.Button {
+        Experimental.Text("add item")
+      } onClick: {
         items.append(items.last! + 1)
-      }
+      }*/
 
-      Experimental.List($items) {
-        Experimental.Text(styleProperties: {
-          ($0.textColor, Color.white)
-        }, String($0))
-      }
+      /*Experimental.List($items) { item in
+        Experimental.Button {
+          Experimental.Text(styleProperties: {
+            ($0.textColor, Color.white)
+          }, String(item))
+        }
+      }*/
     }
   }
 }

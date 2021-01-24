@@ -42,7 +42,7 @@ extension Experimental {
       return constraints.constrain(rootChild?.size ?? .zero)
     }
 
-    override public func renderContent() -> RenderObject? {
+    override open func renderContent() -> RenderObject? {
       return rootChild?.render()
     }
   }
