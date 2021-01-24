@@ -28,17 +28,13 @@ public struct StyleSelectorPart: Equatable, Hashable, ExpressibleByStringLiteral
         self.pseudoClasses = []
     }
 
-    public init(extendsParent: Bool = false, opensScope: Bool = false, typeName: String? = nil, classes: [String] = [], pseudoClasses: [String] = []) {
+    public init(extendsParent: Bool = false, opensScope: Bool = false, typeName: String? = nil, type: Any.Type? = nil, classes: [String] = [], pseudoClasses: [String] = []) {
         self.extendsParent = extendsParent
         self.opensScope = opensScope
+        if typeName != nil && type != nil {
+            fatalError("provide either type or typeName")
+        }
         self.typeName = typeName
-        self.classes = classes
-        self.pseudoClasses = pseudoClasses
-    }
-
-    public init(extendsParent: Bool = false, opensScope: Bool = false, type: Any.Type? = nil, classes: [String] = [], pseudoClasses: [String] = []) {
-        self.extendsParent = extendsParent
-        self.opensScope = opensScope
         self.type = type
         self.classes = classes
         self.pseudoClasses = pseudoClasses
