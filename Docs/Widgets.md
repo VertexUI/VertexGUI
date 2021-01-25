@@ -75,6 +75,31 @@ This document serves as a reference for implementation.
 
 <br>
 
+#### updating the tree when data changes
+- there are at least two ways this can be implemented:
+- every Widget has a build function which instantiates all the children that Widget should have
+  - if a Widget receives children from the outside during it's instantiation, these should be received as a builder function
+  - the builder function should be stored by the Widget to be reused later
+  - when the Widget is rebuilt, the builder function is called again
+  - if the builder function contained some conditions, depending on variables of an outside scope, these conditions are reevaluated and therefore the instantiated children may change
+  - a rebuilt could be triggered by:
+    - providing a set of dependencies (e.g. in the form of ReactiveProperties) with the build function or in the Widget's initialization
+    - listeners are attached to them by the Widget
+    - automatic recording of dependencies of the build function could be possible as well (in some cases)
+    - a function for invoking a rebuild is provided as well and can be called on the Widget instance directly
+- only certain Widgets actually rebuild their children/create new instances
+  - for other Widgets, rebuilts are disabled/or run without an effect
+  - Widgets such as the Build Widget or a dynamic List Widget, which depend on ReactiveProperty inputs, manually implement the logic for updating their children
+  - if it is required to rebuild certain Widgets conditionally / build different Widgets based on some condition in some composed Widget, Widgets such as the Build Widget are used as wrappers
+  - the Build Widget should forward all layout and style properties to the built child, it should not add any rendered output / modify anything else
+  - how could this different handling for different Widgets be implemented?
+    - there might be a flag on each Widget "rebuildable" (or other name), which indicates whether rebuilds are supported or not
+    - the build() function checks upon invocation, whether this flag is set to true
+    - if not, whether this is the first build or not, if it is not, then just return without doing anything, maybe throw a warning
+    - if the Widget is rebuildable, performBuild() is called again
+
+<br>
+
 ### some examples?
 - Button Widget
 - List Widget
@@ -266,3 +291,9 @@ This document serves as a reference for implementation.
 - implement a generic Bus system with piping, filtering (warning about dropped messages), etc.
 - at first, all of these things can probably be implemented on top of the current system, purely as information for debugging
 - the switch to use the new requests in the root logic can be made later
+
+
+<br>
+
+### How to handle registration of children?
+**Implement children as an iterator provided by subclasses?**
