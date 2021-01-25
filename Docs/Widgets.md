@@ -75,6 +75,12 @@ This document serves as a reference for implementation.
 
 <br>
 
+#### tracking the current position in the lifecycle
+- to check whether certain actions / code in the Widget can be executed correctly at a given point in time, it would be useful to know the current position in the lifecycle
+- probably some kind of enum should be implemented which defines all the lifecycle states
+
+<br>
+
 #### updating the tree when data changes
 - there are at least two ways this can be implemented:
 - every Widget has a build function which instantiates all the children that Widget should have
@@ -101,7 +107,32 @@ This document serves as a reference for implementation.
 <br>
 
 #### mounting, remounting, getting access to context and parent information
-**add content**
+
+- a Widget needs access to a context and it's parent to:
+  - resolve dependencies, which might be a store instance, other ways data is transmitted --> influence how the Widget is built
+  - know the current tick
+  - know how big a certain text will be rendered by the renderer attached to the application (important for layout of Text Widget)
+- this information needs to be available before the Widgets children are built
+- the mount function on a Widget could call the Widgets build function, or the build function can be called separately from external code
+- why would the build function be called by mount?
+  - it is the next logical step
+- why wouldn't it?
+  - when a widget is remounted to a different parent, but it doesn't support rebuilding it's children, the call to mount would be wasted
+- it might be useful to be able to take Widget out of their current place in the tree but keep all their children, state and render state and place them at another position in the tree
+- a situation where this might be helpful could be a Widget that supports rebuilding the children it defined by itself but doesn't rebuild the children it got passed as parameters at instatiation
+- in that case, the child should be taken out of the tree manually, the sub tree rebuilt and the child added and mounted again
+- how to implement this?
+  - the parent, context and bus, possibly other things as well need to be removed from the instance
+  - also, the handlers which a parent attached to the child need to be removed
+  - all pending lifecycle requests in some queue need to be canceled (or right before execution it must be checked whether the widget is mounted and if not, don't execute)
+  - the mount method should then add these variables again
+  - when no functions of the Widget are invoked while it is unmounted, there should not be problems with values not being available
+- can this be implemented later?
+  - depends on whether this is implemented on the Widget class or whether special behavior by every Widget is required
+  - Widgets could e.g. have internal timers running which would, when they finish, lead to access of the removed variables
+  - so there should be a cleanup function that can be customized on a per Widget basis, something like performUnmount()
+  - for most Widgets, a default implementation should be sufficient and can be provided through the Widget class
+  - so the details can probably be implemented at a later point, but the unmount function should probably be implemented as a lifecycle function which is executed before destroy as well
 
 <br>
 
