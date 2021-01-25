@@ -780,6 +780,36 @@ string-key-approach:
 
 <br>
 
+## Forwarding styles, classes, etc., taking a Widget out of the style tree
+- there might be functional Widgets, such as the Build Widget, which should not take part in the styling process and be transparent to all styles and classes, etc. applied
+- therefore a way needs to be implemented to implement this transparentness on a per Widget Type or per Widget instance basis
+- transparency might be useful in composed Widgets such as Container as well, because the relevant properties of it's children Background, Padding, etc. are exposed on the container directly
+- allowing a style definition to access these Widgets from the outside would not be useful
+- but these Widgets might not always need to be transparent
+- so it is probably best to implement transparency on a per Widget instance basis
+- by adding a flag to the Widget class
+- what should be the behavior of a transparent Widget?
+  - it should not be able to be selected by any style selectors
+  - and therefore it should not receive any styles from the style distribution logic
+  - directly applied style properties are valid though
+  - it should not even be selectable as a part of a selector
+  - it should be completely jumped
+  - what if the Widget that is transparent defines a scope? --> how to open that scope if it can't be selected in a selector?
+  - answer: a Widget cannot be transparent and create a scope at the same time, if a Widget is configured that way, throw an error
+- for the forwarding of classes, properties:
+  - this should probably be done by the Widget which wants to forward something to another Widget
+  - the amount of forwarding to be done might be different
+  - the Container Widget will not forward it's classes
+  - but the Build Widget will (probably)
+  - it could also not accept any classes at all
+  - making it transparent to style selector might be sufficient
+  - what about resolving properties with a value of inherit?
+    - when a Widget wants to resolve a property with a value of inherit, it will do this through a context which provides the parents resolved properties
+    - when the parent of a Widget is a transparent Widget, this context should instead point to the next non transparent parent
+    - a different approach might be possible as well
+
+<br>
+
 ## Needs Clarification:
 
 - are styles reactive? and if so at what level? at each property? or for each Style element, and where do the dependencies for the reactive calculation come from? from the Widget --> properties?
