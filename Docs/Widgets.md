@@ -100,6 +100,32 @@ This document serves as a reference for implementation.
 
 <br>
 
+#### mounting, remounting, getting access to context and parent information
+**add content**
+
+<br>
+
+#### destruction
+- a Widget that is no longer needed needs to be destroyed, in order to delete all event handlers the Widget registered or that are registered on the Widget
+- as well possibly freeing the render state
+- properties that are managed/created by the Widget should be destroyed as well
+- because there might be handlers registered on them that capture the Widget instances
+- so, the main reason for doing active removal of handlers etc. is to ensure that the Widget instance itself is not captured anywhere, which would lead to the memory not beeing freed
+- however it cannot be fully ensured, that outside code is not holding a reference to the Widget
+- actually this might even be very common when the debugger is active, since past requests and logs are stored which might include a reference to the Widget
+- maybe it would be useful to have an unowned Array of all Widgets, Widgets should register themselves there on instantiation
+- this array could then be displayed in the debugger, after all logs are manually deleted, to see which Widgets are not deleted and for which there must be a reference that was not cleared somewhere in the code
+- after a Widget was destroyed, it shouldn't be possible to mount, render, layout or do anything else with the Widget
+- instead an error should be thrown if any of these methods is invoked
+- this should help with finding places where references are unintentionally holding the Widget in memory as well
+
+<br>
+
+### How to handle registration of children?
+**Implement children as an iterator provided by subclasses?**
+
+<br>
+
 ### some examples?
 - Button Widget
 - List Widget
@@ -291,9 +317,3 @@ This document serves as a reference for implementation.
 - implement a generic Bus system with piping, filtering (warning about dropped messages), etc.
 - at first, all of these things can probably be implemented on top of the current system, purely as information for debugging
 - the switch to use the new requests in the root logic can be made later
-
-
-<br>
-
-### How to handle registration of children?
-**Implement children as an iterator provided by subclasses?**
