@@ -6,9 +6,10 @@ public class DeveloperToolsView: SingleChildWidget {
   private let inspectedRoot: Root
 
   @MutableProperty
-  private var activeTab: Tab = .EventRoll
+  private var activeTab: Tab = .Lifecycle
   
   private var messages = WidgetBus<WidgetInspectionMessage>.MessageBuffer()
+  private var widgetLifecycleInvocationInfoBuffer = Bus<Widget.LifecycleMethodInvocationInfo>.MessageBuffer()
 
   @MutableProperty
   private var inspectedWidget: Widget?
@@ -17,6 +18,7 @@ public class DeveloperToolsView: SingleChildWidget {
     self.inspectedRoot = inspectedRoot
     super.init()
     _ = onDestroy(self.inspectedRoot.widgetContext!.inspectionBus.pipe(into: messages))
+    self.inspectedRoot.widgetContext!.lifecycleMethodInvocationInfoBus.pipe(widgetLifecycleInvocationInfoBuffer)
   }
 
   override public func buildChild() -> Widget {
@@ -57,10 +59,12 @@ public class DeveloperToolsView: SingleChildWidget {
           case .EventRoll:
             EventCumulationView(inspectedRoot)
           case .EventLog:
+            Space(.zero)
             /*EventLogView(inspectedRoot, messages: $bufferedMessages.observable) {
               inspectedWidget = $0
             }*/
-            Space(.zero)
+          case .Lifecycle:
+            LifecycleView(widgetLifecycleInvocationInfoBuffer)
           }
         }
       }
@@ -76,8 +80,9 @@ public class DeveloperToolsView: SingleChildWidget {
   }
 
   override public func destroySelf() {
-    super.destroySelf()
     messages.clear()
+    widgetLifecycleInvocationInfoBuffer.destroy()
+    super.destroySelf()
   }
 
   deinit {
@@ -87,6 +92,6 @@ public class DeveloperToolsView: SingleChildWidget {
 
 extension DeveloperToolsView {
   enum Tab {
-    case Inspector, EventRoll, EventLog
+    case Inspector, EventRoll, EventLog, Lifecycle
   }
 }
