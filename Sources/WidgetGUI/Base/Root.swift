@@ -25,6 +25,11 @@ open class Root: Parent {
       rootWidget.context = widgetContext!
     }
   }
+  /* Widget lifecycle managment
+  --------------------------------
+  */
+  // TODO: implement getTIck!
+  lazy public private(set) var widgetLifecycleManager = Widget.LifecycleManager { Tick(deltaTime: 0, totalTime: 0) }
   public let widgetLifecycleBus = WidgetBus<WidgetLifecycleMessage>()
   private var widgetLifecycleMessages = WidgetBus<WidgetLifecycleMessage>.MessageBuffer()
   private var rebuildWidgets = WidgetBuffer()
@@ -33,6 +38,7 @@ open class Root: Parent {
   private var rerenderWidgets = WidgetBuffer()
   private var matchedStylesInvalidatedWidgets = WidgetBuffer()
   //private var focusContext = FocusContext()
+  /* end Widget lifecycle management */
 
   private var mouseEventManager = WidgetTreeMouseEventManager()
   private var mouseMoveEventBurstLimiter = BurstLimiter(minDelay: 0.015)
@@ -56,16 +62,29 @@ open class Root: Parent {
     _ = onDestroy(self.widgetLifecycleBus.pipe(into: widgetLifecycleMessages))
   }
   
-  // TODO: instead of receiving a widgetcontext directly, receive an application and a rendercontext
-  // and then build the widget context here
-  open func setup(widgetContext: WidgetContext) {
-    self.widgetContext = widgetContext
+  open func setup(
+    window: Window,
+    getTextBoundsSize: @escaping (_ text: String, _ fontConfig: FontConfig, _ maxWidth: Double?) -> DSize2,
+    getApplicationTime: @escaping () -> Double,
+    getRealFps: @escaping () -> Double,
+    createWindow: @escaping (_ guiRootBuilder: @autoclosure () -> Root, _ options: Window.Options) -> Window,
+    requestCursor: @escaping (_ cursor: Cursor) -> () -> Void
+  ) {
+    self.widgetContext = WidgetContext(
+      window: window,
+      getTextBoundsSize: getTextBoundsSize,
+      getApplicationTime: getApplicationTime,
+      getRealFps: getRealFps,
+      createWindow: createWindow,
+      requestCursor: requestCursor,
+      queueLifecycleMethodInvocation: { [unowned self] in widgetLifecycleManager.queue($0, target: $1, sender: $2, reason: $3) }
+    )
     
     _ = rootWidget.onBoxConfigChanged { [unowned self] _ in
       layout()
     }
 
-    rootWidget.mount(parent: self, context: widgetContext, lifecycleBus: widgetLifecycleBus)
+    rootWidget.mount(parent: self, context: widgetContext!, lifecycleBus: widgetLifecycleBus)
     //rootWidget.focusContext = focusContext
 
     styleManager.setup()

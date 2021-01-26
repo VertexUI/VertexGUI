@@ -29,6 +29,8 @@ public class WidgetContext {
     public var realFps: Double {
         getRealFps()
     }
+
+    private let _queueLifecycleMethodInvocation: (Widget.LifecycleMethod, Widget, Widget, Widget.LifecycleMethodInvocationReason) -> ()
     
     public let inspectionBus = WidgetBus<WidgetInspectionMessage>()
 
@@ -40,13 +42,15 @@ public class WidgetContext {
         getApplicationTime: @escaping () -> Double,
         getRealFps: @escaping () -> Double,
         createWindow: @escaping (_ guiRootBuilder: @autoclosure () -> Root, _ options: Window.Options) -> Window,
-        requestCursor: @escaping (_ cursor: Cursor) -> () -> Void) {
+        requestCursor: @escaping (_ cursor: Cursor) -> () -> Void,
+        queueLifecycleMethodInvocation: @escaping (Widget.LifecycleMethod, Widget, Widget, Widget.LifecycleMethodInvocationReason) -> ()) {
             self.window = window
             self._getTextBoundsSize = getTextBoundsSize
             self._getApplicationTime = getApplicationTime
             self.getRealFps = getRealFps
             self._createWindow = createWindow
             self._requestCursor = requestCursor
+            self._queueLifecycleMethodInvocation = queueLifecycleMethodInvocation
     }
 
     public func getTextBoundsSize(_ text: String, fontConfig: FontConfig, maxWidth: Double? = nil) -> DSize2 {
@@ -81,5 +85,9 @@ public class WidgetContext {
             }
         }
         return true
+    }
+
+    public func queueLifecycleMethodInvocation(_ method: Widget.LifecycleMethod, target: Widget, sender: Widget, reason: Widget.LifecycleMethodInvocationReason) {
+        _queueLifecycleMethodInvocation(method, target, sender, reason)
     }
 }

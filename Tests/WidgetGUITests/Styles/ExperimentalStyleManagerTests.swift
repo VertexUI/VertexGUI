@@ -49,18 +49,33 @@ class ExperimentalStyleManagerTests: XCTestCase {
   class MockRoot: Root {
     override public init(rootWidget: Widget) {
       super.init(rootWidget: rootWidget)
-      self.setup(widgetContext: WidgetContext(
+      self.setup(
         window: try! Window(options: Window.Options()),
         getTextBoundsSize: { _, _, _ in DSize2.zero },
         getApplicationTime: { 0 },
         getRealFps: { 0 },
         createWindow: { _, _ in try! Window(options: Window.Options()) },
-        requestCursor: { _ in {} } ))
+        requestCursor: { _ in {} } )
     }
     
-    override func setup(widgetContext: WidgetContext) {
-      self.widgetContext = widgetContext
-      rootWidget.mount(parent: self, context: widgetContext, lifecycleBus: widgetLifecycleBus)
+    override open func setup(
+      window: Window,
+      getTextBoundsSize: @escaping (_ text: String, _ fontConfig: FontConfig, _ maxWidth: Double?) -> DSize2,
+      getApplicationTime: @escaping () -> Double,
+      getRealFps: @escaping () -> Double,
+      createWindow: @escaping (_ guiRootBuilder: @autoclosure () -> Root, _ options: Window.Options) -> Window,
+      requestCursor: @escaping (_ cursor: Cursor) -> () -> Void
+    ) {
+      self.widgetContext = WidgetContext(
+        window: window,
+        getTextBoundsSize: getTextBoundsSize,
+        getApplicationTime: getApplicationTime,
+        getRealFps: getRealFps,
+        createWindow: createWindow,
+        requestCursor: requestCursor,
+        queueLifecycleMethodInvocation: { [unowned self] in widgetLifecycleManager.queue($0, target: $1, sender: $2, reason: $3) }
+      )
+      rootWidget.mount(parent: self, context: widgetContext!, lifecycleBus: widgetLifecycleBus)
     }
 
     public func mockTick() {
