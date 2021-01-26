@@ -24,13 +24,13 @@ public class WidgetContext {
     public var applicationTime: Double {
         _getApplicationTime()
     }
-
     private let getRealFps: () -> Double
     public var realFps: Double {
         getRealFps()
     }
 
     private let _queueLifecycleMethodInvocation: (Widget.LifecycleMethod, Widget, Widget, Widget.LifecycleMethodInvocationReason) -> ()
+    public let lifecycleMethodInvocationInfoBus: Bus<Widget.LifecycleMethodInvocationInfo>
     
     public let inspectionBus = WidgetBus<WidgetInspectionMessage>()
 
@@ -43,7 +43,8 @@ public class WidgetContext {
         getRealFps: @escaping () -> Double,
         createWindow: @escaping (_ guiRootBuilder: @autoclosure () -> Root, _ options: Window.Options) -> Window,
         requestCursor: @escaping (_ cursor: Cursor) -> () -> Void,
-        queueLifecycleMethodInvocation: @escaping (Widget.LifecycleMethod, Widget, Widget, Widget.LifecycleMethodInvocationReason) -> ()) {
+        queueLifecycleMethodInvocation: @escaping (Widget.LifecycleMethod, Widget, Widget, Widget.LifecycleMethodInvocationReason) -> (),
+        lifecycleMethodInvocationInfoBus: Bus<Widget.LifecycleMethodInvocationInfo>) {
             self.window = window
             self._getTextBoundsSize = getTextBoundsSize
             self._getApplicationTime = getApplicationTime
@@ -51,6 +52,7 @@ public class WidgetContext {
             self._createWindow = createWindow
             self._requestCursor = requestCursor
             self._queueLifecycleMethodInvocation = queueLifecycleMethodInvocation
+            self.lifecycleMethodInvocationInfoBus = lifecycleMethodInvocationInfoBus
     }
 
     public func getTextBoundsSize(_ text: String, fontConfig: FontConfig, maxWidth: Double? = nil) -> DSize2 {

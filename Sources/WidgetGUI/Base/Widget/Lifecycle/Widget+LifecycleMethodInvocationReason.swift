@@ -7,6 +7,7 @@ extension Widget {
     case unmount(UnmountInvocationReason)
     case destroy(DestroyInvocationReason)
     case queued(LifecycleMethodInvocationQueue.Entry)
+    case undefined
   }
 
   public enum BuildInvocationReason {

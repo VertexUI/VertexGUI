@@ -73,7 +73,8 @@ class ExperimentalStyleManagerTests: XCTestCase {
         getRealFps: getRealFps,
         createWindow: createWindow,
         requestCursor: requestCursor,
-        queueLifecycleMethodInvocation: { [unowned self] in widgetLifecycleManager.queue($0, target: $1, sender: $2, reason: $3) }
+        queueLifecycleMethodInvocation: { [unowned self] in widgetLifecycleManager.queue($0, target: $1, sender: $2, reason: $3) },
+        lifecycleMethodInvocationInfoBus: Bus<Widget.LifecycleMethodInvocationInfo>()
       )
       rootWidget.mount(parent: self, context: widgetContext!, lifecycleBus: widgetLifecycleBus)
     }

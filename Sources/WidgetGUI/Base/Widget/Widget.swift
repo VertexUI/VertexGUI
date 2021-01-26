@@ -86,6 +86,12 @@ open class Widget: Bounded, Parent, Child {
     ---------------------------
     */
     public private(set) var lifecycleFlags: [LifecycleFlag] = [.initialized]
+    private var lifecycleMethodInvocationInfoBus: Bus<LifecycleMethodInvocationInfo> {
+        context.lifecycleMethodInvocationInfoBus
+    }
+    private var nextLifecycleMethodInvocationIds: [LifecycleMethod: Int] = LifecycleMethod.allCases.reduce(into: [:]) {
+        $0[$1] = 0
+    }
     /* end lifecycle */
 
     @available(*, deprecated, message: "Constraints is now passed as a parameter to layout(constraints:)")
@@ -362,15 +368,13 @@ open class Widget: Bounded, Parent, Child {
         }
     }
 
-    deinit {
-      if !destroyed {
-        fatalError("Deinitialized Widget without calling destroy() first")
-      }
-      Logger.log("Deinitialized Widget: \(id) \(self)", level: .Message, context: .Default)
+    /** side effect: increments the stored next id for the next call of this function. */
+    private func getNextLifecycleMethodInvocationId(_ method: LifecycleMethod) -> Int {
+        defer { nextLifecycleMethodInvocationIds[method]! += 1 }
+        return nextLifecycleMethodInvocationIds[method]!
     }
 
     // TODO: maybe find better names for the following functions?
-
     @inlinable
     public final func with(key: String) -> Self {
         self.key = key
@@ -389,7 +393,7 @@ open class Widget: Bounded, Parent, Child {
         block(self)
         return self
     }
- 
+
     private final func setupContext() {
         contextOnTickHandlerRemover = context.onTick({ [weak self] in
           if let self = self {
@@ -701,7 +705,10 @@ open class Widget: Bounded, Parent, Child {
         onBoxConfigInvalidated.invokeHandlers(Void())
     }
 
-    @inlinable public final func layout(constraints: BoxConstraints) {
+    public final func layout(constraints: BoxConstraints) {
+        let invocationId = getNextLifecycleMethodInvocationId(.layout)
+        lifecycleMethodInvocationInfoBus.publish(.started(method: .layout, reason: .undefined, invocationId: invocationId, timestamp: context.applicationTime ))
+
         #if DEBUG
         Logger.log("Attempting layout".with(fg: .yellow), "on Widget: \(self).", level: .Message, context: .WidgetLayouting)
         #endif
@@ -1154,6 +1161,13 @@ open class Widget: Bounded, Parent, Child {
     }
 
     open func destroySelf() {}
+
+    deinit {
+      if !destroyed {
+        fatalError("Deinitialized Widget without calling destroy() first")
+      }
+      Logger.log("Deinitialized Widget: \(id) \(self)", level: .Message, context: .Default)
+    }
 }
 
 extension Widget {

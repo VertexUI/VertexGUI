@@ -38,7 +38,7 @@ open class WidgetsApp {
                       getRealFps: { [unowned self] in baseApp.system.realFps },
                       createWindow: { [unowned self] in createWindow(guiRoot: $0(), options: $1, immediate: true) },
                       requestCursor: { [unowned self] in
-                          baseApp.system.requestCursor($0)
+                        baseApp.system.requestCursor($0)
                       })
       
         guiRoots[windowId] = guiRoot
