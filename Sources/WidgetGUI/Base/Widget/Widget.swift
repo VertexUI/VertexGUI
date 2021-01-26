@@ -82,6 +82,12 @@ open class Widget: Bounded, Parent, Child {
     public lazy var children: [Widget] = []
     /* end tree properties */
 
+    /* lifecycle
+    ---------------------------
+    */
+    public private(set) var lifecycleFlags: [LifecycleFlag] = [.initialized]
+    /* end lifecycle */
+
     @available(*, deprecated, message: "Constraints is now passed as a parameter to layout(constraints:)")
     open var constraints: BoxConstraints? = nil
     lazy open internal(set) var boxConfig = getBoxConfig()
