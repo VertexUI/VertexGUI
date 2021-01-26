@@ -40,21 +40,17 @@ extension Experimental {
         }
         self.with(stylePropertiesBuilder(StyleKeys.self))
 
-        self._text.bind(textProperty)
+        self.$text.bind(textProperty)
+        _ = onDestroy(self.$text.onChanged { [unowned self] _ in
+          invalidateRenderState()
+        })
     }
 
-    public init(
+    public convenience init(
       classes: [String]? = nil,
       @Experimental.StylePropertiesBuilder styleProperties stylePropertiesBuilder: (StyleKeys.Type) -> Experimental.StyleProperties = { _ in [] },
       _ text: String) {
-        super.init()
-        
-        if let classes = classes {
-          self.classes = classes
-        }
-        self.with(stylePropertiesBuilder(StyleKeys.self))
-
-        self._text.bind(StaticProperty(text))
+        self.init(classes: classes, styleProperties: stylePropertiesBuilder, StaticProperty(text))
     }
 
     override public func getBoxConfig() -> BoxConfig {
