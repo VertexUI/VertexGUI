@@ -1,4 +1,5 @@
 import ExperimentalReactiveProperties
+import VisualAppBase
 import GfxMath
 
 extension Experimental {
@@ -6,13 +7,13 @@ extension Experimental {
     override internal var children: [Widget] {
       didSet {
         if mounted {
-        for child in children {
-          if !child.mounted {
-            self.mountChild(child)
+          for child in children {
+            if !child.mounted {
+              self.mountChild(child)
+            }
           }
-        }
-        self.invalidateLayout()
-        self.invalidateRenderState()
+          self.invalidateLayout()
+          self.invalidateRenderState()
         }
       }
     }
@@ -40,6 +41,11 @@ extension Experimental {
       }
 
       return constraints.constrain(DSize2(maxWidth, currentPosition.y))
+    }
+
+    override public func renderContent() -> RenderObject? {
+      print("EXP LIST RENDERS", children)
+      return super.renderContent()
     }
   }
 
@@ -79,11 +85,23 @@ extension Experimental {
     private func processItemUpdate(old: [Item], new: [Item]) {
       var updatedItemWidgets = [Widget]()
 
-      for item in new {
-        if let oldItemIndex = old.firstIndex(of: item), itemWidgets.count > oldItemIndex {
-          updatedItemWidgets.append(itemWidgets[oldItemIndex])
+      var usedOldIndices = [Int]()
+
+      outer: for newItem in new {
+        var foundOldIndex: Int?
+
+        for (oldIndex, oldItem) in old.enumerated() {
+          if oldItem == newItem, !usedOldIndices.contains(oldIndex), itemWidgets.count > oldIndex {
+            foundOldIndex = oldIndex
+            break
+          }
+        }
+
+        if let oldIndex = foundOldIndex {
+          updatedItemWidgets.append(itemWidgets[oldIndex])
+          usedOldIndices.append(oldIndex)
         } else {
-          updatedItemWidgets.append(childBuilder(item))
+          updatedItemWidgets.append(childBuilder(newItem))
         }
       }
 
