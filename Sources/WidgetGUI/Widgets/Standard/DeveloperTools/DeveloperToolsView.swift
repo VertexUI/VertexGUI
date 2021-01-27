@@ -9,7 +9,9 @@ public class DeveloperToolsView: SingleChildWidget {
   private var activeTab: Tab = .Lifecycle
   
   private var messages = WidgetBus<WidgetInspectionMessage>.MessageBuffer()
-  private var widgetLifecycleInvocationInfoBuffer = Bus<Widget.LifecycleMethodInvocationInfo>.MessageBuffer()
+  private var widgetLifecycleInvocationInfoBuffer = Bus<Widget.LifecycleMethodInvocationSignal>.MessageBuffer()
+  //@MutableProperty
+  //private var aggregatedWidgetLifecycleInvocationInfo:
 
   @MutableProperty
   private var inspectedWidget: Widget?
@@ -18,7 +20,7 @@ public class DeveloperToolsView: SingleChildWidget {
     self.inspectedRoot = inspectedRoot
     super.init()
     _ = onDestroy(self.inspectedRoot.widgetContext!.inspectionBus.pipe(into: messages))
-    self.inspectedRoot.widgetContext!.lifecycleMethodInvocationInfoBus.pipe(widgetLifecycleInvocationInfoBuffer)
+    self.inspectedRoot.widgetContext!.lifecycleMethodInvocationSignalBus.pipe(widgetLifecycleInvocationInfoBuffer)
   }
 
   override public func buildChild() -> Widget {

@@ -86,8 +86,8 @@ open class Widget: Bounded, Parent, Child {
     ---------------------------
     */
     public private(set) var lifecycleFlags: [LifecycleFlag] = [.initialized]
-    private var lifecycleMethodInvocationInfoBus: Bus<LifecycleMethodInvocationInfo> {
-        context.lifecycleMethodInvocationInfoBus
+    private var lifecycleMethodInvocationSignalBus: Bus<LifecycleMethodInvocationSignal> {
+        context.lifecycleMethodInvocationSignalBus
     }
     private var nextLifecycleMethodInvocationIds: [LifecycleMethod: Int] = LifecycleMethod.allCases.reduce(into: [:]) {
         $0[$1] = 0
@@ -707,7 +707,7 @@ open class Widget: Bounded, Parent, Child {
 
     public final func layout(constraints: BoxConstraints) {
         let invocationId = getNextLifecycleMethodInvocationId(.layout)
-        lifecycleMethodInvocationInfoBus.publish(.started(method: .layout, reason: .undefined, invocationId: invocationId, timestamp: context.applicationTime ))
+        lifecycleMethodInvocationSignalBus.publish(.started(method: .layout, reason: .undefined, invocationId: invocationId, timestamp: context.applicationTime ))
 
         #if DEBUG
         Logger.log("Attempting layout".with(fg: .yellow), "on Widget: \(self).", level: .Message, context: .WidgetLayouting)

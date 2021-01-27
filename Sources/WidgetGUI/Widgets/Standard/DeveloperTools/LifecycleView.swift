@@ -2,10 +2,10 @@ import ExperimentalReactiveProperties
 import GfxMath
 
 public class LifecycleView: Experimental.ComposedWidget {
-  private var lifecycleMethodInvocationInfoBuffer: Bus<LifecycleMethodInvocationInfo>.MessageBuffer
+  private var lifecycleMethodInvocationSignalBuffer: Bus<LifecycleMethodInvocationSignal>.MessageBuffer
 
   @ExperimentalReactiveProperties.MutableProperty
-  private var invocationInfoItems: [LifecycleMethodInvocationInfo] = []
+  private var invocationInfoItems: [LifecycleMethodInvocationSignal] = []
 
   @ExperimentalReactiveProperties.MutableProperty
   private var methodInvocationCounts: [LifecycleMethod: Int] = LifecycleMethod.allCases.reduce(into: [:]) {
@@ -15,11 +15,11 @@ public class LifecycleView: Experimental.ComposedWidget {
   @ExperimentalReactiveProperties.MutableProperty
   private var showMessages: Bool = false
 
-  public init(_ lifecycleMethodInvocationInfoBuffer: Bus<LifecycleMethodInvocationInfo>.MessageBuffer) {
-    self.lifecycleMethodInvocationInfoBuffer = lifecycleMethodInvocationInfoBuffer
+  public init(_ lifecycleMethodInvocationSignalBuffer: Bus<LifecycleMethodInvocationSignal>.MessageBuffer) {
+    self.lifecycleMethodInvocationSignalBuffer = lifecycleMethodInvocationSignalBuffer
     super.init()
-    _ = self.onDestroy(lifecycleMethodInvocationInfoBuffer.onMessageAdded { [unowned self] in
-      invocationInfoItems = lifecycleMethodInvocationInfoBuffer.messages
+    _ = self.onDestroy(lifecycleMethodInvocationSignalBuffer.onMessageAdded { [unowned self] in
+      invocationInfoItems = lifecycleMethodInvocationSignalBuffer.messages
       switch $0 {
       case let .started(method, _, _, _):
         methodInvocationCounts[method]! += 1
@@ -81,12 +81,14 @@ public class LifecycleView: Experimental.ComposedWidget {
     }
   }
 
-  private func buildInfo(_ info: Widget.LifecycleMethodInvocationInfo) -> Widget {
+  private func buildInfo(_ info: Widget.LifecycleMethodInvocationSignal) -> Widget {
     let method: LifecycleMethod
     switch info {
     case let .started(_method, reason, invocationId, timestamp):
       method = _method
-    case let .ended(_method, invocationId, timestamp):
+    case let .aborted(_method, _, _, _):
+      method = _method
+    case let .completed(_method, invocationId, timestamp):
       method = _method
     }
 
