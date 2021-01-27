@@ -22,7 +22,9 @@ public class DeveloperToolsView: SingleChildWidget {
   }
 
   override public func buildChild() -> Widget {
-    Row { [unowned self] in
+    Experimental.SimpleRow { [unowned self] in
+      Experimental.DefaultTheme()
+
       Column(spacing: 16) {
         Row {
           Button {

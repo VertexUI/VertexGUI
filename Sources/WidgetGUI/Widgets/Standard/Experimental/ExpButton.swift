@@ -50,8 +50,8 @@ extension Experimental {
       }
     }
 
-    public func acceptsStyleProperties(_ properties: AnyStyleProperties) -> Bool {
-      properties is AnyBackgroundStyleProperties || properties is AnyPaddingStyleProperties
+    override public func renderContent() -> RenderObject? {
+      return super.renderContent()
     }
 
     public func consume(_ event: GUIMouseEvent) {

@@ -9,13 +9,20 @@ extension Experimental {
 
   public class DefaultTheme: Experimental.Theme {
     public init() {
-      super.init(styles: [
-        Experimental.Style(StyleSelector(StyleSelectorPart(type: Experimental.Button.self))) {
-          (Experimental.Button.StyleKeys.padding, Insets(all: 16))
-          (Experimental.Button.StyleKeys.backgroundFill, Color.red)
+      let primaryColor = Color(52, 122, 235, 255)
 
-          Experimental.Style(StyleSelector(StyleSelectorPart(extendsParent: false, opensScope: false, type: Experimental.Text.self))) {
-            (Experimental.Text.StyleKeys.fontSize, 48.0)
+      super.init(styles: [
+        Experimental.Style(StyleSelector(StyleSelectorPart(type: Experimental.Button.self)), Experimental.Button.self) {
+          ($0.padding, Insets(all: 16))
+          ($0.backgroundFill, primaryColor)
+
+          Experimental.Style(StyleSelector(StyleSelectorPart(extendsParent: true, pseudoClasses: ["hover"])), Experimental.Button.self) {
+            ($0.backgroundFill, primaryColor.darkened(10))
+          }
+
+          Experimental.Style(StyleSelector(StyleSelectorPart(extendsParent: false, opensScope: false, type: Experimental.Text.self)), Experimental.Text.self) {
+            ($0.textColor, Color.white)
+            ($0.fontSize, 24.0)
           }
         }
       ])

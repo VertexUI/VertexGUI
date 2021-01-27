@@ -1,7 +1,7 @@
 import GfxMath
 
 extension Experimental {
-  public class SimpleColumn: Widget {
+  public class SimpleRow: Widget {
     public init(classes: [String]? = nil, @MultiChildContentBuilder content contentBuilder: () -> MultiChildContentBuilder.Result) {
       super.init()
       if let classes = classes {
@@ -36,7 +36,7 @@ extension Experimental {
 
     override public func performLayout(constraints: BoxConstraints) -> DSize2 {
       var currentPosition = DPoint2.zero
-      var maxWidth = 0.0
+      var maxHeight = 0.0
 
       for child in children {
         child.position = currentPosition
@@ -44,13 +44,13 @@ extension Experimental {
         let childConstraints = BoxConstraints(minSize: .zero, maxSize: constraints.maxSize)
         child.layout(constraints: childConstraints)
 
-        currentPosition.y += child.height
-        if child.width > maxWidth {
-          maxWidth = child.width
+        currentPosition.x += child.width
+        if child.height > maxHeight {
+          maxHeight = child.height
         }
       }
 
-      return constraints.constrain(DSize2(maxWidth, currentPosition.y))
+      return constraints.constrain(DSize2(currentPosition.x, maxHeight))
     }
   }
 }
