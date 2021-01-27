@@ -4,6 +4,9 @@ import GfxMath
 public class LifecycleView: Experimental.ComposedWidget {
   private var lifecycleMethodInvocationSignalBuffer: Bus<LifecycleMethodInvocationSignal>.MessageBuffer
 
+  @ExperimentalReactiveProperties.ObservableProperty
+  private var invocationSignalGroups: [Int: LifecycleMethodInvocationSignalGroup]
+
   @ExperimentalReactiveProperties.MutableProperty
   private var invocationInfoItems: [LifecycleMethodInvocationSignal] = []
 
@@ -13,20 +16,28 @@ public class LifecycleView: Experimental.ComposedWidget {
   }
 
   @ExperimentalReactiveProperties.MutableProperty
-  private var showMessages: Bool = false
+  private var showSignals: Bool = false
+  @ExperimentalReactiveProperties.MutableProperty
+  private var showSignalGroups: Bool = false
 
-  public init(_ lifecycleMethodInvocationSignalBuffer: Bus<LifecycleMethodInvocationSignal>.MessageBuffer) {
-    self.lifecycleMethodInvocationSignalBuffer = lifecycleMethodInvocationSignalBuffer
-    super.init()
-    _ = self.onDestroy(lifecycleMethodInvocationSignalBuffer.onMessageAdded { [unowned self] in
-      invocationInfoItems = lifecycleMethodInvocationSignalBuffer.messages
-      switch $0 {
-      case let .started(method, _, _, _):
-        methodInvocationCounts[method]! += 1
-      default:
-        break
-      }
-    })
+  public init<P: ReactiveProperty>(
+    _ lifecycleMethodInvocationSignalBuffer: Bus<LifecycleMethodInvocationSignal>.MessageBuffer,
+    _ invocationSignalGroupsProperty: P) where P.Value == [Int: LifecycleMethodInvocationSignalGroup] {
+      self.lifecycleMethodInvocationSignalBuffer = lifecycleMethodInvocationSignalBuffer
+
+      super.init()
+
+      self.$invocationSignalGroups.bind(invocationSignalGroupsProperty)
+
+      _ = self.onDestroy(lifecycleMethodInvocationSignalBuffer.onMessageAdded { [unowned self] in
+        invocationInfoItems = lifecycleMethodInvocationSignalBuffer.messages
+        switch $0 {
+        case let .started(method, _, _, _):
+          methodInvocationCounts[method]! += 1
+        default:
+          break
+        }
+      })
   }
 
   override public func performBuild() {
@@ -36,22 +47,48 @@ public class LifecycleView: Experimental.ComposedWidget {
       Experimental.SimpleColumn {
         buildStatistics()
 
-        Experimental.Button {
-          Experimental.Build($showMessages) {
-            if showMessages {
-              Experimental.Text("hide messages")
-            } else {
-              Experimental.Text("show messages")
+        Experimental.SimpleRow {
+          Experimental.Button {
+            Experimental.Build($showSignals) {
+              if showSignals {
+                Experimental.Text("hide signals")
+              } else {
+                Experimental.Text("show signals")
+              }
             }
+          } onClick: {
+            showSignals = !showSignals
           }
-        } onClick: {
-          showMessages = !showMessages
+
+          Experimental.Button {
+            Experimental.Build($showSignalGroups) {
+              if showSignals {
+                Experimental.Text("hide signal groups")
+              } else {
+                Experimental.Text("show signal groups")
+              }
+            }
+          } onClick: {
+            showSignalGroups = !showSignalGroups
+          }
         }
 
-        Experimental.Build($showMessages) {
-          if showMessages {
+        Experimental.Build($showSignals) {
+          if showSignals {
             Experimental.List($invocationInfoItems) {
-              buildInfo($0)
+              buildSignal($0)
+            }
+          } else {
+            Space(.zero)
+          }
+        }
+
+        Experimental.Build($showSignalGroups) {
+          if showSignalGroups {
+            Experimental.List(ExperimentalReactiveProperties.ComputedProperty(compute: {
+              Array(invocationSignalGroups.values)
+            }, dependencies: [$invocationSignalGroups])) {
+              buildSignalGroup($0)
             }
           } else {
             Space(.zero)
@@ -63,10 +100,10 @@ public class LifecycleView: Experimental.ComposedWidget {
 
   private func buildStatistics() -> Widget {
     SimpleRow { [unowned self] in
+      buildStatistic(for: .mount)
+      buildStatistic(for: .build)
       buildStatistic(for: .layout)
       buildStatistic(for: .render)
-      buildStatistic(for: .build)
-      buildStatistic(for: .mount)
     }
   }
 
@@ -81,20 +118,29 @@ public class LifecycleView: Experimental.ComposedWidget {
     }
   }
 
-  private func buildInfo(_ info: Widget.LifecycleMethodInvocationSignal) -> Widget {
-    let method: LifecycleMethod
-    switch info {
-    case let .started(_method, reason, invocationId, timestamp):
-      method = _method
-    case let .aborted(_method, _, _, _):
-      method = _method
-    case let .completed(_method, invocationId, timestamp):
-      method = _method
-    }
-
-    return Experimental.Container(classes: ["info"]) {
+  private func buildSignal(_ signal: Widget.LifecycleMethodInvocationSignal) -> Widget {
+    Experimental.Container(classes: ["signal"]) {
       Experimental.SimpleColumn {
-        Experimental.Text(classes: ["method-name"], "method \(method)")
+        Experimental.Text(classes: ["method-name"], "method \(signal.method)")
+
+        switch signal {
+        case let .started(_, _, _, timestamp):
+          Experimental.Text("started at: \(timestamp)")
+        default:
+          Space(.zero)
+        }
+      }
+    }
+  }
+
+  private func buildSignalGroup(_ group: Widget.LifecycleMethodInvocationSignalGroup) -> Widget {
+    Experimental.Container(classes: ["signal-group"]) { [unowned self] in
+      Experimental.SimpleColumn {
+        Experimental.Text(classes: ["method-name"], "method \(group.method)")
+
+        group.signals.map {
+          buildSignal($0)
+        }
       }
     }
   }
@@ -107,14 +153,19 @@ public class LifecycleView: Experimental.ComposedWidget {
         ($0.padding, Insets(all: 16))
       }
 
-      Experimental.Style(".info", Experimental.Container.self) {
+      Experimental.Style(".signal", Experimental.Container.self) {
         ($0.backgroundFill, Color.white)
         ($0.padding, Insets(all: 8))
 
         Experimental.Style(".method-name", Experimental.Text.self) {
           ($0.textColor, Color.black)
-          ($0.fontSize, 32.0)
+          ($0.fontSize, 16.0)
         }
+      }
+
+      Experimental.Style(".signal-group", Experimental.Container.self) {
+        ($0.backgroundFill, Color.white)
+        ($0.padding, Insets(all: 16))
       }
     }
   }

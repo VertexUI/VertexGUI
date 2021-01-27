@@ -947,7 +947,7 @@ open class Widget: Bounded, Parent, Child {
             #endif
 
             let duration = Date.timeIntervalSinceReferenceDate - startTime
-            if duration > 1 {
+            if duration > 0.1 {
                 print("THIS PART TOOK", duration, self, newMainContent)
             }
 

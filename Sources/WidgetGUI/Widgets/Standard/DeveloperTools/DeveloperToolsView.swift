@@ -1,26 +1,38 @@
 import Foundation
 import VisualAppBase
 import ReactiveProperties
+import ExperimentalReactiveProperties
 
 public class DeveloperToolsView: SingleChildWidget {
   private let inspectedRoot: Root
 
-  @MutableProperty
+  @ReactiveProperties.MutableProperty
   private var activeTab: Tab = .Lifecycle
   
   private var messages = WidgetBus<WidgetInspectionMessage>.MessageBuffer()
-  private var widgetLifecycleInvocationInfoBuffer = Bus<Widget.LifecycleMethodInvocationSignal>.MessageBuffer()
-  //@MutableProperty
-  //private var aggregatedWidgetLifecycleInvocationInfo:
+  private var widgetLifecycleMethodInvocationSignalBuffer = Bus<Widget.LifecycleMethodInvocationSignal>.MessageBuffer()
+  @ExperimentalReactiveProperties.MutableProperty
+  private var widgetLifecycleMethodInvocationSignalGroups: [Int: Widget.LifecycleMethodInvocationSignalGroup] = [:]
 
-  @MutableProperty
+  @ReactiveProperties.MutableProperty
   private var inspectedWidget: Widget?
 
   public init(_ inspectedRoot: Root) {
     self.inspectedRoot = inspectedRoot
     super.init()
+
     _ = onDestroy(self.inspectedRoot.widgetContext!.inspectionBus.pipe(into: messages))
-    self.inspectedRoot.widgetContext!.lifecycleMethodInvocationSignalBus.pipe(widgetLifecycleInvocationInfoBuffer)
+
+    self.inspectedRoot.widgetContext!.lifecycleMethodInvocationSignalBus.pipe(widgetLifecycleMethodInvocationSignalBuffer)
+
+    _ = onDestroy(widgetLifecycleMethodInvocationSignalBuffer.onMessageAdded { [unowned self] in
+      if (widgetLifecycleMethodInvocationSignalGroups[$0.invocationId] == nil) {
+        widgetLifecycleMethodInvocationSignalGroups[$0.invocationId] = Widget.LifecycleMethodInvocationSignalGroup(
+          method: $0.method, invocationId: $0.invocationId, signals: [$0])
+      } else {
+        widgetLifecycleMethodInvocationSignalGroups[$0.invocationId]!.signals.append($0)
+      }
+    })
   }
 
   override public func buildChild() -> Widget {
@@ -68,7 +80,7 @@ public class DeveloperToolsView: SingleChildWidget {
               inspectedWidget = $0
             }*/
           case .Lifecycle:
-            LifecycleView(widgetLifecycleInvocationInfoBuffer)
+            LifecycleView(widgetLifecycleMethodInvocationSignalBuffer, $widgetLifecycleMethodInvocationSignalGroups)
           }
         }
       }
@@ -85,7 +97,7 @@ public class DeveloperToolsView: SingleChildWidget {
 
   override public func destroySelf() {
     messages.clear()
-    widgetLifecycleInvocationInfoBuffer.destroy()
+    widgetLifecycleMethodInvocationSignalBuffer.destroy()
     super.destroySelf()
   }
 
