@@ -5,9 +5,13 @@ import ColorizeSwift
 import ReactiveProperties
 import Events
 
-open class Widget: Bounded, Parent, Child {
+open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     public var name: String {
         String(describing: type(of: self))
+    }
+
+    public var debugDescription: String {
+        "\(name) \(id)"
     }
 
     public struct ReplacementContext {
@@ -778,6 +782,9 @@ open class Widget: Bounded, Parent, Child {
 
         #if DEBUG
         let layoutDuration = Date.timeIntervalSinceReferenceDate - startTimestamp
+        if layoutDuration > 0.1 {
+            print("layout of Widget", self, "took", layoutDuration)
+        }
         Logger.log("Layout of Widget: \(self) took time:", (layoutDuration.description + " s").with(style: .bold), level: .Message, context: .WidgetLayouting)
         Logger.log("Layout of Widget: \(self) produced result.".with(fg: .green, style: .bold), level: .Message, context: .WidgetLayouting)
         Logger.log("New self size: \(newUnconstrainedSize)", level: .Message, context: .WidgetLayouting)
@@ -893,6 +900,8 @@ open class Widget: Bounded, Parent, Child {
     */
     @usableFromInline
     internal final func updateRenderState() {
+        print("Update Render State", self)
+
         if !renderState.invalid {
             #if DEBUG
             Logger.warn("Called updateRenderState on Widget where renderState is not invalid.".with(fg: .white, bg: .red), context: .WidgetRendering)
@@ -947,8 +956,8 @@ open class Widget: Bounded, Parent, Child {
             #endif
 
             let duration = Date.timeIntervalSinceReferenceDate - startTime
-            if duration > 0.1 {
-                print("THIS PART TOOK", duration, self, newMainContent)
+            if duration > 0.01 {
+                print("updateRenderState took", duration, self)
             }
 
             renderState.debuggingContent = newDebuggingContent
