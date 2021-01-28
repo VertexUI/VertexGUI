@@ -98,8 +98,44 @@ final class UniDirectionalPropertyBindingTests: XCTestCase {
     property1.value = "test"
 
     XCTAssertEqual(property2.value, "test")
-    XCTAssertEqual(property1.registeredBindings.count, 1)
+    XCTAssertEqual(property1.registeredBindings.count, 0)
     XCTAssertEqual(property2.registeredBindings.count, 1)
+  }
+
+  func testSourcePropertyRetained() {
+    let backingProperty = MutableProperty<String>()
+    var sourceProperty = Optional(ComputedProperty<String>(compute: {
+      backingProperty.value
+    }, dependencies: [backingProperty]))
+    var sinkProperty = Optional(MutableProperty<String>())
+    var binding = Optional(sinkProperty!.bind(sourceProperty!))
+    var bindingOnDestroyedCalled = false
+    _ = binding?.onDestroyed {
+      bindingOnDestroyedCalled = true
+    }
+    var sourceOnDestroyedCalled = false
+    _ = sourceProperty?.onDestroyed {
+      sourceOnDestroyedCalled = true
+    }
+    var sinkOnDestroyedCalled = false
+    _ = sinkProperty?.onDestroyed {
+      sinkOnDestroyedCalled = true
+    }
+
+    backingProperty.value = "test1"
+    XCTAssertEqual(sinkProperty!.value, "test1")
+
+    sourceProperty = nil
+    XCTAssertFalse(sourceOnDestroyedCalled)
+
+    backingProperty.value = "test2"
+    XCTAssertEqual(sinkProperty!.value, "test2")
+
+    binding = nil
+    sinkProperty = nil
+    XCTAssertTrue(sinkOnDestroyedCalled)
+    XCTAssertTrue(bindingOnDestroyedCalled)
+    XCTAssertTrue(sourceOnDestroyedCalled)
   }
 
   func testDestroyedAfterPropertiesDeinitialized() {
@@ -136,6 +172,7 @@ final class UniDirectionalPropertyBindingTests: XCTestCase {
     ("testTwoWayBinding", testTwoWayBinding),
     ("testPropertyDestroyed", testPropertyDestroyed),
     ("testNotDestroyedEarly", testNotDestroyedEarly),
+    ("testSourcePropertyRetained", testSourcePropertyRetained),
     ("testDestroyedAfterPropertiesDeinitialized", testDestroyedAfterPropertiesDeinitialized)
   ]
 }

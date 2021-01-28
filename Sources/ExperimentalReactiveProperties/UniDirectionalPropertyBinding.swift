@@ -7,7 +7,11 @@ public class UniDirectionalPropertyBinding: PropertyBindingProtocol, EventfulObj
   public private(set) var destroyed: Bool = false
   public let onDestroyed = EventHandlerManager<Void>()
 
+  private let source: AnyObject
+
   internal init<Source: ReactiveProperty, Sink: InternalValueSettableReactivePropertyProtocol>(source: Source, sink: Sink) where Source.Value == Sink.Value {    
+    self.source = source
+
     var performingSinkUpdate = false
 
     handlerRemovers.append(source.onChanged { [unowned sink] in
@@ -18,7 +22,7 @@ public class UniDirectionalPropertyBinding: PropertyBindingProtocol, EventfulObj
       sink.value = $0.new
       performingSinkUpdate = false
     })
-    handlerRemovers.append(source.onHasValueChanged { [unowned source, sink] in
+    handlerRemovers.append(source.onHasValueChanged { [unowned source, unowned sink] in
       if performingSinkUpdate {
         return
       }
@@ -37,7 +41,6 @@ public class UniDirectionalPropertyBinding: PropertyBindingProtocol, EventfulObj
       sink.value = source.value
     }
     
-    unregisterFunctions.append(source.registerBinding(self))
     unregisterFunctions.append(sink.registerBinding(self))
   }
 
