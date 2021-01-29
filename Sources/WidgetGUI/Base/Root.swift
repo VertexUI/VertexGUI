@@ -28,7 +28,7 @@ open class Root: Parent {
   /* Widget lifecycle managment
   --------------------------------
   */
-  // TODO: implement getTIck!
+  // TODO: implement getTick!
   lazy public private(set) var widgetLifecycleManager = Widget.LifecycleManager { Tick(deltaTime: 0, totalTime: 0) }
   public let widgetLifecycleBus = WidgetBus<WidgetLifecycleMessage>()
   private var widgetLifecycleMessages = WidgetBus<WidgetLifecycleMessage>.MessageBuffer()
@@ -235,10 +235,14 @@ open class Root: Parent {
     let startTime = Date.timeIntervalSinceReferenceDate
     #endif
 
+    guard let rootRenderContent = self.rootWidget.renderState.content else {
+      return
+    }
+
     // first get the current target widgets by performing a raycast over the render object tree
     var currentTargets = [Widget & GUIMouseEventConsumer]()
     var currentTargetPositions: [ObjectIdentifier: DPoint2] = [:]
-    let renderObjectsAtPoint = self.rootWidget.render().objectsAt(point: event.position)
+    let renderObjectsAtPoint = rootRenderContent.objectsAt(point: event.position)
     for renderObjectAtPoint in renderObjectsAtPoint {
       if let object = renderObjectAtPoint.object as? IdentifiedSubTreeRenderObject {
         if let widget = rootWidget.getChild(where: { $0.id == object.id }) {
