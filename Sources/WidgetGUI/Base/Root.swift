@@ -91,7 +91,7 @@ open class Root: Parent {
       layout()
     }
 
-    rootWidget.mount(parent: self, context: widgetContext!, lifecycleBus: widgetLifecycleBus)
+    rootWidget.mount(parent: self, treePath: [], context: widgetContext!, lifecycleBus: widgetLifecycleBus)
     //rootWidget.focusContext = focusContext
 
     styleManager.setup()

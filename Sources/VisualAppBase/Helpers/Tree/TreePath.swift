@@ -1,4 +1,4 @@
-public struct TreePath: Sequence, Comparable, Hashable, Equatable, CustomDebugStringConvertible {
+public struct TreePath: Sequence, Comparable, Hashable, Equatable, CustomDebugStringConvertible, ExpressibleByArrayLiteral {
     public var segments: [Int]
 
     public var count: Int {
@@ -19,6 +19,10 @@ public struct TreePath: Sequence, Comparable, Hashable, Equatable, CustomDebugSt
 
     public init(_ segments: Int...) {
         self.segments = segments
+    }
+
+    public init(arrayLiteral elements: Int...) {
+        self.init(elements)
     }
 
     public subscript(index: Int) -> Int {

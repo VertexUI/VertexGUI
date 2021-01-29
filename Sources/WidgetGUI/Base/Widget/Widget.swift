@@ -6,36 +6,28 @@ import ReactiveProperties
 import Events
 
 open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
+    /* identification
+    ------------------------------
+    */
     public var name: String {
         String(describing: type(of: self))
     }
 
-    public var debugDescription: String {
-        "\(name) \(id)"
-    }
+    public static var nextId: UInt = 2
+    public let id: UInt
 
-    public struct ReplacementContext {
-        public var previousWidget: Widget?
-        public var keyedWidgets: [String: Widget]
-    }
+    // TODO: is this even used?
+    open var key: String?
+
+    public var debugDescription: String {
+        "\(name) \(id) \(treePath)"
+    } 
+    /* end identification */
 
     /* tree properties
     ------------------------
     anything that is related to identification, navigation, messaging, etc. in a tree
     */
-    public static var nextId: UInt = 2
-    public let id: UInt
-    // TODO: is this even used?
-    open var key: String?
-    open var classes: [String] = [] {
-        didSet {
-            notifySelectorChanged()
-        }
-    }
-    open var pseudoClasses: [String] {
-        []
-    }
-
     open var _context: WidgetContext?
     open var context: WidgetContext {
         // TODO: might cache _context
@@ -82,7 +74,9 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
             }
         }*/
     }
-    // TODO: switch to overriding visitChildren() approach instead of children array
+    public private(set) var treePath: TreePath = []
+
+    // TODO: maybe switch to overriding visitChildren() approach instead of children array
     public lazy var children: [Widget] = []
     /* end tree properties */
 
@@ -210,6 +204,15 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     /* style
     -----------------
     */   
+    open var classes: [String] = [] {
+        didSet {
+            notifySelectorChanged()
+        }
+    }
+    open var pseudoClasses: [String] {
+        []
+    }
+
     /** Style property support declared by the Widget instance's context. */
     public var experimentalSupportedGlobalStyleProperties: Experimental.StylePropertySupportDefinitions {
         []
@@ -419,6 +422,7 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     
     public final func mount(
         parent: Parent,
+        treePath: TreePath,
         context: WidgetContext,
         lifecycleBus: WidgetBus<WidgetLifecycleMessage>,
         with replacementContext: ReplacementContext? = nil) {
@@ -450,6 +454,7 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
                 }
             
                 self.parent = parent
+                self.treePath = treePath
 
                 resolveDependencies()
 
@@ -578,7 +583,7 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
             let newChild = children[i]
             let oldChild: Widget? = oldChildren.count > i ? oldChildren[i] : nil
             let childContext = ReplacementContext(previousWidget: oldChild, keyedWidgets: keyedChildren)
-            mountChild(newChild, with: childContext)
+            mountChild(newChild, treePath: self.treePath/i, with: childContext)
         }
 
        /* for child in oldChildren {
@@ -586,8 +591,8 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         }*/
     }
 
-    public func mountChild(_ child: Widget, with replacementContext: ReplacementContext? = nil) {
-        child.mount(parent: self, context: context, lifecycleBus: lifecycleBus, with: replacementContext)
+    public func mountChild(_ child: Widget, treePath: TreePath, with replacementContext: ReplacementContext? = nil) {
+        child.mount(parent: self, treePath: treePath, context: context, lifecycleBus: lifecycleBus, with: replacementContext)
 
         _ = child.onBoxConfigChanged { [unowned self, unowned child] _ in
             handleChildBoxConfigChanged(child: child)
@@ -867,6 +872,8 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     */
     @inlinable
     public final func render() -> RenderObject.IdentifiedSubTree {
+        print("invoked render on ", self)
+
         if renderState.invalid && mounted && !destroyed {
             #if DEBUG
             if countCalls {
@@ -900,7 +907,7 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     */
     @usableFromInline
     internal final func updateRenderState() {
-        print("Update Render State", self)
+        //print("Update Render State", self)
 
         if !renderState.invalid {
             #if DEBUG
@@ -1191,5 +1198,10 @@ extension Widget {
             self.old = old
             self.new = new
         }
+    }
+
+    public struct ReplacementContext {
+        public var previousWidget: Widget?
+        public var keyedWidgets: [String: Widget]
     }
 }

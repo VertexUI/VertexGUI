@@ -7,9 +7,9 @@ extension Experimental {
     override internal var children: [Widget] {
       didSet {
         if mounted {
-          for child in children {
+          for (index, child) in children.enumerated() {
             if !child.mounted {
-              self.mountChild(child)
+              self.mountChild(child, treePath: treePath/index)
             }
           }
           self.invalidateLayout()
