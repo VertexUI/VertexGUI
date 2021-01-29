@@ -46,6 +46,11 @@ open class Root: Parent {
   lazy private var styleManager = StyleManager(rootWidget: rootWidget)
   lazy private var experimentalStyleManager = Experimental.StyleManager()
 
+  /* debugging
+  --------------------------
+  */
+  public let debugManager = DebugManager()
+
   public var debugLayout = false {
     didSet {
       if let widgetContext = widgetContext {
@@ -53,6 +58,7 @@ open class Root: Parent {
       }
     }
   }
+  /* end debugging */
 
   public private(set) var destroyed = false
   private var onDestroy = EventHandlerManager<Void>()
@@ -122,6 +128,8 @@ open class Root: Parent {
   }
 
   open func tick(_ tick: Tick) {
+    debugManager.beginTick()
+
     let startTime = Date.timeIntervalSinceReferenceDate
 
     widgetContext!.onTick.invokeHandlers(tick)
@@ -135,11 +143,13 @@ open class Root: Parent {
       processLifecycleMessage($0)
     }
 
+    debugManager.beginLifecycleMethod(.build)
     for widget in rebuildWidgets {
       if !widget.destroyed {
         widget.build()
       }
     }
+    debugManager.endLifecycleMethod(.build)
     styleManager.refresh(Array(rebuildWidgets))
     rebuildWidgets.clear()
 
@@ -161,6 +171,7 @@ open class Root: Parent {
     reboxConfigWidgets.clear()
     
     //print("relayout widgets count", relayoutWidgets.count)
+    debugManager.beginLifecycleMethod(.layout)
     for widget in relayoutWidgets {
       // the widget should only be relayouted if it hasn't been layouted before
       // if it hasn't been layouted before it will be layouted during
@@ -169,20 +180,25 @@ open class Root: Parent {
         widget.layout(constraints: widget.previousConstraints!)
       }
     }
+    debugManager.endLifecycleMethod(.layout)
     relayoutWidgets.clear()
 
     // TODO: is it good to put this here or better in render()?
     //print("rerender widgets count", rerenderWidgets.count)
+    debugManager.beginLifecycleMethod(.render)
     for widget in rerenderWidgets {
       if !widget.destroyed {
         widget.updateRenderState()
       }
     }
+    debugManager.endLifecycleMethod(.render)
     rerenderWidgets.clear()
 
     removeOnAdd()
     widgetLifecycleMessages.clear()
     //print("ONTICK TOOK", Date.timeIntervalSinceReferenceDate - startTime, "seconds")
+
+    debugManager.endTick()
   }
 
   @inline(__always)
@@ -418,6 +434,86 @@ extension Root {
       } else {
         defer { nextIndex += 1 }
         return buffer.widgets[nextIndex]
+      }
+    }
+  }
+
+  public class DebugManager {
+    private var data = DebugData()
+    private var currentTickData: DebugData.SingleTickData? = nil
+
+    public init() {}
+
+    public func beginTick() {
+      currentTickData = DebugData.SingleTickData(startTimestamp: Date.timeIntervalSinceReferenceDate)
+    }
+
+    public func beginLifecycleMethod(_ method: Widget.LifecycleMethod) {
+      if var currentTickData = currentTickData {
+        currentTickData.lifecycleMethodInvocations[method] = DebugData.SingleTickData.LifecycleMethodInvocation(startTimestamp: Date.timeIntervalSinceReferenceDate)
+        self.currentTickData = currentTickData
+      }
+    }
+
+    public func endLifecycleMethod(_ method: Widget.LifecycleMethod) {
+      if var currentTickData = currentTickData {
+        if currentTickData.lifecycleMethodInvocations[method] != nil {
+          currentTickData.lifecycleMethodInvocations[method]!.endTimestamp = Date.timeIntervalSinceReferenceDate
+        }
+        self.currentTickData = currentTickData
+      }
+    }
+
+    @discardableResult
+    public func endTick() -> DebugData.SingleTickData {
+      guard var tick = currentTickData else {
+        fatalError()
+      }
+
+      tick.endTimestamp = Date.timeIntervalSinceReferenceDate
+      data.operations.append(.tick(tick))
+
+      return tick
+    }
+  }
+
+  public struct DebugData {
+    public var operations: [Operation] = []
+
+    public enum Operation {
+      case tick(SingleTickData)
+    }
+
+    public struct SingleTickData: CustomDebugStringConvertible {
+      public var startTimestamp: Double
+      public var endTimestamp: Double = -1
+      public var lifecycleMethodInvocations: [Widget.LifecycleMethod: LifecycleMethodInvocation] = [:]
+      public var duration: Double {
+        endTimestamp - startTimestamp
+      }
+
+      public struct LifecycleMethodInvocation: CustomDebugStringConvertible {
+        public var startTimestamp: Double
+        public var endTimestamp: Double = -1
+        public var duration: Double {
+          endTimestamp - startTimestamp
+        }
+        public var debugDescription: String {
+          """
+          Lifecycle Method Invocation { duration: \(duration)s }
+          """
+        }
+      }
+
+      public var debugDescription: String {
+        """
+        Tick Report {
+          duration: \(duration)s
+          invocations {
+            \(lifecycleMethodInvocations.map { "\($0): \($1)" }.joined(separator: "\n\t"))
+          }
+        }
+        """
       }
     }
   }
