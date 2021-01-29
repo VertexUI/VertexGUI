@@ -92,6 +92,7 @@ open class RenderObject: CustomDebugStringConvertible, TreeNode {
     }
 
     public func mount(parent: RenderObject, treePath: TreePath, bus: Bus, context: RenderObjectContext?) {
+        print("CALLED MOUNT")
         self.parent = parent
         self.treePath = treePath
         self.bus = bus
@@ -108,7 +109,10 @@ open class RenderObject: CustomDebugStringConvertible, TreeNode {
 
     internal func mountChildren() {
         for (index, child) in children.enumerated() {
-            child.mount(parent: self, treePath: treePath/index, bus: self.bus, context: self._context)
+          // TODO: warning: this check is probably insufficient, add more logic to ensure that context, tree path of the child are up to date
+            if child.parent !== self {
+                child.mount(parent: self, treePath: treePath/index, bus: self.bus, context: self._context)
+            }
         }
     }
 

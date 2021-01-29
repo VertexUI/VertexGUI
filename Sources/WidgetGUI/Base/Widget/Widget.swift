@@ -872,7 +872,7 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     */
     @inlinable
     public final func render(reason: RenderInvocationReason) -> RenderObject.IdentifiedSubTree {
-        print("invoked render on ", self)
+        //print("invoked render on ", self)
 
         if renderState.invalid && mounted && !destroyed {
             #if DEBUG
@@ -907,7 +907,7 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     */
     @usableFromInline
     internal final func updateRenderState(reason: UpdateRenderStateInvocationReason) {
-        print("::::::Update Render State", self, reason)
+        //print("::::::Update Render State", self, reason)
 
         if !renderState.invalid {
             #if DEBUG
@@ -961,10 +961,10 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
             }
             #endif
 
-            let duration = Date.timeIntervalSinceReferenceDate - startTime
+            /*let duration = Date.timeIntervalSinceReferenceDate - startTime
             if duration > 0.01 {
                 print("updateRenderState took", duration, self)
-            }
+            }*/
 
             renderState.debuggingContent = newDebuggingContent
             subTree.replaceChildren(([renderState.mainContent] + renderState.debuggingContent).compactMap { $0 })
@@ -978,7 +978,7 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         renderState.invalid = false
 
         #if DEBUG
-        print("::::RENDER STATE UPDATE TOOK", self, reason, Date.timeIntervalSinceReferenceDate - startTime)
+        //print("::::RENDER STATE UPDATE TOOK", self, reason, Date.timeIntervalSinceReferenceDate - startTime)
         context.inspectionBus.publish(WidgetInspectionMessage(
             sender: self, content: .RenderingFinished))
         #endif
