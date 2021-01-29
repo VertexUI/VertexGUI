@@ -58,6 +58,6 @@ open class SingleChildWidget: Widget {
   }
 
   override open func renderContent() -> RenderObject? {
-    return child.render()
+    return child.render(reason: .renderContentOfParent(self))
   }
 }

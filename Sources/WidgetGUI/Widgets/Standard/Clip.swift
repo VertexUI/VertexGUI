@@ -27,7 +27,7 @@ public class Clip: SingleChildWidget {
 
             max: globalBounds.max - DVec2(insets.right, insets.bottom))) {
 
-            child.render()
+            child.render(reason: .renderContentOfParent(self))
         }
     }
 }

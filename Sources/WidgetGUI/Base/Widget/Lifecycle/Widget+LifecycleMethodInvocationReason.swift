@@ -22,7 +22,14 @@ extension Widget {
   }
 
   public enum RenderInvocationReason {
+    case renderRoot
     case parentRenders
+    case renderContentOfParent(Widget)
+  }
+
+  public enum UpdateRenderStateInvocationReason {
+    case renderCalled(RenderInvocationReason)
+    case rootTick
   }
 
   public enum UnmountInvocationReason {

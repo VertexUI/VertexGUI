@@ -80,8 +80,8 @@ public final class TextField: SingleChildWidget, ConfigurableWidget {
 
   override public func renderContent() -> RenderObject? {
     // TODO: handling clipping like this will allow the text to enter the border of the TextField, maybe add a Clip Widget in buildChild
-    RenderObject.Clip(globalBounds) {
-      child.render()
+    RenderObject.Clip(globalBounds) { [unowned self] in
+      child.render(reason: .renderContentOfParent(self))
     }
   }
 }

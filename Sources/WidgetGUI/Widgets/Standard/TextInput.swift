@@ -187,7 +187,7 @@ public final class TextInput: SingleChildWidget, StatefulWidget, ConfigurableWid
           }
         }
 
-        child.render()
+        child.render(reason: .renderContentOfParent(self))
       }
     }
   }

@@ -43,7 +43,7 @@ extension Experimental {
     }
 
     override open func renderContent() -> RenderObject? {
-      return rootChild?.render()
+      return rootChild?.render(reason: .renderContentOfParent(self))
     }
   }
 }

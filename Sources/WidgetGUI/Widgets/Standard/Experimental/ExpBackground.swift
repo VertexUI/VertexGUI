@@ -36,12 +36,12 @@ extension Experimental {
     }
 
     override public func renderContent() -> RenderObject? {
-      ContainerRenderObject {
+      ContainerRenderObject { [unowned self] in
         RenderStyleRenderObject(fillColor: fill ?? .transparent) {
           RectangleRenderObject(globalBounds)
         }
 
-        rootChild?.render()
+        rootChild?.render(reason: .renderContentOfParent(self))
       }
     }
 

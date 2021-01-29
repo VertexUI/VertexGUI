@@ -137,7 +137,7 @@ public final class Button: SingleChildWidget, StatefulWidget, ConfigurableWidget
     }
 
     override public func renderContent() -> RenderObject? {
-        return child.render()
+        return child.render(reason: .renderContentOfParent(self))
     }
 
     override public func destroySelf() {

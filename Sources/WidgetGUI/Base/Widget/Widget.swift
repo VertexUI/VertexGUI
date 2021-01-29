@@ -871,7 +871,7 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     Returns the rendered representation of the Widget. Updates the Widgets render state if it is invalid.
     */
     @inlinable
-    public final func render() -> RenderObject.IdentifiedSubTree {
+    public final func render(reason: RenderInvocationReason) -> RenderObject.IdentifiedSubTree {
         print("invoked render on ", self)
 
         if renderState.invalid && mounted && !destroyed {
@@ -886,7 +886,7 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
             Logger.log("Render state of Widget: \(self) invalid. Rerendering.".with(fg: .yellow), level: .Message, context: .WidgetRendering)
             #endif
 
-            updateRenderState()
+            updateRenderState(reason: .renderCalled(reason))
         } else if !mounted || destroyed {
             #if DEBUG
             Logger.log("Widget: \(self) is not mounted or already destroyed. Skip rendering.".with(fg: .yellow), level: .Message, context: .WidgetRendering)
@@ -906,8 +906,8 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     Adds rendered output for debugging as well.
     */
     @usableFromInline
-    internal final func updateRenderState() {
-        //print("Update Render State", self)
+    internal final func updateRenderState(reason: UpdateRenderStateInvocationReason) {
+        print("::::::Update Render State", self, reason)
 
         if !renderState.invalid {
             #if DEBUG
@@ -932,7 +932,6 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         renderState.content = subTree
 
         if visibility == .Visible, mounted && layouted && !layouting {
-
             let newMainContent = renderContent()
             // if the content that was rendered by the inheriting Widget
             // is still the same object as the old one, invalidate is cache
@@ -969,7 +968,7 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
 
             renderState.debuggingContent = newDebuggingContent
             subTree.replaceChildren(([renderState.mainContent] + renderState.debuggingContent).compactMap { $0 })
-        } else {
+        } else if visibility == .Hidden {
             subTree.removeChildren()
             #if DEBUG
             Logger.warn("Called updateRenderState on Widget that cannot be rendered in it's current state.".with(fg: .white, bg: .red), context: .WidgetRendering)
@@ -979,6 +978,7 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         renderState.invalid = false
 
         #if DEBUG
+        print("::::RENDER STATE UPDATE TOOK", self, reason, Date.timeIntervalSinceReferenceDate - startTime)
         context.inspectionBus.publish(WidgetInspectionMessage(
             sender: self, content: .RenderingFinished))
         #endif
@@ -992,8 +992,8 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     to rerender as it avoids some class instatiations and mounting in the RenderObjectTree).
     */
     open func renderContent() -> RenderObject? {
-        .Container {
-            children.map { $0.render() }
+        .Container { [unowned self] in
+            children.map { $0.render(reason: .renderContentOfParent(self)) }
         }
     }
 

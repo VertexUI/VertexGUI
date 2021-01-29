@@ -176,7 +176,7 @@ public class ScrollArea: SingleChildWidget, GUIMouseEventConsumer {
 
       RenderObject.Clip(globalBounds) {
         RenderObject.Translation(-offsets) {
-          child.render()
+          child.render(reason: .renderContentOfParent(self))
         }
       }
 

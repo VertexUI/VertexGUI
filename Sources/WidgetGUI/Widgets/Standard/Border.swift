@@ -47,7 +47,7 @@ public class Border: SingleChildWidget {
 
     override public func renderContent() -> RenderObject? {
         RenderObject.Container {
-            child.render()
+            child.render(reason: .renderContentOfParent(self))
 
             if borders.top > 0 {
                 RenderObject.RenderStyle(strokeWidth: borders.top, strokeColor: FixedRenderValue(color)) {

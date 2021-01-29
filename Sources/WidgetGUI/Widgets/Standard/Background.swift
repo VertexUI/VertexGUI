@@ -73,7 +73,7 @@ public final class Background: SingleChildWidget, ConfigurableWidget {
                 }
             }
             
-            child.render()
+            child.render(reason: .renderContentOfParent(self))
         }
     }
 }

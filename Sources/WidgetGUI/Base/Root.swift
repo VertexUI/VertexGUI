@@ -188,7 +188,7 @@ open class Root: Parent {
     debugManager.beginLifecycleMethod(.render)
     for widget in rerenderWidgets {
       if !widget.destroyed {
-        widget.updateRenderState()
+        widget.updateRenderState(reason: .rootTick)
       }
     }
     debugManager.endLifecycleMethod(.render)
@@ -218,7 +218,7 @@ open class Root: Parent {
   }
 
   open func render() -> RenderObject? {
-    return rootWidget.render()
+    return rootWidget.render(reason: .renderRoot)
   }
 
   /*

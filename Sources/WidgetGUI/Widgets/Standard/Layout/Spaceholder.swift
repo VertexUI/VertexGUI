@@ -42,7 +42,7 @@ public class Spaceholder: SingleChildWidget {
 
   override public func renderContent() -> RenderObject? {
     if display {
-      return child.render()
+      return child.render(reason: .renderContentOfParent(self))
     } else {
       return nil
     }
