@@ -89,7 +89,8 @@ What are the advantages of using properties?
 - the logic for generating the values is close to the render object that needs it
 
 Would there be any downsides to using properties?
-- they do not only update during a specific render call, but whenever their dependencies change
+- they do not only update during a specific render call, but whenever their dependencies change, depending on how transitions are implemented this could be quite frequently
+  - in most cases, the updates should however be infrequent, for example: a theme change, a new style gets applied to a Widget and changes a color property, a layout pass updates the position of a Widget
 
 <br>
 
@@ -97,8 +98,34 @@ Would there be any downsides to using properties?
 Every render object would take in some kind of reactive property, probably a computed property and then assign onChanged handlers to it. Since all the render objects are defined by the framework, all the work is done by the framework developer and the user will not create bugs by forgetting to register the handlers.
 Each render object sets a flag on itself to indicate that it needs to be rasterized again. And probably emit this information over a bus so that the rasterization logic and caching etc. can be handled at the root level.
 Another approach would be to only set the flag and then on every frame go through the render graph and look for objects that need to be rasterized again. This would generate fewer calls between frames (because no bus) and probably remove the need for sharing a context between objects as well. However a context might become necessary for other logic and then a bus could be added as well.
+A different benefit of iterating the tree and searching for render objects that need rerasterization could be that that in case many changes happened to render objects (e.g. a theme change, a large style change, many positions updated), only the topmost render object that needs rasterization needs to be found in order to invoke the rasterization.
+The children will then be iterated by the rasterizer. In case they are chached, by have a flag that indicates a need for rerasterization set as well, they will be rasterized.
+This saves work of handling a queue and either sorting it by depth or making inefficient small updates only to then make a larger update that includes all the smaller updates to the rasterized output again.
+The question is, whether there would be few rasterization requests or a lot of them and what takes more time to process. If there are only a few calls, it might be efficient to have the queue. Otherwise the whole render tree needs to be searched on every frame.
+This probably means that the queue approach is going to be taken. And that the queue must then be sorted by depth and rasterization only be invoked for parents and not again for their already rerasterized children.
 
-If a render object is marked for rerasterization, do it's children need to be rasterized as well? Or can their rasterizations be used again?
+<br>
+
+A solution for transitions and frequent updates to properties needs to be found.<br>
+Frequent updates to reactive properties would trigger a lots of calls to handlers and the requestRasterization function.
+Actually for transitions this depends on how they are implemented.<br>
+If transitions are implemented in such a way that the Widget is updating a property value used by the render object on every frame, this might be inefficient. But maybe transition definitions should be the values passed to render objects.
+A transition definition would probably include a start and end time, maybe no end time if it is going on indefinitely and a function to calculate the current value based on the difference of the current time to the start time.
+Such a transition definition would be set as a property value by the Widget managing the render object.
+The transition might be defined by styles. In that case the Widget would probably register handlers on the resolved styles to find out whether any transition is going. And then transform this transition in a way that it can be passed to the render object.<br>
+This means that render object properties need to accept multiple types of values. Either the value directly or a transition definition for the value.
+If the render object notices that the value of a property changed and the new value is a transition it should signal that it needs to be rasterized on each frame until the transition ends.
+The value that the rasterizer accesses on the render object on each frame should then always be the current transition value, given by the function and the current time.<br>
+This could be implemented by either letting the rasterizer call a tick function on each render object before rasterizing it, providing a time delta. This could be beneficial to modify the perception of time for certain render objects but would include an additional function call.
+The render object could as well provide the value with a get function that takes a time value.
+Probably the most convenient solution would be to have property wrappers for render objects which calculate the current value when it's accessed based on the type of internal value that was provided to the wrapper.<br>
+Stopping the transition and signaling that rasterization on every frame is not necessary any more could be achieved by using dispatch, checking the time in a tick method, or registering a timer through the context of the render object.<br>
+Actually this is necessary for starting as well. Since the start time of a given transition might be in the future. The value before the start time is reached is then the value at time 0. Until the start time is reached, the render object should not be rasterized on every frame.<br>
+The approach being used will probably be that each render object which notices that is has a transition value will register a handler by calling onTick on it's context and providing a value like executeAfter: absolute time value of start. The onTick handlers are processed by the rendering pipeline which receives it's ticks from the system.
+All times that are specified should be in terms of times of the frameworks internal time. Probably measured from the initialization of the framework.
+So the Widgets which provide the transition values also need to use that.
+
+<br>
 
 Go through it by example:
 
@@ -180,6 +207,8 @@ disadvantages:
 **how to handle input recording --> mouse and forwarding it to the correct widget?**
 
 **how to handle mouse cursor updates?**
+
+<br>
 
 <br>
 
