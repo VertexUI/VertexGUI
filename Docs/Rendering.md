@@ -106,6 +106,10 @@ This probably means that the queue approach is going to be taken. And that the q
 
 <br>
 
+**explain on a Widget which has multiple children and adds them dynamically (e.g. List) and a Widget where there is only a render object where a color needs to be updated sometimes**
+
+<br>
+
 A solution for transitions and frequent updates to properties needs to be found.<br>
 Frequent updates to reactive properties would trigger a lots of calls to handlers and the requestRasterization function.
 Actually for transitions this depends on how they are implemented.<br>
@@ -124,6 +128,39 @@ Actually this is necessary for starting as well. Since the start time of a given
 The approach being used will probably be that each render object which notices that is has a transition value will register a handler by calling onTick on it's context and providing a value like executeAfter: absolute time value of start. The onTick handlers are processed by the rendering pipeline which receives it's ticks from the system.
 All times that are specified should be in terms of times of the frameworks internal time. Probably measured from the initialization of the framework.
 So the Widgets which provide the transition values also need to use that.
+
+<br>
+
+**are manual changes to render objects still possible with the property approach --> going through the render objects and assigning values on them, is this even necessary?**
+
+<br>
+
+How would the property system of render objects need to work to support transitions and static values?<br>
+First of all: properties on render objects that are available for transitions need to be able to accept values of different types (probably). The static value and a transition value.<br>
+It would be convenient to allow the render objects constructor to receive values which are not properties. Which means they will probably not change during the lifetime of the object.
+To support this there would probably need to be multiple constructors. On the other hand, since the values are provided by Widgets which in turn have their own values defined as reactive properties since they can change based on the style and in most cases these properties will be forwarded to the render objects, it would be ok to only accept reactive properties as values.
+The StaticProperty should be made efficient. It should probably discard all handlers registered/not even register them in the first place. Or the render object always checks whether a given property is static, but that would be kind of a lot of work and could lead to bugs.<br>
+After a render object has received a reactive property it needs to register an onChange handler on it to be notified of new values and apply the current value of the property to wherever the value should be stored.
+Since there are static values and timed values / transitioned values, the render object must accept properties which allow both of these types for their value.
+Probably an enum should be added which wraps these types, like this:
+    
+    enum RenderObjectValue<T> {
+      case static(T)
+      case transition(RenderObjectValueTransition<T>)
+    }
+
+A nice target syntax would be to allow the rasterizer to simply access the current property value, either static, or the value of a transition at the current time, by the properties name.
+However, to calculate the current value of a transition the framework time is necessary. The framework time could either come from the render objects context, or from a call on the render object which was menitioned earlier as well. Something like tick(Tick). The render object would need to store the time by itself.
+This would add another call to be made.<br>
+A simpler approach would be to access the framework time in the get function of the property. Access to the render objects instance is necessary for this. This could be realized with the subscript approach of property wrappers.
+Another way to implement this would be to initialize computed properties which wrap the properties of the render object in the initializer. This would allow access to self as well as the reactive properties that were passed to the render object.
+The computed property wrapper's job would only be to get a single value for the property, regardless of whether the value passed in was a static value or a transition.
+The handlers that invoke a rasterization request should be registered directly on the properties that were passed in.
+In the handlers, it is necessary to check whether the new value provided is a static value or a transition and the relevant signals to the rasterizer / render pipeline have to be published.<br>
+Note that it is not necessary that the render object values be wrapped with reactive computed properties in this approach.
+A special property wrapper for render objects could be added, which can either receive a reactive property to extract it's values and listen for changes or receive a RenderObjectValue directly to then always provide the current value through the value getter.
+The adding of self access could be automated by letting the RenderObject class go through all properties that are available on the class and setting the instance on them. This would automatically be executed by the super.init() call in inherting RenderObjects.<br>
+Updating the value for the property could be done manually by registering an onChange handler on the reactive property. The singnaling could be done manually as well, however it would be more convenient in most cases to let the render object property wrapper handle all of this, since it also has access to the render object instance this should be doable.
 
 <br>
 
