@@ -250,3 +250,51 @@ disadvantages:
 <br>
 
 ### Which Render Objects are Needed?
+
+<br><br>
+
+## A Completely New Approach
+
+Maybe a separate render object tree can be avoided by making Widgets renderable. This could be achieved by defining protocols for renderable objects which include things such as iterating over children.
+
+One first question is whether all Widgets should conform to a renderable protocol.<br>
+If not all children conform to such a protocol, then the Widget tree would need to be collapsed in order to allow rendering. This could be a time consuming operation, because it would need to be rerun when a Widget is added to the tree that is renderable.<br>
+Maybe the renderer would accept a generic tree and then check on each node whether it is a renderable node.<br>
+If all Widgets would conform to a renderable protocol, then the Widgets which should not output anything by themselves (e.g. a layout Widget) would use a protocol that simply does nothing.<br>
+
+Widgets would need to access a rendering context in order to be able to request rasterization. This context could be provided through the Widget context. Alternatively it could be set on each renderable Widget by the rendering system, when going through the tree or maybe by the Widget Root.
+
+<br>
+
+**How would a rerasterization happen after a relevant property of a Widget has changed?**
+
+The properties relevant for rendering are probably given by the protocol the Widget conforms to. This would mean that for example a RectangleRenderable protocol could define a property size which the Widget must then provide. 
+Note that this protocol would not automatically provide any logic to react to changes of this property, or even to determine the current value if the value is continuously updated by a transition.<br>
+Such things would need to be implemented by whatever conforms to the protocol. This might actually be a benefit in terms of the breadth of tasks the rendering system can be used for since some tasks might not require any updates to property values and every renderable can be a simple struct with a static value.<br>
+In the case of Widgets, if all Widgets conform to some renderable protocol, the root Widget class could provide common logic for handling updates to properties relevant for rendering.<br>
+If a property wrapper is applied to the relevant properties, the root Widget class can find these properties and give them access to self or register handlers on them to e.g. be able to make a rasterization request if the property changes or to find out whether the new value is a transition type value and inform the rendering system of this, so that the Widget is rasterized on every frame.
+
+Where would the values for the render properties come from?<br>
+Since the Widgets use styles, the values will mostly come from styles. Style properties can be retrieved as reactive properties, so that if the property wrappers for render properties receive those, the property wrappers can automatically notify the rendering system of a necessary rerasterization.<br>
+It would probably be possible to define convenience property wrappers, like StyleForwardedRenderValue or something like that which takes a key of a style property and gets assigned the instance of the Widget by some logic in the root Widget class.
+Such a wrapper could automatically handle transitions defined by styles.<br>
+Note that in this approach, all the transition handling is done by the implementers of the renderable protocols. It might be possible to define the render values as an enum type of either a static value or a transition, but this enforces a certain type of transition definition. On the other hand, on the side of the implementers the work necessary to manage transitions would be reduced.
+
+<br>
+
+**should the properties of renderable protocols should accept static and transition values or only static and the transition handling should be left to the implementing system?**
+
+**how can things that every renderable widget does be automated e.g. by a superclass?**
+
+**how are things like translation handled in this approach?**
+
+**how would mouse input be handled with this approach?**
+
+**how would a lot of custom rendering look like? With the current render object system, one idea was to have something like an svg type drawable definition for each widget**
+
+**would the rendering system be useful for a different system than the Widget system as well?**
+
+<br>
+
+**how are structural changes handled-->changing a background? --> since the background Widget now wraps it's children, are the children destroyed and reinstantiated?**<br>
+## **CONTINUE WITH THIS QUESTION**
