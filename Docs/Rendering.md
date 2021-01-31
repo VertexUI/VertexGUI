@@ -296,5 +296,19 @@ Note that in this approach, all the transition handling is done by the implement
 
 <br>
 
-**how are structural changes handled-->changing a background? --> since the background Widget now wraps it's children, are the children destroyed and reinstantiated?**<br>
-## **CONTINUE WITH THIS QUESTION**
+### How would structural changes be handled, can children that don't change be reused?
+Some Widgets take a builder function to generate children. This builder function is evaluated during the initialization of the Widget in most cases.
+Such a Widget might wrap the provided children in some other Widgets, depending on which functionality should be added.
+A container Widget might wrap the provided child inside a Padding and a Background Widget.
+The container Widget does not change the structure of it's sub tree during it's lifetime. But there could be other Widgets which would do that.<br>
+This would probably mostly happen somewhere inside a composed Widget which a user defined view. The developer might want to display certain data differently based on some other data or flags. One use case might be switching the orientation of the layout of certain Widgets. By wrapping them in a Column or a Row layout Widget and allowing the user to switch between those two.
+The children inside these two layouts could be reused. However, since the children are build by the layout which invokes the provided build function, the children would be rebuilt after the layout is switched.<br>
+One possible solution would be to not use two separate layout Widgets Row and Column, but instead a single layout Widget which allows for switching between those two by updating a property. This property could be given as a reactive property.
+After it changes, the layout performs another layout pass, the children stay the same.<br>
+Another solution could be to provide a functional Widget which takes in a build function, invokes it, stores the children and takes another build function which builds another subtree. The second build function receives the result of the first as a parameter. When some dynamic rebuilding logic is in the second subtree, every newly built version will still have access to the result of the first as it is retained by the closure.<br>
+It could be necessary to be careful about not creating reference cycles with this approach. Generally, if possible, the solution of providing a single Widget which allows for switching instead of needing to rebuild the entire sub tree is better.<br>
+Additionally, every developer can create another functional composed Widget which receives the build function for the children that are to be retained, and inserts them into a subtree defined by the Widget. This would add the overhead of needing to create a new Widget for a specific use case.
+
+If render objects would form a separate tree, this wouldn't be different, since the render object's functionality is hidden behind Widgets.
+
+### Some examples of composing Widgets to achieve a specific functionality:
