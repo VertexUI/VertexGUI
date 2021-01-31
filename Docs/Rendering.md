@@ -304,8 +304,7 @@ Opacity and transforms can affect mouse events. When the opacity is zero, it mig
 Probably this behavior should be configurable by a property on whatever Widget handles the receiving of mouse events. To be able to make that decision, the rasterized output of the sub tree of the Widget receiving the mouse events needs to be known or the sub tree of the Widget has to be searched for the exact child Widget below the mouse and that Widget checked for it's opacity configuration.<br>
 Translation and rotation change the position of the bounding rect in which a Widget can receive mouse events.
 If scale is applied as well it is probably necessary to scale the mouse position on screen to a position in the Widget as if it had no scale applied.<br>
-Probably a Widget mouse event should include a global position and a local position, relative to the Widget bounds with all transforms resolved.
-<br>
+Probably a Widget mouse event should include a global position and a local position, relative to the Widget bounds with all transforms resolved.<br>
 To be able to do these calculations, the transformation state of every Widget must be known. This can either be done by storing the state on every Widget when going through the tree, or by keeping track of the transformation state temporarily when resolving mouse events.
 
 <br>
@@ -313,6 +312,10 @@ To be able to do these calculations, the transformation state of every Widget mu
 This means, that one open question is whether transformation, opacity and the like should be tracked on every Widget / made available as a property on every Widget.<br>
 The answer to this depends on whether these values are required for any calculations outside of mouse input processing, since in that case the tracking can probably happen temporarily.<br>
 For calculating large layout transitions, for example morphing one Widget into another, it might be useful to have direct access to the transformation state of every Widget to be able to calculate where points inside the Widget are located in the global space. However these values would probably only seldomly be accessed. It might be enough to calculate them as they are needed, by going up the tree.
+
+<br>
+
+Maybe transform, opacity etc. should even be settable on every renderable. Determine this in a dedicated section exploring the details of composing renderables.
 
 <br>
 
@@ -349,8 +352,158 @@ Additionally, every developer can create another functional composed Widget whic
 
 If render objects would form a separate tree, this wouldn't be different, since the render object's functionality is hidden behind Widgets.
 
-### Which Render Objects are Needed?
+<br>
+
+### Some specific examples exploring which renderables would be needed:
+
+<br>
+
+- Buttons, Containers need a background. This background could be a color, a gradient, an image, a pattern
+  - for design purposes the background can be an arbitrary shape.
+  - some buttons might be stylized to have some edge beveled, be a circle or only slightly rounded
+  - the background of a button/container can change, for example when the mouse is over the button
+  - it would be useful if the background can consist of multiple independently colored shapes, which can be defined in terms of their path and colors, something similar to using svg backgrounds in css, the background would need to be scalable
+  - the Widget can probably not switch which type of renderable it is during runtime, so all of these possible values should be supported by one renderable
+- a design might be visually more interesting if there can be graphical elements which direct the viewers eye
+  - should these be included in the definition of a renderable with a fill?
+  - the graphical elements might be essentialy something drawable with multiple shapes, the drawables can stretch to whatever size is to be filled, so they are svgs, and include colors
+  - such a graphical element could include transitions
+  - e.g. a color inside the drawable could be transitioned or animated
+  - this would mean that frequent updates would be necessary
+  - if the drawable is only one value, which includes shapes, and colors, the amount of data being created and overwritten on every frame might be unnecessarily high
+  - a path could be transitioned, morphed as well, in that case it would be necessary to either modify the existing path data or overwrite it with new data
+  - when doing essentially svg values for properties of renderables, that would introduce a whole new tree with properties and so on, this should probably be avoided and renderables be used directly
+- should images be handled by the same renderable that also does backgrounds etc.?
+- maybe there could be a path renderable with a property that accepts points or segments, maybe with bezier handles, a contour property
+- text which can break and span over multiple lines (although this might be handled by the Widget system)
+
+<br>
+
+### Types of fills
+
+<br>
+
+A shape can be filled with:
+
+- solid color
+- pattern
+- image
+- gradient
+- vector graphic (image?)
+
+<br>
+
+### Types of renderables
+
+<br>
+
+The nested items are the Widgets which would use this renderable.
+
+<br>
+
+- Rectangle (size, fill, border radius, border width, border color, border style, border bevel?)
+  - Background
+  - Image (fill: type Image)
+- Clip
+  - Forwarded to c
+
+<br>
+
+### Can a Widget conform to multiple renderables?
+
+<br>
+
+It could make sense that a Widget can be a renderable which supports transform as well as a renderable which enables filling a shape. A container Widget could use those two properties and make them available by wrapping other Widgets. But the container Widget could just as well use two Widgets internally which provide this functionality.<br>
+Since protocols allow conforming to multiple of them, how could it be prevented even if it would make sense to prevent it? Conflicting property types would throw an error, but it would not be clear that this means that renderables shouldn't be combined on one Widget.<br>
+It's probably going to be allowed. So the render logic must take this into account.
+
+<br>
 
 ### Can the new approach be developed next to the current approach?
 
-### Some examples of composing Widgets to achieve a specific functionality:
+<br>
+
+A new implementation for the renderer is needed for this system. All the existing render object outputs could stay there while the new approach is being implemented. The Widget Root might become a renderable itself and can then be passed directly to the new renderer.<br>
+The app containing the Widget Root can conditionally enable or disable the old renderer.<br>
+Some protocols for renderables might conflict with existing property names in Widgets. These Widgets and their current render functions will need to be adjusted slightly.<br>
+Any newly implemented Widget which should only support the new rendering approach can return nil in the old render function.
+
+<br>
+
+### Should everything be done with draw functions?
+
+<br>
+
+Why go with the dedicated renderables in the first place?<br>
+The draw calls are still made, somewhere else, by a renderer, by they are made. Even if something is triangulated, it is essentially still a drawcall, and the backend for the draw calls made by Widgets could be implemented in such a way that triangles are generated.<br>
+It would be simple to use only drawRect for backgrounds, but use more complex shapes wherever they are needed.<br>
+There would anyway be the need for supporting custom drawings for certain edge cases.<br>
+Essentially, the functions of a skia canvas need to be forwarded.
+
+What about Widgets which have multiple children and draw something around or on top of them and need to handle the drawing order of the children?<br>
+Drawing Widgets in a different order than they are defined in the tree might be problematic, since for caching it needs to be known in which order Widgets overlap in order to be able to determin whether any siblings, parents or whatever needs to be redrawn.
+
+<br>
+
+The complexity can probably be reduced by only allowing certain leaf Widgets to actually draw something. So a background Widget would not make a draw call and then invoke draw on it's children.
+Instead there should be another Widget which the Background Widget adds to itself as a child before the other children.
+This Widget could be an internal class which only the background Widget can see or it can be something like a Rectangle Widget which essentially exposes the same properties as Background or more.<br>
+This would mean that the background Widget becomes a kind of layout Widget because it stacks two other Widgets.<br>
+A button could use the background Widget for it's own background. But sometimes a user might want to have a totally customized background.
+The background might consist of different Shape Widgets which allow drawing of arbitrary colored shapes.
+Either the user creates a custom Button Widget, which probably wouldn't be very complicated. Or the background property takes a complex graphic definition for which transitioning must be implemented by finding similarities and differences or by transitioning raw pixel values.
+Probably the approach with the graphic will be taken. The graphic will be inside a rectangular area and stretch or not stretch as defined.<br>
+This would probably the implementation that covers most use cases. Custom buttons with custom drawings can still be implemented.
+
+<br>
+
+Where should caching be handled?
+- by the Widget system
+- or by the drawing system?
+
+Probably the most stuff should happen should be done by the Widget system to keep unnecessary abstraction low. 
+The drawing system only needs to provide the mechanisms necessary for caching, such as being able to draw to a virtual buffer instead of directly to the screen.
+
+<br>
+
+What about reusability?
+
+The drawing functions can be used with anything else. It is even more flexible than having to conform to specific protocols in order to be able to draw something.
+
+<br>
+
+**How should the draw functions work?** 
+- in which space are points assumed to be
+
+**Wow to iterate through the tree and find the Widgets that can be drawn?**
+
+**note: the following algorithm will probably not work**
+
+When redrawing everything / this is the first drawing pass:
+
+1. go through the tree, find all of the Widgets which have a draw function
+2. sort the Widgets into the order in which they are drawn by considering layer indices / z indices and the position in the tree (if manual setting of z is going to be implemented at all)
+3. call all draw functions in sequence
+4. display
+
+When a Widget changed and needs to be redrawn:
+
+- get the order in which Widgets are drawn (maybe from first pass)
+
+- if the Widget has an opacity that is lower than 1
+  
+  - find out what what is drawn before the Widget and is overlapped by the Widget
+
+  - draw these things by calling redraw recursively (this should lead to the smallest possible amount of Widgets being redrawn)
+
+  - the Widget should have been redrawn by the recursive call
+
+- if the Widget has not yet been drawn and if the Widget has an opacity is greater than 0
+  
+  - call draw on the Widget
+
+- find out everything drawn after the Widget
+
+  - if it has not yet been drawn, call draw on it
+
+3.
