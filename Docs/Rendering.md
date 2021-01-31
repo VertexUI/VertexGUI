@@ -249,11 +249,11 @@ disadvantages:
 
 <br>
 
-### Which Render Objects are Needed?
-
 <br><br>
 
 ## A Completely New Approach
+
+<br>
 
 Maybe a separate render object tree can be avoided by making Widgets renderable. This could be achieved by defining protocols for renderable objects which include things such as iterating over children.
 
@@ -266,7 +266,9 @@ Widgets would need to access a rendering context in order to be able to request 
 
 <br>
 
-**How would a rerasterization happen after a relevant property of a Widget has changed?**
+### How would a rerasterization happen after a relevant property of a Widget has changed?
+
+<br>
 
 The properties relevant for rendering are probably given by the protocol the Widget conforms to. This would mean that for example a RectangleRenderable protocol could define a property size which the Widget must then provide. 
 Note that this protocol would not automatically provide any logic to react to changes of this property, or even to determine the current value if the value is continuously updated by a transition.<br>
@@ -286,17 +288,53 @@ Note that in this approach, all the transition handling is done by the implement
 
 **how can things that every renderable widget does be automated e.g. by a superclass?**
 
-**how are things like translation handled in this approach?**
+### How are things like translation handled in this approach?
 
-**how would mouse input be handled with this approach?**
+<br>
+
+The thing about translation is that it affects all the children of a Widget. This applies to other transforms as well. Opacity also shows this behavior.<br>
+These values are provided by wrapping a tree of Widgets in a special Widget exposing these properties. For example the container Widget might expose them.<br>
+The properties are accessed by the rasterizer. It should keep track of the cumulated value of these properties when going down a specific tree path.
+This means that, if a sub tree is going to be rasterized, all parents of the first node of the subtree need to be checked for transforms, opacity and the like.<br>
+Transform and opacity can also affect caching. Usually caching would done by caching certain root nodes of sub trees where it could have a beneficial effect on performance.
+When rasterizing, it is assumed that every subtree has it's own area and doesn't overlap with other sub trees. So that only the sub tree that changed is rasterized.
+Having transform and opacity set could change this. Since now one sub tree can be anywhere on the screen, and if it is rerasterized and opacity is smaller than 1, the visual output would change. Any subtree that is overlapped would first have to be rasterized or at least the current cache state applied again and the subtree in question would then be layered on top of it.
+
+Opacity and transforms can affect mouse events. When the opacity is zero, it might make sense, sometimes, to disable mouse events for these areas and forward them to whatever is below.
+Probably this behavior should be configurable by a property on whatever Widget handles the receiving of mouse events. To be able to make that decision, the rasterized output of the sub tree of the Widget receiving the mouse events needs to be known or the sub tree of the Widget has to be searched for the exact child Widget below the mouse and that Widget checked for it's opacity configuration.<br>
+Translation and rotation change the position of the bounding rect in which a Widget can receive mouse events.
+If scale is applied as well it is probably necessary to scale the mouse position on screen to a position in the Widget as if it had no scale applied.<br>
+Probably a Widget mouse event should include a global position and a local position, relative to the Widget bounds with all transforms resolved.
+<br>
+To be able to do these calculations, the transformation state of every Widget must be known. This can either be done by storing the state on every Widget when going through the tree, or by keeping track of the transformation state temporarily when resolving mouse events.
+
+<br>
+
+This means, that one open question is whether transformation, opacity and the like should be tracked on every Widget / made available as a property on every Widget.<br>
+The answer to this depends on whether these values are required for any calculations outside of mouse input processing, since in that case the tracking can probably happen temporarily.<br>
+For calculating large layout transitions, for example morphing one Widget into another, it might be useful to have direct access to the transformation state of every Widget to be able to calculate where points inside the Widget are located in the global space. However these values would probably only seldomly be accessed. It might be enough to calculate them as they are needed, by going up the tree.
+
+<br>
+
+### How would mouse input be handled with this approach?
+
+<br>
+
+
+
+<br>
 
 **how would a lot of custom rendering look like? With the current render object system, one idea was to have something like an svg type drawable definition for each widget**
 
 **would the rendering system be useful for a different system than the Widget system as well?**
 
+
 <br>
 
 ### How would structural changes be handled, can children that don't change be reused?
+
+<br>
+
 Some Widgets take a builder function to generate children. This builder function is evaluated during the initialization of the Widget in most cases.
 Such a Widget might wrap the provided children in some other Widgets, depending on which functionality should be added.
 A container Widget might wrap the provided child inside a Padding and a Background Widget.
@@ -310,5 +348,9 @@ It could be necessary to be careful about not creating reference cycles with thi
 Additionally, every developer can create another functional composed Widget which receives the build function for the children that are to be retained, and inserts them into a subtree defined by the Widget. This would add the overhead of needing to create a new Widget for a specific use case.
 
 If render objects would form a separate tree, this wouldn't be different, since the render object's functionality is hidden behind Widgets.
+
+### Which Render Objects are Needed?
+
+### Can the new approach be developed next to the current approach?
 
 ### Some examples of composing Widgets to achieve a specific functionality:
