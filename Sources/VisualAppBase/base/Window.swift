@@ -2,7 +2,7 @@ import GfxMath
 import Foundation
 import Events
 
-open class Window {
+open class Window: DrawingSurface {
   open var id: Int {
     return -1
   }
@@ -36,8 +36,8 @@ open class Window {
   }
   public private(set) var drawableSizeInvalid = false
 
-  public var resolution: DSize2 {
-    drawableSize / size
+  public var resolution: Double {
+    drawableSize.x / size.x
   }
 
   private var _position: DPoint2 = .zero

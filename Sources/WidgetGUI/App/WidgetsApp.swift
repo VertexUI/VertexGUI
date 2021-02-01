@@ -77,7 +77,9 @@ open class WidgetsApp {
         _ = window.onFrame { [unowned self] _ in
             // TODO: maybe store this?
             let drawingContext = windowContexts[windowId]!.window.getDrawingContext()
+            drawingContext.beginDrawing()
             guiRoots[windowId]!.draw(drawingContext)
+            drawingContext.endDrawing()
         }
 
         if let rendering = guiRoot.render() {

@@ -13,7 +13,7 @@ extension Experimental {
     }
 
     public func draw(_ drawingContext: DrawingContext) {
-      drawingContext.drawRect(rect: DRect(min: .zero, size: size), paint: Paint())
+      drawingContext.drawRect(rect: DRect(min: .zero, size: size), paint: Paint(color: .blue))
     }
   }
 }

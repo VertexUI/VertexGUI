@@ -48,7 +48,7 @@ open class SDL2OpenGL3NanoVGRenderObjectTreeSliceRenderer: RenderObjectTreeSlice
       imageShader.use()
       imageVao.bind()
 
-      let relativeSize = FVec2(bounds.size) / FVec2(context.window.size) * FVec2(context.window.resolution)
+      let relativeSize = FVec2(bounds.size) / FVec2(context.window.size) * Float(context.window.resolution)
       let relativePosition = FVec2(bounds.min) / FVec2(context.window.size)
 
       let glPosition = (FVec2(relativePosition.x, 1 - relativePosition.y)) * 2 - FVec2(1, 1)

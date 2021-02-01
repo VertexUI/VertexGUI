@@ -1,10 +1,12 @@
 import GfxMath
 
 open class DrawingContext {
+  public let surface: DrawingSurface
   public let inherentOpacity: Double
   public let inherentTransforms: [Transform]
 
-  public init(opacity: Double = 1, transforms: [Transform] = []) {
+  public init(surface: DrawingSurface, opacity: Double = 1, transforms: [Transform] = []) {
+    self.surface = surface
     self.inherentOpacity = opacity
     self.inherentTransforms = transforms
   }
@@ -13,7 +15,11 @@ open class DrawingContext {
     if opacity > 1 {
       fatalError("opacity must be <= than 1")
     }
-    return DrawingContext(opacity: self.inherentOpacity * opacity)
+    return DrawingContext(surface: surface, opacity: self.inherentOpacity * opacity)
+  }
+
+  open func beginDrawing() {
+
   }
 
   public func drawRect(rect: DRect, paint: Paint) {
@@ -25,12 +31,16 @@ open class DrawingContext {
     fatalError("drawRect() not implemented")
   }
 
-  public func drawRoundedRect() {
+  open func drawRoundedRect() {
 
   }
 
-  public func drawPath() {
+  open func drawPath() {
     
+  }
+
+  open func endDrawing() {
+
   }
 
   public struct Transform {}

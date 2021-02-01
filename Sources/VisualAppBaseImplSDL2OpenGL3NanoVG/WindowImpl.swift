@@ -154,7 +154,7 @@ open class SDL2OpenGL3NanoVGWindow: Window {
   }
 
   override open func getDrawingContext() -> DrawingContext {
-    SDL2OpenGL3NanoVGDrawingContext(nvg: nvg)
+    SDL2OpenGL3NanoVGDrawingContext(surface: self, nvg: nvg)
   }
 
   override open func clear() {
