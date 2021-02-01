@@ -92,7 +92,6 @@ open class RenderObject: CustomDebugStringConvertible, TreeNode {
     }
 
     public func mount(parent: RenderObject, treePath: TreePath, bus: Bus, context: RenderObjectContext?) {
-        print("CALLED MOUNT")
         self.parent = parent
         self.treePath = treePath
         self.bus = bus

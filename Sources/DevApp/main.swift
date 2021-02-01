@@ -9,7 +9,7 @@ public class DevApp: WidgetsApp {
     let guiRoot = WidgetGUI.Root(rootWidget: MainView())
 
     let window = createWindow(guiRoot: guiRoot, options: Window.Options(background: Color(20, 36, 50, 255)), immediate: true)
-    openDevTools(for: window)
+    //openDevTools(for: window)
   }
 }
 

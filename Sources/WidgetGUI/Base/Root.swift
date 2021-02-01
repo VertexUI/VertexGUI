@@ -221,6 +221,26 @@ open class Root: Parent {
     return rootWidget.render(reason: .renderRoot)
   }
 
+  open func draw(_ drawingContext: DrawingContext) {
+    var iterators = [Widget.ChildIterator]()
+    iterators.append(Widget.ChildIterator(count: 1) { [unowned self] _ in
+      rootWidget
+    })
+
+    outer: while var iterator = iterators.last {
+      while let widget = iterator.next() {
+        iterators[iterators.count - 1] = iterator
+        if let leafWidget = widget as? LeafWidget {
+          leafWidget.draw(drawingContext)
+        } else {
+          iterators.append(widget.visitChildren())
+          continue outer
+        }
+      }
+      iterators.popLast()
+    }
+  }
+
   /*
     Event Propagation
     --------------------

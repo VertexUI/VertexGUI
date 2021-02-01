@@ -74,6 +74,12 @@ open class WidgetsApp {
             guiRoots.removeValue(forKey: windowId)
         }
 
+        _ = window.onFrame { [unowned self] _ in
+            // TODO: maybe store this?
+            let drawingContext = windowContexts[windowId]!.window.getDrawingContext()
+            guiRoots[windowId]!.draw(drawingContext)
+        }
+
         if let rendering = guiRoot.render() {
             context.tree.appendChild(rendering)
         }
@@ -104,21 +110,4 @@ open class WidgetsApp {
     public func start() throws {
         try baseApp.start()
     }
-
-    /*public func renderWindow(_ context: WindowContext) {
-        #if DEBUG
-        let startTime = Date.timeIntervalSinceReferenceDate
-        #endif
-
-        super.renderWindow(context)
-
-        #if DEBUG
-        let deltaTime = Date.timeIntervalSinceReferenceDate - startTime
-        Logger.log(
-            "Took \(deltaTime) seconds for rendering window.",
-            level: .Message,
-            context: .Performance
-        )
-        #endif
-    }*/
 }

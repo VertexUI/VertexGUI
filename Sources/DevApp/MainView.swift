@@ -38,6 +38,8 @@ public class MainView: Experimental.ComposedWidget {
             data.children.append(NestedData(content: "child", children: []))
           }
 
+          Experimental.Rectangle()
+
           Experimental.List($childData) {
             NestedWidget($0)
           }
