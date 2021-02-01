@@ -472,8 +472,56 @@ The drawing functions can be used with anything else. It is even more flexible t
 
 <br>
 
-**How should the draw functions work?** 
-- in which space are points assumed to be
+How should the draw functions work?
+
+A question is, whether the Widget needs to calculate transformations by itself or whether the drawing api knows the transformation state (as well as opacity and the like) and handles it automatically.
+Since the opacity and transformations add up (or multiply up), each Widget would need to not only know it's own opacity and transform values, but also how they are changed by the values of parent Widgets.
+Since the drawing backend should be as light as possible and the Widget Root should probably only receive a bare drawing context, something like a canvas, an area in which it can draw which is provided by the backend, all the handling of transformation and opacity should probably be done in the drawing logic of the Widget system.
+This would mean, that any calls to drawing functions which are made by the Widget have to be intercepted and points transformed, the opacity of colors adjusted to reflected the opacity of the Widget.<br>
+If this isn't done it would be easy for a Widget author who implements custom drawing to forget to apply some transformations.<br>
+In case a new property that behaves similar to transform or opacity would be introduced at a later point, it would have to be implemented in every Widget draw function, if such things are not handled automatically by proxying calls.<br>
+
+<br>
+
+Should the Widget root have a draw function?
+
+The Widget root needs to redraw parts of itself whenever a Widget needs to be redrawn. That may mean replacing parts of the existing output or replacing everything.
+
+It should be possible to transform the whole gui, set opacity etc. for effects. This could be done by letting the gui draw itself into a buffer and then transforming that buffer before outputting it to the screen.<br>
+This might be useful if the gui is sometimes partially drawn over by something which is not controlled by the gui.
+For example something in a game flying over the gui would require the gui to be drawn on every frame and whatever is on top after it.
+When drawing the gui to a buffer this would be easy.
+If the gui is standalone, drawing to a buffer first would probably unnecessarily lower the performance. It should be possible to draw to the screen directly.<br>
+Skia has the canvas object which hides the drawing target from whatever uses it.<br>
+This could be given to the gui directly. It can then create proxies for it.<br>
+The drawing context provided by the backend could just as well offer the capability to apply an opacity and transform to every input.
+That way the gui as a whole could be transformed as well.<br>
+Handling mouse events on the app level and distributing them between different contents such as a gui and a game can be done later. The gui only needs to receive mouse events with positions in it's own coordinate space.
+And then forward everything to it's Widgets.
+
+What could draw calls look like?
+
+    // outside logic which calls draw on the gui
+    DrawingContext drawCtx = DrawingContext(for: window, transform: .translate(...), opacity: 0.2)
+    widgetGUIRoot.draw(with: drawCtx)
+
+    class WidgetGUIRoot {
+      func draw(with initialContext: DrawingContext) {
+        var derivedContext = initialContext.derive()
+        for widget in widgets {
+          if widget.transform != derivedContext.transform || widget.opacity != derivedContext.opacity {
+            derivedContext = initialContext.derive(transform: widget.transform, opacity: widget.opacity)
+            widget.draw(with: derivedContext)
+          }
+        }
+      }
+    }
+
+It should be impossible for anyone using a drawing context to remove the transform and opacity set by the logic that provided the drawing context. A solution to this is to only allow changing the transform and opacity by deriving a context.
+
+Another property that would behave like transform and opacity is the clip state. If this is set on the initial context, it is prevented that the gui draws anything outside of where it's allowed to draw by applying a translation that brings some drawcalls out of the bounds.
+
+<br>
 
 **Wow to iterate through the tree and find the Widgets that can be drawn?**
 
@@ -505,5 +553,3 @@ When a Widget changed and needs to be redrawn:
 - find out everything drawn after the Widget
 
   - if it has not yet been drawn, call draw on it
-
-3.
