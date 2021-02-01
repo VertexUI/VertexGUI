@@ -231,7 +231,8 @@ open class Root: Parent {
       while let widget = iterator.next() {
         iterators[iterators.count - 1] = iterator
         if let leafWidget = widget as? LeafWidget {
-          leafWidget.draw(drawingContext)
+          let lockedDrawingContext = drawingContext.locked(transforms: [.translate(leafWidget.position)])
+          leafWidget.draw(lockedDrawingContext)
         } else {
           iterators.append(widget.visitChildren())
           continue outer

@@ -10,6 +10,10 @@ open class SDL2OpenGL3NanoVGDrawingContext: DrawingContext {
     super.init(surface: surface)
   }
 
+  override open func clone() -> DrawingContext {
+    return SDL2OpenGL3NanoVGDrawingContext(surface: surface, nvg: nvg)
+  }
+
   override public func beginDrawing() {
     nvgBeginFrame(nvg, Float(surface.size.width), Float(surface.size.height), Float(surface.resolution))
   }
