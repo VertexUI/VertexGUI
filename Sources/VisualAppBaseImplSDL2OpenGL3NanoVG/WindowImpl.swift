@@ -153,6 +153,10 @@ open class SDL2OpenGL3NanoVGWindow: Window {
     SDL_GL_MakeCurrent(sdlWindow, glContext)
   }
 
+  override open func getDrawingContext() -> DrawingContext {
+    SDL2OpenGL3NanoVGDrawingContext(nvg: nvg)
+  }
+
   override open func clear() {
     GL.glViewport(0, 0, GLMap.Size(drawableSize.width), GLMap.Size(drawableSize.height))
     GL.glClearColor(options.background.glR, options.background.glG, options.background.glB, options.background.glA)

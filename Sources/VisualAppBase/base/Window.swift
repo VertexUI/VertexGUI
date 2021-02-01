@@ -171,6 +171,10 @@ open class Window {
     fatalError("applyInputFocus(:) not implemented")
   }
 
+  open func getDrawingContext() -> DrawingContext {
+    fatalError("getDrawingContext() not implemented")
+  }
+
   open func performFrame(_ deltaTime: Double) {
     onBeforeFrame.invokeHandlers(self)
     if self.frameNeeded {
