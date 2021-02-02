@@ -3,12 +3,19 @@ import ExperimentalReactiveProperties
 import GfxMath
 
 extension Experimental {
-  public class Background: ComposedWidget, ExperimentalStylableWidget {
+  public class Background: Widget, ExperimentalStylableWidget {
     @ObservableProperty
     private var fill: Color?
+
+    @Reference
+    private var backgroundRectangle: Widget
+    private var foregroundChild: Widget
     
-    override private init(contentBuilder: () -> SingleChildContentBuilder.Result) {
-        super.init(contentBuilder: contentBuilder)
+    private init(contentBuilder: () -> SingleChildContentBuilder.Result) {
+        let content = contentBuilder()
+        self.foregroundChild = content.child()
+        super.init()
+        self.experimentalProvidedStyles.append(contentsOf: content.experimentalStyles)
         self._fill = stylePropertiesResolver[reactive: StyleKeys.fill]
         _ = self.$fill.onChanged { [unowned self] _ in
           invalidateRenderState()
@@ -35,13 +42,30 @@ extension Experimental {
         self.with(stylePropertiesBuilder(StyleKeys.self))
     }
 
+    override public func performBuild() {
+      children = [
+        Experimental.Rectangle().connect(ref: $backgroundRectangle),
+        foregroundChild
+      ]
+    }
+
+    override public func getBoxConfig() -> BoxConfig {
+      foregroundChild.getBoxConfig()
+    }
+
+    override public func performLayout(constraints: BoxConstraints) -> DSize2 {
+      foregroundChild.layout(constraints: constraints)
+      backgroundRectangle.layout(constraints: BoxConstraints(size: foregroundChild.size))
+      return foregroundChild.size
+    }
+
     override public func renderContent() -> RenderObject? {
       ContainerRenderObject { [unowned self] in
         RenderStyleRenderObject(fillColor: fill ?? .transparent) {
           RectangleRenderObject(globalBounds)
         }
 
-        rootChild?.render(reason: .renderContentOfParent(self))
+        children.map { $0.render(reason: .renderContentOfParent(self)) }
       }
     }
 
