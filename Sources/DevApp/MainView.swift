@@ -29,9 +29,9 @@ public class MainView: Experimental.ComposedWidget {
       }) { [unowned self] in
         Experimental.SimpleColumn {
           Experimental.Text(styleProperties: {
-            ($0.textColor, Color.white)
+            ($0.textColor, Color.black)
           }, data.content)
-
+ 
           Experimental.Button() {
             Experimental.Text("add child content")
           } onClick: {

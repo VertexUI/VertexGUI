@@ -4,7 +4,7 @@ import GfxMath
 
 extension Experimental {
   public class Background: Widget, ExperimentalStylableWidget {
-    @ObservableProperty
+    @ExperimentalReactiveProperties.ObservableProperty
     private var fill: Color?
 
     @Reference
@@ -44,7 +44,9 @@ extension Experimental {
 
     override public func performBuild() {
       children = [
-        Experimental.Rectangle().connect(ref: $backgroundRectangle),
+        Experimental.Rectangle(paint: ExperimentalReactiveProperties.ComputedProperty(compute: { [unowned self] in
+          Paint(color: fill)
+        }, dependencies: [$fill])).connect(ref: $backgroundRectangle),
         foregroundChild
       ]
     }
