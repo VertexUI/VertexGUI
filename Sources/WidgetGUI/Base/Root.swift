@@ -58,6 +58,9 @@ open class Root: Parent {
       }
     }
   }
+
+  /** this flag should be deleted once the direct draw call approach is fully implemented */
+  public var renderObjectSystemEnabled = true
   /* end debugging */
 
   public private(set) var destroyed = false
@@ -183,16 +186,18 @@ open class Root: Parent {
     debugManager.endLifecycleMethod(.layout)
     relayoutWidgets.clear()
 
-    // TODO: is it good to put this here or better in render()?
-    //print("rerender widgets count", rerenderWidgets.count)
-    debugManager.beginLifecycleMethod(.render)
-    for widget in rerenderWidgets {
-      if !widget.destroyed {
-        widget.updateRenderState(reason: .rootTick)
+    if renderObjectSystemEnabled {
+      // TODO: is it good to put this here or better in render()?
+      //print("rerender widgets count", rerenderWidgets.count)
+      debugManager.beginLifecycleMethod(.render)
+      for widget in rerenderWidgets {
+        if !widget.destroyed {
+          widget.updateRenderState(reason: .rootTick)
+        }
       }
+      debugManager.endLifecycleMethod(.render)
+      rerenderWidgets.clear()
     }
-    debugManager.endLifecycleMethod(.render)
-    rerenderWidgets.clear()
 
     removeOnAdd()
     widgetLifecycleMessages.clear()
@@ -218,7 +223,10 @@ open class Root: Parent {
   }
 
   open func render() -> RenderObject? {
-    return rootWidget.render(reason: .renderRoot)
+    if renderObjectSystemEnabled {
+      return rootWidget.render(reason: .renderRoot)
+    }
+    return nil
   }
 
   open func draw(_ drawingContext: DrawingContext) {
