@@ -81,7 +81,7 @@ open class DrawingContext {
 
   /** For internal use. Called by drawRect() with all transforms etc. applied. */
   open func _drawRect(rect: DRect, paint: Paint) {
-    fatalError("drawRect() not implemented")
+    fatalError("_drawRect() not implemented")
   }
 
   open func drawRoundedRect() {
@@ -90,6 +90,25 @@ open class DrawingContext {
 
   open func drawPath() {
     
+  }
+
+  /**
+  // TODO: maybe the result should be a rect to also have access to the position
+  */
+  public func measureText(text: String, paint: TextPaint) -> DSize2 {
+   .zero
+  }
+
+  open func _measureText(text: String, paint: TextPaint) -> DSize2 {
+    fatalError("_measureText() not implemented")
+  }
+
+  public func drawText(text: String, position: DVec2, paint: TextPaint) {
+    _drawText(text: text, position: applyTransforms(to: position), paint: paint)
+  }
+
+  open func _drawText(text: String, position: DVec2, paint: TextPaint) {
+    fatalError("_drawText() not implemented")
   }
 
   open func endDrawing() {

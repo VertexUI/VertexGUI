@@ -3,7 +3,7 @@ import VisualAppBase
 import GfxMath
 
 extension Experimental {
-  public class Text: Widget, ExperimentalStylableWidget {
+  public class Text: Widget, LeafWidget, ExperimentalStylableWidget {
     @ObservableProperty
     private var text: String
 
@@ -80,6 +80,10 @@ extension Experimental {
       textBoundsSize.width += 4
 
       return constraints.constrain(textBoundsSize)
+    }
+
+    public func draw(_ drawingContext: DrawingContext) {
+      drawingContext.drawText(text: self.transformedText, position: .zero, paint: TextPaint(fontConfig: fontConfig, color: color))
     }
 
     override public func renderContent() -> RenderObject? {
