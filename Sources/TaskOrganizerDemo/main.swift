@@ -20,13 +20,14 @@ open class TodoApp: WidgetsApp {
             ]) {
                 TodoAppView().with { $0.debugLayout = false }
             })
+        guiRoot.renderObjectSystemEnabled = false
         super.init(baseApp: SDL2OpenGL3NanoVGVisualApp())
     }
 
     override open func setup() {
         let window = createWindow(guiRoot: guiRoot, options: Window.Options(), immediate: true)
         #if DEBUG
-        openDevTools(for: window)
+        //openDevTools(for: window)
         #endif
     }
 }
