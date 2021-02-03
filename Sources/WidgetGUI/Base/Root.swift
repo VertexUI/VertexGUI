@@ -37,11 +37,14 @@ open class Root: Parent {
   private var relayoutWidgets = WidgetBuffer()
   private var rerenderWidgets = WidgetBuffer()
   private var matchedStylesInvalidatedWidgets = WidgetBuffer()
-  //private var focusContext = FocusContext()
   /* end Widget lifecycle management */
 
-  private var mouseEventManager = WidgetTreeMouseEventManager()
+  //private var focusContext = FocusContext()
+
+  /* event propagation */
+  lazy private var mouseEventManager = WidgetTreeMouseEventManager(rootWidget: rootWidget)
   private var mouseMoveEventBurstLimiter = BurstLimiter(minDelay: 0.015)
+  /* end event propagation */
 
   lazy private var styleManager = StyleManager(rootWidget: rootWidget)
   lazy private var experimentalStyleManager = Experimental.StyleManager()
@@ -109,10 +112,18 @@ open class Root: Parent {
   open func consume(_ rawMouseEvent: RawMouseEvent) -> Bool {
     if let event = rawMouseEvent as? RawMouseMoveEvent {
       mouseMoveEventBurstLimiter.limit { [weak self] in
-        self?.propagate(rawMouseEvent)
+        if let self = self {
+          self.propagate(rawMouseEvent)
+          if !self.renderObjectSystemEnabled {
+            self.mouseEventManager.propagate(rawMouseEvent)
+          }
+        }
       }
     } else {
       propagate(rawMouseEvent)
+      if !self.renderObjectSystemEnabled {
+        mouseEventManager.propagate(rawMouseEvent)
+      }
     }
 
     return false
