@@ -15,12 +15,44 @@ open class SDL2OpenGL3NanoVGDrawingBackend: DrawingBackend {
     nvgBeginFrame(surface.nvg, Float(surface.size.width), Float(surface.size.height), Float(surface.resolution))
   }
 
-  override open func drawRect(rect: DRect, paint: Paint) {
+  override open func drawLine(from start: DVec2, to end: DVec2, paint: Paint) {
     var performFill = false
+    var performStroke = false
     if let color = paint.color {
       nvgFillColor(surface.nvg, color.toNVG())
       performFill = true
     }
+    if let strokeWidth = paint.strokeWidth, let strokeColor = paint.strokeColor {
+      nvgStrokeWidth(surface.nvg, Float(strokeWidth))
+      nvgStrokeColor(surface.nvg, strokeColor.toNVG())
+      performStroke = true
+    }
+
+    nvgBeginPath(surface.nvg)
+    nvgMoveTo(surface.nvg, Float(start.x), Float(start.y))
+    nvgLineTo(surface.nvg, Float(end.x), Float(end.y))
+    
+    if performFill {
+      nvgFill(surface.nvg)
+    }
+    if performStroke {
+      nvgStroke(surface.nvg)
+    }
+  }
+
+  override open func drawRect(rect: DRect, paint: Paint) {
+    var performFill = false
+    var performStroke = false
+    if let color = paint.color {
+      nvgFillColor(surface.nvg, color.toNVG())
+      performFill = true
+    }
+    if let strokeWidth = paint.strokeWidth, let strokeColor = paint.strokeColor {
+      nvgStrokeWidth(surface.nvg, Float(strokeWidth))
+      nvgStrokeColor(surface.nvg, strokeColor.toNVG())
+      performStroke = true
+    }
+
     nvgBeginPath(surface.nvg)
     nvgRect(
       surface.nvg,
@@ -28,8 +60,12 @@ open class SDL2OpenGL3NanoVGDrawingBackend: DrawingBackend {
       Float(rect.min.y),
       Float(rect.size.width),
       Float(rect.size.height))
+
     if performFill {
       nvgFill(surface.nvg)
+    }
+    if performStroke {
+      nvgStroke(surface.nvg)
     }
   }
 

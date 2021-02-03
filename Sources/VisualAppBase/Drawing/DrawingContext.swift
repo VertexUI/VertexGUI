@@ -75,6 +75,10 @@ open class DrawingContext {
     self.transforms.append(contentsOf: transforms)
   }
 
+  public func drawLine(from start: DVec2, to end: DVec2, paint: Paint) {
+    backend.drawLine(from: applyTransforms(to: start), to: applyTransforms(to: end), paint: paint)
+  }
+
   public func drawRect(rect: DRect, paint: Paint) {
     backend.drawRect(rect: applyTransforms(to: rect), paint: paint)
   }

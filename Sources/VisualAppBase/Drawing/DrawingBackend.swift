@@ -7,6 +7,10 @@ open class DrawingBackend {
 
   }
 
+  open func drawLine(from start: DVec2, to end: DVec2, paint: Paint) {
+    fatalError("drawLine() not implemented")
+  }
+
   open func drawRect(rect: DRect, paint: Paint) {
     fatalError("drawRect() not implemented")
   }
