@@ -16,16 +16,21 @@ open class SDL2OpenGL3NanoVGDrawingBackend: DrawingBackend {
   }
 
   override open func drawRect(rect: DRect, paint: Paint) {
+    var performFill = false
     if let color = paint.color {
       nvgFillColor(surface.nvg, color.toNVG())
+      performFill = true
     }
+    nvgBeginPath(surface.nvg)
     nvgRect(
       surface.nvg,
       Float(rect.min.x),
       Float(rect.min.y),
       Float(rect.size.width),
       Float(rect.size.height))
-    nvgFill(surface.nvg)
+    if performFill {
+      nvgFill(surface.nvg)
+    }
   }
 
   override open func measureText(text: String, paint: TextPaint) -> DSize2 {
