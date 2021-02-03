@@ -35,10 +35,13 @@ extension Experimental {
 
     override public func performBuild() {
       let builtChild = childBuilder()
-      rootChild = Background() { [unowned self] in
+      rootChild = Experimental.Border(styleProperties: {
+        ($0.borderWidths, stylePropertyValue(reactive: StyleKeys.borderWidths))
+        ($0.borderColor, stylePropertyValue(reactive: StyleKeys.borderColor))
+      }) { [unowned self] in
         Experimental.Background(styleProperties: {
           ($0.fill, stylePropertyValue(reactive: StyleKeys.backgroundFill))
-        }) {
+        }) { 
           Experimental.ConstrainedSizeBox(styleProperties: {
             ($0.width, stylePropertyValue(reactive: StyleKeys.width))
             ($0.height, stylePropertyValue(reactive: StyleKeys.height))
@@ -58,6 +61,8 @@ extension Experimental {
       case height
       case padding
       case backgroundFill
+      case borderWidths
+      case borderColor
     }
   }
 }

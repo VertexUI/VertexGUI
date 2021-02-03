@@ -23,15 +23,6 @@ extension Experimental {
     }
 
     public convenience init(
-      configure: ((Experimental.Background) -> ())? = nil,
-      @SingleChildContentBuilder content contentBuilder: @escaping () -> SingleChildContentBuilder.Result) {
-        self.init(contentBuilder: contentBuilder)
-        if let configure = configure {
-          configure(self)
-        }
-    }
-
-    public convenience init(
       classes: [String]? = nil,
       @Experimental.StylePropertiesBuilder styleProperties stylePropertiesBuilder: (StyleKeys.Type) -> Experimental.StyleProperties = { _ in [] },
       @SingleChildContentBuilder content contentBuilder: @escaping () -> SingleChildContentBuilder.Result) {
