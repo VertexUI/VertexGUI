@@ -74,6 +74,13 @@ open class WidgetsApp {
             guiRoots.removeValue(forKey: windowId)
         }
 
+        if !guiRoot.renderObjectSystemEnabled {
+            // TODO: TMP remove once fully transitioned to draw calls!
+            _ = window.onBeforeFrame { [unowned self] _ in
+                windowContexts[windowId]!.window.frameNeeded = true
+            }
+        }
+
         _ = window.onFrame { [unowned self] _ in
             // TODO: maybe store this?
             let drawingContext = windowContexts[windowId]!.window.getDrawingContext()
@@ -94,6 +101,7 @@ open class WidgetsApp {
         let devToolsGuiRoot = WidgetGUI.Root(
             rootWidget: devToolsView
         )
+        devToolsGuiRoot.renderObjectSystemEnabled = false
         createWindow(guiRoot: devToolsGuiRoot, options: Window.Options(
             initialPosition: .Defined(window.position + DVec2(window.size))
         ), immediate: true)
