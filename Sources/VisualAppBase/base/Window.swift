@@ -2,7 +2,7 @@ import GfxMath
 import Foundation
 import Events
 
-open class Window: DrawingSurface {
+open class Window {
   open var id: Int {
     return -1
   }

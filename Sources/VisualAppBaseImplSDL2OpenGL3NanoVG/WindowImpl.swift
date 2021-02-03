@@ -11,6 +11,8 @@ open class SDL2OpenGL3NanoVGWindow: Window {
   public var sdlWindow: OpaquePointer
   public var glContext: SDL_GLContext
   public var nvg: UnsafeMutablePointer<NVGcontext>
+  public let drawingSurface: SDL2OpenGL3NanoVGDrawingSurface
+  private var drawingContext: DrawingContext?
 
   private var _id: Int = -1
   override open var id: Int {
@@ -78,7 +80,14 @@ open class SDL2OpenGL3NanoVGWindow: Window {
     nvg = nvgCreateGL3(
       Int32(NVG_ANTIALIAS.rawValue | NVG_STENCIL_STROKES.rawValue | NVG_DEBUG.rawValue))
 
+    drawingSurface = SDL2OpenGL3NanoVGDrawingSurface(glContext: glContext, nvg: nvg)
+
     try super.init(options: options)
+
+    _ = self.onSizeChanged { [unowned self] _ in
+      drawingSurface.size = drawableSize 
+      drawingSurface.resolution = resolution
+    }
 
     _id = Int(SDL_GetWindowID(sdlWindow))
     
@@ -154,7 +163,10 @@ open class SDL2OpenGL3NanoVGWindow: Window {
   }
 
   override open func getDrawingContext() -> DrawingContext {
-    SDL2OpenGL3NanoVGDrawingContext(surface: self, nvg: nvg)
+    if drawingContext == nil {
+      drawingContext = drawingSurface.getDrawingContext()
+    }
+    return drawingContext!
   }
 
   override open func clear() {

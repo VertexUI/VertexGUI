@@ -113,7 +113,6 @@ public class WidgetTreeMouseEventManager {
                     stillPresentPreviousTargetIds.append(currentTarget.id)
                 } else {
                     currentTarget.consume(GUIMouseEnterEvent(position: rawMouseEvent.position))
-                    print("ENTER", currentTarget)
                 }
             }
 

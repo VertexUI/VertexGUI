@@ -1,7 +1,7 @@
 import GfxMath
 
 open class DrawingContext {
-  public let surface: DrawingSurface
+  public let backend: DrawingBackend 
 
   public private(set) var inherentTransforms: [Transform] = []
   public private(set) var inherentOpacity: Double = 1
@@ -12,12 +12,12 @@ open class DrawingContext {
     }
   }
 
-  public init(surface: DrawingSurface) {
-    self.surface = surface
+  public init(backend: DrawingBackend) {
+    self.backend = backend 
   }
 
   open func clone() -> DrawingContext {
-    fatalError("clone() not implemented")
+    DrawingContext(backend: backend)
   }
 
   /**
@@ -47,7 +47,7 @@ open class DrawingContext {
   }
 
   open func beginDrawing() {
-
+    backend.activate()
   }
 
   private func applyTransforms(to point: DVec2) -> DVec2 {
@@ -76,12 +76,7 @@ open class DrawingContext {
   }
 
   public func drawRect(rect: DRect, paint: Paint) {
-    _drawRect(rect: applyTransforms(to: rect), paint: paint)
-  }
-
-  /** For internal use. Called by drawRect() with all transforms etc. applied. */
-  open func _drawRect(rect: DRect, paint: Paint) {
-    fatalError("_drawRect() not implemented")
+    backend.drawRect(rect: applyTransforms(to: rect), paint: paint)
   }
 
   open func drawRoundedRect() {
@@ -96,23 +91,15 @@ open class DrawingContext {
   // TODO: maybe the result should be a rect to also have access to the position
   */
   public func measureText(text: String, paint: TextPaint) -> DSize2 {
-   .zero
-  }
-
-  open func _measureText(text: String, paint: TextPaint) -> DSize2 {
-    fatalError("_measureText() not implemented")
+    backend.measureText(text: text, paint: paint)
   }
 
   public func drawText(text: String, position: DVec2, paint: TextPaint) {
-    _drawText(text: text, position: applyTransforms(to: position), paint: paint)
-  }
-
-  open func _drawText(text: String, position: DVec2, paint: TextPaint) {
-    fatalError("_drawText() not implemented")
+    backend.drawText(text: text, position: applyTransforms(to: position), paint: paint)
   }
 
   open func endDrawing() {
-
+    backend.deactivate()
   }
 
   public enum Transform {
