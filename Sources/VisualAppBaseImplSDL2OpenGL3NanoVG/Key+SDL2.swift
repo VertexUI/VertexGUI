@@ -2,17 +2,13 @@ import CSDL2
 import WidgetGUI
 import VisualAppBase
 
-#if os(macOS)
-fileprivate func asSDLKeycode(_ key: SDL_KeyCode) -> SDL_Keycode {
-    SDL_Keycode(key.rawValue)
-}
-
-#elseif os(Linux)
 fileprivate func asSDLKeycode(_ key: Int) -> SDL_Keycode {
     SDL_Keycode(key)
 }
-#endif
 
+fileprivate func asSDLKeycode<T: RawRepresentable>(_ key: T) -> SDL_Keycode where T.RawValue == UInt32 {
+    SDL_Keycode(key.rawValue)
+}
 
 public extension Key {   
     init?(sdlKeycode: SDL_Keycode) {
