@@ -15,8 +15,17 @@
         "repositoryURL": "https://github.com/mtynior/ColorizeSwift",
         "state": {
           "branch": "master",
-          "revision": "2a354639173d021f4648cf1912b2b00a3a7cd83c",
+          "revision": "04f419e2737daaa3ae8a543dd9d96f1e7b15d9ab",
           "version": null
+        }
+      },
+      {
+        "package": "CRuntime",
+        "repositoryURL": "https://github.com/wickwirew/CRuntime.git",
+        "state": {
+          "branch": null,
+          "revision": "95f911318d8c885f6fc05e971471f94adfd39405",
+          "version": "2.1.2"
         }
       },
       {
@@ -42,8 +51,8 @@
         "repositoryURL": "https://github.com/wickwirew/Runtime.git",
         "state": {
           "branch": null,
-          "revision": "a848b81e1a0100801f572e5273ffe4352fd54088",
-          "version": "2.2.2"
+          "revision": "61c9776f47d2951bdc562486ad348e5e1ca2e180",
+          "version": "2.1.1"
         }
       },
       {
