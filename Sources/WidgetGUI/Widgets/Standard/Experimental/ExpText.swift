@@ -42,6 +42,7 @@ extension Experimental {
 
         self.$text.bind(textProperty)
         _ = onDestroy(self.$text.onChanged { [unowned self] _ in
+          invalidateBoxConfig()
           invalidateRenderState()
         })
     }
@@ -86,6 +87,10 @@ extension Experimental {
       drawingContext.drawText(text: self.transformedText, position: .zero, paint: TextPaint(fontConfig: fontConfig, color: color))
     }
 
+    public func measureText(_ text: String) -> DSize2 {
+      context.measureText(text: text, paint: TextPaint(fontConfig: fontConfig, color: color))
+    }
+
     override public func renderContent() -> RenderObject? {
       let maxWidth = wrap ? bounds.size.width : nil
 
@@ -103,13 +108,9 @@ extension Experimental {
       }
     }
 
-    public enum StyleKeys: String, StyleKey, ExperimentalDefaultStyleKeys {
-      case textColor
-      case textTransform
-      case wrapText
-      case fontSize
-      case fontWeight
-      case fontStyle
-    }
+    /*public enum StyleKeys: String, StyleKey, ExperimentalDefaultStyleKeys {
+
+    }*/
+    public typealias StyleKeys = Experimental.AnyDefaultStyleKeys
   }
 }

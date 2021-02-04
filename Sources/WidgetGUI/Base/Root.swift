@@ -77,6 +77,7 @@ open class Root: Parent {
   open func setup(
     window: Window,
     getTextBoundsSize: @escaping (_ text: String, _ fontConfig: FontConfig, _ maxWidth: Double?) -> DSize2,
+    measureText: @escaping (_ text: String, _ paint: TextPaint) -> DSize2,
     getApplicationTime: @escaping () -> Double,
     getRealFps: @escaping () -> Double,
     createWindow: @escaping (_ guiRootBuilder: @autoclosure () -> Root, _ options: Window.Options) -> Window,
@@ -85,6 +86,7 @@ open class Root: Parent {
     self.widgetContext = WidgetContext(
       window: window,
       getTextBoundsSize: getTextBoundsSize,
+      measureText: measureText,
       getApplicationTime: getApplicationTime,
       getRealFps: getRealFps,
       createWindow: createWindow,

@@ -70,18 +70,17 @@ open class SDL2OpenGL3NanoVGDrawingBackend: DrawingBackend {
   }
 
   override open func measureText(text: String, paint: TextPaint) -> DSize2 {
-    /*applyFontConfig(fontConfig)
+    applyFontConfig(paint.fontConfig)
 
     var bounds = [Float](repeating: 0, count: 4)
 
-    if let maxWidth = maxWidth {
-        nvgTextBoxBounds(window.surface.nvg, 0, 0, Float(maxWidth), text, nil, &bounds)
+    if let breakWidth = paint.breakWidth {
+        nvgTextBoxBounds(surface.nvg, 0, 0, Float(breakWidth), text, nil, &bounds)
     } else {
-        nvgTextBounds(window.surface.nvg, 0, 0, text, nil, &bounds)
+        nvgTextBounds(surface.nvg, 0, 0, text, nil, &bounds)
     }
 
-    return DSize2(Double(bounds[2]), Double(bounds[3]))*/
-    .zero
+    return DSize2(Double(bounds[2]), Double(bounds[3]))
   }
 
   override open func drawText(text: String, position: DVec2, paint: TextPaint) {

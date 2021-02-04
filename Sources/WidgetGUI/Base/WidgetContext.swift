@@ -5,6 +5,7 @@ import Events
 public class WidgetContext {
     public internal(set) var window: Window
     private var _getTextBoundsSize: (_ text: String, _ fontConfig: FontConfig, _ maxWidth: Double?) -> DSize2
+    private var _measureText: (_ text: String, _ paint: TextPaint) -> DSize2
     private var _requestCursor: (_ cursor: Cursor) -> () -> Void
     private var _createWindow: (_ guiRootBuilder: @autoclosure () -> Root, _ options: Window.Options) -> Window
     weak public internal(set) var focusedWidget: Widget? {
@@ -39,6 +40,7 @@ public class WidgetContext {
     public init(
         window: Window,
         getTextBoundsSize: @escaping (_ text: String, _ fontConfig: FontConfig, _ maxWidth: Double?) -> DSize2,
+        measureText: @escaping (_ text: String, _ paint: TextPaint) -> DSize2,
         getApplicationTime: @escaping () -> Double,
         getRealFps: @escaping () -> Double,
         createWindow: @escaping (_ guiRootBuilder: @autoclosure () -> Root, _ options: Window.Options) -> Window,
@@ -47,6 +49,7 @@ public class WidgetContext {
         lifecycleMethodInvocationSignalBus: Bus<Widget.LifecycleMethodInvocationSignal>) {
             self.window = window
             self._getTextBoundsSize = getTextBoundsSize
+            self._measureText = measureText
             self._getApplicationTime = getApplicationTime
             self.getRealFps = getRealFps
             self._createWindow = createWindow
@@ -57,6 +60,10 @@ public class WidgetContext {
 
     public func getTextBoundsSize(_ text: String, fontConfig: FontConfig, maxWidth: Double? = nil) -> DSize2 {
         _getTextBoundsSize(text, fontConfig, maxWidth)
+    }
+
+    public func measureText(text: String, paint: TextPaint) -> DSize2 {
+        _measureText(text, paint)
     }
 
     public func requestCursor(_ cursor: Cursor) -> () -> Void {
