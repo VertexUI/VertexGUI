@@ -41,21 +41,21 @@ public class DeveloperToolsView: SingleChildWidget {
 
       Column(spacing: 16) {
         Row {
-          Button {
+          Experimental.Button {
             Text("Inspector")
-          } onClick: { _ in
+          } onClick: {
             activeTab = .Inspector
           }
 
-          Button {
+          Experimental.Button {
             Text("Event Cumulation")
-          } onClick: { _ in
+          } onClick: {
             activeTab = .EventRoll
           }
 
-          Button {
+          Experimental.Button {
             Text("Event Log")
-          } onClick: { _ in
+          } onClick: {
             activeTab = .EventLog
           }
 

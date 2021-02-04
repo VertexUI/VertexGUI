@@ -15,7 +15,8 @@ extension Experimental {
     public init(
       classes: [String]? = nil,
       @Experimental.StylePropertiesBuilder styleProperties stylePropertiesBuilder: (StyleKeys.Type) -> Experimental.StyleProperties = { _ in [] },
-      @SingleChildContentBuilder content contentBuilder: @escaping () -> SingleChildContentBuilder.Result) {
+      @SingleChildContentBuilder content contentBuilder: @escaping () -> SingleChildContentBuilder.Result,
+      onClick onClickHandler: (() -> ())? = nil) {
         let result = contentBuilder()
         self.childBuilder = result.child
         super.init()
@@ -24,6 +25,9 @@ extension Experimental {
           self.classes = classes
         }
         self.with(stylePropertiesBuilder(StyleKeys.self))
+        if let handler = onClickHandler {
+          _ = self.onClick(handler)
+        }
     }
 
     override public func performBuild() {

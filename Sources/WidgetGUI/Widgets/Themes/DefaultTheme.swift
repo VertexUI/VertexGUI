@@ -37,42 +37,7 @@ public class DefaultTheme: Theme {
 
       TextInput.PartialConfig {
         $0.caretColor = primaryColor.lightened(50)
-      },
-
-      Button.PartialConfig {
-        $0.normalStyle {
-          $0.backgroundConfig {
-            $0.fill = primaryColor
-            $0.shape = .RoundedRectangle(CornerRadii(all: 8))
-          }
-
-          $0.textConfig {
-            $0.color = Color(255, 255, 255, 255)
-          }
-        }
-
-        $0.hoverStyle {
-          $0.backgroundConfig {
-            $0.fill = primaryColor.adjusted(alpha: 140)
-            $0.shape = .Rectangle
-          }
-
-          $0.textConfig {
-            $0.color = .white
-          }
-        }
-
-        $0.activeStyle {
-          $0.backgroundConfig {
-            $0.fill = primaryColor.adjusted(alpha: 60)
-            $0.shape = .Rectangle
-          }
-
-          $0.textConfig {
-            $0.color = .white
-          }
-        }
-      },
+      }
     ]
   }
 }

@@ -115,9 +115,9 @@ public class TodoAppView: SingleChildWidget {
             Spaceholder(display: ComputedProperty<Bool>([$mode.any]) { [unowned self] in
               return mode == .Search
             }, dimension: .Vertical) {
-              Button {
+              Experimental.Button {
                 Text("cancel")
-              } onClick: { _ in
+              } onClick: {
                 mode = .SelectedList
               }
             }
