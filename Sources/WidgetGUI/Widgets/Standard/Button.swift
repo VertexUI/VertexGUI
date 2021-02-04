@@ -90,18 +90,17 @@ public final class Button: SingleChildWidget, StatefulWidget, ConfigurableWidget
     lazy public var config = combineConfigs()
     
     public var cursorRequestId: UInt64? = nil
-    public var onClick = EventHandlerManager<GUIMouseButtonClickEvent>()
     private var dropCursorRequest: (() -> ())?
     private var childBuilder: () -> Widget
 
     public init(
         @WidgetBuilder child childBuilder: @escaping () -> Widget,
         onClick onClickHandler: EventHandlerManager<GUIMouseButtonClickEvent>.Handler? = nil) {
+            self.childBuilder = childBuilder
+            super.init()
             if onClickHandler != nil {
                 _ = onClick.addHandler(onClickHandler!)
             }
-            self.childBuilder = childBuilder
-            super.init()
     }
 
     public convenience init(@WidgetBuilder child childBuilder: @escaping () -> Widget) {

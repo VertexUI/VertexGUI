@@ -79,7 +79,7 @@ public class WidgetContext {
                 self.focusedWidget = nil
             }
         }
-        unregisterOnFocusChanged = focusedWidget!.onFocusChanged { [unowned self] focused in
+        unregisterOnFocusChanged = focusedWidget!.onFocusChanged.addHandler { [unowned self] focused in
             if let focusedWidget = focusedWidget {
                 if focusedWidget === widget && !focused {
                     self.focusedWidget = nil

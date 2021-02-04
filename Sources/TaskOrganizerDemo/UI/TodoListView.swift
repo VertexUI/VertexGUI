@@ -32,7 +32,7 @@ public class TodoListView: SingleChildWidget {
                   updatedNameBuffer = $0.new
                 })
 
-                _ = onDestroy(onFocusChanged { [unowned self] in
+                _ = onDestroy(onFocusChanged.addHandler { [unowned self] in
                   if !$0 {
                     nameEditMode = false
                   }

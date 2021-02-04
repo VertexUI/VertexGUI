@@ -10,7 +10,6 @@ public class MouseArea: SingleChildWidget, GUIMouseEventConsumer {
 
     // TODO: maybe call it pointer event instead of mouse event / or provide both
     // TODO: maybe name Click MouseButtonClick?
-    public var onClick = EventHandlerManager<GUIMouseButtonClickEvent>()
     public var onMouseButtonDown = EventHandlerManager<GUIMouseButtonDownEvent>()
     public var onMouseButtonUp = EventHandlerManager<GUIMouseButtonUpEvent>()
     public var onMouseMove = EventHandlerManager<GUIMouseMoveEvent>()
@@ -35,7 +34,7 @@ public class MouseArea: SingleChildWidget, GUIMouseEventConsumer {
             self.init(child: childBuilder)
 
             if let onClickHandler = onClickHandler {
-                _ = self.onClick(onClickHandler)
+                self.onClick(onClickHandler)
             }
 
             if let onMouseButtonDownHandler = onMouseButtonDownHandler {

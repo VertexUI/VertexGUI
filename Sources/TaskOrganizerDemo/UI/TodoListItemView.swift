@@ -42,7 +42,7 @@ public class TodoListItemView: SingleChildWidget {
                         updatedDescriptionBuffer = $0.new
                       })
 
-                      _ = onDestroy(textField.onFocusChanged { focused in
+                      _ = onDestroy(textField.onFocusChanged.addHandler { focused in
                         if !focused {
                           editing = false
                         }

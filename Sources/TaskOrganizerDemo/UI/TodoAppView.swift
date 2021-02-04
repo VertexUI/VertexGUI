@@ -24,18 +24,20 @@ public class TodoAppView: SingleChildWidget {
   }
 
   override public func buildChild() -> Widget {
-    ThemeProvider(appTheme) { [unowned self] in
-      Background(fill: appTheme.backgroundColor) { [unowned self] in
-        Column(spacing: 32) {
-          Column.Item(grow: 1, crossAlignment: .Stretch) {
-            Row {
-              Row.Item(grow: 0, crossAlignment: .Stretch) {
-                buildMenu()
-              }
+    Experimental.Container(styleProperties: {
+      ($0.backgroundFill, AppTheme.backgroundColor)
+    }) { [unowned self] in
+      Experimental.DefaultTheme()
 
-              Row.Item(grow: 1, crossAlignment: .Stretch) {
-                buildActiveView()
-              }
+      Column(spacing: 32) {
+        Column.Item(grow: 1, crossAlignment: .Stretch) {
+          Row {
+            Row.Item(grow: 0, crossAlignment: .Stretch) {
+              buildMenu()
+            }
+
+            Row.Item(grow: 1, crossAlignment: .Stretch) {
+              buildActiveView()
             }
           }
         }
@@ -44,44 +46,42 @@ public class TodoAppView: SingleChildWidget {
   }
 
   private func buildMenu() -> Widget {
-    RenderGroup {
-      ConstrainedSize(minSize: DSize2(400, 0), maxSize: DSize2(400, .infinity)) {
-        Border(right: 1, color: appTheme.backgroundColor.darkened(40)) {
-          Column { [unowned self] in
-            Column.Item(crossAlignment: .Stretch) {
-              buildSearch()
+    ConstrainedSize(minSize: DSize2(400, 0), maxSize: DSize2(400, .infinity)) {
+      Border(right: 1, color: appTheme.backgroundColor.darkened(40)) {
+        Column { [unowned self] in
+          Column.Item(crossAlignment: .Stretch) {
+            buildSearch()
+          }
+
+          Experimental.Container(styleProperties: {
+            ($0.padding, Insets(all: 64))
+          }) {
+            Experimental.Style(".button", Experimental.Button.self) {
+              ($0.backgroundFill, Color.yellow)
+              ($0.padding, Insets(all: 16))
+              ($0.foreground, Color.white)
             }
 
-            Experimental.Container(styleProperties: {
-              ($0.padding, Insets(all: 64))
-            }) {
-              Experimental.Style(".button", Experimental.Button.self) {
-                ($0.backgroundFill, Color.blue)
-                ($0.padding, Insets(all: 16))
-                ($0.foreground, Color.white)
-              }
-
-              Experimental.Style("Button:hover") {
-                Experimental.StyleProperties(Experimental.Button.self) {
-                  ($0.backgroundFill, Color.red)
-                }
-              }
-
-              Experimental.Button(classes: ["button"]) {
-                Experimental.Text(styleProperties: {
-                  ($0.fontWeight, FontWeight.bold)
-                  ($0.fontSize, 20.0)
-                  ($0.textColor, Color.white)
-                }, "New List")
-              } onClick: { [unowned self] in
-                handleNewListClick()
+            Experimental.Style(".button:hover") {
+              Experimental.StyleProperties(Experimental.Button.self) {
+                ($0.backgroundFill, Color.red)
               }
             }
 
-            Column.Item(crossAlignment: .Stretch) {
-              List(store.$state.compute { $0.lists }) {
-                buildMenuListItem(for: $0)
-              }
+            Experimental.Button(classes: ["button"]) {
+              Experimental.Text(styleProperties: {
+                ($0.fontWeight, FontWeight.bold)
+                ($0.fontSize, 20.0)
+                ($0.textColor, Color.black)
+              }, "New List")
+            }.onClick { [unowned self] in
+              handleNewListClick()
+            }
+          }
+
+          Column.Item(crossAlignment: .Stretch) {
+            List(store.$state.compute { $0.lists }) {
+              buildMenuListItem(for: $0)
             }
           }
         }
@@ -101,7 +101,7 @@ public class TodoAppView: SingleChildWidget {
                 store.dispatch(.Search($0.new))
               })
               
-              _ = onDestroy(textField.onFocusChanged {
+              _ = onDestroy(textField.onFocusChanged.addHandler {
                 if $0 {
                   mode = .Search
                 }
@@ -129,47 +129,29 @@ public class TodoAppView: SingleChildWidget {
 
   private func buildMenuListItem(for list: TodoList) -> Widget {
     MouseArea {
-      MouseInteraction {
-        Border(bottom: 2, color: appTheme.backgroundColor.darkened(40)) {
-          Background {
-            Padding(top: 16, right: 32, bottom: 16, left: 32) {
-              Row(spacing: 16) {
-                Row.Item(crossAlignment: .Center) {
-                  Background(fill: list.color) {
-                    Padding(all: 8) {
-                      MaterialIcon(.formatListBulletedSquare, color: .white)
-                    }
-                  }
-                }
+      Experimental.Container(styleProperties: {
+        ($0.padding, Insets(all: 16))
+        ($0.borderWidths, Experimental.Border.BorderWidths(bottom: 1.0))
+        ($0.borderColor, Color.white)
+      }) {
 
-                Row.Item(crossAlignment: .Center) {
-                  ExperimentalText(list.name).with(classes: ["list-item-name"])
-                }
-              }
-            }.provideStyles {
-              ExperimentalText.Style(".list-item-name") {
-                $0.foreground = .white
-              }
+        Row(spacing: 16) {
+          Row.Item(crossAlignment: .Center) {
+            Experimental.Container(styleProperties: {
+              ($0.backgroundFill, list.color)
+              ($0.padding, Insets(all: 8))
+            }) {
+              MaterialIcon(.formatListBulletedSquare, color: .white)
             }
           }
+
+          Row.Item(crossAlignment: .Center) {
+            Experimental.Text(styleProperties: {
+              ($0.textColor, Color.white)
+            }, list.name).with(classes: ["list-item-name"])
+          }
         }
-      }.with(
-        config: MouseInteraction.PartialConfig {
-          $0.stateConfigs = [
-            .Normal: Background.PartialConfig {
-              $0.fill = appTheme.backgroundColor
-              $0.fillTransition = Background.FillTransition(duration: 0.3)
-            },
-            .Hover: Background.PartialConfig {
-              $0.fill = list.color
-              $0.fillTransition = Background.FillTransition(duration: 0.3)
-            },
-            .Active: Background.PartialConfig {
-              $0.fill = list.color.darkened(50)
-              $0.fillTransition = Background.FillTransition(duration: 0.3)
-            },
-          ]
-        })
+      }
     } onClick: { [unowned self] _ in
       store.commit(.SelectList(list.id))
       mode = .SelectedList

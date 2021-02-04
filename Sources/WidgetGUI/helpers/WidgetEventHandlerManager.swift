@@ -7,8 +7,8 @@ internal protocol AnyWidgetEventHandlerManager {
   func removeAllHandlers()
 }
 
-public class WidgetEventHandlerManager<Data>: EventHandlerManager<Data>, AnyWidgetEventHandlerManager {
-  /*public typealias Handler = (Data) -> Void
+public class WidgetEventHandlerManager<Data>: AnyWidgetEventHandlerManager {
+  public typealias Handler = (Data) -> Void
   public typealias UnregisterCallback = () -> Void
 
   public var handlers = [Int: Handler]()
@@ -21,7 +21,7 @@ public class WidgetEventHandlerManager<Data>: EventHandlerManager<Data>, AnyWidg
     removeAllHandlers()
   }
 
-  public func callAsFunction(_ handler: @escaping Handler) -> UnregisterCallback {
+  /*public func callAsFunction(_ handler: @escaping Handler) -> UnregisterCallback {
     addHandler(handler)
   }*/
 
@@ -33,8 +33,18 @@ public class WidgetEventHandlerManager<Data>: EventHandlerManager<Data>, AnyWidg
     return widget!
   }
 
+  public func callAsFunction(_ handler: @escaping () -> ()) -> Widget {
+    _ = addHandler({ _ in handler() })
+    return widget!
+  }
+
+  public func callAsFunction(_ handler: @escaping Handler) -> Widget {
+    _ = addHandler(handler)
+    return widget!
+  }
+
   // TODO: implement function to add to start of handler list
-  /*public func addHandler(_ handler: @escaping Handler) -> UnregisterCallback {
+  public func addHandler(_ handler: @escaping Handler) -> UnregisterCallback {
     let currentHandlerId = nextHandlerId
     handlers[currentHandlerId] = handler
     nextHandlerId += 1
@@ -66,5 +76,11 @@ public class WidgetEventHandlerManager<Data>: EventHandlerManager<Data>, AnyWidg
 
   public func removeAllHandlers() {
     handlers.removeAll()
-  }*/
+  }
+}
+
+extension WidgetEventHandlerManager where Data == Void {
+  public func invokeHandlers() {
+    invokeHandlers(())
+  }
 }

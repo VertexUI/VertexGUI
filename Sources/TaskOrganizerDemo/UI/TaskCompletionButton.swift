@@ -8,8 +8,6 @@ public class TaskCompletionButton: Widget, GUIMouseEventConsumer {
     private let preferredSize = DSize2(32, 32)
     @ObservableProperty private var completed: Bool
 
-    public private(set) var onClick = WidgetEventHandlerManager<GUIMouseButtonClickEvent>()
-
     public init(_ completed: ObservableProperty<Bool>, color: Color, onClick onClickHandler: ((_ event: GUIMouseButtonClickEvent) -> ())? = nil) {
         self._completed = completed
         self.color = color

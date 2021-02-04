@@ -56,7 +56,7 @@ public class LifecycleView: Experimental.ComposedWidget {
                 Experimental.Text("show signals")
               }
             }
-          } onClick: {
+          }.onClick {
             showSignals = !showSignals
           }
 
@@ -68,7 +68,7 @@ public class LifecycleView: Experimental.ComposedWidget {
                 Experimental.Text("show signal groups")
               }
             }
-          } onClick: {
+          }.onClick {
             showSignalGroups = !showSignalGroups
           }
         }

@@ -21,7 +21,7 @@ public class ObservingBuilder: SingleChildWidget {
       })
     }
     
-    _ = self.onTick { [unowned self] _ in
+    _ = self.onTick { [unowned self] in
       if anyObservableChanged {
         invalidateChild()
         anyObservableChanged = false

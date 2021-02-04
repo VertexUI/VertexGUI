@@ -31,11 +31,15 @@ public class MainView: Experimental.ComposedWidget {
           Experimental.Text(styleProperties: {
             ($0.textColor, Color.black)
           }, data.content)
- 
-          Experimental.Button() {
-            Experimental.Text("add child content")
-          } onClick: {
-            data.children.append(NestedData(content: "child", children: []))
+
+          Experimental.Container(styleProperties: {
+            ($0.padding, Insets(all: 32))
+          }) {
+            Experimental.Button() {
+              Experimental.Text("add child content")
+            }.onClick {
+              data.children.append(NestedData(content: "child", children: []))
+            }
           }
 
           Experimental.List($childData) {
@@ -55,7 +59,19 @@ public class MainView: Experimental.ComposedWidget {
     rootChild = Experimental.SimpleColumn { [unowned self] in
       Experimental.DefaultTheme()
 
-      NestedWidget(NestedData(content: "level1", children: []))
+      Experimental.Button {
+        Experimental.Text("WOWOWWOOW")
+      }
+
+      Experimental.Container(styleProperties: {
+        ($0.padding, Insets(all: 32))
+      }) {
+        Experimental.Button() {
+          Experimental.Text("add child content")
+        }
+      }
+
+      //NestedWidget(NestedData(content: "level1", children: []))
 
       /*Experimental.Button {
         Experimental.Text("add item")
