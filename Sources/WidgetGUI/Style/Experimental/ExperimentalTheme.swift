@@ -24,6 +24,11 @@ extension Experimental {
             ($0.textColor, Color.white)
             ($0.fontSize, 24.0)
           }
+        },
+        Experimental.Style(StyleSelector(StyleSelectorPart(type: Experimental.TextInput.self)), Experimental.TextInput.self) {
+          ($0.padding, Insets(all: 8))
+          ($0.borderColor, primaryColor)
+          ($0.borderWidths, Experimental.Border.BorderWidths(bottom: 1))
         }
       ])
     }

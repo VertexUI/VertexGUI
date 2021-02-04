@@ -56,13 +56,28 @@ extension Experimental {
       }
     }
 
-    public enum StyleKeys: String, StyleKey, ExperimentalDefaultStyleKeys {
-      case width
-      case height
-      case padding
-      case backgroundFill
-      case borderWidths
-      case borderColor
-    }
+    public struct StyleKeys: ExperimentalDefaultStyleKeys, ExperimentalContainerStyleKeys {}
+  }
+}
+
+public protocol ExperimentalContainerStyleKeys {}
+public extension ExperimentalContainerStyleKeys {
+  static var width: String {
+    "width"
+  }
+  static var height: String {
+    "height"
+  }
+  static var padding: String {
+    "padding"
+  }
+  static var backgroundFill: String {
+    "backgroundFill"
+  }
+  static var borderWidths: String {
+    "borderWidths"
+  }
+  static var borderColor: String {
+    "borderColor"
   }
 }

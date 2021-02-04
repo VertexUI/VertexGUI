@@ -1,4 +1,5 @@
 import SwiftGUI
+import ExperimentalReactiveProperties
 
 public class TodoAppView: SingleChildWidget {
   public enum Mode {
@@ -14,9 +15,9 @@ public class TodoAppView: SingleChildWidget {
 
   @Reference
   private var activeViewTopSpace: Space
-  @MutableProperty
+  @ReactiveProperties.MutableProperty
   private var mode: Mode = .SelectedList
-  @MutableProperty
+  @ExperimentalReactiveProperties.MutableProperty
   private var searchQuery: String = ""
 
   public init() {
@@ -94,7 +95,8 @@ public class TodoAppView: SingleChildWidget {
       Padding(all: 32) {
         Row(spacing: 0) {
           Row.Item(grow: 1, margins: Margins(right: 24)) {
-            {
+            Experimental.TextInput(mutableText: $searchQuery)
+            /*{
               let textField = TextField(store.state.searchResult?.query ?? "")
 
               _ = onDestroy(textField.$text.onChanged {
@@ -108,11 +110,11 @@ public class TodoAppView: SingleChildWidget {
               })
 
               return textField
-            }()
+            }()*/
           }
 
           Row.Item(crossAlignment: .Center) {
-            Spaceholder(display: ComputedProperty<Bool>([$mode.any]) { [unowned self] in
+            Spaceholder(display: ReactiveProperties.ComputedProperty<Bool>([$mode.any]) { [unowned self] in
               return mode == .Search
             }, dimension: .Vertical) {
               Experimental.Button {
