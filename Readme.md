@@ -23,7 +23,15 @@ When the requirements are met, clone this repo and from it's root directory run:
  
     swift run TaskOrganizerDemo
 
-The application might be really slow. This is mainly due to inefficient rendering and will be fixed.
+<br>
+
+## **NOTE**: I'm currently redesigning a large part of the framework and most examples are outdated, most widgets are not yet updated to the new api design
+
+<br>
+
+I estimate that around mid-March the framework will be in a more usable state.
+
+<br>
 
 ## Use
 
