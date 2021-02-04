@@ -209,9 +209,7 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
             notifySelectorChanged()
         }
     }
-    open var pseudoClasses: [String] {
-        []
-    }
+    public internal(set) var pseudoClasses = Set<String>()
 
     /** Style property support declared by the Widget instance's context. */
     public var experimentalSupportedGlobalStyleProperties: Experimental.StylePropertySupportDefinitions {
@@ -349,6 +347,12 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     public internal(set) var onRenderStateInvalidated = EventHandlerManager<Widget>()
     public internal(set) var onFocusChanged = WidgetEventHandlerManager<Bool>()
     public internal(set) var onDestroy = EventHandlerManager<Void>()
+
+    /* mouse events
+    --------------------------
+    */
+    public let onClick = WidgetEventHandlerManager<GUIMouseButtonClickEvent>()
+    /* end mouse events */
     
     private var unregisterAnyParentChangedHandler: EventHandlerManager<Parent?>.UnregisterCallback?
 	
