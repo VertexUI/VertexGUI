@@ -11,6 +11,12 @@ open class DrawingContext {
       checkFailOpacity(newValue)
     }
   }
+  private var mergedTransforms: [Transform] {
+    inherentTransforms + transforms
+  }
+  private var mergedOpacity: Double {
+    inherentOpacity * opacity
+  }
 
   public init(backend: DrawingBackend) {
     self.backend = backend 
@@ -50,9 +56,9 @@ open class DrawingContext {
     backend.activate()
   }
 
-  private func applyTransforms(to point: DVec2) -> DVec2 {
+  private func preprocess(_ point: DVec2) -> DVec2 {
     var currentPoint = point
-    for transform in inherentTransforms + transforms {
+    for transform in mergedTransforms {
       switch transform {
       case let .translate(translation):
         currentPoint = currentPoint + translation
@@ -61,10 +67,29 @@ open class DrawingContext {
     return currentPoint
   }
 
-  private func applyTransforms(to rect: DRect) -> DRect {
-    let min = applyTransforms(to: rect.min)
-    let max = applyTransforms(to: rect.max)
+  private func preprocess(_ rect: DRect) -> DRect {
+    let min = preprocess(rect.min)
+    let max = preprocess(rect.max)
     return DRect(min: min, max: max)
+  }
+
+  private func preprocess(_ paint: Paint) -> Paint {
+    var processed = paint
+    if let color = paint.color {
+      processed.color = color.adjusted(alpha: UInt8(mergedOpacity * color.aFrac * 255))
+    }
+    if let strokeColor = paint.strokeColor {
+      processed.strokeColor = strokeColor.adjusted(alpha: UInt8(mergedOpacity * strokeColor.aFrac * 255))
+    }
+    return processed
+  }
+
+  private func preprocess(_ paint: TextPaint) -> TextPaint {
+    var processed = paint
+    if let color = paint.color {
+      processed.color = color.adjusted(alpha: UInt8(mergedOpacity * color.aFrac * 255))
+    }
+    return processed
   }
 
   public func transform(_ transform: Transform) {
@@ -76,11 +101,11 @@ open class DrawingContext {
   }
 
   public func drawLine(from start: DVec2, to end: DVec2, paint: Paint) {
-    backend.drawLine(from: applyTransforms(to: start), to: applyTransforms(to: end), paint: paint)
+    backend.drawLine(from: preprocess(start), to: preprocess(end), paint: preprocess(paint))
   }
 
   public func drawRect(rect: DRect, paint: Paint) {
-    backend.drawRect(rect: applyTransforms(to: rect), paint: paint)
+    backend.drawRect(rect: preprocess(rect), paint: preprocess(paint))
   }
 
   open func drawRoundedRect() {
@@ -95,11 +120,11 @@ open class DrawingContext {
   // TODO: maybe the result should be a rect to also have access to the position
   */
   public func measureText(text: String, paint: TextPaint) -> DSize2 {
-    backend.measureText(text: text, paint: paint)
+    backend.measureText(text: text, paint: preprocess(paint))
   }
 
   public func drawText(text: String, position: DVec2, paint: TextPaint) {
-    backend.drawText(text: text, position: applyTransforms(to: position), paint: paint)
+    backend.drawText(text: text, position: preprocess(position), paint: preprocess(paint))
   }
 
   open func endDrawing() {
