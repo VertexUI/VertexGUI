@@ -95,7 +95,7 @@ public class TodoAppView: SingleChildWidget {
       Padding(all: 32) {
         Row(spacing: 0) {
           Row.Item(grow: 1, margins: Margins(right: 24)) {
-            Experimental.TextInput(mutableText: $searchQuery)
+            Experimental.TextInput(mutableText: $searchQuery, placeholder: "search")
             /*{
               let textField = TextField(store.state.searchResult?.query ?? "")
 

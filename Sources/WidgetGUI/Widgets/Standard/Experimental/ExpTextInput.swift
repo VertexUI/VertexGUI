@@ -10,8 +10,16 @@ extension Experimental {
     public var text: String
     private var textBuffer: String
 
+    @ExperimentalReactiveProperties.ObservableProperty
+    private var placeholderText: String
+
+    @ExperimentalReactiveProperties.MutableProperty
+    private var placeholderVisibility: Visibility = .visible
+
     @Reference
     private var containerWidget: Experimental.Container
+    @Reference
+    private var stackContainer: Experimental.Stack
     @Reference
     private var textWidget: Experimental.Text
     @Reference
@@ -39,25 +47,66 @@ extension Experimental {
 
     private var dropCursorRequest: (() -> ())? = nil
 
-    public init<P: MutablePropertyProtocol>(
+    public init<T: MutablePropertyProtocol, P: ReactiveProperty>(
       classes: [String]? = nil,
       @StylePropertiesBuilder styleProperties stylePropertiesBuilder: (TextInput.StyleKeys.Type) -> StyleProperties = { _ in [] },
-      mutableText mutableTextProperty: P) where P.Value == String {
+      mutableText mutableTextProperty: T,
+      placeholder placeholderProperty: P? = nil) where T.Value == String, P.Value == String {
+
         if mutableTextProperty.hasValue {
           self.textBuffer = mutableTextProperty.value
         } else {
           self.textBuffer = ""
         }
+        self.text = self.textBuffer
+
         super.init()
+
+        if let property = placeholderProperty {
+          self.$placeholderText.bind(property)
+        } else {
+          self.$placeholderText.bind(StaticProperty(""))
+        }
+
         if let classes = classes {
           self.classes.append(contentsOf: classes)
         }
         self.with(stylePropertiesBuilder(StyleKeys.self))
+
+        updatePlaceholderVisibility()
+
         self.$text.bindBidirectional(mutableTextProperty)
         _ = self.$text.onChanged { [unowned self] in
           textBuffer = $0.new
+          updatePlaceholderVisibility()
         }
+
         self.focusable = true
+    }
+
+    public convenience init<T: MutablePropertyProtocol>(
+      classes: [String]? = nil,
+      @StylePropertiesBuilder styleProperties stylePropertiesBuilder: (TextInput.StyleKeys.Type) -> StyleProperties = { _ in [] },
+      mutableText mutableTextProperty: T) where T.Value == String {
+
+        self.init(classes: classes, styleProperties: stylePropertiesBuilder, mutableText: mutableTextProperty, placeholder: Optional<ObservableProperty<String>>.none)
+    }
+
+    public convenience init<T: MutablePropertyProtocol>(
+      classes: [String]? = nil,
+      @StylePropertiesBuilder styleProperties stylePropertiesBuilder: (TextInput.StyleKeys.Type) -> StyleProperties = { _ in [] },
+      mutableText mutableTextProperty: T,
+      placeholder: String) where T.Value == String {
+
+        self.init(classes: classes, styleProperties: stylePropertiesBuilder, mutableText: mutableTextProperty, placeholder: StaticProperty(placeholder))
+    }
+
+    private func updatePlaceholderVisibility() {
+      if text.isEmpty && placeholderVisibility == .hidden {
+        placeholderVisibility = .visible
+      } else if !text.isEmpty && placeholderVisibility == .visible {
+        placeholderVisibility = .hidden
+      }
     }
 
     override public func performBuild() {
@@ -70,10 +119,18 @@ extension Experimental {
           ($0.borderWidths, stylePropertyValue(reactive: StyleKeys.borderWidths))
           ($0.borderColor, stylePropertyValue(reactive: StyleKeys.borderColor))
         }) { [unowned self] in
-          Experimental.Text(styleProperties: {
-            ($0.textColor, Color.white)
-            ($0.fontSize, 24.0)
-          }, $text).connect(ref: $textWidget)
+          Experimental.Stack {
+            Experimental.Text(styleProperties: {
+              ($0.textColor, Color.white)
+              ($0.fontSize, 24.0)
+            }, $text).connect(ref: $textWidget)
+            Experimental.Text(styleProperties: {
+              ($0.opacity, 0.5)
+              ($0.textColor, Color.white)
+              ($0.fontSize, 24.0)
+              ($0.visibility, $placeholderVisibility)
+            }, $placeholderText)
+          }.connect(ref: $stackContainer)
         }.connect(ref: $containerWidget).onClick { [unowned self] in
           self.handleClick($0)
         },
@@ -178,7 +235,7 @@ extension Experimental {
       caretBlinkTime += timestamp - lastDrawTimestamp
       lastDrawTimestamp = timestamp
 
-      var caretTranslationX = textWidget.position.x
+      var caretTranslationX = stackContainer.position.x
       caretTranslationX += textWidget.measureText(String(text.prefix(caretIndex))).width + caretWidth / 2
 
       drawingContext.drawLine(
