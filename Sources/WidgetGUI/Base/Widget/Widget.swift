@@ -289,7 +289,7 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         widget: self)
     /* end style */
 
-    open var visibility: Visibility = .Visible {
+    open var visibility: Visibility = .visible {
         didSet {
             if oldValue != visibility {
                 // TODO: should invalidation of lifecycle happen inside didSet?
@@ -935,7 +935,7 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         let oldMainContent = renderState.mainContent
         renderState.content = subTree
 
-        if visibility == .Visible, mounted && layouted && !layouting {
+        if visibility == .visible, mounted && layouted && !layouting {
             let newMainContent = renderContent()
             // if the content that was rendered by the inheriting Widget
             // is still the same object as the old one, invalidate is cache
@@ -972,7 +972,7 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
 
             renderState.debuggingContent = newDebuggingContent
             subTree.replaceChildren(([renderState.mainContent] + renderState.debuggingContent).compactMap { $0 })
-        } else if visibility == .Hidden {
+        } else if visibility == .hidden {
             subTree.removeChildren()
             #if DEBUG
             Logger.warn("Called updateRenderState on Widget that cannot be rendered in it's current state.".with(fg: .white, bg: .red), context: .WidgetRendering)
@@ -1191,10 +1191,6 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
 }
 
 extension Widget {
-    public enum Visibility {
-        case Visible, Hidden
-    }
-
     public struct BoxConfigChangedEvent {
         public var old: BoxConfig
         public var new: BoxConfig

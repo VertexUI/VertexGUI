@@ -12,5 +12,6 @@ extension DSize2: StyleValue {}
 extension Insets: StyleValue {}
 extension GfxMath.Color: StyleValue {}
 extension TextTransform: StyleValue {}
+extension Visibility: StyleValue {}
 extension VisualAppBase.FontWeight: StyleValue {}
 extension VisualAppBase.FontStyle: StyleValue {}

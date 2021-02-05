@@ -52,7 +52,7 @@ public class List<Item: Equatable>: SingleChildWidget {
       Column {
         itemWidgets.map {
           $0.with {
-            $0.visibility = .Visible
+            $0.visibility = .visible
           }
         }
       }.connect(ref: $itemLayoutContainer)
@@ -69,9 +69,9 @@ public class List<Item: Equatable>: SingleChildWidget {
 
     for widget in itemWidgets {
       if widget.y + widget.height >= currentScrollOffsets.y && widget.y <= currentScrollOffsets.y + scrollArea.height {
-        widget.visibility = .Visible
+        widget.visibility = .visible
       } else {
-        widget.visibility = .Hidden
+        widget.visibility = .hidden
       }
     }
   }
