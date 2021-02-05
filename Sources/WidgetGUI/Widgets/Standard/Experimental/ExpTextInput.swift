@@ -178,7 +178,8 @@ extension Experimental {
       caretBlinkTime += timestamp - lastDrawTimestamp
       lastDrawTimestamp = timestamp
 
-      let caretTranslationX = textWidget.measureText(String(text.prefix(caretIndex))).width + caretWidth / 2
+      var caretTranslationX = textWidget.position.x
+      caretTranslationX += textWidget.measureText(String(text.prefix(caretIndex))).width + caretWidth / 2
 
       drawingContext.drawLine(
         from: DVec2(caretTranslationX, textWidget.position.y),
