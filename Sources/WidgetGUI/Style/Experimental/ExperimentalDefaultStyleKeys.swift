@@ -1,10 +1,15 @@
 public protocol ExperimentalDefaultStyleKeys {
-  static var foreground: String { get }
 }
 
 public extension ExperimentalDefaultStyleKeys {
   static var foreground: String {
     "foreground"
+  }
+  static var opacity: String {
+    "opacity"
+  }
+  static var visibility: String {
+    "visibility"
   }
   static var textColor: String {
     "textColor"

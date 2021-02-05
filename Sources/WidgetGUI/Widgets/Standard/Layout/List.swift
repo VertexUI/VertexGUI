@@ -50,11 +50,11 @@ public class List<Item: Equatable>: SingleChildWidget {
   override public func buildChild() -> Widget {
     return ScrollArea(scrollX: .Never) { [unowned self] in
       Column {
-        itemWidgets.map {
+        itemWidgets/*.map {
           $0.with {
             $0.visibility = .visible
           }
-        }
+        }*/
       }.connect(ref: $itemLayoutContainer)
     }.connect(ref: $scrollArea).onScrollProgressChanged.chain { [unowned self] _ in
       updateDisplayedItems()
@@ -67,12 +67,12 @@ public class List<Item: Equatable>: SingleChildWidget {
     let currentScrollOffsets = scrollArea.offsets
     let currentScrollProgress = scrollArea.scrollProgress
 
-    for widget in itemWidgets {
+    /*for widget in itemWidgets {
       if widget.y + widget.height >= currentScrollOffsets.y && widget.y <= currentScrollOffsets.y + scrollArea.height {
         widget.visibility = .visible
       } else {
         widget.visibility = .hidden
       }
-    }
+    }*/
   }
 }

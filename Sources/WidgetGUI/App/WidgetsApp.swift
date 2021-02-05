@@ -3,7 +3,7 @@ import VisualAppBase
 import GfxMath
 
 open class WidgetsApp {
-    private var baseApp: VisualApp
+    public private(set) var baseApp: VisualApp
     
     public private(set) var guiRoots: [Int: Root] = [:]
 

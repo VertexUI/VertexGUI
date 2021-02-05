@@ -287,16 +287,13 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     lazy internal var stylePropertiesResolver = Experimental.StylePropertiesResolver(
         propertySupportDefinitions: experimentalMergedSupportedStyleProperties,
         widget: self)
-    /* end style */
 
-    open var visibility: Visibility = .visible {
-        didSet {
-            if oldValue != visibility {
-                // TODO: should invalidation of lifecycle happen inside didSet?
-                invalidateRenderState()
-            }
-        }
-    }
+    @FromStyle(key: Experimental.AnyDefaultStyleKeys.opacity)
+    public var opacity: Double = 1
+
+    @FromStyle(key: Experimental.AnyDefaultStyleKeys.visibility)
+    open var visibility: Visibility = .visible
+    /* end style */
 
     @usableFromInline internal var reference: AnyReferenceProtocol? {
         didSet {
@@ -361,7 +358,10 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         Self.nextId += 1
         self.children = children
         self.styleScope = Widget.activeStyleScope
+
         setupWidgetEventHandlerManagers()
+        setupFromStyleWrappers()
+
         _ = onDestroy(_debugLayout.onChanged { [unowned self] _ in
             invalidateRenderState()
         })
@@ -375,6 +375,15 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         for child in mirror.allChildren {
             if var manager = child.value as? AnyWidgetEventHandlerManager {
                 manager.widget = self
+            }
+        }
+    }
+
+    private func setupFromStyleWrappers() {
+        let mirror = Mirror(reflecting: self)
+        for child in mirror.allChildren {
+            if let fromStyle = child.value as? FromStyleProtocol {
+                fromStyle.registerWidget(self)
             }
         }
     }
