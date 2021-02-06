@@ -14,10 +14,10 @@ extension Experimental {
       super.init(styles: [
         Experimental.Style(StyleSelector(StyleSelectorPart(type: Experimental.Button.self)), Experimental.Button.self) {
           ($0.padding, Insets(all: 16))
-          ($0.backgroundFill, primaryColor)
+          ($0.background, primaryColor)
 
           Experimental.Style(StyleSelector(StyleSelectorPart(extendsParent: true, pseudoClasses: ["hover"])), Experimental.Button.self) {
-            ($0.backgroundFill, primaryColor.darkened(10))
+            ($0.background, primaryColor.darkened(10))
           }
 
           Experimental.Style(StyleSelector(StyleSelectorPart(extendsParent: false, opensScope: false, type: Experimental.Text.self)), Experimental.Text.self) {

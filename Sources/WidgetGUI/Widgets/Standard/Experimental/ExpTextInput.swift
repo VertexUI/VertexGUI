@@ -114,7 +114,6 @@ extension Experimental {
         Experimental.Container(styleProperties: {
           ($0.width, stylePropertyValue(reactive: StyleKeys.width))
           ($0.height, stylePropertyValue(reactive: StyleKeys.height))
-          ($0.backgroundFill, stylePropertyValue(reactive: StyleKeys.backgroundFill))
           ($0.borderWidths, stylePropertyValue(reactive: StyleKeys.borderWidths))
           ($0.borderColor, stylePropertyValue(reactive: StyleKeys.borderColor))
         }) { [unowned self] in

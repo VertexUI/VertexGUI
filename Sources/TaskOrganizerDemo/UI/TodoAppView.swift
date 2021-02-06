@@ -26,7 +26,7 @@ public class TodoAppView: SingleChildWidget {
 
   override public func buildChild() -> Widget {
     Experimental.Container(styleProperties: {
-      ($0.backgroundFill, AppTheme.backgroundColor)
+      ($0.background, AppTheme.backgroundColor)
     }) { [unowned self] in
       Experimental.DefaultTheme()
 
@@ -58,14 +58,14 @@ public class TodoAppView: SingleChildWidget {
             ($0.padding, Insets(all: 64))
           }) {
             Experimental.Style(".button", Experimental.Button.self) {
-              ($0.backgroundFill, Color.yellow)
+              ($0.background, Color.yellow)
               ($0.padding, Insets(all: 16))
               ($0.foreground, Color.white)
             }
 
             Experimental.Style(".button:hover") {
               Experimental.StyleProperties(Experimental.Button.self) {
-                ($0.backgroundFill, Color.red)
+                ($0.background, Color.red)
               }
             }
 
@@ -96,21 +96,6 @@ public class TodoAppView: SingleChildWidget {
         Row(spacing: 0) {
           Row.Item(grow: 1, margins: Margins(right: 24)) {
             Experimental.TextInput(mutableText: $searchQuery, placeholder: "search")
-            /*{
-              let textField = TextField(store.state.searchResult?.query ?? "")
-
-              _ = onDestroy(textField.$text.onChanged {
-                store.dispatch(.Search($0.new))
-              })
-              
-              _ = onDestroy(textField.onFocusChanged.addHandler {
-                if $0 {
-                  mode = .Search
-                }
-              })
-
-              return textField
-            }()*/
           }
 
           Row.Item(crossAlignment: .Center) {
@@ -140,7 +125,7 @@ public class TodoAppView: SingleChildWidget {
         Row(spacing: 16) {
           Row.Item(crossAlignment: .Center) {
             Experimental.Container(styleProperties: {
-              ($0.backgroundFill, list.color)
+              ($0.background, list.color)
               ($0.padding, Insets(all: 8))
             }) {
               MaterialIcon(.formatListBulletedSquare, color: .white)

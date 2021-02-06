@@ -298,6 +298,9 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     // TODO: maybe even create a separate section for universal properties?
     @FromStyle(key: Experimental.AnyDefaultStyleKeys.padding)
     public var padding: Insets = .zero
+
+    @FromStyle(key: Experimental.AnyDefaultStyleKeys.background)
+    public var background: Color = .transparent
     /* end style */
 
     @usableFromInline internal var reference: AnyReferenceProtocol? {

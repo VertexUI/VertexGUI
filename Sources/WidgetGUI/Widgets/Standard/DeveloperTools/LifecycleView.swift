@@ -147,14 +147,14 @@ public class LifecycleView: Experimental.ComposedWidget {
 
   private func buildStyle() -> Experimental.Style {
     Experimental.Style("&", Experimental.Container.self) {
-      ($0.backgroundFill, Color.white)
+      ($0.background, Color.white)
 
       Experimental.Style(".method-invocation-count-container", Experimental.Container.self) {
         ($0.padding, Insets(all: 16))
       }
 
       Experimental.Style(".signal", Experimental.Container.self) {
-        ($0.backgroundFill, Color.white)
+        ($0.background, Color.white)
         ($0.padding, Insets(all: 8))
 
         Experimental.Style(".method-name", Experimental.Text.self) {
@@ -164,7 +164,7 @@ public class LifecycleView: Experimental.ComposedWidget {
       }
 
       Experimental.Style(".signal-group", Experimental.Container.self) {
-        ($0.backgroundFill, Color.white)
+        ($0.background, Color.white)
         ($0.padding, Insets(all: 16))
       }
     }

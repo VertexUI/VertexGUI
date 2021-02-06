@@ -252,9 +252,15 @@ open class Root: Parent {
       while let widget = iterator.next() {
         iterators[iterators.count - 1] = iterator
 
-        if widget.visibility == .visible {
+        if widget.visibility == .visible && widget.opacity > 0 {
+          // TODO: accumulate opacity from parent widgets
+          let lockedDrawingContext: DrawingContext = drawingContext.locked(opacity: widget.opacity, transforms: [.translate(widget.globalPosition)])
+          
+          if widget.background != .transparent {
+              lockedDrawingContext.drawRect(rect: DRect(min: .zero, size: widget.size), paint: Paint(color: widget.background))
+          }
+
           if let leafWidget = widget as? LeafWidget {
-            let lockedDrawingContext = drawingContext.locked(opacity: leafWidget.opacity, transforms: [.translate(leafWidget.globalPosition)])
             leafWidget.draw(lockedDrawingContext)
           } else {
             iterators.append(widget.visitChildren())

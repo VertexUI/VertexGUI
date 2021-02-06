@@ -35,15 +35,11 @@ extension Experimental {
         ($0.borderWidths, stylePropertyValue(reactive: StyleKeys.borderWidths))
         ($0.borderColor, stylePropertyValue(reactive: StyleKeys.borderColor))
       }) { [unowned self] in
-        Experimental.Background(styleProperties: {
-          ($0.fill, stylePropertyValue(reactive: StyleKeys.backgroundFill))
-        }) { 
-          Experimental.ConstrainedSizeBox(styleProperties: {
-            ($0.width, stylePropertyValue(reactive: StyleKeys.width))
-            ($0.height, stylePropertyValue(reactive: StyleKeys.height))
-          }) {
-            builtChild
-          }
+        Experimental.ConstrainedSizeBox(styleProperties: {
+          ($0.width, stylePropertyValue(reactive: StyleKeys.width))
+          ($0.height, stylePropertyValue(reactive: StyleKeys.height))
+        }) {
+          builtChild
         }
       }
     }
@@ -59,9 +55,6 @@ public extension ExperimentalContainerStyleKeys {
   }
   static var height: String {
     "height"
-  }
-  static var backgroundFill: String {
-    "backgroundFill"
   }
   static var borderWidths: String {
     "borderWidths"

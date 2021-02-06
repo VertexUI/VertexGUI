@@ -8,6 +8,9 @@ public extension ExperimentalDefaultStyleKeys {
   static var foreground: String {
     "foreground"
   }
+  static var background: String {
+    "background"
+  }
   static var opacity: String {
     "opacity"
   }
