@@ -32,7 +32,7 @@ public class MockLeafWidget: Widget, SimpleStylableWidget {
     self.mode = mode
   }
 
-  override public func getBoxConfig() -> BoxConfig {
+  override public func getContentBoxConfig() -> BoxConfig {
     BoxConfig(preferredSize: .zero)
   }
 

@@ -12,7 +12,7 @@ extension Experimental {
       self.$paint.bind(paintProperty)
     }
 
-    override public func getBoxConfig() -> BoxConfig {
+    override public func getContentBoxConfig() -> BoxConfig {
       // this is an arbitrary preffered size, the size should be set by whatever uses the Widget
       BoxConfig(preferredSize: DSize2(100, 100))
     }

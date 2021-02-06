@@ -13,7 +13,7 @@ extension Experimental {
       self.experimentalProvidedStyles.append(contentsOf: content.experimentalStyles)
     }
 
-    override public func getBoxConfig() -> BoxConfig {
+    override public func getContentBoxConfig() -> BoxConfig {
       var result = BoxConfig(preferredSize: .zero)
       for child in children {
         if child.boxConfig.preferredSize.width > result.preferredSize.width {

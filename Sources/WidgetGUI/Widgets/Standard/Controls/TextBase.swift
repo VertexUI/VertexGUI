@@ -35,7 +35,7 @@ open class TextBase: Widget, SimpleStylableWidget {
     self.displayedText = text
   }
 
-  override public func getBoxConfig() -> BoxConfig {
+  override public func getContentBoxConfig() -> BoxConfig {
     var boxConfig = BoxConfig(
       preferredSize: context.getTextBoundsSize(transformedText, fontConfig: fontConfig))
 

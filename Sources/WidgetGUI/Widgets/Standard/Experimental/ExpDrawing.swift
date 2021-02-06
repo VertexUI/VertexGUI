@@ -13,7 +13,7 @@ extension Experimental {
       self._draw = draw
     }
 
-    override public func getBoxConfig() -> BoxConfig {
+    override public func getContentBoxConfig() -> BoxConfig {
       // size is arbitrary, should be chosen by parent
       BoxConfig(preferredSize: DSize2(100, 100))
     }

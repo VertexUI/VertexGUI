@@ -11,7 +11,7 @@ public class SimpleRow: Widget {
     self.children = childrenBuilder()
   }
 
-  override public func getBoxConfig() -> BoxConfig {
+  override public func getContentBoxConfig() -> BoxConfig {
     var result = BoxConfig(preferredSize: .zero)
     for child in children {
       let childConfig = child.boxConfig

@@ -20,7 +20,7 @@ extension Experimental {
 
     internal init() {}
 
-    override public func getBoxConfig() -> BoxConfig {
+    override public func getContentBoxConfig() -> BoxConfig {
       BoxConfig(preferredSize: .zero)
     }
 

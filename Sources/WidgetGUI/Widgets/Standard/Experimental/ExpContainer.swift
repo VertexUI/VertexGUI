@@ -4,10 +4,6 @@ extension Experimental {
   public class Container: ComposedWidget, ExperimentalStylableWidget {
     private let childBuilder: SingleChildContentBuilder.ChildBuilder
 
-    private var padding: Insets {
-      stylePropertyValue(StyleKeys.padding, as: Insets.self) ?? Insets(all: 0)
-    }
-
     override private init(contentBuilder: () -> SingleChildContentBuilder.Result) {
         let content = contentBuilder()
         self.childBuilder = content.child
@@ -46,11 +42,7 @@ extension Experimental {
             ($0.width, stylePropertyValue(reactive: StyleKeys.width))
             ($0.height, stylePropertyValue(reactive: StyleKeys.height))
           }) {
-            Experimental.Padding(styleProperties: {
-              ($0.insets, stylePropertyValue(reactive: StyleKeys.padding))
-            }) {
-              builtChild
-            }
+            builtChild
           }
         }
       }
@@ -67,9 +59,6 @@ public extension ExperimentalContainerStyleKeys {
   }
   static var height: String {
     "height"
-  }
-  static var padding: String {
-    "padding"
   }
   static var backgroundFill: String {
     "backgroundFill"

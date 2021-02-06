@@ -185,7 +185,7 @@ extension EventCumulationView {
       self.children = childrenBuilder()
     }
 
-    override public func getBoxConfig() {
+    override public func getContentBoxConfig() {
       BoxConfig(preferredSize: .zero)
     }
 

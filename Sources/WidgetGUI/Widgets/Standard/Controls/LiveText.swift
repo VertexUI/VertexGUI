@@ -10,7 +10,7 @@ public class LiveText: TextBase {
   }
 
 /*
-  override public func getBoxConfig() -> BoxConfig {
+  override public func getContentBoxConfig() -> BoxConfig {
     var boxConfig = BoxConfig(
       preferredSize: context.getTextBoundsSize(transformedText, fontConfig: config.fontConfig))
 

@@ -25,7 +25,7 @@ extension Experimental {
         self.with(stylePropertiesBuilder(StyleKeys.self))
     }
 
-    override public func getBoxConfig() -> BoxConfig {
+    override public func getContentBoxConfig() -> BoxConfig {
       let preferredSize = DSize2(targetWidth ?? rootChild!.boxConfig.preferredSize.width,
         targetHeight ?? rootChild!.boxConfig.preferredSize.height)
       return BoxConfig(preferredSize: preferredSize, minSize: rootChild!.boxConfig.minSize, maxSize: rootChild!.boxConfig.maxSize)

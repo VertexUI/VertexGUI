@@ -2,6 +2,9 @@ public protocol ExperimentalDefaultStyleKeys {
 }
 
 public extension ExperimentalDefaultStyleKeys {
+  static var padding: String {
+    "padding"
+  }
   static var foreground: String {
     "foreground"
   }

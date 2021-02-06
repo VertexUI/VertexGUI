@@ -1,11 +1,11 @@
 import GfxMath
 
 public class Padding: SingleChildWidget {
-    public var padding: Insets
+    //public var padding: Insets
     private var inputChild: Widget
 
     public init(top: Double = 0, right: Double = 0, bottom: Double = 0, left: Double = 0, @WidgetBuilder child inputChild: () -> Widget) {
-        self.padding = Insets(top, right, bottom, left)
+        //self.padding = Insets(top, right, bottom, left)
         self.inputChild = inputChild()
         super.init()
     }
@@ -18,7 +18,7 @@ public class Padding: SingleChildWidget {
         return inputChild
     }
 
-    override public func getBoxConfig() -> BoxConfig {
+    override public func getContentBoxConfig() -> BoxConfig {
         var resultConfig = child.boxConfig
         resultConfig.minSize.width += padding.left + padding.right
         resultConfig.minSize.height += padding.top + padding.bottom

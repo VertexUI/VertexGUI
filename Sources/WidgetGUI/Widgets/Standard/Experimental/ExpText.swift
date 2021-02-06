@@ -54,7 +54,7 @@ extension Experimental {
         self.init(classes: classes, styleProperties: stylePropertiesBuilder, StaticProperty(text))
     }
 
-    override public func getBoxConfig() -> BoxConfig {
+    override public func getContentBoxConfig() -> BoxConfig {
       var boxConfig = BoxConfig(
         preferredSize: context.getTextBoundsSize(transformedText, fontConfig: fontConfig))
 

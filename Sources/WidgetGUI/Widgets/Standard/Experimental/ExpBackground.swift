@@ -42,7 +42,7 @@ extension Experimental {
       ]
     }
 
-    override public func getBoxConfig() -> BoxConfig {
+    override public func getContentBoxConfig() -> BoxConfig {
       foregroundChild.getBoxConfig()
     }
 

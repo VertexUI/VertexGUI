@@ -19,7 +19,7 @@ extension Experimental {
       }
     }
 
-    override public func getBoxConfig() -> BoxConfig {
+    override public func getContentBoxConfig() -> BoxConfig {
       BoxConfig(preferredSize: DSize2(400, 400))
     }
 

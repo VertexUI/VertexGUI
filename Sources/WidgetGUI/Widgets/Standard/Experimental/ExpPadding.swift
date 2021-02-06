@@ -30,7 +30,7 @@ extension Experimental {
         }
     }
 
-    override public func getBoxConfig() -> BoxConfig {
+    override public func getContentBoxConfig() -> BoxConfig {
       guard let rootChild = self.rootChild else {
         fatalError("rootChild must be available during layout")
       }

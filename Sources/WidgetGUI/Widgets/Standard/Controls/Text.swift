@@ -84,7 +84,7 @@ public final class Text: Widget, ConfigurableWidget {
       ))
   }
 
-  override public func getBoxConfig() -> BoxConfig {
+  override public func getContentBoxConfig() -> BoxConfig {
     var boxConfig = BoxConfig(
       preferredSize: context.getTextBoundsSize(transformedText, fontConfig: config.fontConfig))
 

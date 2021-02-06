@@ -63,7 +63,7 @@ extension ColorPicker {
       })
     }
 
-    override public func getBoxConfig() -> BoxConfig {
+    override public func getContentBoxConfig() -> BoxConfig {
       BoxConfig(preferredSize: DSize2(200, 200))
     }
 

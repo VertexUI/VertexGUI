@@ -28,7 +28,7 @@ public class ImageView: Widget {
        })
     }
 
-    override public func getBoxConfig() -> BoxConfig {
+    override public func getContentBoxConfig() -> BoxConfig {
         BoxConfig(preferredSize: DSize2(Double(image.width), Double(image.height)))
     }
 

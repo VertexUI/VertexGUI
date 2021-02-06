@@ -30,7 +30,7 @@ public class Border: SingleChildWidget {
     childBuilder()
   }
 
-  override public func getBoxConfig() -> BoxConfig {
+  override public func getContentBoxConfig() -> BoxConfig {
     var boxConfig = child.boxConfig
     boxConfig.preferredSize += borderSize
     boxConfig.minSize += borderSize

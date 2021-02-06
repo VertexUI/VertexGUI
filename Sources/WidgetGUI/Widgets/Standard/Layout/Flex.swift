@@ -68,7 +68,7 @@ public class Flex: Widget {
 
   // TODO: maybe have box config inside the Widget and then let the parent give the child constraints
   // or maybe one dimension and then the child should decide how to set up the other direction
-  override public func getBoxConfig() -> BoxConfig {
+  override public func getContentBoxConfig() -> BoxConfig {
     var config = BoxConfig(preferredSize: .zero, minSize: .zero, maxSize: .zero)
 
     for (index, item) in items.enumerated() {

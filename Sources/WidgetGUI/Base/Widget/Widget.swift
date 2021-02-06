@@ -292,7 +292,12 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     public var opacity: Double = 1
 
     @FromStyle(key: Experimental.AnyDefaultStyleKeys.visibility)
-    open var visibility: Visibility = .visible
+    public var visibility: Visibility = .visible
+
+    // TODO: maybe this belongs into the layout section instead of in the style section?
+    // TODO: maybe even create a separate section for universal properties?
+    @FromStyle(key: Experimental.AnyDefaultStyleKeys.padding)
+    public var padding: Insets = .zero
     /* end style */
 
     @usableFromInline internal var reference: AnyReferenceProtocol? {
@@ -700,8 +705,16 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         boxConfigInvalid = false
     }
 
-    open func getBoxConfig() -> BoxConfig {
-        fatalError("getBoxConfig() not implemented for Widget \(self).")
+    public func getBoxConfig() -> BoxConfig {
+        getContentBoxConfig()
+    }
+
+    /**
+    * Needs to be implemented by subclasses.
+    * - Returns: the box config of the content of the Widget, which might be a drawing or other Widgets.
+    */
+    open func getContentBoxConfig() -> BoxConfig {
+        fatalError("getContentBoxConfig() not implemented")
     }
 
     // TODO: maybe call this updateBoxConfig / or queueBoxConfigUpdate??? --> on next tick?

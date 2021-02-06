@@ -25,7 +25,7 @@ public class MainView: Experimental.ComposedWidget {
       }, $text)
 
       Experimental.Container(styleProperties: {
-        ($0.padding, Insets(all: 32))
+        ($0.padding, Insets(all: 128))
       }) {
         Experimental.Button() {
           Experimental.Text("add child content")

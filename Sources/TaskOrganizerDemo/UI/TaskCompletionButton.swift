@@ -20,7 +20,7 @@ public class TaskCompletionButton: Widget, GUIMouseEventConsumer {
         }
     }
 
-    override public func getBoxConfig() -> BoxConfig {
+    override public func getContentBoxConfig() -> BoxConfig {
         BoxConfig(preferredSize: preferredSize)
     }
 

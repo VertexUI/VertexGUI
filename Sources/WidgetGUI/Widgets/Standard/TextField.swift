@@ -59,7 +59,7 @@ public final class TextField: SingleChildWidget, ConfigurableWidget {
     }
   }
 
-  override public func getBoxConfig() -> BoxConfig {
+  override public func getContentBoxConfig() -> BoxConfig {
     let childConfig = child.boxConfig
     return BoxConfig(preferredSize: childConfig.preferredSize, minSize: .zero, maxSize: .infinity)
   }

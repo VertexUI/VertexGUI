@@ -23,7 +23,7 @@ open class Divider: Widget {
     super.init()
   }
 
-  override public func getBoxConfig() -> BoxConfig {
+  override public func getContentBoxConfig() -> BoxConfig {
     // TODO: implement something like percentage thickness / height --> fill parent + calculations probably
     BoxConfig(preferredSize: orientedSize)
   }

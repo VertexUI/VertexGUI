@@ -9,7 +9,7 @@ extension Experimental {
       provideStyles(content.experimentalStyles)
     }
 
-    override public func getBoxConfig() -> BoxConfig {
+    override public func getContentBoxConfig() -> BoxConfig {
       var maxSize = DSize2.zero
       var minSize = DSize2.infinity
       var maxPreferredSize = DSize2.zero

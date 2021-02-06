@@ -27,4 +27,6 @@ public struct Insets: Equatable {
     public init(_ value: Double) {
         self.init(top: value, right: value, bottom: value, left: value)
     }
+
+    public static var zero = Insets(all: 0)
 }

@@ -19,7 +19,7 @@ public class MockContainerWidget: Widget, SimpleStylableWidget {
     providedStyles.append(contentsOf: result.styles)
   }
 
-  override public func getBoxConfig() -> BoxConfig {
+  override public func getContentBoxConfig() -> BoxConfig {
     BoxConfig(preferredSize: .zero)
   }
 

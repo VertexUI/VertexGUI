@@ -46,7 +46,7 @@ public class Checkbox: Widget, GUIMouseEventConsumer {
     })
   }
 
-  override public func getBoxConfig() -> BoxConfig {
+  override public func getContentBoxConfig() -> BoxConfig {
     BoxConfig(size: DSize2(40, 40))
   }
 
