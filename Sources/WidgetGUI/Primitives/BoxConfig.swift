@@ -20,6 +20,20 @@ public struct BoxConfig: Equatable {
     self.minSize = size
     self.maxSize = size
   }
+
+  /** Adds given size to all sizes in BoxConfig. */
+  public static func += (lhs: inout BoxConfig, rhs: DSize2) {
+    lhs.minSize += rhs
+    lhs.maxSize += rhs
+    lhs.preferredSize += rhs
+  }
+
+  /** - See: BoxConfig.+= */
+  public static func + (lhs: BoxConfig, rhs: DSize2) -> BoxConfig {
+    var result = lhs
+    result += rhs
+    return result
+  }
 }
 
 /*

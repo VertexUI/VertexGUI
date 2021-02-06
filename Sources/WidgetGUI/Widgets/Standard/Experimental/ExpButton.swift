@@ -32,7 +32,6 @@ extension Experimental {
 
     override public func performBuild() {
       rootChild = Experimental.Container(styleProperties: {
-        ($0.padding, stylePropertyValue(reactive: StyleKeys.padding))
         ($0.backgroundFill, stylePropertyValue(reactive: StyleKeys.backgroundFill))
       }) { [unowned self] in
         childBuilder()

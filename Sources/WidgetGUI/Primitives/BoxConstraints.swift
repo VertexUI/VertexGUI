@@ -64,4 +64,18 @@ public struct BoxConstraints: Equatable, CustomDebugStringConvertible {
       min(max(size.width, minSize.width), maxSize.width),
       min(max(size.height, minSize.height), maxSize.height))
   }
+
+  /** Subtracts given size from all sizes in BoxConstraints. */
+  public static func -= (lhs: inout BoxConstraints, rhs: DSize2) {
+    lhs.minSize -= rhs
+    lhs.minSize = max(.zero, lhs.minSize)
+    lhs.maxSize -= rhs
+  }
+
+  /** See: BoxConstraints.-= */
+  public static func - (lhs: BoxConstraints, rhs: DSize2) -> BoxConstraints {
+    var result = lhs
+    result -= rhs
+    return result
+  }
 }

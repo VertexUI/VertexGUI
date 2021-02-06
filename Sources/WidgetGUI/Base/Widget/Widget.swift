@@ -706,7 +706,10 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     }
 
     public func getBoxConfig() -> BoxConfig {
-        getContentBoxConfig()
+        var boxConfig = getContentBoxConfig()
+        let paddingSize = padding.aggregateSize
+        boxConfig += paddingSize
+        return boxConfig
     }
 
     /**
@@ -776,79 +779,32 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     internal final func _layout(constraints: BoxConstraints) {
         if constraints.minWidth.isInfinite || constraints.minHeight.isInfinite {
             fatalError("Widget received constraints that contain infinite value in min size: \(self)")
-
         }
-
-        #if (DEBUG)
-        context.inspectionBus.publish(WidgetInspectionMessage(
-            sender: self,
-            content: .LayoutingStarted))
-        
-        if countCalls {
-            if callCounter.count(.Layout) && burstHighlightEnabled {
-                if countCallsFlash {
-                    flashHighlight()
-                }
-                context.inspectionBus.publish(
-                    WidgetInspectionMessage(sender: self, content: .LayoutBurstThresholdExceeded))
-            }
-        }
-        Logger.log("Layouting Widget: \(self)".with(fg: .blue, style: .bold), level: .Message, context: .WidgetLayouting)
-        Logger.log("Constraints: \(constraints)", level: .Message, context: .WidgetLayouting)
-        Logger.log("Current size: \(bounds.size)", level: .Message, context: .WidgetLayouting)
-        #endif
 
         layouting = true
 
         onLayoutingStarted.invokeHandlers(constraints)
 
+        for child in children {
+            child.position = .zero
+        }
+
         let previousSize = size
         let isFirstRound = !layouted
 
-        #if DEBUG
-        let startTimestamp = Date.timeIntervalSinceReferenceDate
-        #endif
+        let preparedConstraints = constraints - padding.aggregateSize
+        let newUnconstrainedContentSize = performLayout(constraints: preparedConstraints)
+        let constrainedContentSize = preparedConstraints.constrain(newUnconstrainedContentSize)
 
-        let newUnconstrainedSize = performLayout(constraints: constraints)
-
-        #if DEBUG
-        let layoutDuration = Date.timeIntervalSinceReferenceDate - startTimestamp
-        if layoutDuration > 0.1 {
-            print("layout of Widget", self, "took", layoutDuration)
-        }
-        Logger.log("Layout of Widget: \(self) took time:", (layoutDuration.description + " s").with(style: .bold), level: .Message, context: .WidgetLayouting)
-        Logger.log("Layout of Widget: \(self) produced result.".with(fg: .green, style: .bold), level: .Message, context: .WidgetLayouting)
-        Logger.log("New self size: \(newUnconstrainedSize)", level: .Message, context: .WidgetLayouting)
-        #endif
-
-        let constrainedSize = constraints.constrain(newUnconstrainedSize)
-
-        #if DEBUG
-        if newUnconstrainedSize != constrainedSize {
-            Logger.warn("New size does not respect constraints. Size: \(newUnconstrainedSize), Constraints: \(constraints)", context: .WidgetLayouting)
-        }
-        #endif
-
-        let boxConfigConstrainedSize = BoxConstraints(
-            minSize: boxConfig.minSize,
-            maxSize: boxConfig.maxSize)
-                .constrain(newUnconstrainedSize)
-        
-        if newUnconstrainedSize != boxConfigConstrainedSize {
-            Logger.warn("New size does not respect own box config. Size: \(newUnconstrainedSize), BoxConfig: \(boxConfig)")
+        for child in children {
+            child.position += DVec2(padding.left, padding.top)
         }
 
-        size = constrainedSize
+        size = constrainedContentSize + padding.aggregateSize
         layouting = false
         layouted = true
         layoutInvalid = false
         
-        #if DEBUG
-        context.inspectionBus.publish(WidgetInspectionMessage(
-            sender: self,
-            content: .LayoutingFinished))
-        #endif
-
         // TODO: where to call this? after setting bounds or before?
         onLayoutingFinished.invokeHandlers(bounds.size)
 
