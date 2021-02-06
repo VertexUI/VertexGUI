@@ -14,13 +14,18 @@ extension Experimental {
       applyAsParent()
     }
 
+    public convenience init(selector: StyleSelector, properties: Experimental.StyleProperties, children: [Style]) {
+      self.init(selector, properties, children)
+    }
+
     public convenience init(_ selector: StyleSelector, @StyleBuilder content contentBuilder: () -> StyleBuilder.IntermediateResult) {
       let content = contentBuilder()
       self.init(selector, StyleProperties(content.properties), content.children)
     }
 
-    public convenience init(selector: StyleSelector, properties: Experimental.StyleProperties, children: [Style]) {
-      self.init(selector, properties, children)
+    public convenience init(_ selector: StyleSelector, @StyleBuilder content contentBuilder: (Experimental.AnyDefaultStyleKeys.Type) -> StyleBuilder.IntermediateResult) {
+      let content = contentBuilder(Experimental.AnyDefaultStyleKeys.self)
+      self.init(selector, StyleProperties(content.properties), content.children)
     }
 
     public convenience init<W: ExperimentalStylableWidget>(

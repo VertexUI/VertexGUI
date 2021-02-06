@@ -43,9 +43,7 @@ public class EventCumulationView: SingleChildWidget {
       Experimental.SimpleColumn {
         cumulatedEvents.map { event in
           Experimental.SimpleColumn {
-            Experimental.Padding(classes: ["event-name-label-container"]) {
-              Experimental.Text(classes: ["event-name-label"], event.rawValue)
-            }
+            Experimental.Text(classes: ["event-name-label"], event.rawValue)
             Experimental.Container(classes: ["bar-chart-container"]) {
               Experimental.BarChart(barChartData[event]!)
             }.with {
@@ -54,8 +52,8 @@ public class EventCumulationView: SingleChildWidget {
           }
         }
       }.provideStyles([
-        Experimental.Style(".event-name-label-container", Experimental.Padding.self) {
-          ($0.insets, Insets(all: 16))
+        Experimental.Style(".event-name-label-container") {
+          ($0.padding, Insets(all: 16))
         },
         Experimental.Style(".event-name-label", Experimental.Text.self) {
           ($0.fontSize, 24.0)
