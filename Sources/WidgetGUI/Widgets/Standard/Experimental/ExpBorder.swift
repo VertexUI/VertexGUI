@@ -8,27 +8,11 @@ extension Experimental {
     @Reference
     private var drawing: Widget
 
-    @ExperimentalReactiveProperties.ObservableProperty
-    private var borderColor: Color?
-
-    @ExperimentalReactiveProperties.ObservableProperty
-    private var borderWidths: BorderWidths?
-
     private init(contentBuilder: () -> SingleChildContentBuilder.Result) {
       let content = contentBuilder()
       self.contentChild = content.child()
       super.init()
       self.experimentalProvidedStyles.append(contentsOf: content.experimentalStyles)
-
-      self._borderColor = stylePropertiesResolver[reactive: StyleKeys.borderColor]
-      _ = self.$borderColor.onChanged { [unowned self] _ in
-        invalidateRenderState()
-      }
-
-      self._borderWidths = stylePropertiesResolver[reactive: StyleKeys.borderWidths]
-      _ = self.$borderWidths.onChanged { [unowned self] _ in
-        invalidateRenderState()
-      }
     }
 
     public convenience init(
@@ -63,7 +47,7 @@ extension Experimental {
     }
 
     private func drawBorder(_ drawingContext: DrawingContext) {
-      if let borderWidths = borderWidths {
+      /*if let borderWidths = borderWidths {
         let strokeColor = borderColor ?? .transparent
 
         if borderWidths.top > 0 {
@@ -92,11 +76,10 @@ extension Experimental {
             from: DVec2(borderWidths.left / 2, 0), to: DVec2(borderWidths.left / 2, bounds.height),
             paint: Paint(strokeWidth: borderWidths.left, strokeColor: strokeColor))
         }
-      }
+      }*/
     }
 
     public enum StyleKeys: String, StyleKey, ExperimentalDefaultStyleKeys {
-      case borderColor
       case borderWidths
     }
 

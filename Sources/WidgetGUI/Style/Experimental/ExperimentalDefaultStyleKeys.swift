@@ -1,3 +1,5 @@
+import GfxMath
+
 public protocol ExperimentalDefaultStyleKeys {
 }
 
@@ -10,6 +12,12 @@ public extension ExperimentalDefaultStyleKeys {
   }
   static var background: String {
     "background"
+  }
+  static var borderWidth: String {
+    "borderWidth"
+  }
+  static var borderColor: String {
+    "borderColor"
   }
   static var opacity: String {
     "opacity"

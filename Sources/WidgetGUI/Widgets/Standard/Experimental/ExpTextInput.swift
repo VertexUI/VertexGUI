@@ -17,8 +17,6 @@ extension Experimental {
     private var placeholderVisibility: Visibility = .visible
 
     @Reference
-    private var containerWidget: Experimental.Container
-    @Reference
     private var stackContainer: Experimental.Stack
     @Reference
     private var textWidget: Experimental.Text
@@ -111,39 +109,33 @@ extension Experimental {
 
     override public func performBuild() {
       children = [
-        Experimental.Container(styleProperties: {
-          ($0.width, stylePropertyValue(reactive: StyleKeys.width))
-          ($0.height, stylePropertyValue(reactive: StyleKeys.height))
-          ($0.borderWidths, stylePropertyValue(reactive: StyleKeys.borderWidths))
-          ($0.borderColor, stylePropertyValue(reactive: StyleKeys.borderColor))
-        }) { [unowned self] in
-          Experimental.Stack {
-            Experimental.Text(styleProperties: {
-              ($0.textColor, Color.white)
-              ($0.fontSize, 24.0)
-            }, $text).connect(ref: $textWidget)
-            Experimental.Text(styleProperties: {
-              ($0.opacity, 0.5)
-              ($0.textColor, Color.white)
-              ($0.fontSize, 24.0)
-              ($0.visibility, $placeholderVisibility)
-            }, $placeholderText)
-          }.connect(ref: $stackContainer)
-        }.connect(ref: $containerWidget).onClick { [unowned self] in
-          self.handleClick($0)
+        Experimental.Stack { [unowned self] in
+          Experimental.Text(styleProperties: {
+            ($0.textColor, Color.white)
+            ($0.fontSize, 24.0)
+          }, $text).connect(ref: $textWidget)
+
+          Experimental.Text(styleProperties: {
+            ($0.opacity, 0.5)
+            ($0.textColor, Color.white)
+            ($0.fontSize, 24.0)
+            ($0.visibility, $placeholderVisibility)
+          }, $placeholderText)
+        }.connect(ref: $stackContainer).onClick { [unowned self] in
+          handleClick($0)
         },
         Experimental.Drawing(draw: self.drawCaret).connect(ref: $caretWidget)
       ]
     }
 
     override public func getContentBoxConfig() -> BoxConfig {
-      containerWidget.boxConfig
+      stackContainer.boxConfig
     }
 
     override public func performLayout(constraints: BoxConstraints) -> DSize2 {
-      containerWidget.layout(constraints: constraints)
-      caretWidget.layout(constraints: BoxConstraints(size: containerWidget.size))
-      return constraints.constrain(containerWidget.size)
+      stackContainer.layout(constraints: constraints)
+      caretWidget.layout(constraints: BoxConstraints(size: stackContainer.size))
+      return constraints.constrain(stackContainer.size)
     }
 
     private func syncText() {
@@ -233,8 +225,7 @@ extension Experimental {
       caretBlinkTime += timestamp - lastDrawTimestamp
       lastDrawTimestamp = timestamp
 
-      var caretTranslationX = stackContainer.position.x
-      caretTranslationX += textWidget.measureText(String(text.prefix(caretIndex))).width + caretWidth / 2
+      var caretTranslationX = textWidget.measureText(String(text.prefix(caretIndex))).width + caretWidth / 2
 
       drawingContext.drawLine(
         from: DVec2(caretTranslationX, textWidget.position.y),
@@ -248,7 +239,6 @@ extension Experimental {
       }
     }
 
-    public struct StyleKeys: ExperimentalDefaultStyleKeys, ExperimentalContainerStyleKeys {
-    } 
+    public typealias StyleKeys = Experimental.AnyDefaultStyleKeys
   }
 }

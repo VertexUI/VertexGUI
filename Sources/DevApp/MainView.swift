@@ -15,7 +15,7 @@ public class MainView: Experimental.ComposedWidget {
       }
 
       Experimental.TextInput(styleProperties: {
-        ($0.borderWidths, Experimental.Border.BorderWidths(bottom: 2.0))
+        ($0.borderWidth, BorderWidth(bottom: 2.0))
         ($0.borderColor, Color.yellow)
         ($0.padding, Insets(all: 8))
       }, mutableText: $text)

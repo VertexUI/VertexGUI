@@ -299,6 +299,12 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     @FromStyle(key: Experimental.AnyDefaultStyleKeys.padding)
     public var padding: Insets = .zero
 
+    @FromStyle(key: Experimental.AnyDefaultStyleKeys.borderWidth)
+    public var borderWidth: BorderWidth = .zero
+
+    @FromStyle(key: Experimental.AnyDefaultStyleKeys.borderColor)
+    public var borderColor: Color = .transparent
+
     @FromStyle(key: Experimental.AnyDefaultStyleKeys.background)
     public var background: Color = .transparent
     /* end style */
@@ -712,6 +718,8 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         var boxConfig = getContentBoxConfig()
         let paddingSize = padding.aggregateSize
         boxConfig += paddingSize
+        let borderSize = borderWidth.aggregateSize
+        boxConfig += borderSize
         return boxConfig
     }
 
@@ -795,7 +803,7 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         let previousSize = size
         let isFirstRound = !layouted
 
-        let preparedConstraints = constraints - padding.aggregateSize
+        let preparedConstraints = constraints - padding.aggregateSize - borderWidth.aggregateSize
         let newUnconstrainedContentSize = performLayout(constraints: preparedConstraints)
         let constrainedContentSize = preparedConstraints.constrain(newUnconstrainedContentSize)
 
@@ -803,7 +811,7 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
             child.position += DVec2(padding.left, padding.top)
         }
 
-        size = constrainedContentSize + padding.aggregateSize
+        size = constrainedContentSize + padding.aggregateSize + borderWidth.aggregateSize
         layouting = false
         layouted = true
         layoutInvalid = false

@@ -26,9 +26,9 @@ extension Experimental {
           }
         },
         Experimental.Style(StyleSelector(StyleSelectorPart(type: Experimental.TextInput.self)), Experimental.TextInput.self) {
-          ($0.padding, Insets(all: 8))
+          ($0.padding, Insets(top: 16, right: 8, bottom: 16, left: 8))
           ($0.borderColor, primaryColor)
-          ($0.borderWidths, Experimental.Border.BorderWidths(bottom: 1))
+          ($0.borderWidth, BorderWidth(bottom: 1))
         }
       ])
     }

@@ -91,22 +91,23 @@ public class TodoAppView: SingleChildWidget {
   }
 
   private func buildSearch() -> Widget {
-    Background(fill: appTheme.backgroundColor) { [unowned self] in
-      Padding(all: 32) {
-        Row(spacing: 0) {
-          Row.Item(grow: 1, margins: Margins(right: 24)) {
-            Experimental.TextInput(mutableText: $searchQuery, placeholder: "search")
-          }
+    Experimental.Container(styleProperties: {
+      ($0.background, AppTheme.backgroundColor)
+      ($0.padding, Insets(all: 32))
+    }) { [unowned self] in
+      Row(spacing: 0) {
+        Row.Item(grow: 1, margins: Margins(right: 24)) {
+          Experimental.TextInput(mutableText: $searchQuery, placeholder: "search")
+        }
 
-          Row.Item(crossAlignment: .Center) {
-            Spaceholder(display: ReactiveProperties.ComputedProperty<Bool>([$mode.any]) { [unowned self] in
-              return mode == .Search
-            }, dimension: .Vertical) {
-              Experimental.Button {
-                Text("cancel")
-              } onClick: {
-                mode = .SelectedList
-              }
+        Row.Item(crossAlignment: .Center) {
+          Spaceholder(display: ReactiveProperties.ComputedProperty<Bool>([$mode.any]) { [unowned self] in
+            return mode == .Search
+          }, dimension: .Vertical) {
+            Experimental.Button {
+              Text("cancel")
+            } onClick: {
+              mode = .SelectedList
             }
           }
         }
@@ -118,7 +119,7 @@ public class TodoAppView: SingleChildWidget {
     MouseArea {
       Experimental.Container(styleProperties: {
         ($0.padding, Insets(all: 16))
-        ($0.borderWidths, Experimental.Border.BorderWidths(bottom: 1.0))
+        ($0.borderWidth, BorderWidth(bottom: 1.0))
         ($0.borderColor, Color.white)
       }) {
 
