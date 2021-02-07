@@ -7,6 +7,14 @@ open class DrawingBackend {
 
   }
 
+  open func clip(rect: DRect) {
+    fatalError("clip() not implemented")
+  }
+
+  open func resetClip() {
+    fatalError("resetClip() not implemented")
+  }
+
   open func drawLine(from start: DVec2, to end: DVec2, paint: Paint) {
     fatalError("drawLine() not implemented")
   }

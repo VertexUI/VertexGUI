@@ -5,45 +5,49 @@ open class DrawingContext {
 
   public private(set) var inherentTransforms: [Transform] = []
   public private(set) var inherentOpacity: Double = 1
+  public private(set) var inherentClip: DRect?
   private var transforms: [Transform] = []
-  private var opacity: Double = 1 {
+  public var opacity: Double = 1 {
     willSet {
       checkFailOpacity(newValue)
     }
   }
-  private var mergedTransforms: [Transform] {
+  private var currentClip: DRect?
+  public var mergedTransforms: [Transform] {
     inherentTransforms + transforms
   }
-  private var mergedOpacity: Double {
+  public var mergedOpacity: Double {
     inherentOpacity * opacity
+  }
+  public var mergedClip: DRect? {
+    if let currentClip = currentClip, let inherentClip = inherentClip {
+      return currentClip.intersection(with: inherentClip)
+    } 
+    return currentClip ?? inherentClip
   }
 
   public init(backend: DrawingBackend) {
     self.backend = backend 
   }
 
-  open func clone() -> DrawingContext {
-    DrawingContext(backend: backend)
-  }
-
-  /**
-  Locks current transforms, opacity by merging them into inherentTransforms, inherentOpacity.
-  - Returns: A new DrawingContext instance with the values of these properties locked.
-  Which means that they will always be applied and cannot be removed, other transforms etc. can however be added on top of them.
-  */
-  open func locked(opacity: Double = 1, transforms: [Transform] = []) -> DrawingContext {
-    let result = clone()
-    result.transform(transforms)
-    result.opacity *= opacity
-    result.lock()
+  public func clone() -> DrawingContext {
+    let result = DrawingContext(backend: backend)
+    result.inherentTransforms = inherentTransforms
+    result.inherentOpacity = inherentOpacity
+    result.inherentClip = inherentClip
+    result.transforms = transforms
+    result.opacity = opacity
+    result.currentClip = currentClip
     return result
   }
 
   open func lock() {
-    self.inherentTransforms.append(contentsOf: transforms)
+    self.inherentTransforms = mergedTransforms
     self.transforms = []
-    self.inherentOpacity *= opacity
+    self.inherentOpacity = mergedOpacity
     self.opacity = 1
+    self.inherentClip = mergedClip
+    self.currentClip = nil
   }
 
   private func checkFailOpacity(_ opacity: Double) {
@@ -54,6 +58,11 @@ open class DrawingContext {
 
   open func beginDrawing() {
     backend.activate()
+    if let clip = mergedClip {
+      backend.clip(rect: clip)
+    } else {
+      backend.resetClip()
+    }
   }
 
   private func preprocess(_ point: DVec2) -> DVec2 {
@@ -98,6 +107,25 @@ open class DrawingContext {
 
   public func transform(_ transforms: [Transform]) {
     self.transforms.append(contentsOf: transforms)
+  }
+
+  public func clip(rect: DRect) {
+    let preprocessedRect = preprocess(rect)
+    if let currentClip = currentClip {
+      self.currentClip = currentClip.intersection(with: preprocessedRect)
+    } else {
+      currentClip = preprocessedRect
+    }
+    backend.clip(rect: mergedClip!)
+  }
+
+  public func resetClip() {
+    self.currentClip = nil
+    if let mergedClip = mergedClip {
+      backend.clip(rect: mergedClip)
+    } else {
+      backend.resetClip()
+    }
   }
 
   public func drawLine(from start: DVec2, to end: DVec2, paint: Paint) {

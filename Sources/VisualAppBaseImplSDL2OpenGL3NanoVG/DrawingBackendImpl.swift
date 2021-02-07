@@ -15,6 +15,14 @@ open class SDL2OpenGL3NanoVGDrawingBackend: DrawingBackend {
     nvgBeginFrame(surface.nvg, Float(surface.size.width), Float(surface.size.height), Float(surface.resolution))
   }
 
+  override open func clip(rect: DRect) {
+    nvgScissor(surface.nvg, Float(rect.min.x), Float(rect.min.y), Float(rect.size.width), Float(rect.size.height))
+  }
+
+  override open func resetClip() {
+    nvgResetScissor(surface.nvg)
+  }
+
   override open func drawLine(from start: DVec2, to end: DVec2, paint: Paint) {
     var performFill = false
     var performStroke = false
