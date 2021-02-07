@@ -25,6 +25,9 @@ public extension ExperimentalDefaultStyleKeys {
   static var visibility: String {
     "visibility"
   }
+  static var overflow: String {
+    "overflow"
+  }
   static var textColor: String {
     "textColor"
   }

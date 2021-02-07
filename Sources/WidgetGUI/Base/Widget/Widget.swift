@@ -294,6 +294,9 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     @FromStyle(key: Experimental.AnyDefaultStyleKeys.visibility)
     public var visibility: Visibility = .visible
 
+    @FromStyle(key: Experimental.AnyDefaultStyleKeys.overflow)
+    public var overflow: Overflow = .show
+
     // TODO: maybe this belongs into the layout section instead of in the style section?
     // TODO: maybe even create a separate section for universal properties?
     @FromStyle(key: Experimental.AnyDefaultStyleKeys.padding)
