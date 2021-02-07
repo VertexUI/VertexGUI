@@ -1,3 +1,3 @@
 public enum Overflow {
-  case show, cut
+  case show, cut, scroll
 }
