@@ -10,7 +10,7 @@ public class MainView: Experimental.ComposedWidget {
     rootChild = Experimental.SimpleColumn { [unowned self] in
       Experimental.DefaultTheme()
 
-      Experimental.Button {
+      /*Experimental.Button {
         Experimental.Text("WOWOWWOOW")
       }
 
@@ -24,11 +24,27 @@ public class MainView: Experimental.ComposedWidget {
         ($0.textColor, Color.white)
       }, $text)
 
-      Experimental.Container(styleProperties: {
-        ($0.padding, Insets(all: 128))
+      Experimental.Drawing { drawingContext in
+        //drawingContext.clip(rect: DRect(min: .zero, max: DVec2(200, 200)))
+        drawingContext.drawRect(rect: DRect(min: .zero, size: DSize2(200, 200)), paint: Paint(color: .red))
+      }*/
+
+      Experimental.ConstrainedSizeBox(styleProperties: {
+        ($0.overflow, Overflow.cut)
+        ($0.width, 200.0)
       }) {
-        Experimental.Button() {
-          Experimental.Text("add child content")
+        Experimental.SimpleColumn {
+          /*Experimental.Drawing { drawingContext in
+            //drawingContext.resetClip()
+          }*/
+
+          Experimental.Container(styleProperties: {
+            ($0.padding, Insets(all: 128))
+          }) {
+            Experimental.Button() {
+              Experimental.Text("add child content")
+            }
+          }
         }
       }
 

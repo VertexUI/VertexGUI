@@ -243,39 +243,56 @@ open class Root: Parent {
   }
 
   open func draw(_ drawingContext: DrawingContext) {
+    var drawingContexts = [drawingContext]
+
     var iterators = [Widget.ChildIterator]()
     iterators.append(Widget.ChildIterator(count: 1) { [unowned self] _ in
       rootWidget
     })
 
     outer: while var iterator = iterators.last {
+      let parentDrawingContext = drawingContexts[iterators.count - 1]
+
       while let widget = iterator.next() {
         iterators[iterators.count - 1] = iterator
 
         if widget.visibility == .visible && widget.opacity > 0 {
-          // TODO: accumulate opacity from parent widgets
-          let lockedDrawingContext: DrawingContext = drawingContext.locked(opacity: widget.opacity, transforms: [.translate(widget.globalPosition)])
+          let childDrawingContext: DrawingContext = parentDrawingContext.clone()
+          
+          childDrawingContext.opacity = widget.opacity
+          childDrawingContext.transform(.translate(widget.position))
+          if widget.overflow == .cut {
+            // TODO: accumulate clip state from parents
+            childDrawingContext.clip(rect: DRect(min: .zero, size: widget.size))
+          }
+          childDrawingContext.lock()
+
+          childDrawingContext.beginDrawing()
 
           if widget.background != .transparent {
-            lockedDrawingContext.drawRect(rect: DRect(min: .zero, size: widget.size), paint: Paint(color: widget.background))
+            childDrawingContext.drawRect(rect: DRect(min: .zero, size: widget.size), paint: Paint(color: widget.background))
           }
 
           if let leafWidget = widget as? LeafWidget {
-            leafWidget.draw(lockedDrawingContext)
+            leafWidget.draw(childDrawingContext)
           }
 
           // TODO: probably the border should be drawn after all children have been drawn, to avoid the border being overlpassed
           if widget.borderColor != .transparent && widget.borderWidth != .zero {
-            drawBorders(lockedDrawingContext, widget: widget)
+            drawBorders(childDrawingContext, widget: widget)
           }
+
+          childDrawingContext.endDrawing()
 
           if !(widget is LeafWidget) {
             iterators.append(widget.visitChildren())
+            drawingContexts.append(childDrawingContext)
             continue outer
           }
         }
       }
       iterators.popLast()
+      drawingContexts.popLast()
     }
   }
 
