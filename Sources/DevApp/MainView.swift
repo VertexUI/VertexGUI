@@ -30,19 +30,30 @@ public class MainView: Experimental.ComposedWidget {
       }*/
 
       Experimental.ConstrainedSizeBox(styleProperties: {
-        ($0.overflow, Overflow.cut)
-        ($0.width, 200.0)
+        //($0.width, 200.0)
+        ($0.height, 100.0)
       }) {
-        Experimental.SimpleColumn {
-          /*Experimental.Drawing { drawingContext in
-            //drawingContext.resetClip()
-          }*/
+        
+        Experimental.Container(styleProperties: {
+          ($0.overflow, Overflow.scroll)
+        }) {
 
-          Experimental.Container(styleProperties: {
-            ($0.padding, Insets(all: 128))
-          }) {
-            Experimental.Button() {
-              Experimental.Text("add child content")
+          Experimental.SimpleColumn() {
+
+            Experimental.ConstrainedSizeBox(styleProperties: {
+              ($0.width, 500)
+              ($0.height, 500)
+            }) {
+
+              Experimental.Container(styleProperties: {
+                ($0.padding, Insets(all: 128))
+                ($0.background, Color.yellow)
+              }) {
+
+                Experimental.Button() {
+                  Experimental.Text("add child content")
+                }
+              }
             }
           }
         }

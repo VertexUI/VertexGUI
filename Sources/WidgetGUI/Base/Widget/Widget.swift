@@ -312,6 +312,23 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     public var background: Color = .transparent
     /* end style */
 
+    /* scrolling
+    ------------------------------------
+    */
+    private var scrollingEnabled = false {
+        didSet {
+            updateScrollEventHandler()
+        }
+    }
+    private var removeScrollEventHandler: (() -> ())? = nil
+    private var scrollingSpeed = 20.0
+    internal var currentScrollOffset: DVec2 = .zero
+    /** should be set in layout, if scrolling is enabled */
+    private var maxScrollOffset: DVec2 = .zero
+    /** should be set in layout, if scrolling is enabled */
+    private var minScrollOffset: DVec2 = .zero
+    /* end scrolling */
+
     @usableFromInline internal var reference: AnyReferenceProtocol? {
         didSet {
             if var reference = reference {
@@ -366,6 +383,7 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     --------------------------
     */
     public let onClick = WidgetEventHandlerManager<GUIMouseButtonClickEvent>()
+    public let onMouseWheel = WidgetEventHandlerManager<GUIMouseWheelEvent>()
     /* end mouse events */
     
     private var unregisterAnyParentChangedHandler: EventHandlerManager<Parent?>.UnregisterCallback?
@@ -387,6 +405,10 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         })
     }
 
+    
+    /* internal widget setup / management
+    -----------------------------------------------------
+    */
     private func setupWidgetEventHandlerManagers() {
         let mirror = Mirror(reflecting: self)
         for child in mirror.allChildren {
@@ -404,6 +426,26 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
             }
         }
     }
+
+    private func updateScrollEventHandler() {
+        if let remove = removeScrollEventHandler {
+            remove()
+        }
+
+        if scrollingEnabled {
+            removeScrollEventHandler = onMouseWheel.addHandler { [unowned self] event in
+                processMouseWheelEventUpdateScroll(event)
+            }
+        }
+    }
+
+    /** Used if the widget is in scrolling mode. Updates the scroll position based on mouse wheel events. */
+    private func processMouseWheelEventUpdateScroll(_ event: GUIMouseWheelEvent) {
+        self.currentScrollOffset += event.scrollAmount * self.scrollingSpeed
+        self.currentScrollOffset = min(max(self.currentScrollOffset, self.minScrollOffset), self.maxScrollOffset)
+
+    }
+    /* end internal widget setup / management */
 
     /** side effect: increments the stored next id for the next call of this function. */
     private func getNextLifecycleMethodInvocationId(_ method: LifecycleMethod) -> Int {
@@ -805,16 +847,31 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
 
         let previousSize = size
         let isFirstRound = !layouted
+        
+        let preparedConstraints: BoxConstraints
+        if overflow == .scroll {
+            preparedConstraints = BoxConstraints(minSize: .zero, maxSize: .infinity)
+        } else {
+            preparedConstraints = constraints - padding.aggregateSize - borderWidth.aggregateSize
+        }
 
-        let preparedConstraints = constraints - padding.aggregateSize - borderWidth.aggregateSize
         let newUnconstrainedContentSize = performLayout(constraints: preparedConstraints)
-        let constrainedContentSize = preparedConstraints.constrain(newUnconstrainedContentSize)
 
         for child in children {
             child.position += DVec2(padding.left, padding.top)
         }
+        
+        let targetSize = newUnconstrainedContentSize + padding.aggregateSize + borderWidth.aggregateSize
+        size = constraints.constrain(targetSize)
 
-        size = constrainedContentSize + padding.aggregateSize + borderWidth.aggregateSize
+        if targetSize != size && overflow == .scroll {
+            scrollingEnabled = true
+            maxScrollOffset = .zero
+            minScrollOffset = DVec2(size - targetSize)
+        } else {
+            scrollingEnabled = false
+        }
+
         layouting = false
         layouted = true
         layoutInvalid = false
@@ -823,7 +880,6 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         onLayoutingFinished.invokeHandlers(bounds.size)
 
         if previousSize != size && !isFirstRound {
-            Logger.log("Size changed and is not first round.".with(fg: .yellow), level: .Message, context: .WidgetLayouting)
             onSizeChanged.invokeHandlers(size)
             invalidateRenderState()
         }

@@ -15,7 +15,6 @@ public class MouseArea: SingleChildWidget, GUIMouseEventConsumer {
     public var onMouseMove = EventHandlerManager<GUIMouseMoveEvent>()
     public var onMouseEnter = EventHandlerManager<GUIMouseEnterEvent>()
     public var onMouseLeave = EventHandlerManager<GUIMouseLeaveEvent>()
-    public var onMouseWheel = EventHandlerManager<GUIMouseWheelEvent>()
     private var inputChild: Widget
 
     public init(@WidgetBuilder child childBuilder: () -> Widget) {

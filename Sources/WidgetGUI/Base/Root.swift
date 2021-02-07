@@ -261,7 +261,11 @@ open class Root: Parent {
           
           childDrawingContext.opacity = widget.opacity
           childDrawingContext.transform(.translate(widget.position))
-          if widget.overflow == .cut {
+          // TODO: maybe the scrolling translation should be added to the parent widget context before adding the iterator to the list?
+          if let parent = widget.parent as? Widget, parent.overflow == .scroll {
+            childDrawingContext.transform(.translate(parent.currentScrollOffset))
+          }
+          if widget.overflow == .cut || widget.overflow == .scroll {
             // TODO: accumulate clip state from parents
             childDrawingContext.clip(rect: DRect(min: .zero, size: widget.size))
           }

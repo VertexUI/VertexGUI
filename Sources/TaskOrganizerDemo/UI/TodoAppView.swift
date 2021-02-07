@@ -81,8 +81,12 @@ public class TodoAppView: SingleChildWidget {
           }
 
           Column.Item(crossAlignment: .Stretch) {
-            List(store.$state.compute { $0.lists }) {
-              buildMenuListItem(for: $0)
+            Experimental.Container(styleProperties: {
+              ($0.overflow, Overflow.scroll)
+            }) {
+              List(store.$state.compute { $0.lists }) {
+                buildMenuListItem(for: $0)
+              }
             }
           }
         }

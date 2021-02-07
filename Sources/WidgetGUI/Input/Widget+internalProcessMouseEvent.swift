@@ -7,6 +7,8 @@ extension Widget {
       self._disablePseudoClass(Widget.PseudoClasses.hover)
     case let event as GUIMouseButtonClickEvent:
       self.onClick.invokeHandlers(event)
+    case let event as GUIMouseWheelEvent:
+      self.onMouseWheel.invokeHandlers(event)
     default:
       break
     }
