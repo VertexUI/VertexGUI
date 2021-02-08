@@ -12,7 +12,6 @@ public class MouseArea: SingleChildWidget, GUIMouseEventConsumer {
     // TODO: maybe name Click MouseButtonClick?
     public var onMouseButtonDown = EventHandlerManager<GUIMouseButtonDownEvent>()
     public var onMouseButtonUp = EventHandlerManager<GUIMouseButtonUpEvent>()
-    public var onMouseMove = EventHandlerManager<GUIMouseMoveEvent>()
     public var onMouseEnter = EventHandlerManager<GUIMouseEnterEvent>()
     public var onMouseLeave = EventHandlerManager<GUIMouseLeaveEvent>()
     private var inputChild: Widget

@@ -296,7 +296,7 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
 
     @FromStyle(key: Experimental.AnyDefaultStyleKeys.overflowX)
     public var overflowX: Overflow = .show
-    
+
     @FromStyle(key: Experimental.AnyDefaultStyleKeys.overflowY)
     public var overflowY: Overflow = .show
 
@@ -320,10 +320,11 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     */
     internal var scrollingEnabled = (x: false, y: false) {
         didSet {
-            updateScrollEventHandler()
+            updateScrollEventHandlers()
         }
     }
-    private var removeScrollEventHandler: (() -> ())? = nil
+    /** removers for event handlers that are registered to manage scrolling */
+    private var scrollEventHandlerRemovers: [() -> ()] = []
     private var scrollingSpeed = 20.0
     internal var currentScrollOffset: DVec2 = .zero
     /** should be set in layout, if scrolling is enabled */
@@ -389,6 +390,9 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     --------------------------
     */
     public let onClick = WidgetEventHandlerManager<GUIMouseButtonClickEvent>()
+    public let onMouseDown = WidgetEventHandlerManager<GUIMouseButtonDownEvent>()
+    public let onMouseUp = WidgetEventHandlerManager<GUIMouseButtonUpEvent>()
+    public let onMouseMove = WidgetEventHandlerManager<GUIMouseMoveEvent>()
     public let onMouseWheel = WidgetEventHandlerManager<GUIMouseWheelEvent>()
     /* end mouse events */
     
@@ -410,7 +414,6 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
             invalidateRenderState()
         })
     }
-
     
     /* internal widget setup / management
     -----------------------------------------------------
@@ -433,15 +436,27 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         }
     }
 
-    private func updateScrollEventHandler() {
-        if let remove = removeScrollEventHandler {
+    private func updateScrollEventHandlers() {
+        for remove in scrollEventHandlerRemovers {
             remove()
         }
 
         if scrollingEnabled.x || scrollingEnabled.y {
-            removeScrollEventHandler = onMouseWheel.addHandler { [unowned self] event in
+            scrollEventHandlerRemovers.append(onMouseWheel.addHandler { [unowned self] event in
                 processMouseWheelEventUpdateScroll(event)
-            }
+            })
+
+            scrollEventHandlerRemovers.append(onMouseDown.addHandler { [unowned self] event in
+                processMouseDownEventForScroll(event)
+            })
+
+            scrollEventHandlerRemovers.append(onMouseMove.addHandler { [unowned self] event in
+                processMouseMoveEventForScroll(event)
+            })
+
+            scrollEventHandlerRemovers.append(onMouseUp.addHandler { [unowned self] event in
+                processMouseUpEventForScroll(event)
+            })
         }
     }
 
@@ -450,6 +465,20 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         let enabledDimensions = DVec2(scrollingEnabled.x ? 1 : 0, scrollingEnabled.y ? 1 : 0)
         self.currentScrollOffset += event.scrollAmount * self.scrollingSpeed * enabledDimensions
         self.currentScrollOffset = min(max(self.currentScrollOffset, self.minScrollOffset), self.maxScrollOffset)
+
+    }
+
+    private func processMouseDownEventForScroll(_ event: GUIMouseButtonDownEvent) {
+        if event.position < size {
+            
+        }
+    }
+
+    private func processMouseMoveEventForScroll(_ event: GUIMouseMoveEvent) {
+
+    }
+
+    private func processMouseUpEventForScroll(_ event: GUIMouseButtonUpEvent) {
 
     }
     /* end internal widget setup / management */
