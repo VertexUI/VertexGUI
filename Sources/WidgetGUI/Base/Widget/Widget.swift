@@ -335,9 +335,11 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     internal var maxScrollOffset: DVec2 = .zero
     /** should be set in layout, if scrolling is enabled */
     internal var minScrollOffset: DVec2 = .zero
+    /** Mainly used to avoid scroll bars being translated with the rest of the content. */
+    internal var unaffectedByParentScroll = false
 
-    lazy internal var pseudoScrollBarX = ScrollBar()
-    lazy internal var pseudoScrollBarY = ScrollBar()
+    lazy internal var pseudoScrollBarX = ScrollBar(orientation: .horizontal)
+    lazy internal var pseudoScrollBarY = ScrollBar(orientation: .vertical)
     /* end scrolling */
 
     @usableFromInline internal var reference: AnyReferenceProtocol? {
@@ -547,7 +549,43 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         remove()
       }
     }
-    
+
+    // TODO: this is work in progress, possibly one step towards a new approach to child handling
+    public func visitChildren() -> ChildIterator {
+        var internalChildren = [Widget]()
+        if scrollingEnabled.x {
+            internalChildren.append(pseudoScrollBarX)
+        }
+        if scrollingEnabled.y {
+            internalChildren.append(pseudoScrollBarY)
+        }
+        
+        var contentIterator = visitContentChildren()
+        var contentIteratorActive = true
+        var internalStartIndex = 0
+
+        return ChildIterator() {
+            if contentIteratorActive {
+                if let next = contentIterator.next() {
+                    return next
+                } else {
+                    contentIteratorActive = false 
+                    internalStartIndex = $0
+                }
+            }
+
+            return ($0 - internalStartIndex) < internalChildren.count ? internalChildren[$0 - internalStartIndex] : nil
+        }
+    }
+
+    /** Implemented by subclasses. Should iterate over only those children that are defined by the subclass. */
+    open func visitContentChildren() -> ChildIterator {
+        // default implementation, fallback to old children array
+        ChildIterator() { [unowned self] in
+            $0 < children.count ? children[$0] : nil
+        }
+    }
+
     public final func mount(
         parent: Parent,
         treePath: TreePath,
@@ -626,13 +664,6 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     open func addedToParent() {
     }
 
-    // TODO: this is work in progress, possibly one step towards a new approach to child handling
-    open func visitChildren() -> ChildIterator {
-        ChildIterator(count: children.count) { [unowned self] in
-            children[$0]
-        }
-    }
-
     // TODO: maybe rename to inMount or something like that
     public final func build() {
         // TODO: check for invalid build
@@ -679,7 +710,7 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     Checks whether the state of the old children can be transferred to the new children and if yes, applies it.
     */
     private final func mountChildren(oldChildren: [Widget]) {
-        var keyedChildren: [String: Widget] = [:]
+        /*var keyedChildren: [String: Widget] = [:]
         var checkChildren: [Widget] = oldChildren
 
         while let child = checkChildren.popLast() {
@@ -688,7 +719,7 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
             }
 
             checkChildren.append(contentsOf: child.children)
-        }
+        }*/
 
         /* OLD CODE TAKEN OUT OF MOUNT
         // TODO: reimplement state retaining
@@ -707,11 +738,14 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         }
         */
 
-        for i in 0..<children.count {
-            let newChild = children[i]
-            let oldChild: Widget? = oldChildren.count > i ? oldChildren[i] : nil
-            let childContext = ReplacementContext(previousWidget: oldChild, keyedWidgets: keyedChildren)
-            mountChild(newChild, treePath: self.treePath/i, with: childContext)
+        var iterator = visitChildren()
+        var i = 0
+        while let child = iterator.next() {
+            //let newChild = children[i]
+            //let oldChild: Widget? = oldChildren.count > i ? oldChildren[i] : nil
+            //let childContext = ReplacementContext(previousWidget: oldChild, keyedWidgets: keyedChildren)
+            mountChild(child, treePath: self.treePath/i, with: ReplacementContext(previousWidget: nil, keyedWidgets: [:]))
+            i += 1
         }
 
        /* for child in oldChildren {
@@ -928,6 +962,19 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         minScrollOffset = DVec2(size - targetSize)
 
         // TODO: implement logic for overflow == .auto
+
+        if scrollingEnabled.x {
+            pseudoScrollBarX.layout(constraints: BoxConstraints(
+                size: DSize2(width, pseudoScrollBarX.boxConfig.preferredSize.y)))
+
+            pseudoScrollBarX.position = DVec2(0, height - pseudoScrollBarX.height)
+        }
+        if scrollingEnabled.y {
+            pseudoScrollBarY.layout(constraints: BoxConstraints(
+                size: DSize2(pseudoScrollBarY.boxConfig.preferredSize.x, height)))
+
+            pseudoScrollBarY.position = DVec2(width - pseudoScrollBarY.width, 0)
+        }
 
         layouting = false
         layouted = true

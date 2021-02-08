@@ -244,8 +244,8 @@ open class Root: Parent {
 
   open func draw(_ drawingContext: DrawingContext) {
     var iterationStates = [(Parent, DrawingContext, Widget.ChildIterator)]()
-    iterationStates.append((self, drawingContext, Widget.ChildIterator(count: 1) { [unowned self] _ in
-      rootWidget
+    iterationStates.append((self, drawingContext, Widget.ChildIterator() { [unowned self] in
+      $0 == 0 ? rootWidget : nil
     }))
 
     outer: while var (parent, parentDrawingContext, iterator) = iterationStates.last {
@@ -258,7 +258,7 @@ open class Root: Parent {
           childDrawingContext.opacity = widget.opacity
           childDrawingContext.transform(.translate(widget.position))
           // TODO: maybe the scrolling translation should be added to the parent widget context before adding the iterator to the list?
-          if let parent = widget.parent as? Widget, parent.overflowX == .scroll || parent.overflowY == .scroll {
+          if !widget.unaffectedByParentScroll, let parent = widget.parent as? Widget, parent.overflowX == .scroll || parent.overflowY == .scroll {
             childDrawingContext.transform(.translate(parent.currentScrollOffset))
           }
           if widget.overflowX == .cut || widget.overflowX == .scroll || widget.overflowY == .cut || widget.overflowY == .scroll {
@@ -303,11 +303,11 @@ open class Root: Parent {
         }
       }
 
-      if let parent = parent as? Widget, parent.scrollingEnabled.x || parent.scrollingEnabled.y {
+      /*if let parent = parent as? Widget, parent.scrollingEnabled.x || parent.scrollingEnabled.y {
         parentDrawingContext.beginDrawing()
         parent.drawScrollbars(parentDrawingContext)
         parentDrawingContext.endDrawing()
-      }
+      }*/
 
       iterationStates.removeLast()
     }
