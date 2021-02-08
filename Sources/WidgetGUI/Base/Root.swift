@@ -243,18 +243,14 @@ open class Root: Parent {
   }
 
   open func draw(_ drawingContext: DrawingContext) {
-    var drawingContexts = [drawingContext]
-
-    var iterators = [Widget.ChildIterator]()
-    iterators.append(Widget.ChildIterator(count: 1) { [unowned self] _ in
+    var iterationStates = [(Parent, DrawingContext, Widget.ChildIterator)]()
+    iterationStates.append((self, drawingContext, Widget.ChildIterator(count: 1) { [unowned self] _ in
       rootWidget
-    })
+    }))
 
-    outer: while var iterator = iterators.last {
-      let parentDrawingContext = drawingContexts[iterators.count - 1]
-
+    outer: while var (parent, parentDrawingContext, iterator) = iterationStates.last {
       while let widget = iterator.next() {
-        iterators[iterators.count - 1] = iterator
+        iterationStates[iterationStates.count - 1].2 = iterator
 
         if widget.visibility == .visible && widget.opacity > 0 {
           let childDrawingContext: DrawingContext = parentDrawingContext.clone()
@@ -289,17 +285,23 @@ open class Root: Parent {
           childDrawingContext.endDrawing()
 
           if !(widget is LeafWidget) {
-            iterators.append(widget.visitChildren())
-            drawingContexts.append(childDrawingContext)
+            iterationStates.append((widget, childDrawingContext, widget.visitChildren()))
             continue outer
           }
         }
       }
-      iterators.popLast()
-      drawingContexts.popLast()
+
+      if let parent = parent as? Widget, parent.overflow == .scroll, parent.scrollingEnabled.x || parent.scrollingEnabled.y {
+        parentDrawingContext.beginDrawing()
+        parent.drawScrollbars(parentDrawingContext)
+        parentDrawingContext.endDrawing()
+      }
+
+      iterationStates.removeLast()
     }
   }
 
+  // TODO: maybe this function should be added to Widget
   private func drawBorders(_ drawingContext: DrawingContext, widget: Widget) {
     if widget.borderWidth.top > 0 {
       drawingContext.drawLine(
