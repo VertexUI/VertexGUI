@@ -30,12 +30,13 @@ public class MainView: Experimental.ComposedWidget {
       }*/
 
       Experimental.ConstrainedSizeBox(styleProperties: {
-        //($0.width, 200.0)
+        ($0.width, 200.0)
         ($0.height, 100.0)
       }) {
         
         Experimental.Container(styleProperties: {
           ($0.overflowY, Overflow.scroll)
+          ($0.overflowX, Overflow.scroll)
         }) {
 
           Experimental.SimpleColumn() {
