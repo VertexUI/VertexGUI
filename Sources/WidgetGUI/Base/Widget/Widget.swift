@@ -3,6 +3,7 @@ import GfxMath
 import VisualAppBase
 import ColorizeSwift
 import ReactiveProperties
+import ExperimentalReactiveProperties
 import Events
 
 open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
@@ -318,11 +319,14 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     /* scrolling
     ------------------------------------
     */
-    internal var scrollingEnabled = (x: false, y: false) {
+    @ExperimentalReactiveProperties.MutableProperty
+    internal var autoScrollingEnabled = (x: false, y: false)
+    @ExperimentalReactiveProperties.ComputedProperty
+    internal var scrollingEnabled: (x: Bool, y: Bool)/* {
         didSet {
             updateScrollEventHandlers()
         }
-    }
+    }*/
     /** removers for event handlers that are registered to manage scrolling */
     private var scrollEventHandlerRemovers: [() -> ()] = []
     private var scrollingSpeed = 20.0
@@ -332,8 +336,8 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     /** should be set in layout, if scrolling is enabled */
     internal var minScrollOffset: DVec2 = .zero
 
-    internal var pseudoScrollBarX = ScrollBar()
-    internal var pseudoScrollBarY = ScrollBar()
+    lazy internal var pseudoScrollBarX = ScrollBar()
+    lazy internal var pseudoScrollBarY = ScrollBar()
     /* end scrolling */
 
     @usableFromInline internal var reference: AnyReferenceProtocol? {
@@ -349,7 +353,7 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     /// Flag whether to show bounds and sizes for debugging purposes.
     //@MutableProperty
     ////internal var _debugLayout: Bool?
-    @MutableProperty
+    @ReactiveProperties.MutableProperty
     public var debugLayout: Bool = false/* {
         get {
             _debugLayout ?? context.debugLayout
@@ -359,7 +363,7 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
             _debugLayout = newValue
         }
     }*/
-    @MutableProperty
+    @ReactiveProperties.MutableProperty
     public var layoutDebuggingColor = Color.red
     private let layoutDebuggingTextFontConfig = FontConfig(family: defaultFontFamily, size: 16, weight: .regular, style: .normal)
     // if true, highlight the Widget when bursts of calls to functions such as layout or render occur
@@ -403,9 +407,10 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         Self.nextId += 1
         self.children = children
         self.styleScope = Widget.activeStyleScope
-
+        
         setupWidgetEventHandlerManagers()
         setupFromStyleWrappers()
+        setupScrolling()
 
         _ = onDestroy(_debugLayout.onChanged { [unowned self] _ in
             invalidateRenderState()
@@ -434,6 +439,21 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
                 fromStyle.registerWidget(self)
             }
         }
+    }
+
+    private func setupScrolling() {
+        self._scrollingEnabled.reinit(compute: { [unowned self] in
+            (
+                x: overflowX == .scroll || autoScrollingEnabled.x,
+                y: overflowY == .scroll || autoScrollingEnabled.y
+            )
+        }, dependencies: [$autoScrollingEnabled, $overflowX, $overflowY])
+
+       // updateScrollEventHandlers()
+
+        _ = onDestroy(self.$scrollingEnabled.onChanged { [unowned self] _ in
+            updateScrollEventHandlers()
+        })
     }
 
     private func updateScrollEventHandlers() {
@@ -903,19 +923,11 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         let targetSize = newUnconstrainedContentSize + padding.aggregateSize + borderWidth.aggregateSize
         size = constraints.constrain(targetSize)
         
-        // depending on whether scrolling gets enabled now, these two values may or may not be used
+        // depending on whether scrolling is enabled, these two values may or may not be used
         maxScrollOffset = .zero
         minScrollOffset = DVec2(size - targetSize)
 
-        var scrollingEnabled = (x: false, y: false)
-        if overflowX == .scroll {
-            scrollingEnabled.x = true
-        }
-        if overflowY == .scroll {
-            scrollingEnabled.y = true
-        }
         // TODO: implement logic for overflow == .auto
-        self.scrollingEnabled = scrollingEnabled
 
         layouting = false
         layouted = true
