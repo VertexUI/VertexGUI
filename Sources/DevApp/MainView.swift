@@ -35,7 +35,7 @@ public class MainView: Experimental.ComposedWidget {
       }) {
         
         Experimental.Container(styleProperties: {
-          ($0.overflow, Overflow.scroll)
+          ($0.overflowY, Overflow.scroll)
         }) {
 
           Experimental.SimpleColumn() {

@@ -294,8 +294,11 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     @FromStyle(key: Experimental.AnyDefaultStyleKeys.visibility)
     public var visibility: Visibility = .visible
 
-    @FromStyle(key: Experimental.AnyDefaultStyleKeys.overflow)
-    public var overflow: Overflow = .show
+    @FromStyle(key: Experimental.AnyDefaultStyleKeys.overflowX)
+    public var overflowX: Overflow = .show
+    
+    @FromStyle(key: Experimental.AnyDefaultStyleKeys.overflowY)
+    public var overflowY: Overflow = .show
 
     // TODO: maybe this belongs into the layout section instead of in the style section?
     // TODO: maybe even create a separate section for universal properties?
@@ -852,11 +855,14 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         let previousSize = size
         let isFirstRound = !layouted
         
-        let preparedConstraints: BoxConstraints
-        if overflow == .scroll {
-            preparedConstraints = BoxConstraints(minSize: .zero, maxSize: .infinity)
-        } else {
-            preparedConstraints = constraints - padding.aggregateSize - borderWidth.aggregateSize
+        var preparedConstraints: BoxConstraints = constraints - padding.aggregateSize - borderWidth.aggregateSize
+        if overflowX == .scroll {
+            preparedConstraints.minSize.x = 0
+            preparedConstraints.maxSize.x = .infinity
+        }
+        if overflowY == .scroll {
+            preparedConstraints.minSize.y = 0
+            preparedConstraints.maxSize.y = .infinity
         }
 
         let newUnconstrainedContentSize = performLayout(constraints: preparedConstraints)
@@ -867,14 +873,20 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         
         let targetSize = newUnconstrainedContentSize + padding.aggregateSize + borderWidth.aggregateSize
         size = constraints.constrain(targetSize)
+        
+        // depending on whether scrolling gets enabled now, these two values may or may not be used
+        maxScrollOffset = .zero
+        minScrollOffset = DVec2(size - targetSize)
 
-        if targetSize != size && overflow == .scroll {
-            scrollingEnabled = (x: targetSize.x > size.x, y: targetSize.y > size.y)
-            maxScrollOffset = .zero
-            minScrollOffset = DVec2(size - targetSize)
-        } else {
-            scrollingEnabled = (x: false, y: false)
+        var scrollingEnabled = (x: false, y: false)
+        if overflowX == .scroll {
+            scrollingEnabled.x = true
         }
+        if overflowY == .scroll {
+            scrollingEnabled.y = true
+        }
+        // TODO: implement logic for overflow == .auto
+        self.scrollingEnabled = scrollingEnabled
 
         layouting = false
         layouted = true

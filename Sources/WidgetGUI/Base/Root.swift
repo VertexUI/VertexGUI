@@ -258,12 +258,24 @@ open class Root: Parent {
           childDrawingContext.opacity = widget.opacity
           childDrawingContext.transform(.translate(widget.position))
           // TODO: maybe the scrolling translation should be added to the parent widget context before adding the iterator to the list?
-          if let parent = widget.parent as? Widget, parent.overflow == .scroll {
+          if let parent = widget.parent as? Widget, parent.overflowX == .scroll || parent.overflowY == .scroll {
             childDrawingContext.transform(.translate(parent.currentScrollOffset))
           }
-          if widget.overflow == .cut || widget.overflow == .scroll {
-            // TODO: accumulate clip state from parents
-            childDrawingContext.clip(rect: DRect(min: .zero, size: widget.size))
+          if widget.overflowX == .cut || widget.overflowX == .scroll || widget.overflowY == .cut || widget.overflowY == .scroll {
+            let translationTestRect = drawingContext.preprocess(DRect(min: .zero, max: .zero))
+            let totalTranslation = translationTestRect.min
+            var clipRect = DRect(min: -totalTranslation, size: self.bounds.size)
+
+            if widget.overflowX == .cut || widget.overflowX == .scroll {
+              clipRect.min.x = 0
+              clipRect.size.x = widget.width
+            }
+            if widget.overflowY == .cut || widget.overflowY == .scroll {
+              clipRect.min.y = 0
+              clipRect.size.y = widget.height
+            }
+
+            childDrawingContext.clip(rect: clipRect)
           }
           childDrawingContext.lock()
 
@@ -291,7 +303,7 @@ open class Root: Parent {
         }
       }
 
-      if let parent = parent as? Widget, parent.overflow == .scroll, parent.scrollingEnabled.x || parent.scrollingEnabled.y {
+      if let parent = parent as? Widget, parent.scrollingEnabled.x || parent.scrollingEnabled.y {
         parentDrawingContext.beginDrawing()
         parent.drawScrollbars(parentDrawingContext)
         parentDrawingContext.endDrawing()

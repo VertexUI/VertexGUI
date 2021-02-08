@@ -82,7 +82,7 @@ public class TodoAppView: SingleChildWidget {
 
           Column.Item(crossAlignment: .Stretch) {
             Experimental.Container(styleProperties: {
-              ($0.overflow, Overflow.scroll)
+              ($0.overflowY, Overflow.scroll)
             }) {
               List(store.$state.compute { $0.lists }) {
                 buildMenuListItem(for: $0)

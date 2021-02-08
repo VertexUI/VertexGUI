@@ -76,7 +76,7 @@ open class DrawingContext {
     return currentPoint
   }
 
-  private func preprocess(_ rect: DRect) -> DRect {
+  public func preprocess(_ rect: DRect) -> DRect {
     let min = preprocess(rect.min)
     let max = preprocess(rect.max)
     return DRect(min: min, max: max)
