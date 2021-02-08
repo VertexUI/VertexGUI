@@ -315,7 +315,7 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     /* scrolling
     ------------------------------------
     */
-    private var scrollingEnabled = false {
+    internal var scrollingEnabled = (x: false, y: false) {
         didSet {
             updateScrollEventHandler()
         }
@@ -324,9 +324,12 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     private var scrollingSpeed = 20.0
     internal var currentScrollOffset: DVec2 = .zero
     /** should be set in layout, if scrolling is enabled */
-    private var maxScrollOffset: DVec2 = .zero
+    internal var maxScrollOffset: DVec2 = .zero
     /** should be set in layout, if scrolling is enabled */
-    private var minScrollOffset: DVec2 = .zero
+    internal var minScrollOffset: DVec2 = .zero
+
+    internal var pseudoScrollBarX = ScrollBar()
+    internal var pseudoScrollBarY = ScrollBar()
     /* end scrolling */
 
     @usableFromInline internal var reference: AnyReferenceProtocol? {
@@ -432,7 +435,7 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
             remove()
         }
 
-        if scrollingEnabled {
+        if scrollingEnabled.x || scrollingEnabled.y {
             removeScrollEventHandler = onMouseWheel.addHandler { [unowned self] event in
                 processMouseWheelEventUpdateScroll(event)
             }
@@ -441,7 +444,8 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
 
     /** Used if the widget is in scrolling mode. Updates the scroll position based on mouse wheel events. */
     private func processMouseWheelEventUpdateScroll(_ event: GUIMouseWheelEvent) {
-        self.currentScrollOffset += event.scrollAmount * self.scrollingSpeed
+        let enabledDimensions = DVec2(scrollingEnabled.x ? 1 : 0, scrollingEnabled.y ? 1 : 0)
+        self.currentScrollOffset += event.scrollAmount * self.scrollingSpeed * enabledDimensions
         self.currentScrollOffset = min(max(self.currentScrollOffset, self.minScrollOffset), self.maxScrollOffset)
 
     }
@@ -865,11 +869,11 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         size = constraints.constrain(targetSize)
 
         if targetSize != size && overflow == .scroll {
-            scrollingEnabled = true
+            scrollingEnabled = (x: targetSize.x > size.x, y: targetSize.y > size.y)
             maxScrollOffset = .zero
             minScrollOffset = DVec2(size - targetSize)
         } else {
-            scrollingEnabled = false
+            scrollingEnabled = (x: false, y: false)
         }
 
         layouting = false
