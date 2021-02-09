@@ -1,11 +1,14 @@
 import Foundation
 import VisualAppBase
+import Events
 import GfxMath
 
-open class WidgetsApp {
+open class WidgetsApp: EventfulObject {
     public private(set) var baseApp: VisualApp
     
     public private(set) var guiRoots: [Int: Root] = [:]
+
+    public let onTick = EventHandlerManager<Tick>()
 
     private var windowContexts: [Int: VisualApp.WindowContext] {
         baseApp.windowContexts
@@ -112,6 +115,7 @@ open class WidgetsApp {
         for guiRoot in guiRoots.values {
             guiRoot.tick(tick)
         }
+        onTick.invokeHandlers(tick)
     }
 
     open func setup() {
@@ -120,5 +124,13 @@ open class WidgetsApp {
 
     public func start() throws {
         try baseApp.start()
+    }
+
+    public func destroy() {
+        removeAllEventHandlers()
+    }
+
+    deinit {
+        destroy()
     }
 }
