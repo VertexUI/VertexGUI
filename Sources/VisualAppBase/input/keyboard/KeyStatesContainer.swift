@@ -3,6 +3,8 @@ public struct KeyStatesContainer {
         $0[$1] = false
     }
 
+    public init() {}
+
     public subscript(_ key: Key) -> Bool {
         get {
             return states[key]!

@@ -52,6 +52,8 @@ class ExperimentalStyleManagerTests: XCTestCase {
       self.setup(
         window: try! Window(options: Window.Options()),
         getTextBoundsSize: { _, _, _ in DSize2.zero },
+        measureText: { _, _ in .zero },
+        getKeyStates: { KeyStatesContainer() },
         getApplicationTime: { 0 },
         getRealFps: { 0 },
         createWindow: { _, _ in try! Window(options: Window.Options()) },
@@ -61,6 +63,8 @@ class ExperimentalStyleManagerTests: XCTestCase {
     override open func setup(
       window: Window,
       getTextBoundsSize: @escaping (_ text: String, _ fontConfig: FontConfig, _ maxWidth: Double?) -> DSize2,
+      measureText: @escaping (_ text: String, _ paint: TextPaint) -> DSize2,
+      getKeyStates: @escaping () -> KeyStatesContainer,
       getApplicationTime: @escaping () -> Double,
       getRealFps: @escaping () -> Double,
       createWindow: @escaping (_ guiRootBuilder: @autoclosure () -> Root, _ options: Window.Options) -> Window,
@@ -69,6 +73,8 @@ class ExperimentalStyleManagerTests: XCTestCase {
       self.widgetContext = WidgetContext(
         window: window,
         getTextBoundsSize: getTextBoundsSize,
+        measureText: measureText,
+        getKeyStates: getKeyStates,
         getApplicationTime: getApplicationTime,
         getRealFps: getRealFps,
         createWindow: createWindow,
@@ -76,7 +82,7 @@ class ExperimentalStyleManagerTests: XCTestCase {
         queueLifecycleMethodInvocation: { [unowned self] in widgetLifecycleManager.queue($0, target: $1, sender: $2, reason: $3) },
         lifecycleMethodInvocationSignalBus: Bus<Widget.LifecycleMethodInvocationSignal>()
       )
-      rootWidget.mount(parent: self, context: widgetContext!, lifecycleBus: widgetLifecycleBus)
+      rootWidget.mount(parent: self, treePath: [], context: widgetContext!, lifecycleBus: widgetLifecycleBus)
     }
 
     public func mockTick() {

@@ -11,9 +11,9 @@ public class MockLeafWidget: Widget, SimpleStylableWidget {
   lazy public private(set) var filledStyleProperties = getFilledStyleProperties()
   public var directStyleProperties = [AnyStyleProperties]()
 
-  override public var pseudoClasses: [String] {
+  /*override public var pseudoClasses: [String] {
     [state.rawValue, mode.rawValue]
-  }
+  }*/
 
   private var state: State {
     didSet {

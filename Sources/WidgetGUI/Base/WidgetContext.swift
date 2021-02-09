@@ -7,6 +7,7 @@ public class WidgetContext {
     private var _getTextBoundsSize: (_ text: String, _ fontConfig: FontConfig, _ maxWidth: Double?) -> DSize2
     private var _measureText: (_ text: String, _ paint: TextPaint) -> DSize2
     private var _requestCursor: (_ cursor: Cursor) -> () -> Void
+    private let _getKeyStates: () -> KeyStatesContainer
     private var _createWindow: (_ guiRootBuilder: @autoclosure () -> Root, _ options: Window.Options) -> Window
     weak public internal(set) var focusedWidget: Widget? {
         didSet {
@@ -37,10 +38,15 @@ public class WidgetContext {
 
     public private(set) var onTick = EventHandlerManager<Tick>()
 
+    public var keyStates: KeyStatesContainer {
+        _getKeyStates()
+    }
+
     public init(
         window: Window,
         getTextBoundsSize: @escaping (_ text: String, _ fontConfig: FontConfig, _ maxWidth: Double?) -> DSize2,
         measureText: @escaping (_ text: String, _ paint: TextPaint) -> DSize2,
+        getKeyStates: @escaping () -> KeyStatesContainer,
         getApplicationTime: @escaping () -> Double,
         getRealFps: @escaping () -> Double,
         createWindow: @escaping (_ guiRootBuilder: @autoclosure () -> Root, _ options: Window.Options) -> Window,
@@ -50,6 +56,7 @@ public class WidgetContext {
             self.window = window
             self._getTextBoundsSize = getTextBoundsSize
             self._measureText = measureText
+            self._getKeyStates = getKeyStates
             self._getApplicationTime = getApplicationTime
             self.getRealFps = getRealFps
             self._createWindow = createWindow

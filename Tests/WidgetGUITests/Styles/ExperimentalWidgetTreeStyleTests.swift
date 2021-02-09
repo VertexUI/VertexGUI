@@ -13,9 +13,9 @@ class ExperimentalWidgetTreeStyleTests: XCTestCase {
         notifySelectorChanged()
       }
     }
-    override var pseudoClasses: [String] {
+    /*override var pseudoClasses: [String] {
       pseudoClass1Enabled ? ["pseudo-class-1"] : []
-    }
+    }*/
 
     init(_ createsStyleScope: Bool, buildInternal: ((MultiChildContentBuilder.ChildrenBuilder?) -> [Widget])?,
       @MultiChildContentBuilder content buildContent: () -> MultiChildContentBuilder.Result) {
@@ -140,7 +140,7 @@ class ExperimentalWidgetTreeStyleTests: XCTestCase {
     let reference1 = Reference<Experimental.Button>()
     let root = MockRoot(rootWidget: TestWidget(true, buildInternal: nil) {
       Experimental.Style(".button", Experimental.Button.self) {
-        ($0.backgroundFill, Color.red)
+        ($0.background, Color.red)
       }
 
       Experimental.Button() {
@@ -148,8 +148,8 @@ class ExperimentalWidgetTreeStyleTests: XCTestCase {
       }.with(classes: ["button"]).connect(ref: reference1)
     })
 
-    XCTAssertEqual(reference1.referenced!.stylePropertyValue(Experimental.Button.StyleKeys.backgroundFill) as? Color, Color.red)
-    XCTAssertEqual(reference1.referenced!.children[0].stylePropertyValue(Experimental.Container.StyleKeys.backgroundFill) as? Color, Color.red)
+    XCTAssertEqual(reference1.referenced!.stylePropertyValue(Experimental.Button.StyleKeys.background) as? Color, Color.red)
+    XCTAssertEqual(reference1.referenced!.children[0].stylePropertyValue(Experimental.Container.StyleKeys.background) as? Color, Color.red)
   }
 
   func testPseudoClassUpdate() {
