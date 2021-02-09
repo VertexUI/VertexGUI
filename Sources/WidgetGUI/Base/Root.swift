@@ -117,14 +117,12 @@ open class Root: Parent {
     if let event = rawMouseEvent as? RawMouseMoveEvent {
       mouseMoveEventBurstLimiter.limit { [weak self] in
         if let self = self {
-          self.propagate(rawMouseEvent)
           if !self.renderObjectSystemEnabled {
             self.mouseEventManager.propagate(rawMouseEvent)
           }
         }
       }
     } else {
-      propagate(rawMouseEvent)
       if !self.renderObjectSystemEnabled {
         mouseEventManager.propagate(rawMouseEvent)
       }
@@ -353,114 +351,6 @@ open class Root: Parent {
     ObjectIdentifier(GUIMouseButtonDownEvent.self): [],
     ObjectIdentifier(GUIMouseMoveEvent.self): [],
   ]
-
-  internal func propagate(_ event: RawMouseEvent) {
-    #if DEBUG
-    let startTime = Date.timeIntervalSinceReferenceDate
-    #endif
-
-    guard let rootRenderContent = self.rootWidget.renderState.content else {
-      return
-    }
-
-    // first get the current target widgets by performing a raycast over the render object tree
-    var currentTargets = [Widget & GUIMouseEventConsumer]()
-    var currentTargetPositions: [ObjectIdentifier: DPoint2] = [:]
-    let renderObjectsAtPoint = rootRenderContent.objectsAt(point: event.position)
-    for renderObjectAtPoint in renderObjectsAtPoint {
-      if let object = renderObjectAtPoint.object as? IdentifiedSubTreeRenderObject {
-        if let widget = rootWidget.getChild(where: { $0.id == object.id }) {
-          if let widget = widget as? GUIMouseEventConsumer & Widget {
-            currentTargets.append(widget)
-            currentTargetPositions[ObjectIdentifier(widget)] = renderObjectAtPoint.transformedPoint
-          }
-        }
-      }
-    }
-
-    // now use the information about the current targets and the previous targets to forward the events
-    switch event {
-    case let event as RawMouseButtonDownEvent:
-      previousMouseEventTargets[ObjectIdentifier(GUIMouseButtonDownEvent.self)] = currentTargets
-      for target in currentTargets {
-        let currentPosition = currentTargetPositions[ObjectIdentifier(target)]!
-        target.consume(GUIMouseButtonDownEvent(button: event.button, position: currentPosition))
-      }
-
-    case let event as RawMouseButtonUpEvent:
-      for previousDownEventTarget in previousMouseEventTargets[
-        ObjectIdentifier(GUIMouseButtonDownEvent.self)]!
-      {
-        // TODO: need to calculate point translation here as well for the previous targets
-        // TODO: or if something was a previous down target but the up is occurring on the outside, maybe force the position into the bounds of the widget?
-        previousDownEventTarget.consume(
-          GUIMouseButtonUpEvent(button: event.button, position: event.position))
-      }
-
-      for target in currentTargets {
-        let currentPosition = currentTargetPositions[ObjectIdentifier(target)]!
-        var wasPreviousTarget = false
-        for previousTarget in previousMouseEventTargets[
-          ObjectIdentifier(GUIMouseButtonDownEvent.self)]!
-        {
-          if previousTarget.mounted && previousTarget === target {
-            previousTarget.consume(
-              GUIMouseButtonClickEvent(button: event.button, position: currentPosition))
-            wasPreviousTarget = true
-          }
-        }
-
-        if !wasPreviousTarget {
-          target.consume(GUIMouseButtonUpEvent(button: event.button, position: currentPosition))
-        }
-      }
-
-    case let event as RawMouseMoveEvent:
-      var previousTargets = previousMouseEventTargets[ObjectIdentifier(GUIMouseMoveEvent.self)]!
-
-      for target in currentTargets {
-        let currentPosition = currentTargetPositions[ObjectIdentifier(target)]!
-        let translation = currentPosition - event.position
-
-        // TODO: maybe instead of contains by object identity, use contains by Widget identity
-        // --> same type, same position, same id
-        if previousTargets.contains(where: { ObjectIdentifier($0) == ObjectIdentifier(target) }) {
-          previousTargets.removeAll { ObjectIdentifier($0) == ObjectIdentifier(target) }
-          // TODO: save the previous translated position for this target!
-          target.consume(
-            GUIMouseMoveEvent(
-              position: currentPosition, previousPosition: event.previousPosition + translation))
-        } else {
-          target.consume(GUIMouseEnterEvent(position: currentPosition))
-        }
-      }
-
-      // the targets left in previousTargets are only those which were not targets of the current event
-      // which means the mouse has left them
-      for target in previousTargets {
-        // TODO: save the previous translated position for this specific target and pass it here instead!
-        target.consume(GUIMouseLeaveEvent(previousPosition: event.previousPosition))
-      }
-
-      previousMouseEventTargets[ObjectIdentifier(GUIMouseMoveEvent.self)] = currentTargets
-
-    case let event as RawMouseWheelEvent:
-      for target in currentTargets {
-        let currentPosition = currentTargetPositions[ObjectIdentifier(target)]!
-        target.consume(
-          GUIMouseWheelEvent(scrollAmount: event.scrollAmount, position: currentPosition))
-      }
-    default:
-      print("Could not forward MouseEvent \(event), not supported.")
-    }
-
-    #if DEBUG
-    let deltaTime = Date.timeIntervalSinceReferenceDate - startTime
-    Logger.log(
-      "Took \(deltaTime) seconds for propagating a mouse event.",
-      level: .Message, context: .Performance)
-    #endif
-  }
 
   internal func propagate(_ rawKeyEvent: KeyEvent) {
     if let focus = widgetContext?.focusedWidget as? GUIKeyEventConsumer {

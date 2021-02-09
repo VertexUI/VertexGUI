@@ -52,7 +52,7 @@ public class WidgetTreeMouseEventManager {
         previousMouseEventTargets[ObjectIdentifier(GUIMouseButtonDownEvent.self)] = currentTargets
         for target in currentTargets {
             //let currentPosition = currentTargetPositions[ObjectIdentifier(target)]!
-            target.processMouseEvent(GUIMouseButtonDownEvent(button: event.button, position: event.position))
+            target.processMouseEvent(GUIMouseButtonDownEvent(button: event.button, position: event.position, globalPosition: event.position))
         }
 
         case let event as RawMouseButtonUpEvent:
@@ -62,7 +62,7 @@ public class WidgetTreeMouseEventManager {
             // TODO: need to calculate point translation here as well for the previous targets
             // TODO: or if something was a previous down target but the up is occurring on the outside, maybe force the position into the bounds of the widget?
             previousDownEventTarget.processMouseEvent(
-            GUIMouseButtonUpEvent(button: event.button, position: event.position))
+            GUIMouseButtonUpEvent(button: event.button, position: event.position, globalPosition: event.position))
         }
 
         for target in currentTargets {
@@ -73,13 +73,13 @@ public class WidgetTreeMouseEventManager {
             {
             if previousTarget.mounted && previousTarget === target {
                 previousTarget.processMouseEvent(
-                GUIMouseButtonClickEvent(button: event.button, position: event.position))
+                GUIMouseButtonClickEvent(button: event.button, position: event.position, globalPosition: event.position))
                 wasPreviousTarget = true
             }
             }
 
             if !wasPreviousTarget {
-            target.processMouseEvent(GUIMouseButtonUpEvent(button: event.button, position: event.position))
+            target.processMouseEvent(GUIMouseButtonUpEvent(button: event.button, position: event.position, globalPosition: event.position))
             }
         }
 
@@ -97,9 +97,9 @@ public class WidgetTreeMouseEventManager {
             // TODO: save the previous translated position for this target!
             target.processMouseEvent(
                 GUIMouseMoveEvent(
-                position: event.position, previousPosition: event.previousPosition))
+                position: event.position, globalPosition: event.position, previousPosition: event.previousPosition, previousGlobalPosition: event.previousPosition))
             } else {
-            target.processMouseEvent(GUIMouseEnterEvent(position: event.position))
+            target.processMouseEvent(GUIMouseEnterEvent(position: event.position, globalPosition: event.position))
             }
         }
 
@@ -107,7 +107,7 @@ public class WidgetTreeMouseEventManager {
         // which means the mouse has left them
         for target in previousTargets {
             // TODO: save the previous translated position for this specific target and pass it here instead!
-            target.processMouseEvent(GUIMouseLeaveEvent(previousPosition: event.previousPosition))
+            target.processMouseEvent(GUIMouseLeaveEvent(position: event.position, globalPosition: event.position))
         }
 
         previousMouseEventTargets[ObjectIdentifier(GUIMouseMoveEvent.self)] = currentTargets
@@ -116,113 +116,12 @@ public class WidgetTreeMouseEventManager {
         for target in currentTargets {
             //let currentPosition = currentTargetPositions[ObjectIdentifier(target)]!
             target.processMouseEvent(
-            GUIMouseWheelEvent(scrollAmount: event.scrollAmount, position: event.position))
+            GUIMouseWheelEvent(scrollAmount: event.scrollAmount, position: event.position, globalPosition: event.position))
         }
         default:
         print("Could not forward MouseEvent \(rawMouseEvent), not supported.")
         }
-/*
-        switch rawMouseEvent {
-            case _ as RawMouseButtonDownEvent:
-                previousMouseEventTargets[ObjectIdentifier(GUIMouseButtonDownEvent.self)] = []
-                previousMouseButtonDownEventButton = nil
-
-            default:
-                break
-        }
-
-        switch rawMouseEvent {
-        case let rawMouseButtonDownEvent as RawMouseButtonDownEvent:
-            for mouseEventTarget in mouseEventTargets {
-                mouseEventTarget.consume(
-                    GUIMouseButtonDownEvent(
-                        button: rawMouseButtonDownEvent.button,
-                        position: rawMouseButtonDownEvent.position))
-            }
-            //previousMouseButtonDownEventTarget = mouseEventTarget
-            previousMouseEventTargets[ObjectIdentifier(GUIMouseButtonDownEvent.self)]! = mouseEventTargets
-            previousMouseButtonDownEventButton = rawMouseButtonDownEvent.button
-
-        case let rawMouseButtonUpEvent as RawMouseButtonUpEvent:
-            for previousTarget in previousMouseEventTargets[ObjectIdentifier(GUIMouseButtonDownEvent.self)]! {
-                previousTarget.consume(
-                    GUIMouseButtonUpEvent(
-                        button: rawMouseButtonUpEvent.button,
-                        position: rawMouseButtonUpEvent.position
-                    )
-                )
-            }
-
-            for mouseEventTarget in mouseEventTargets {
-                /*try mouseEventTarget.consume(
-                    GUIMouseButtonUpEvent(
-                        button: rawMouseButtonUpEvent.button,
-                        position: rawMouseButtonUpEvent.position))*/
-                
-            
-                // after same button down and up on same element, generate click event
-
-                if let previousButton = previousMouseButtonDownEventButton,
-                    rawMouseButtonUpEvent.button == previousButton {
-
-                    for previousTarget in previousMouseEventTargets[ObjectIdentifier(GUIMouseButtonDownEvent.self)]! {
-                        if !previousTarget.destroyed && previousTarget.id == mouseEventTarget.id {
-                            mouseEventTarget.consume(
-                                GUIMouseButtonClickEvent(
-                                    button: rawMouseButtonUpEvent.button,
-                                    position: rawMouseButtonUpEvent.position))
-                        }
-                    }
-                }
-            }
-
-        case let rawMouseEvent as RawMouseMoveEvent:
-            let previousTargets = previousMouseEventTargets[ObjectIdentifier(GUIMouseMoveEvent.self)]!
-            var stillPresentPreviousTargetIds = [UInt]()
-
-            for i in 0..<mouseEventTargets.count {
-                let currentTarget = mouseEventTargets[i]
-                currentTarget.consume(GUIMouseMoveEvent(position: rawMouseEvent.position, previousPosition: rawMouseEvent.previousPosition))
-
-                // TODO: maybe this check can be optimized in speed
-                if previousTargets.contains(where: { !$0.destroyed && $0.id == currentTarget.id }) {
-                    stillPresentPreviousTargetIds.append(currentTarget.id)
-                } else {
-                    currentTarget.consume(GUIMouseEnterEvent(position: rawMouseEvent.position))
-                }
-            }
-
-            for previousTarget in previousTargets {
-                // TODO: maybe this check can be optimized in speed
-                if !previousTarget.destroyed && !stillPresentPreviousTargetIds.contains(previousTarget.id) {
-                    previousTarget.consume(GUIMouseLeaveEvent(previousPosition: rawMouseEvent.previousPosition))
-                }
-            }
-
-            previousMouseEventTargets[ObjectIdentifier(GUIMouseMoveEvent.self)] = mouseEventTargets
-
-        case let rawMouseEvent as RawMouseWheelEvent:
-            for mouseEventTarget in mouseEventTargets {
-                mouseEventTarget.consume(GUIMouseWheelEvent(scrollAmount: rawMouseEvent.scrollAmount, position: rawMouseEvent.position))
-            }
-
-        default:
-            print("Unsupported event.")
-        }
-        /* else {
-            switch rawMouseEvent {
-            case let rawMouseEvent as RawMouseMoveEvent:
-                if let previousMouseMoveEventTarget = previousMouseMoveEventTarget {
-                    try previousMouseMoveEventTarget.consume(GUIMouseLeaveEvent(position: rawMouseEvent.position, previousPosition: rawMouseEvent.previousPosition))
-                    self.previousMouseMoveEventTarget = nil
-                }
-            default:
-                print("Unsupported event.")
-            }
-        }*/*/
-
-
-        //previousMouseEventTarget = mouseEventTarget
+        
         return false
     }
 }
