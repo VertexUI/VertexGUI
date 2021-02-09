@@ -62,20 +62,16 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
                 unregisterAnyParentChangedHandler!()
             }
         }
-
-        /*didSet {
-            onParentChanged.invokeHandlers(parent)
-            onAnyParentChanged.invokeHandlers(parent)
-            if parent != nil {
-                if let childParent: Child = parent as? Child {
-                    unregisterAnyParentChangedHandler = childParent.onAnyParentChanged({ [unowned self] in
-                        onAnyParentChanged.invokeHandlers($0)
-                    })
-                }
-            }
-        }*/
     }
     public private(set) var treePath: TreePath = []
+    /** The topmost parent or the widget instance itself if not mounted into a parent. */
+    public var rootParent: Widget {
+        var maxParent = parent as? Widget
+        while let nextParent = maxParent?.parent as? Widget {
+            maxParent = nextParent
+        }
+        return maxParent ?? self
+    }
 
     // TODO: maybe switch to overriding visitChildren() approach instead of children array
     public lazy var children: [Widget] = []
@@ -330,11 +326,13 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     /** removers for event handlers that are registered to manage scrolling */
     private var scrollEventHandlerRemovers: [() -> ()] = []
     private var scrollingSpeed = 20.0
+    @ExperimentalReactiveProperties.MutableProperty
     internal var currentScrollOffset: DVec2 = .zero
-    /** should be set in layout, if scrolling is enabled */
+   /* /** should be set in layout, if scrolling is enabled */
     internal var maxScrollOffset: DVec2 = .zero
     /** should be set in layout, if scrolling is enabled */
-    internal var minScrollOffset: DVec2 = .zero
+    internal var minScrollOffset: DVec2 = .zero*/
+    internal var scrollableLength: DVec2 = .zero
     /** Mainly used to avoid scroll bars being translated with the rest of the content. */
     internal var unaffectedByParentScroll = false
 
@@ -450,12 +448,29 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
                 y: overflowY == .scroll || autoScrollingEnabled.y
             )
         }, dependencies: [$autoScrollingEnabled, $overflowX, $overflowY])
-
-       // updateScrollEventHandlers()
+        
+        //updateScrollOffsetProperty()
+        //updateScrollEventHandlers()
 
         _ = onDestroy(self.$scrollingEnabled.onChanged { [unowned self] _ in
+            //updateScrollOffsetProperty()
             updateScrollEventHandlers()
         })
+    }
+
+    private func updateScrollOffsetProperty() {
+        /*if scrollingEnabled.x || scrollingEnabled.y {
+            self._currentScrollOffset.reinit(compute: { [unowned self] in
+                DVec2(pseudoScrollBarX.scrollProgress * width, pseudoScrollBarY.scrollProgress * height)
+            }, apply: { [unowned self] in
+                pseudoScrollBarX.scrollProgress = $0.x / width
+                pseudoScrollBarY.scrollProgress = $0.y / height
+            }, dependencies: [pseudoScrollBarX.$scrollProgress, pseudoScrollBarY.$scrollProgress])
+        } else {
+            self._currentScrollOffset.reinit(compute: {
+                .zero
+            }, apply: { _ in }, dependencies: [])
+        }*/
     }
 
     private func updateScrollEventHandlers() {
@@ -464,20 +479,25 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         }
 
         if scrollingEnabled.x || scrollingEnabled.y {
+            scrollEventHandlerRemovers.append($currentScrollOffset.onChanged { [unowned self] in
+                pseudoScrollBarX.scrollProgress = $0.new.x / width
+                pseudoScrollBarY.scrollProgress = $0.new.y / height
+            })
+
+            scrollEventHandlerRemovers.append(pseudoScrollBarX.$scrollProgress.onChanged { [unowned self] in
+                if $0.old != $0.new {
+                    currentScrollOffset.x = $0.new * width
+                }
+            })
+
+            scrollEventHandlerRemovers.append(pseudoScrollBarY.$scrollProgress.onChanged { [unowned self] in
+                if $0.old != $0.new { 
+                    currentScrollOffset.y = $0.new * height
+                }
+            })
+
             scrollEventHandlerRemovers.append(onMouseWheel.addHandler { [unowned self] event in
                 processMouseWheelEventUpdateScroll(event)
-            })
-
-            scrollEventHandlerRemovers.append(onMouseDown.addHandler { [unowned self] event in
-                processMouseDownEventForScroll(event)
-            })
-
-            scrollEventHandlerRemovers.append(onMouseMove.addHandler { [unowned self] event in
-                processMouseMoveEventForScroll(event)
-            })
-
-            scrollEventHandlerRemovers.append(onMouseUp.addHandler { [unowned self] event in
-                processMouseUpEventForScroll(event)
             })
         }
     }
@@ -485,23 +505,8 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     /** Used if the widget is in scrolling mode. Updates the scroll position based on mouse wheel events. */
     private func processMouseWheelEventUpdateScroll(_ event: GUIMouseWheelEvent) {
         let enabledDimensions = DVec2(scrollingEnabled.x ? 1 : 0, scrollingEnabled.y ? 1 : 0)
-        self.currentScrollOffset += event.scrollAmount * self.scrollingSpeed * enabledDimensions
-        self.currentScrollOffset = min(max(self.currentScrollOffset, self.minScrollOffset), self.maxScrollOffset)
-
-    }
-
-    private func processMouseDownEventForScroll(_ event: GUIMouseButtonDownEvent) {
-        if event.position < size {
-            
-        }
-    }
-
-    private func processMouseMoveEventForScroll(_ event: GUIMouseMoveEvent) {
-
-    }
-
-    private func processMouseUpEventForScroll(_ event: GUIMouseButtonUpEvent) {
-
+        self.currentScrollOffset -= event.scrollAmount * self.scrollingSpeed * enabledDimensions
+        self.currentScrollOffset = max(.zero, min(self.currentScrollOffset, self.scrollableLength))
     }
     /* end internal widget setup / management */
 
@@ -960,20 +965,28 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         size = constraints.constrain(targetSize)
         
         // depending on whether scrolling is enabled, these two values may or may not be used
-        maxScrollOffset = .zero
-        minScrollOffset = DVec2(size - targetSize)
+        //maxScrollOffset = .zero
+        //minScrollOffset = DVec2(size - targetSize)
+        scrollableLength = DVec2(targetSize - size)
 
         // TODO: implement logic for overflow == .auto
 
+        var scrollBarsLength = DSize2(width, height)
+        if scrollingEnabled.x && scrollingEnabled.y {
+            scrollBarsLength -= DSize2(pseudoScrollBarY.boxConfig.preferredSize.x, pseudoScrollBarX.boxConfig.preferredSize.y)
+        }
+
         if scrollingEnabled.x {
+            pseudoScrollBarX.maxScrollProgress = scrollableLength.x / width
             pseudoScrollBarX.layout(constraints: BoxConstraints(
-                size: DSize2(width, pseudoScrollBarX.boxConfig.preferredSize.y)))
+                size: DSize2(scrollBarsLength.x, pseudoScrollBarX.boxConfig.preferredSize.y)))
 
             pseudoScrollBarX.position = DVec2(0, height - pseudoScrollBarX.height)
         }
         if scrollingEnabled.y {
+            pseudoScrollBarY.maxScrollProgress = scrollableLength.y / height
             pseudoScrollBarY.layout(constraints: BoxConstraints(
-                size: DSize2(pseudoScrollBarY.boxConfig.preferredSize.x, height)))
+                size: DSize2(pseudoScrollBarY.boxConfig.preferredSize.x, scrollBarsLength.y)))
 
             pseudoScrollBarY.position = DVec2(width - pseudoScrollBarY.width, 0)
         }

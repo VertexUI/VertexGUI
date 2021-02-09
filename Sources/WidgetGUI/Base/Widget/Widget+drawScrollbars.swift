@@ -2,7 +2,7 @@ import VisualAppBase
 import GfxMath
 
 extension Widget {
-  internal func drawScrollbars(_ drawingContext: DrawingContext) {
+  /*internal func drawScrollbars(_ drawingContext: DrawingContext) {
     var endPosition: DVec2 = DVec2(width, height)
     if scrollingEnabled.x && scrollingEnabled.y {
       endPosition -= DVec2(pseudoScrollBarY.width, pseudoScrollBarX.width)
@@ -46,5 +46,5 @@ extension Widget {
         paint: Paint(color: pseudoScrollBarY.background)
       )
     }
-  }
+  }*/
 }

@@ -261,7 +261,7 @@ open class Root: Parent {
           childDrawingContext.transform(.translate(widget.position))
           // TODO: maybe the scrolling translation should be added to the parent widget context before adding the iterator to the list?
           if !widget.unaffectedByParentScroll, let parent = widget.parent as? Widget, parent.overflowX == .scroll || parent.overflowY == .scroll {
-            childDrawingContext.transform(.translate(parent.currentScrollOffset))
+            childDrawingContext.transform(.translate(-parent.currentScrollOffset))
           }
           if widget.overflowX == .cut || widget.overflowX == .scroll || widget.overflowY == .cut || widget.overflowY == .scroll {
             let translationTestRect = drawingContext.preprocess(DRect(min: .zero, max: .zero))
