@@ -22,20 +22,32 @@ public class DependencyProvider: SingleChildWidget {
 
     return nil
   }
+
+  public func getDependency(with key: String) -> Dependency? {
+    for dependency in dependencies {
+      if dependency.key == key {
+        return dependency
+      }
+    }
+    return nil
+  }
 }
 
 public struct Dependency {
   public internal(set) var value: Any
-  public internal(set) var id: String?
-  public init<T>(_ value: T, id: String? = nil) {
+  public internal(set) var key: String?
+  public init<T>(_ value: T, key: String? = nil) {
     self.value = value
-    self.id = id
+    self.key = key
   }
 }
 
 @propertyWrapper
 public class Inject<T>: AnyInject {
   public typealias Value = T
+
+  internal var key: String? = nil
+
   internal var value: T? = nil
   internal var anyValue: Any? {
     get {
@@ -56,10 +68,16 @@ public class Inject<T>: AnyInject {
   var anyType: Any.Type = T.self
 
   public var wrappedValue: T {
-    return value!
+    if case let .some(value) = value {
+      return value
+    } else {
+      fatalError("a dependency declared with @Inject was not resolved before it's value was accessed")
+    }
   }
 
-  public init() {}
+  public init(key: String?) {
+    self.key = key
+  }
 }
 
 internal protocol AnyInject: class, _AnyInject {}
@@ -71,6 +89,7 @@ to check whether some property of a class is an Inject container. _AnyInject can
 this crashes Swift because of some NSObject conversion.
 */
 internal protocol _AnyInject {
+  var key: String? { get }
   var anyType: Any.Type { get }
   var anyValue: Any? { get set }
 }

@@ -654,6 +654,8 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
                     if injectable.anyValue == nil {
                         if let dependency = provider.getDependency(ofType: injectable.anyType) {
                             injectable.anyValue = dependency.value
+                        } else if let key = injectable.key, let dependency = provider.getDependency(with: key) {
+                            injectable.anyValue = dependency.value
                         }
                     }
                 }
