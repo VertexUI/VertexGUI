@@ -75,7 +75,7 @@ public class Inject<T>: AnyInject {
     }
   }
 
-  public init(key: String?) {
+  public init(key: String? = nil) {
     self.key = key
   }
 }
