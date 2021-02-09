@@ -35,7 +35,10 @@ public class WidgetTreeMouseEventManager {
             // TODO: this might be a lot of calculation, can optimize by successively removing x, y while traversing the testTargets
             if testTarget.globalBounds.contains(point: rawMouseEvent.position) {
                 currentTargets.append(testTarget)
-                testMouseEventTargets.insert(contentsOf: testTarget.children, at: 0)
+                var iterator = testTarget.visitChildren()
+                while let child = iterator.next() {
+                    testMouseEventTargets.insert(child, at: 0)
+                }
             }
         }
 
