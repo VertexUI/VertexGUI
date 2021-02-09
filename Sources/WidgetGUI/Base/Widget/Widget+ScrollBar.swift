@@ -21,6 +21,8 @@ extension Widget {
     }
 
     private var trackingMouse = false
+    private var trackingStartProgress = 0.0
+    private var trackingStartPosition: DPoint2 = .zero
 
     public init(orientation: Orientation) {
       self.orientation = orientation
@@ -51,6 +53,8 @@ extension Widget {
     func handleMouseDown(_ event: GUIMouseButtonDownEvent) {
       if event.button == .Left {
         trackingMouse = true
+        trackingStartProgress = scrollProgress
+        trackingStartPosition = event.globalPosition
       }
     }
 
@@ -58,10 +62,10 @@ extension Widget {
       if trackingMouse {
         let relevantMove: Double
         switch orientation {
-        case .horizontal: relevantMove = event.move.x
-        case .vertical: relevantMove = event.move.y
+        case .horizontal: relevantMove = event.globalPosition.x - trackingStartPosition.x
+        case .vertical: relevantMove = event.globalPosition.y - trackingStartPosition.y
         }
-        scrollProgress += relevantMove / trackLength
+        scrollProgress = max(min(trackingStartProgress + relevantMove / trackLength, maxScrollProgress), 0)
       }
     }
 
