@@ -30,8 +30,8 @@ public class MainView: Experimental.ComposedWidget {
       }*/
 
       Experimental.ConstrainedSizeBox(styleProperties: {
-        ($0.width, 200.0)
-        ($0.height, 100.0)
+        ($0.width, 300.0)
+        ($0.height, 300.0)
       }) {
         
         Experimental.Container(styleProperties: {

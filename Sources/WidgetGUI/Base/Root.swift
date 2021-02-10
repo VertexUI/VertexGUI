@@ -37,6 +37,8 @@ open class Root: Parent {
   private var relayoutWidgets = WidgetBuffer()
   private var rerenderWidgets = WidgetBuffer()
   private var matchedStylesInvalidatedWidgets = WidgetBuffer()
+
+  lazy var cumulatedValuesProcessor = CumulatedValuesProcessor(self)
   /* end Widget lifecycle management */
 
   //private var focusContext = FocusContext()
@@ -199,6 +201,8 @@ open class Root: Parent {
     debugManager.endLifecycleMethod(.layout)
     relayoutWidgets.clear()
 
+    cumulatedValuesProcessor.processQueue()
+
     if renderObjectSystemEnabled {
       // TODO: is it good to put this here or better in render()?
       //print("rerender widgets count", rerenderWidgets.count)
@@ -301,6 +305,10 @@ open class Root: Parent {
             continue outer
           }
         }
+      }
+
+      if let parent = parent as? Widget, parent.debugLayout {
+        drawingContext.drawRect(rect: parent.globalBounds, paint: Paint(strokeWidth: 2.0, strokeColor: .red))
       }
 
       /*if let parent = parent as? Widget, parent.scrollingEnabled.x || parent.scrollingEnabled.y {

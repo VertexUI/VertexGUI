@@ -88,7 +88,10 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         $0[$1] = 0
     }
     /* end lifecycle */
-
+    
+    /* layout, position
+    -----------------------------------------------------
+    */
     @available(*, deprecated, message: "Constraints is now passed as a parameter to layout(constraints:)")
     open var constraints: BoxConstraints? = nil
     lazy open internal(set) var boxConfig = getBoxConfig()
@@ -149,24 +152,22 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         }
     }
     
-    // TODO: might need to create something like layoutBounds and renderBounds (area that is invalidated on rerender request --> could be more than layoutBounds and affect outside widgets (e.g. a drop shadow that is not included in layoutBounds))
-    // TODO: make size unsettable from outside when new layout approach completed
     @inlinable open var bounds: DRect {
         DRect(min: position, size: size)
     }
     
     @inlinable open var globalBounds: DRect {
-        return DRect(min: globalPosition, size: bounds.size)
+        cumulatedTransforms.transform(rect: DRect(min: .zero, size: bounds.size))
     }
     
     @inlinable open var globalPosition: DPoint2 {
-        if parent != nil {
-            return parent!.globalPosition + bounds.min
-        }
-        return bounds.min
+        cumulatedTransforms.transform(point: .zero)
     }
+    
+    public internal(set) var cumulatedTransforms: [DTransform2] = []
 
     public internal(set) var previousConstraints: BoxConstraints?
+    /* end layout, position */
  
     public internal(set) var focusable = false
     public internal(set) var focused = false {
@@ -482,6 +483,9 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
             scrollEventHandlerRemovers.append($currentScrollOffset.onChanged { [unowned self] in
                 pseudoScrollBarX.scrollProgress = $0.new.x / width
                 pseudoScrollBarY.scrollProgress = $0.new.y / height
+                for child in children {
+                    context.queueLifecycleMethodInvocation(.resolveCumulatedValues, target: child, sender: self, reason: .undefined)
+                }
             })
 
             scrollEventHandlerRemovers.append(pseudoScrollBarX.$scrollProgress.onChanged { [unowned self] in
@@ -1001,6 +1005,10 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         if previousSize != size && !isFirstRound {
             onSizeChanged.invokeHandlers(size)
             invalidateRenderState()
+        }
+
+        for child in children {
+            context.queueLifecycleMethodInvocation(.resolveCumulatedValues, target: child, sender: self, reason: .undefined)
         }
 
         self.previousConstraints = constraints

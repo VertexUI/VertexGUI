@@ -32,7 +32,6 @@ public class WidgetTreeMouseEventManager {
         while testMouseEventTargets.count > 0 {
             let testTarget = testMouseEventTargets.removeFirst()
 
-            // TODO: this might be a lot of calculation, can optimize by successively removing x, y while traversing the testTargets
             if testTarget.globalBounds.contains(point: rawMouseEvent.position) {
                 currentTargets.append(testTarget)
                 var iterator = testTarget.visitChildren()
@@ -41,6 +40,7 @@ public class WidgetTreeMouseEventManager {
                 }
             }
         }
+        //print("TARGETS", currentTargets)
 
         // to let the event bubble up
         // TODO: maybe implement a bubble down first and then call on target + bubble up after that
@@ -121,7 +121,7 @@ public class WidgetTreeMouseEventManager {
         default:
         print("Could not forward MouseEvent \(rawMouseEvent), not supported.")
         }
-        
+
         return false
     }
 }

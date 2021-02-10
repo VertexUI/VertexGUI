@@ -5,7 +5,7 @@ extension Widget {
   public class LifecycleManager {
     private let getCurrentTick: () -> Tick
 
-    private var queues: [LifecycleMethod: LifecycleMethodInvocationQueue] = LifecycleMethod.allCases.reduce(into: [:]) {
+    var queues: [LifecycleMethod: LifecycleMethodInvocationQueue] = LifecycleMethod.allCases.reduce(into: [:]) {
       $0[$1] = LifecycleMethodInvocationQueue()
     }
 
