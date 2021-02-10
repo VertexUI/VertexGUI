@@ -3,15 +3,19 @@ import ExperimentalReactiveProperties
 extension Experimental {
   public class Build: ComposedWidget {
     private let childBuilder: SingleChildContentBuilder.ChildBuilder
+    private var ownedProperties = [AnyObject]()
 
-    public init<P1: ReactiveProperty>(_ property: P1, @BuildChildBuilder child childBuilder: @escaping () -> Widget) {
+    public init<P: ReactiveProperty>(_ property: P, @BuildChildBuilder child childBuilder: @escaping () -> Widget) {
       self.childBuilder = SingleChildContentBuilder.ChildBuilder(associatedStyleScope: Widget.activeStyleScope, build: childBuilder)
       super.init()
-      _ = property.onHasValueChanged {
-        self.invalidateBuild()
+      let ownedProperty = ExperimentalReactiveProperties.ObservableProperty<P.Value>()
+      ownedProperty.bind(property)
+      ownedProperties.append(ownedProperty)
+      _ = ownedProperty.onHasValueChanged { [unowned self] in
+        invalidateBuild()
       }
-      _ = property.onChanged { _ in
-        self.invalidateBuild()       
+      _ = ownedProperty.onChanged { [unowned self] _ in
+        invalidateBuild()       
       }
     }
 
