@@ -71,6 +71,14 @@ open class DrawingContext {
       switch transform {
       case let .translate(translation):
         currentPoint = currentPoint + translation
+      case let .scale(scale, origin):
+        if let origin = origin {
+          currentPoint -= origin
+        }
+        currentPoint *= scale
+        if let origin = origin {
+          currentPoint += origin
+        }
       }
     }
     return currentPoint
@@ -161,5 +169,6 @@ open class DrawingContext {
 
   public enum Transform {
     case translate(DVec2)
+    case scale(DVec2, origin: DVec2? = nil)
   }
 }
