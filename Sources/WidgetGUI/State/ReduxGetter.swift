@@ -1,6 +1,6 @@
 import VisualAppBase
 import ReactiveProperties
-
+/*
 internal protocol ReduxGetterMarkerProtocol {
   var dependencies: [AnyObservableProperty] { get set }
   var anyObservableState: Any? { get set }
@@ -76,4 +76,4 @@ public class ReduxGetter<V, State>: ObservableProperty<V>, ReduxGetterMarkerProt
       remove()
     }
   }
-}
+}*/

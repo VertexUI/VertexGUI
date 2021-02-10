@@ -1,4 +1,4 @@
-import ReactiveProperties
+import ExperimentalReactiveProperties
 
 open class ReduxStore<S, G: ReduxGetters<S>, M, A> {
   public typealias State = S
@@ -6,17 +6,18 @@ open class ReduxStore<S, G: ReduxGetters<S>, M, A> {
   public typealias Mutation = M
   public typealias Action = A
 
-  @MutableProperty public private(set) var state: State
+  @MutableProperty
+  public private(set) var state: State
   private var _mutableState: State
 
-  public let getters: Getters
+  //public let getters: Getters
 
   private var dispatchingAction = false
 
   public init(initialState: S) {
     self._mutableState = initialState
     self.state = initialState
-    self.getters = Getters(self._state.observable)
+    //self.getters = Getters(self._state.observable)
   }
 
   open func performMutation(_ state: inout State, _ mutation: Mutation) {
@@ -50,17 +51,18 @@ open class ReduxStore<S, G: ReduxGetters<S>, M, A> {
 open class ReduxGetters<S> {
   public typealias State = S
 
-  @ObservableProperty public var state: State
+  @ObservableProperty
+  public var state: State
 
-  required public init(_ observableState: ObservablePropertyBinding<State>) {
-    self._state = observableState
+  required public init<R: ReactiveProperty>(state stateProperty: R) where R.Value == S {
+    $state.bind(stateProperty)
 
-    let mirror = Mirror(reflecting: self)
+    /*let mirror = Mirror(reflecting: self)
     for child in mirror.children {
       if var getter = child.value as? ReduxGetterMarkerProtocol {
         getter.dependencies = [$state.any]
         getter.anyObservableState = $state
       }
-    }
+    }*/
   }
 }
