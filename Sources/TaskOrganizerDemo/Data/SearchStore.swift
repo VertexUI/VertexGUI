@@ -5,8 +5,11 @@ public class SearchStore: ReduxStore<SearchState, SearchGetters, SearchMutation,
     super.init(initialState: SearchState())
   }
 
-  override public func performMutation(_ state: inout State, _ mutation: Mutation) {
-    
+  override public func performMutation(state: inout State, mutation: Mutation) {
+    switch mutation {
+    case let .updateQuery(query):
+      state.searchQuery = query
+    }
   }
 }
 

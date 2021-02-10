@@ -1,29 +1,46 @@
 import SwiftGUI
+import ExperimentalReactiveProperties
 
 public class TodoListView: SingleChildWidget {
-  @Inject private var store: TodoStore
-  @ObservableProperty private var list: TodoListProtocol
+  @Inject
+  private var store: TodoStore
+
+  @ExperimentalReactiveProperties.ObservableProperty
+  private var listId: Int
+  @ExperimentalReactiveProperties.ComputedProperty
+  private var list: TodoList
   private var editable: Bool
   private var checkable: Bool
   private var expandedItemIndices: Set<Int> = []
-  @MutableProperty
+
+  @ExperimentalReactiveProperties.MutableProperty
   private var nameEditMode: Bool = false
   private var updatedNameBuffer: String = ""
-  @MutableProperty
+
+  @ExperimentalReactiveProperties.MutableProperty
   private var editingItemIndex: Int? = nil
   private var updatedItemDescription: String = ""
 
 
-  public init(_ observableList: ObservableProperty<TodoListProtocol>, editable: Bool = true, checkable: Bool = true) {
-    self._list = observableList
+  public init<P: ReactiveProperty>(listId listIdProperty: P, editable: Bool = true, checkable: Bool = true) where P.Value == Int {
     self.editable = editable
     self.checkable = checkable
+    super.init()
+    self.$listId.bind(listIdProperty)
+    _ = onDependenciesInjected { [unowned self] in
+      self.$list.reinit(compute: { [unowned self] in
+        store.state.lists.first { $0.id == listId }!
+      }, dependencies: [$listId])
+    }
   }
 
   override public func buildChild() -> Widget {
     ScrollArea(scrollX: .Never) { [unowned self] in
       Column(spacing: 16) {
-        ObservingBuilder($nameEditMode) {
+        Experimental.Text(styleProperties: {
+          ($0.textColor, Color.white)
+        }, "DISPLAY A LIST!")
+        /*ObservingBuilder($nameEditMode) {
           if nameEditMode {
             Row(spacing: 16) {
               {
@@ -76,12 +93,12 @@ public class TodoListView: SingleChildWidget {
               build(todo: todo, index: index)
             }
           }
-        }
+        }*/
       }
     }
   }
 
-  @Flex.ItemBuilder private func build(todo: TodoItem, index: Int) -> [Flex.Item] {
+  /*@Flex.ItemBuilder private func build(todo: TodoItem, index: Int) -> [Flex.Item] {
     TodoListItemView(todo, editable: editable, checkable: checkable)
 
     Column.Item(crossAlignment: .Stretch) {
@@ -93,5 +110,5 @@ public class TodoListView: SingleChildWidget {
 
   private func handleAddTodoClick() {
     store.commit(.AddItem(listId: list.id))
-  }
+  }*/
 }

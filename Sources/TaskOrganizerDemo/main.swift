@@ -13,12 +13,14 @@ open class TodoApp: WidgetsApp {
     open var guiRoot: WidgetGUI.Root
     private var todoStore = TodoStore()
     private var searchStore = SearchStore()
+    private var navigationStore = NavigationStore()
 
     public init() {
         guiRoot = WidgetGUI.Root(
             rootWidget: DependencyProvider(provide: [
                 Dependency(todoStore),
-                Dependency(searchStore)
+                Dependency(searchStore),
+                Dependency(navigationStore)
             ]) {
                 TodoAppView()
             })

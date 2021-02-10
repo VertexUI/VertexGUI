@@ -20,17 +20,17 @@ open class ReduxStore<S, G: ReduxGetters<S>, M, A> {
     //self.getters = Getters(self._state.observable)
   }
 
-  open func performMutation(_ state: inout State, _ mutation: Mutation) {
+  open func performMutation(state: inout State, mutation: Mutation) {
     fatalError("performMutation() not implemented")
   }
 
-  open func performAction(_ action: A) {
+  open func performAction(action: A) {
     fatalError("performAction() not implemented")
   }
 
   public func commit(_ mutation: Mutation) {
     var newState = _mutableState
-    performMutation(&newState, mutation)
+    performMutation(state: &newState, mutation: mutation)
     _mutableState = newState
     if !dispatchingAction {
       state = _mutableState
@@ -40,7 +40,7 @@ open class ReduxStore<S, G: ReduxGetters<S>, M, A> {
   public func dispatch(_ action: A) {
     let isRootDispatch = !dispatchingAction
     dispatchingAction = true
-    performAction(action)
+    performAction(action: action)
     if isRootDispatch {
       dispatchingAction = false
       state = _mutableState

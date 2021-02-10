@@ -12,6 +12,9 @@ public class TodoAppView: SingleChildWidget {
   @Inject
   private var searchStore: SearchStore
 
+  @Inject
+  private var navigationStore: NavigationStore
+
   /*private var todoLists: [TodoList] {
     store.state.lists
   }*/
@@ -156,7 +159,7 @@ public class TodoAppView: SingleChildWidget {
         }
       }
     } onClick: { [unowned self] _ in
-      todoStore.commit(.SelectList(list.id))
+      navigationStore.commit(.updateMainViewRoute(.selectedList(list.id)))
       //mode = .SelectedList
     }
   }
@@ -165,6 +168,25 @@ public class TodoAppView: SingleChildWidget {
     return Background(fill: appTheme.backgroundColor) { [unowned self] in
       Column {
         Space(DSize2(0, 0)).connect(ref: $activeViewTopSpace)
+
+        Experimental.Build(ExperimentalReactiveProperties.ComputedProperty(compute: {
+          navigationStore.state.mainViewRoute
+        }, dependencies: [navigationStore.$state])) {
+
+          switch navigationStore.state.mainViewRoute {
+          case .none:
+            return Space(.zero)
+          case let .selectedList(id):
+            return TodoListView(listId: ExperimentalReactiveProperties.ComputedProperty(compute: {
+              if case let .selectedList(id) = navigationStore.state.mainViewRoute {
+                return id
+              }
+              return -1
+            }, dependencies: [navigationStore.$state]))
+          case .searchResults:
+            return SearchResultsView()
+          }
+        }
 
         /*Column.Item(grow: 1, crossAlignment: .Stretch) {
           Padding(all: 32) {

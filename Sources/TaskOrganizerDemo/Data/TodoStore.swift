@@ -7,11 +7,8 @@ public class TodoStore: ReduxStore<TodoState, TodoGetters, TodoMutation, TodoAct
     super.init(initialState: TodoState())
   }
 
-  override public func performMutation(_ state: inout State, _ mutation: Mutation) {
+  override public func performMutation(state: inout State, mutation: Mutation) {
     outer: switch mutation {
-    case let .SelectList(listId):
-      state.selectedListId = listId
-
     case let .AddList:
       state.lists.append(TodoList(id: state.nextListId, name: "New List", color: .yellow, items: []))
       state.nextListId += 1
@@ -56,7 +53,7 @@ public class TodoStore: ReduxStore<TodoState, TodoGetters, TodoMutation, TodoAct
     }
   }
 
-  override public func performAction(_ action: Action) {
+  override public func performAction(action: Action) {
     switch action {
     case let .UpdateTodoItem(updatedItem):
       commit(.UpdateTodoItem(updatedItem))
@@ -101,7 +98,6 @@ public class TodoStore: ReduxStore<TodoState, TodoGetters, TodoMutation, TodoAct
 public struct TodoState {
   public var nextListId: Int = 0
   public var lists: [TodoList] = []
-  public var selectedListId: Int? = nil
   public var searchQuery: String? = nil
   public var searchResult: TodoSearchResult? = nil
 }
@@ -117,7 +113,6 @@ public class TodoGetters: ReduxGetters<TodoState> {
 }
 
 public enum TodoMutation {
-  case SelectList(_ listId: Int)
   case AddList
   case UpdateTodoItem(_ updatedItem: TodoItem)
   case UpdateListName(_ newName: String, listId: Int)
