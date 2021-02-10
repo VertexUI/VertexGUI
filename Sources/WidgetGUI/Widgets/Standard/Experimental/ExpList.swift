@@ -66,10 +66,18 @@ extension Experimental {
     private var displayedCount = 0
     
     public init<P: ReactiveProperty>(
+      classes: [String]? = nil,
+      @StylePropertiesBuilder styleProperties: (Experimental.AnyDefaultStyleKeys.Type) -> Experimental.StyleProperties = { _ in [] },
       _ itemsProperty: P,
       @WidgetBuilder child childBuilder: @escaping (Item) -> Widget) where P.Value == Array<Item> {
         self.childBuilder = childBuilder
         super.init()
+
+        if let classes = classes {
+          self.classes.append(contentsOf: classes)
+        }
+        with(styleProperties(Experimental.AnyDefaultStyleKeys.self))
+
         self.$items.bind(itemsProperty)
         _ = self.onDestroy(self.$items.onChanged { [unowned self] in
           processItemUpdate(old: $0.old, new: $0.new)

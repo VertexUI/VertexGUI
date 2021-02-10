@@ -107,13 +107,13 @@ public struct TodoState {
 }
 
 public class TodoGetters: ReduxGetters<TodoState> {
-  @ReduxGetter(compute: { (state: State) in
+  /*@ReduxGetter(compute: { (state: State) in
     if let id = state.selectedListId {
       return state.lists.first { $0.id == id }
     }
     return nil
   })
-  public var selectedList: TodoList?
+  public var selectedList: TodoList?*/
 }
 
 public enum TodoMutation {

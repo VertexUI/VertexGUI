@@ -12,13 +12,15 @@ import ColorizeSwift
 open class TodoApp: WidgetsApp {    
     open var guiRoot: WidgetGUI.Root
     private var todoStore = TodoStore()
+    private var searchStore = SearchStore()
 
     public init() {
         guiRoot = WidgetGUI.Root(
             rootWidget: DependencyProvider(provide: [
-                Dependency(todoStore)
+                Dependency(todoStore),
+                Dependency(searchStore)
             ]) {
-                TodoAppView().with { $0.debugLayout = false }
+                TodoAppView()
             })
         guiRoot.renderObjectSystemEnabled = false
         super.init(baseApp: SDL2OpenGL3NanoVGVisualApp())

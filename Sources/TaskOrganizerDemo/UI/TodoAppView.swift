@@ -7,7 +7,10 @@ public class TodoAppView: SingleChildWidget {
   }
 
   @Inject
-  private var store: TodoStore
+  private var todoStore: TodoStore
+
+  @Inject
+  private var searchStore: SearchStore
 
   /*private var todoLists: [TodoList] {
     store.state.lists
@@ -15,8 +18,10 @@ public class TodoAppView: SingleChildWidget {
 
   @Reference
   private var activeViewTopSpace: Space
-  @ReactiveProperties.MutableProperty
-  private var mode: Mode = .SelectedList
+
+  /*@ReactiveProperties.MutableProperty
+  private var mode: Mode = .SelectedList*/
+
   @ExperimentalReactiveProperties.MutableProperty
   private var searchQuery: String = ""
 
@@ -47,9 +52,9 @@ public class TodoAppView: SingleChildWidget {
   }
 
   private func buildMenu() -> Widget {
-    ConstrainedSize(minSize: DSize2(400, 0), maxSize: DSize2(400, .infinity)) {
+    ConstrainedSize(minSize: DSize2(400, 0), maxSize: DSize2(400, .infinity)) { [unowned self] in
       Border(right: 1, color: appTheme.backgroundColor.darkened(40)) {
-        Column { [unowned self] in
+        Column {
           Column.Item(crossAlignment: .Stretch) {
             buildSearch()
           }
@@ -84,7 +89,9 @@ public class TodoAppView: SingleChildWidget {
             Experimental.Container(styleProperties: {
               ($0.overflowY, Overflow.scroll)
             }) {
-              List(store.$state.compute { $0.lists }) {
+              Experimental.List(ExperimentalReactiveProperties.ComputedProperty(compute: {
+                todoStore.state.lists
+              }, dependencies: [todoStore.$state])) {
                 buildMenuListItem(for: $0)
               }
             }
@@ -101,10 +108,14 @@ public class TodoAppView: SingleChildWidget {
     }) { [unowned self] in
       Row(spacing: 0) {
         Row.Item(grow: 1, margins: Margins(right: 24)) {
-          Experimental.TextInput(mutableText: $searchQuery, placeholder: "search")
+          Experimental.TextInput(mutableText: ExperimentalReactiveProperties.MutableComputedProperty(compute: {
+            searchStore.state.searchQuery
+          }, apply: {
+            searchStore.commit(.updateQuery($0))
+          }, dependencies: [searchStore.$state]), placeholder: "search")
         }
 
-        Row.Item(crossAlignment: .Center) {
+        /*Row.Item(crossAlignment: .Center) {
           Spaceholder(display: ReactiveProperties.ComputedProperty<Bool>([$mode.any]) { [unowned self] in
             return mode == .Search
           }, dimension: .Vertical) {
@@ -114,7 +125,7 @@ public class TodoAppView: SingleChildWidget {
               mode = .SelectedList
             }
           }
-        }
+        }*/
       }
     }
   }
@@ -145,8 +156,8 @@ public class TodoAppView: SingleChildWidget {
         }
       }
     } onClick: { [unowned self] _ in
-      store.commit(.SelectList(list.id))
-      mode = .SelectedList
+      todoStore.commit(.SelectList(list.id))
+      //mode = .SelectedList
     }
   }
 
@@ -155,7 +166,7 @@ public class TodoAppView: SingleChildWidget {
       Column {
         Space(DSize2(0, 0)).connect(ref: $activeViewTopSpace)
 
-        Column.Item(grow: 1, crossAlignment: .Stretch) {
+        /*Column.Item(grow: 1, crossAlignment: .Stretch) {
           Padding(all: 32) {
             ObservingBuilder($mode) {
               switch mode {
@@ -175,12 +186,12 @@ public class TodoAppView: SingleChildWidget {
               }
             }
           }
-        }
+        }*/
       }
     }
   }
 
   private func handleNewListClick() {
-    store.commit(.AddList)
+    todoStore.commit(.AddList)
   }
 }
