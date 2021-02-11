@@ -73,8 +73,10 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         return maxParent ?? self
     }
 
-    // TODO: maybe switch to overriding visitChildren() approach instead of children array
     public lazy var children: [Widget] = []
+    public var contentChildren: [Widget] {
+        children
+    }
     /* end tree properties */
 
     /* lifecycle

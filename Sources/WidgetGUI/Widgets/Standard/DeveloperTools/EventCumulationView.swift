@@ -60,8 +60,6 @@ public class EventCumulationView: SingleChildWidget {
         },
         Experimental.Style(".bar-chart-container", Experimental.Container.self) {
           ($0.padding, Insets(all: 32))
-          ($0.width, 600.0)
-          ($0.height, 200.0)
         }
       ])
     }

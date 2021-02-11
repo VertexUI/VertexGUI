@@ -4,11 +4,20 @@ extension Experimental {
   public class Container: ComposedWidget, ExperimentalStylableWidget {
     private let childBuilder: SingleChildContentBuilder.ChildBuilder
 
+    @FromStyle(key: StyleKeys.layout)
+    private var layoutType: Layout.Type = AbsoluteLayout.self
+    lazy private var layoutInstance: Layout = layoutType.init(widgets: contentChildren)
+
     override private init(contentBuilder: () -> SingleChildContentBuilder.Result) {
         let content = contentBuilder()
         self.childBuilder = content.child
         super.init()
         self.experimentalProvidedStyles.append(contentsOf: content.experimentalStyles)
+        _ = $layoutType.onChanged { [unowned self] in
+          if ObjectIdentifier($0.old) != ObjectIdentifier($0.new) {
+            updateLayoutInstance()
+          }
+        }
     }
 
     public convenience init(
@@ -29,26 +38,16 @@ extension Experimental {
         configure(self)
     }
 
-    override public func performBuild() {
-      let builtChild = childBuilder()
-      rootChild = Experimental.ConstrainedSizeBox(styleProperties: {
-        ($0.width, stylePropertyValue(reactive: StyleKeys.width))
-        ($0.height, stylePropertyValue(reactive: StyleKeys.height))
-      }) {
-        builtChild
-      }
+    private func updateLayoutInstance() {
+      layoutInstance = layoutType.init(widgets: contentChildren)
     }
 
-    public struct StyleKeys: ExperimentalDefaultStyleKeys, ExperimentalContainerStyleKeys {}
-  }
-}
+    override public func performBuild() {
+      rootChild = childBuilder()
+    }
 
-public protocol ExperimentalContainerStyleKeys {}
-public extension ExperimentalContainerStyleKeys {
-  static var width: String {
-    "width"
-  }
-  static var height: String {
-    "height"
+    public enum StyleKeys: String, StyleKey, ExperimentalDefaultStyleKeys {
+      case layout
+    }
   }
 }

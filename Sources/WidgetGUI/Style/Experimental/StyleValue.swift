@@ -1,6 +1,9 @@
 import GfxMath
 import VisualAppBase
 
+public typealias StyleValue = Any
+
+/*
 public protocol StyleValue {
 }
 
@@ -15,4 +18,4 @@ extension TextTransform: StyleValue {}
 extension Visibility: StyleValue {}
 extension Overflow: StyleValue {}
 extension VisualAppBase.FontWeight: StyleValue {}
-extension VisualAppBase.FontStyle: StyleValue {}
+extension VisualAppBase.FontStyle: StyleValue {}*/
