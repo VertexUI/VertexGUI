@@ -1,5 +1,5 @@
 extension Experimental {
-  public struct StylePropertySupportDefinitions: ExpressibleByArrayLiteral {
+  public struct StylePropertySupportDefinitions: Sequence, ExpressibleByArrayLiteral {
     public var definitions: [StylePropertySupportDefinition]
     public var definitionsByKey: [String: StylePropertySupportDefinition] {
       definitions.reduce(into: [:]) { $0[$1.key.asString] = $1 }
@@ -50,6 +50,14 @@ extension Experimental {
       }
 
       self.definitions = merged
+    }
+    
+    public var count: Int {
+      definitions.count
+    }
+
+    public func makeIterator() -> Array<StylePropertySupportDefinition>.Iterator {
+      definitions.makeIterator()
     }
 
     mutating public func declaredWith(source: StylePropertySupportDefinition.Source) -> Self {

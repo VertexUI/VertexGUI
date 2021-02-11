@@ -4,7 +4,9 @@ extension Experimental {
   public class Container: Widget, ExperimentalStylableWidget {
     @FromStyle(key: StyleKeys.layout)
     private var layoutType: Layout.Type = AbsoluteLayout.self
-    lazy private var layoutInstance: Layout = layoutType.init(widgets: contentChildren)
+    private var layoutInstance: Layout?
+
+    private var childrenLayoutPropertiesHandlerRemovers: [() -> ()] = []
 
     public init(
       classes: [String]? = nil,
@@ -26,18 +28,38 @@ extension Experimental {
             updateLayoutInstance()
           }
         }
+
+        _ = onDestroy(removeChildrenLayoutPropertiesHandlers)
+
+        updateLayoutInstance()
     }
 
     private func updateLayoutInstance() {
+      removeChildrenLayoutPropertiesHandlers()
+
       layoutInstance = layoutType.init(widgets: contentChildren)
+      if layoutInstance!.childPropertySupportDefinitions.count > 0 {
+        for child in contentChildren {
+          childrenLayoutPropertiesHandlerRemovers.append(child.stylePropertiesResolver.onResolvedPropertyValuesChanged { [unowned self] _ in
+            invalidateLayout()
+          })
+        }
+      }
+    }
+
+    private func removeChildrenLayoutPropertiesHandlers() {
+      for remove in childrenLayoutPropertiesHandlerRemovers {
+        remove()
+      }
+      childrenLayoutPropertiesHandlerRemovers = []
     }
 
     override public func getContentBoxConfig() -> BoxConfig {
-      return layoutInstance.getBoxConfig()
+      return layoutInstance!.getBoxConfig()
     }
 
     override public func performLayout(constraints: BoxConstraints) -> DSize2 {
-      return layoutInstance.layout(constraints: constraints)
+      return layoutInstance!.layout(constraints: constraints)
     }
 
     public enum StyleKeys: String, StyleKey, ExperimentalDefaultStyleKeys {

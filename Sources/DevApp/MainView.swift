@@ -71,18 +71,31 @@ public class MainView: Experimental.ComposedWidget {
         items.append(items.last! + 1)
       }*/
       Experimental.Container(styleProperties: {
+        ($0.layout, FlexLayout.self)
         ($0.padding, Insets(all: 128))
         ($0.background, Color.blue)
       }) {
+        Experimental.Style(".test-container") {
+          ($0.background, Color.green)
+
+          Experimental.Style("&:hover") {
+            ($0.background, Color.red)
+            (FlexLayout.ChildKeys.flexAlignSelf, FlexLayout.FlexAlign.stretch)
+          }
+        }
+
         Experimental.Container(styleProperties: {
           ($0.padding, Insets(all: 43))
           ($0.background, Color.yellow)
         }) {
           Experimental.Text("CONTAINER TWO")
-        }.with {
-          $0.debugLayout = true
         }
-        Experimental.Text("WSOW")
+
+        Experimental.Container(classes: ["test-container"], styleProperties: {
+          ($0.padding, Insets(all: 16))
+        }) {
+          Experimental.Text("WSOW")
+        }
       }
 
       Column {
