@@ -75,7 +75,8 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
 
     public lazy var children: [Widget] = []
     public var contentChildren: [Widget] {
-        children
+        get { children }
+        set { children = newValue }
     }
     /* end tree properties */
 
@@ -862,7 +863,7 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         boxConfigInvalid = false
     }
 
-    public func getBoxConfig() -> BoxConfig {
+    final public func getBoxConfig() -> BoxConfig {
         var boxConfig = getContentBoxConfig()
         let paddingSize = padding.aggregateSize
         boxConfig += paddingSize

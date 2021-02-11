@@ -70,6 +70,20 @@ public class MainView: Experimental.ComposedWidget {
       } onClick: {
         items.append(items.last! + 1)
       }*/
+      Experimental.Container(styleProperties: {
+        ($0.padding, Insets(all: 128))
+        ($0.background, Color.blue)
+      }) {
+        Experimental.Container(styleProperties: {
+          ($0.padding, Insets(all: 43))
+          ($0.background, Color.yellow)
+        }) {
+          Experimental.Text("CONTAINER TWO")
+        }.with {
+          $0.debugLayout = true
+        }
+        Experimental.Text("WSOW")
+      }
 
       Column {
         Experimental.List($items) { item in

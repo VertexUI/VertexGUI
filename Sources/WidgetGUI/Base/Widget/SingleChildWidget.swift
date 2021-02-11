@@ -48,7 +48,7 @@ open class SingleChildWidget: Widget {
     invalidateChild()
   }
 
-  override open func getBoxConfig() -> BoxConfig {
+  override open func getContentBoxConfig() -> BoxConfig {
     return child.boxConfig
   }
 

@@ -33,7 +33,7 @@ extension Experimental {
         self.with(stylePropertiesBuilder(StyleKeys.self))
     }
 
-    override open func getBoxConfig() -> BoxConfig {
+    override open func getContentBoxConfig() -> BoxConfig {
       rootChild!.getBoxConfig()
     }
 

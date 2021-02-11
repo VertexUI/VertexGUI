@@ -83,7 +83,7 @@ public class ScrollArea: SingleChildWidget, GUIMouseEventConsumer {
     childBuilder()
   }
 
-  override public final func getBoxConfig() -> BoxConfig {
+  override public final func getContentBoxConfig() -> BoxConfig {
     BoxConfig(
       preferredSize: child.boxConfig.preferredSize + DSize2(scrollBarWidths.y, scrollBarWidths.x))
   }
