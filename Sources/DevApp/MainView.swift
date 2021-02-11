@@ -6,6 +6,9 @@ public class MainView: Experimental.ComposedWidget {
   @ExperimentalReactiveProperties.MutableProperty
   private var text: String = "initial Text"
 
+  @ExperimentalReactiveProperties.MutableProperty
+  var items: [String] = (0..<40).map { _ in "WOWO" }
+
   override public func performBuild() {
     rootChild = Experimental.SimpleColumn { [unowned self] in
       Experimental.DefaultTheme()
@@ -29,7 +32,7 @@ public class MainView: Experimental.ComposedWidget {
         drawingContext.drawRect(rect: DRect(min: .zero, size: DSize2(200, 200)), paint: Paint(color: .red))
       }*/
 
-      Experimental.ConstrainedSizeBox(styleProperties: {
+      /*Experimental.ConstrainedSizeBox(styleProperties: {
         ($0.width, 300.0)
         ($0.height, 300.0)
       }) {
@@ -58,7 +61,7 @@ public class MainView: Experimental.ComposedWidget {
             }
           }
         }
-      }
+      }*/
 
       //NestedWidget(NestedData(content: "level1", children: []))
 
@@ -68,13 +71,15 @@ public class MainView: Experimental.ComposedWidget {
         items.append(items.last! + 1)
       }*/
 
-      /*Experimental.List($items) { item in
-        Experimental.Button {
-          Experimental.Text(styleProperties: {
-            ($0.textColor, Color.white)
-          }, String(item))
+      Column {
+        Experimental.List($items) { item in
+          Experimental.Button {
+            Experimental.Text(styleProperties: {
+              ($0.textColor, Color.white)
+            }, String(item))
+          }
         }
-      }*/
+      }
     }
   }
 
