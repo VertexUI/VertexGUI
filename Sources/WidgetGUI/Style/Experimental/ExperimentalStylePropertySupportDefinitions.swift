@@ -12,13 +12,13 @@ extension Experimental {
       }
     }
 
-    /** 
-    A convenient api for defining supported properties.  
-    
+    /**
+    A convenient api for defining supported properties.
+
     Use it like:
 
         StylePropertySupportDefinition {
-          ("someKey", type: .specific(SomeType.self))
+          ("someKey", type: .specific(SomeType.self), default: someValue)
           ("someOtherKey", type: .function({ $0 is SomeType }), value: { $0.property1 == 0 })
         }
      */
@@ -41,7 +41,7 @@ extension Experimental {
       for definition in definitions.flatMap { $0.definitions } {
         if byKey[definition.key.asString] != nil {
           throw MergingError.duplicateKey(
-            key: definition.key.asString, 
+            key: definition.key.asString,
             sources: [byKey[definition.key.asString]!.source, definition.source])
         }
 
@@ -51,7 +51,7 @@ extension Experimental {
 
       self.definitions = merged
     }
-    
+
     public var count: Int {
       definitions.count
     }
@@ -60,12 +60,18 @@ extension Experimental {
       definitions.makeIterator()
     }
 
+    public subscript(_ key: StyleKey) -> StylePropertySupportDefinition? {
+      definitionsByKey[key.asString]
+    }
+
     mutating public func declaredWith(source: StylePropertySupportDefinition.Source) -> Self {
       self.source = source
       return self
     }
 
-    public func process(_ properties: [Experimental.StyleProperty]) -> (validProperties: [Experimental.StyleProperty], results: [String: ValidationResult]) {
+    public func process(_ properties: [Experimental.StyleProperty]) -> (
+      validProperties: [Experimental.StyleProperty], results: [String: ValidationResult]
+    ) {
       var validationResults = [String: ValidationResult]()
       var validProperties = [Experimental.StyleProperty]()
 
@@ -86,23 +92,65 @@ extension Experimental {
 
     @_functionBuilder
     public struct DefinitionBuilder {
-      public static func buildExpression(_ expression: (StyleKey,
-        type: StylePropertyValueValidators.TypeValidator,
-        value: StylePropertyValueValidators.ValueValidator)) -> StylePropertySupportDefinition {
-          StylePropertySupportDefinition(key: expression.0,
-            validators: StylePropertyValueValidators(
-              typeValidator: expression.type,
-              valueValidator: expression.value))
+      public static func buildExpression(
+        _ expression: (
+          StyleKey,
+          type: StylePropertyValueValidators.TypeValidator,
+          value: StylePropertyValueValidators.ValueValidator
+        )
+      ) -> StylePropertySupportDefinition {
+        StylePropertySupportDefinition(
+          key: expression.0,
+          validators: StylePropertyValueValidators(
+            typeValidator: expression.type,
+            valueValidator: expression.value))
       }
 
-      public static func buildExpression(_ expression: (StyleKey,
-        type: StylePropertyValueValidators.TypeValidator)) -> StylePropertySupportDefinition {
-          StylePropertySupportDefinition(key: expression.0,
-            validators: StylePropertyValueValidators(
-              typeValidator: expression.type))
+      public static func buildExpression(
+        _ expression: (
+          StyleKey,
+          type: StylePropertyValueValidators.TypeValidator,
+          value: StylePropertyValueValidators.ValueValidator,
+          default: StyleValue?
+        )
+      ) -> StylePropertySupportDefinition {
+        StylePropertySupportDefinition(
+          key: expression.0,
+          validators: StylePropertyValueValidators(
+            typeValidator: expression.type,
+            valueValidator: expression.value),
+          defaultValue: expression.default)
       }
 
-      public static func buildBlock(_ definitions: StylePropertySupportDefinition...) -> [StylePropertySupportDefinition] {
+      public static func buildExpression(
+        _ expression: (
+          StyleKey,
+          type: StylePropertyValueValidators.TypeValidator
+        )
+      ) -> StylePropertySupportDefinition {
+        StylePropertySupportDefinition(
+          key: expression.0,
+          validators: StylePropertyValueValidators(
+            typeValidator: expression.type))
+      }
+
+      public static func buildExpression(
+        _ expression: (
+          StyleKey,
+          type: StylePropertyValueValidators.TypeValidator,
+          default: StyleValue?
+        )
+      ) -> StylePropertySupportDefinition {
+        StylePropertySupportDefinition(
+          key: expression.0,
+          validators: StylePropertyValueValidators(
+            typeValidator: expression.type),
+          defaultValue: expression.default)
+      }
+
+      public static func buildBlock(_ definitions: StylePropertySupportDefinition...)
+        -> [StylePropertySupportDefinition]
+      {
         definitions
       }
     }
