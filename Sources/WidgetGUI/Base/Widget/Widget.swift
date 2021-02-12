@@ -224,7 +224,7 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     /** Style property support declared for this Widget instance as the child of it's parent. */
     public var experimentalSupportedParentStyleProperties: Experimental.StylePropertySupportDefinitions = []
     /** Style property support declared by this Widget instance. */
-    public var experimentalSupportedStyleProperties: Experimental.StylePropertySupportDefinitions { [] }
+    open var experimentalSupportedStyleProperties: Experimental.StylePropertySupportDefinitions { [] }
     /** */
     public var experimentalMergedSupportedStyleProperties: Experimental.StylePropertySupportDefinitions {
             do {

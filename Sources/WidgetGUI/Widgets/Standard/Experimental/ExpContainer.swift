@@ -8,6 +8,10 @@ extension Experimental {
 
     private var childrenLayoutPropertiesHandlerRemovers: [() -> ()] = []
 
+    override public var experimentalSupportedStyleProperties: Experimental.StylePropertySupportDefinitions {
+      layoutInstance?.parentPropertySupportDefinitions ?? []
+    }
+
     public init(
       classes: [String]? = nil,
       @Experimental.StylePropertiesBuilder styleProperties stylePropertiesBuilder: (StyleKeys.Type) -> Experimental.StyleProperties = { _ in [] },
@@ -23,9 +27,16 @@ extension Experimental {
         }
         self.with(stylePropertiesBuilder(StyleKeys.self))
 
-        _ = $layoutType.onChanged { [unowned self] in
-          if ObjectIdentifier($0.old) != ObjectIdentifier($0.new) {
-            updateLayoutInstance()
+        _ = stylePropertiesResolver.onResolvedPropertyValuesChanged { [unowned self] in
+          let oldLayoutProperty = $0.old[StyleKeys.layout.asString]
+          let newLayoutProperty = $0.new[StyleKeys.layout.asString]
+
+          if let oldLayoutType = oldLayoutProperty as? Layout.Type,
+            let newLayoutType = newLayoutProperty as? Layout.Type,
+            ObjectIdentifier(oldLayoutType) != ObjectIdentifier(newLayoutType) {
+              updateLayoutInstance()
+          } else {
+            updateLayoutInstanceProperties()
           }
         }
 
@@ -37,13 +48,27 @@ extension Experimental {
     private func updateLayoutInstance() {
       removeChildrenLayoutPropertiesHandlers()
 
-      layoutInstance = layoutType.init(widgets: contentChildren)
+      layoutInstance = layoutType.init(widgets: contentChildren, layoutPropertyValues: [:])
+      stylePropertiesResolver.propertySupportDefinitions = experimentalMergedSupportedStyleProperties
+      stylePropertiesResolver.resolve()
+
+      //updateLayoutInstanceProperties()
+
       if layoutInstance!.childPropertySupportDefinitions.count > 0 {
         for child in contentChildren {
           childrenLayoutPropertiesHandlerRemovers.append(child.stylePropertiesResolver.onResolvedPropertyValuesChanged { [unowned self] _ in
             invalidateLayout()
           })
         }
+      }
+    }
+
+    private func updateLayoutInstanceProperties() {
+      for property in layoutInstance!.parentPropertySupportDefinitions {
+        layoutInstance!.layoutPropertyValues[property.key.asString] = stylePropertyValue(property.key)
+      }
+      if mounted && layouted {
+        invalidateLayout()
       }
     }
 
