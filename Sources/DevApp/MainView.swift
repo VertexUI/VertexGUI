@@ -10,7 +10,7 @@ public class MainView: Experimental.ComposedWidget {
   var items: [String] = (0..<40).map { _ in "WOWO" }
 
   @ExperimentalReactiveProperties.MutableProperty
-  var flexDirection: FlexLayout.Direction = .row
+  var layoutDirection: SimpleLinearLayout.Direction = .row
 
   override public func performBuild() {
     rootChild = Experimental.SimpleColumn { [unowned self] in
@@ -74,8 +74,8 @@ public class MainView: Experimental.ComposedWidget {
         items.append(items.last! + 1)
       }*/
       Experimental.Container(styleProperties: {
-        ($0.layout, FlexLayout.self)
-        (FlexLayout.ParentKeys.direction, $flexDirection)
+        ($0.layout, SimpleLinearLayout.self)
+        (SimpleLinearLayout.ParentKeys.direction, $layoutDirection)
         ($0.padding, Insets(all: 128))
         ($0.background, Color.blue)
       }) {
@@ -84,7 +84,7 @@ public class MainView: Experimental.ComposedWidget {
 
           Experimental.Style("&:hover") {
             ($0.background, Color.red)
-            (FlexLayout.ChildKeys.alignSelf, FlexLayout.FlexAlign.stretch)
+            (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.stretch)
           }
         }
 
@@ -101,7 +101,7 @@ public class MainView: Experimental.ComposedWidget {
           Experimental.Text("WSOW")
         }
       }.onClick {
-        flexDirection = .column
+        layoutDirection = .column
       }
 
       Column {
