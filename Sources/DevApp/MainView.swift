@@ -95,6 +95,20 @@ public class MainView: Experimental.ComposedWidget {
           Experimental.Text("CONTAINER TWO")
         }
 
+        Experimental.Container(styleProperties: {
+          ($0.background, Color.orange)
+          (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.center)
+        }) {
+          Experimental.Text("CONTAINER THREE")
+        }
+
+        Experimental.Container(styleProperties: {
+          ($0.background, Color.green)
+          (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.end)
+        }) {
+          Experimental.Text("CONTAINER FOUR")
+        }
+
         Experimental.Container(classes: ["test-container"], styleProperties: {
           ($0.padding, Insets(all: 16))
         }) {

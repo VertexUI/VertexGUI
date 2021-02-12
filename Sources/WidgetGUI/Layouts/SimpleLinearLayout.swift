@@ -10,7 +10,7 @@ public class SimpleLinearLayout: Layout {
   override public var childPropertySupportDefinitions: Experimental.StylePropertySupportDefinitions {
     Experimental.StylePropertySupportDefinitions {
       (ChildKeys.grow, type: .specific(Double.self))
-      (ChildKeys.alignSelf, type: .specific(Align.self))
+      (ChildKeys.alignSelf, type: .specific(Align.self), default: Align.start)
     }
   }
 
@@ -33,25 +33,65 @@ public class SimpleLinearLayout: Layout {
       secondaryAxisIndex = 0
     }
 
-    var maxSize = DSize2.zero
+    // first pass to get preferred sizes, determine max cross axis size
+    var accumulatedSize = DSize2.zero
     for widget in widgets {
-      var widgetConstraints = constraints
-      if widget.stylePropertyValue(ChildKeys.alignSelf, as: Align.self) == .stretch {
-        widgetConstraints.minSize.width = maxSize.width
-      }
+      var widgetConstraints = BoxConstraints(minSize: .zero, maxSize: .infinity)
+      widgetConstraints.maxSize[secondaryAxisIndex] = constraints.maxSize[secondaryAxisIndex]
       widget.layout(constraints: widgetConstraints)
 
       var widgetPosition = DVec2.zero
-      widgetPosition[primaryAxisIndex] = maxSize[primaryAxisIndex]
+      widgetPosition[primaryAxisIndex] = accumulatedSize[primaryAxisIndex]
       widgetPosition[secondaryAxisIndex] = 0
       widget.position = widgetPosition
 
-      maxSize[primaryAxisIndex] += widget.size[primaryAxisIndex]
-      if widget.size[secondaryAxisIndex] > maxSize[secondaryAxisIndex] {
-        maxSize[secondaryAxisIndex] = widget.size[secondaryAxisIndex]
+      accumulatedSize[primaryAxisIndex] += widget.size[primaryAxisIndex]
+      if widget.size[secondaryAxisIndex] > accumulatedSize[secondaryAxisIndex] {
+        accumulatedSize[secondaryAxisIndex] = widget.size[secondaryAxisIndex]
       }
     }
-    return maxSize
+
+    let constrainedAccumulatedSize = constraints.constrain(accumulatedSize)
+    let deltaAccumulatedSize = constrainedAccumulatedSize - accumulatedSize
+
+    // resolve cross axis
+    var currentPrimaryAxisPosition = 0.0
+    for widget in widgets {
+      widget.position[primaryAxisIndex] = currentPrimaryAxisPosition
+
+      var needRelayout = false
+      var widgetConstraints = BoxConstraints(minSize: .zero, maxSize: .infinity)
+      widgetConstraints.maxSize[secondaryAxisIndex] = constraints.maxSize[secondaryAxisIndex]
+
+      // TODO: implement property definitions forwarding to children!
+      switch widget.stylePropertyValue(ChildKeys.alignSelf, as: Align.self) ?? .start {
+      case .start:
+        widget.position[secondaryAxisIndex] = 0
+     
+      case .center:
+        widget.position[secondaryAxisIndex] = constrainedAccumulatedSize[secondaryAxisIndex] / 2 - widget.size[secondaryAxisIndex] / 2
+      
+      case .end:
+        widget.position[secondaryAxisIndex] = constrainedAccumulatedSize[secondaryAxisIndex] - widget.size[secondaryAxisIndex]
+
+      case .stretch:
+        needRelayout = true
+        widgetConstraints.minSize[secondaryAxisIndex] = constrainedAccumulatedSize[secondaryAxisIndex]
+        widgetConstraints.maxSize[primaryAxisIndex] = widget.size[primaryAxisIndex]
+     }
+
+      if needRelayout {
+        widget.layout(constraints: widgetConstraints)
+      }
+
+      currentPrimaryAxisPosition += widget.size[primaryAxisIndex]
+    }
+
+    // TODO: resolve main axis
+    // --> note, e.g. for image view, it might have been stretched, and now, it might be shrunk again and the height will shrink as well
+    // because it has aspect ratio -> so stretch will not work, that's ok!
+
+    return accumulatedSize 
   }
 
   public enum Direction {
@@ -59,7 +99,7 @@ public class SimpleLinearLayout: Layout {
   }
 
   public enum Align {
-    case start, stretch
+    case start, center, end, stretch
   }
 
   public enum ParentKeys: String, StyleKey {
