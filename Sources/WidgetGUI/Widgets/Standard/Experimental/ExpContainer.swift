@@ -56,6 +56,10 @@ extension Experimental {
 
       if layoutInstance!.childPropertySupportDefinitions.count > 0 {
         for child in contentChildren {
+          child.experimentalSupportedParentStyleProperties["layout"] = layoutInstance!.childPropertySupportDefinitions
+          child.stylePropertiesResolver.propertySupportDefinitions = child.experimentalMergedSupportedStyleProperties
+          child.stylePropertiesResolver.resolve()
+          
           childrenLayoutPropertiesHandlerRemovers.append(child.stylePropertiesResolver.onResolvedPropertyValuesChanged { [unowned self] _ in
             invalidateLayout()
           })

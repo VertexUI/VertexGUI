@@ -9,7 +9,7 @@ public class SimpleLinearLayout: Layout {
 
   override public var childPropertySupportDefinitions: Experimental.StylePropertySupportDefinitions {
     Experimental.StylePropertySupportDefinitions {
-      (ChildKeys.grow, type: .specific(Double.self))
+      (ChildKeys.grow, type: .specific(Double.self), default: 0.0)
       (ChildKeys.alignSelf, type: .specific(Align.self), default: Align.start)
     }
   }
@@ -64,7 +64,7 @@ public class SimpleLinearLayout: Layout {
       widgetConstraints.maxSize[secondaryAxisIndex] = constraints.maxSize[secondaryAxisIndex]
 
       // TODO: implement property definitions forwarding to children!
-      switch widget.stylePropertyValue(ChildKeys.alignSelf, as: Align.self) ?? .start {
+      switch widget.stylePropertyValue(ChildKeys.alignSelf, as: Align.self)! {
       case .start:
         widget.position[secondaryAxisIndex] = 0
      

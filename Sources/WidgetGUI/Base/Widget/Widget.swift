@@ -221,15 +221,18 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     public var globalPropertyKeysWithAutomaticLifecycleManagement: [StyleKey] {
         []
     }
-    /** Style property support declared for this Widget instance as the child of it's parent. */
-    public var experimentalSupportedParentStyleProperties: Experimental.StylePropertySupportDefinitions = []
+    /** Style property support declared for this Widget instance as the child of it's parent. 
+    Given as a dictionary so that the parent can add properties in groups and conveniently update the groups instead
+    of reapplying everything.
+    */
+    public var experimentalSupportedParentStyleProperties: [String: Experimental.StylePropertySupportDefinitions] = [:]
     /** Style property support declared by this Widget instance. */
     open var experimentalSupportedStyleProperties: Experimental.StylePropertySupportDefinitions { [] }
     /** */
     public var experimentalMergedSupportedStyleProperties: Experimental.StylePropertySupportDefinitions {
             do {
-                return try Experimental.StylePropertySupportDefinitions(merge: experimentalSupportedGlobalStyleProperties, 
-                    experimentalSupportedParentStyleProperties, experimentalSupportedStyleProperties)
+                return try Experimental.StylePropertySupportDefinitions(merge: [experimentalSupportedGlobalStyleProperties] +
+                    experimentalSupportedParentStyleProperties.values + [experimentalSupportedStyleProperties])
             } catch {
                 fatalError("error while merging style property support definitions in Widget: \(self), error: \(error)")
             }

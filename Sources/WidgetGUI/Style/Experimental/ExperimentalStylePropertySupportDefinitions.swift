@@ -34,7 +34,7 @@ extension Experimental {
       self.init(elements)
     }
 
-    public init(merge definitions: StylePropertySupportDefinitions...) throws {
+    public init(merge definitions: [StylePropertySupportDefinitions]) throws {
       var byKey = [String: StylePropertySupportDefinition]()
       var merged = [StylePropertySupportDefinition]()
 
