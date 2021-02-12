@@ -97,6 +97,7 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     */
     @available(*, deprecated, message: "Constraints is now passed as a parameter to layout(constraints:)")
     open var constraints: BoxConstraints? = nil
+
     lazy open internal(set) var boxConfig = getBoxConfig()
     /// bridge boxConfig for use in @inlinable functions
     @usableFromInline internal var _boxConfig: BoxConfig {
@@ -108,7 +109,7 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
             boxConfig = newValue
         }
     }
-
+    
     open private(set) var size = DSize2(0, 0) {
         didSet {
             if oldValue != size {
@@ -292,11 +293,16 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         propertySupportDefinitions: experimentalMergedSupportedStyleProperties,
         widget: self)
 
-    @FromStyle(key: Experimental.AnyDefaultStyleKeys.opacity)
-    public var opacity: Double = 1
+    // TODO: maybe this belongs into the layout section instead of in the style section?
+    // TODO: maybe even create a separate section for universal properties?
+    /*@FromStyle(key: Experimental.AnyDefaultStyleKeys.width)
+    public var explicitWidth: Double = 0
 
-    @FromStyle(key: Experimental.AnyDefaultStyleKeys.visibility)
-    public var visibility: Visibility = .visible
+    @FromStyle(key: Experimental.AnyDefaultStyleKeys.height)
+    public var explicitHeight: Double = 0*/
+
+    @FromStyle(key: Experimental.AnyDefaultStyleKeys.padding)
+    public var padding: Insets = .zero
 
     @FromStyle(key: Experimental.AnyDefaultStyleKeys.overflowX)
     public var overflowX: Overflow = .show
@@ -304,10 +310,11 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     @FromStyle(key: Experimental.AnyDefaultStyleKeys.overflowY)
     public var overflowY: Overflow = .show
 
-    // TODO: maybe this belongs into the layout section instead of in the style section?
-    // TODO: maybe even create a separate section for universal properties?
-    @FromStyle(key: Experimental.AnyDefaultStyleKeys.padding)
-    public var padding: Insets = .zero
+    @FromStyle(key: Experimental.AnyDefaultStyleKeys.opacity)
+    public var opacity: Double = 1
+
+    @FromStyle(key: Experimental.AnyDefaultStyleKeys.visibility)
+    public var visibility: Visibility = .visible
 
     @FromStyle(key: Experimental.AnyDefaultStyleKeys.borderWidth)
     public var borderWidth: BorderWidth = .zero
@@ -417,6 +424,7 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         
         setupWidgetEventHandlerManagers()
         setupFromStyleWrappers()
+        setupBoxConfigUpdateTriggers()
         setupScrolling()
 
         _ = onDestroy(_debugLayout.onChanged { [unowned self] _ in
@@ -444,6 +452,18 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         for child in mirror.allChildren {
             if let fromStyle = child.value as? FromStyleProtocol {
                 fromStyle.registerWidget(self)
+            }
+        }
+    }
+
+    private func setupBoxConfigUpdateTriggers() {
+        _ = stylePropertiesResolver.onResolvedPropertyValuesChanged { [unowned self] in
+            let oldWidth = $0.old[StyleKeys.width] as? Double
+            let newWidth = $0.new[StyleKeys.width] as? Double
+            let oldHeight = $0.old[StyleKeys.height] as? Double
+            let newHeight = $0.new[StyleKeys.height] as? Double
+            if oldWidth != newWidth || oldHeight != newHeight {
+                invalidateBoxConfig()
             }
         }
     }
@@ -872,6 +892,18 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         boxConfig += paddingSize
         let borderSize = borderWidth.aggregateSize
         boxConfig += borderSize
+
+        if let explicitWidth = stylePropertyValue(StyleKeys.width, as: Double.self) {
+            boxConfig.minSize.width = explicitWidth
+            boxConfig.maxSize.width = explicitWidth
+            boxConfig.preferredSize.width = explicitWidth
+        }
+        if let explicitHeight = stylePropertyValue(StyleKeys.height, as: Double.self) {
+            boxConfig.minSize.height = explicitHeight
+            boxConfig.maxSize.height = explicitHeight
+            boxConfig.preferredSize.height = explicitHeight
+        }
+
         return boxConfig
     }
 
@@ -955,24 +987,29 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         let previousSize = size
         let isFirstRound = !layouted
         
-        var preparedConstraints: BoxConstraints = constraints - padding.aggregateSize - borderWidth.aggregateSize
+        let boxConfigConstraints = BoxConstraints(minSize: boxConfig.minSize, maxSize: boxConfig.maxSize)
+        let constrainedParentConstraints = BoxConstraints(
+            minSize: boxConfigConstraints.constrain(constraints.minSize),
+            maxSize: boxConfigConstraints.constrain(constraints.maxSize)
+        )
+        var contentConstraints: BoxConstraints = constrainedParentConstraints - padding.aggregateSize - borderWidth.aggregateSize
         if overflowX == .scroll {
-            preparedConstraints.minSize.x = 0
-            preparedConstraints.maxSize.x = .infinity
+            contentConstraints.minSize.x = 0
+            contentConstraints.maxSize.x = .infinity
         }
         if overflowY == .scroll {
-            preparedConstraints.minSize.y = 0
-            preparedConstraints.maxSize.y = .infinity
+            contentConstraints.minSize.y = 0
+            contentConstraints.maxSize.y = .infinity
         }
-
-        let newUnconstrainedContentSize = performLayout(constraints: preparedConstraints)
+        
+        let newUnconstrainedContentSize = performLayout(constraints: contentConstraints)
 
         for child in children {
             child.position += DVec2(padding.left, padding.top)
         }
         
         let targetSize = newUnconstrainedContentSize + padding.aggregateSize + borderWidth.aggregateSize
-        size = constraints.constrain(targetSize)
+        size = boxConfigConstraints.constrain(targetSize)
         
         // depending on whether scrolling is enabled, these two values may or may not be used
         //maxScrollOffset = .zero

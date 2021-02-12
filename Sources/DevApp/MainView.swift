@@ -78,6 +78,7 @@ public class MainView: Experimental.ComposedWidget {
         (SimpleLinearLayout.ParentKeys.direction, $layoutDirection)
         //($0.padding, Insets(all: 128))
         ($0.width, 800.0)
+        ($0.height, 1000.0)
         ($0.background, Color.blue)
       }) {
         Experimental.Style(".test-container") {

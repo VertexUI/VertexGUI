@@ -88,16 +88,7 @@ extension Experimental {
     }
 
     override public func performLayout(constraints: BoxConstraints) -> DSize2 {
-      var preparedConstraints = constraints
-      if let explicitWidth = stylePropertyValue(StyleKeys.width, as: Double.self) {
-        preparedConstraints.minWidth = explicitWidth
-        preparedConstraints.maxWidth = explicitWidth
-      }
-      if let explicitHeight = stylePropertyValue(StyleKeys.height, as: Double.self) {
-        preparedConstraints.minHeight = explicitHeight 
-        preparedConstraints.maxHeight = explicitHeight 
-      }
-      return preparedConstraints.constrain(layoutInstance!.layout(constraints: preparedConstraints))
+      layoutInstance!.layout(constraints: constraints)
     }
 
     public enum StyleKeys: String, StyleKey, ExperimentalDefaultStyleKeys {

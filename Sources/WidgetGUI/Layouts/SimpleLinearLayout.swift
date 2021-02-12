@@ -84,7 +84,7 @@ public class SimpleLinearLayout: Layout {
         needRelayout = true
         widgetConstraints.minSize[secondaryAxisIndex] = constrainedAccumulatedSize[secondaryAxisIndex]
         widgetConstraints.maxSize[primaryAxisIndex] = widget.size[primaryAxisIndex]
-     }
+      }
 
       if needRelayout {
         widget.layout(constraints: widgetConstraints)
