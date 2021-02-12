@@ -4,6 +4,12 @@ public protocol ExperimentalDefaultStyleKeys {
 }
 
 public extension ExperimentalDefaultStyleKeys {
+  static var width: String {
+    "width"
+  }
+  static var height: String {
+    "height"
+  }
   static var padding: String {
     "padding"
   }

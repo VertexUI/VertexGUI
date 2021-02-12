@@ -10,6 +10,7 @@ public class SimpleLinearLayout: Layout {
   override public var childPropertySupportDefinitions: Experimental.StylePropertySupportDefinitions {
     Experimental.StylePropertySupportDefinitions {
       (ChildKeys.grow, type: .specific(Double.self), default: 0.0)
+      (ChildKeys.shrink, type: .specific(Double.self), default: 0.0)
       (ChildKeys.alignSelf, type: .specific(Align.self), default: Align.start)
     }
   }
@@ -33,9 +34,15 @@ public class SimpleLinearLayout: Layout {
       secondaryAxisIndex = 0
     }
 
-    // first pass to get preferred sizes, determine max cross axis size
+    var totalGrowWeight = 0.0
+    var totalShrinkWeight = 0.0
+
+    // first pass to get preferred sizes, total grow and shrink weights, determine max cross axis size
     var accumulatedSize = DSize2.zero
     for widget in widgets {
+      totalGrowWeight += widget.stylePropertyValue(ChildKeys.grow, as: Double.self)!
+      totalShrinkWeight += widget.stylePropertyValue(ChildKeys.shrink, as: Double.self)!
+
       var widgetConstraints = BoxConstraints(minSize: .zero, maxSize: .infinity)
       widgetConstraints.maxSize[secondaryAxisIndex] = constraints.maxSize[secondaryAxisIndex]
       widget.layout(constraints: widgetConstraints)
@@ -51,8 +58,7 @@ public class SimpleLinearLayout: Layout {
       }
     }
 
-    let constrainedAccumulatedSize = constraints.constrain(accumulatedSize)
-    let deltaAccumulatedSize = constrainedAccumulatedSize - accumulatedSize
+    var constrainedAccumulatedSize = constraints.constrain(accumulatedSize)
 
     // resolve cross axis
     var currentPrimaryAxisPosition = 0.0
@@ -87,9 +93,30 @@ public class SimpleLinearLayout: Layout {
       currentPrimaryAxisPosition += widget.size[primaryAxisIndex]
     }
 
-    // TODO: resolve main axis
-    // --> note, e.g. for image view, it might have been stretched, and now, it might be shrunk again and the height will shrink as well
-    // because it has aspect ratio -> so stretch will not work, that's ok!
+    accumulatedSize[primaryAxisIndex] = currentPrimaryAxisPosition
+    constrainedAccumulatedSize = constraints.constrain(accumulatedSize)
+    let deltaAccumulatedSize = constrainedAccumulatedSize - accumulatedSize
+
+    // resolve main axis
+    currentPrimaryAxisPosition = 0
+    for widget in widgets {
+      widget.position[primaryAxisIndex] = currentPrimaryAxisPosition
+ 
+      let growWeight = widget.stylePropertyValue(ChildKeys.grow, as: Double.self)!
+      if deltaAccumulatedSize[primaryAxisIndex] > 0 && growWeight > 0 {
+        let relativeGrowWeight = growWeight / totalGrowWeight 
+        let primaryAxisGrowSpace = deltaAccumulatedSize[primaryAxisIndex] * relativeGrowWeight
+        var targetSize = DSize2.zero
+        targetSize[primaryAxisIndex] = widget.size[primaryAxisIndex] + primaryAxisGrowSpace
+        targetSize[secondaryAxisIndex] = widget.size[secondaryAxisIndex]
+        var widgetConstraints = BoxConstraints(size: targetSize)
+        widget.layout(constraints: widgetConstraints)
+      }
+
+      currentPrimaryAxisPosition += widget.size[primaryAxisIndex]
+    }
+
+    accumulatedSize[primaryAxisIndex] = currentPrimaryAxisPosition
 
     return accumulatedSize 
   }
@@ -107,7 +134,8 @@ public class SimpleLinearLayout: Layout {
   }
 
   public enum ChildKeys: String, StyleKey {
-    case grow 
+    case grow
+    case shrink
     case alignSelf 
   }
 }

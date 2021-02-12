@@ -59,7 +59,7 @@ extension Experimental {
           child.experimentalSupportedParentStyleProperties["layout"] = layoutInstance!.childPropertySupportDefinitions
           child.stylePropertiesResolver.propertySupportDefinitions = child.experimentalMergedSupportedStyleProperties
           child.stylePropertiesResolver.resolve()
-          
+
           childrenLayoutPropertiesHandlerRemovers.append(child.stylePropertiesResolver.onResolvedPropertyValuesChanged { [unowned self] _ in
             invalidateLayout()
           })
@@ -88,7 +88,16 @@ extension Experimental {
     }
 
     override public func performLayout(constraints: BoxConstraints) -> DSize2 {
-      return layoutInstance!.layout(constraints: constraints)
+      var preparedConstraints = constraints
+      if let explicitWidth = stylePropertyValue(StyleKeys.width, as: Double.self) {
+        preparedConstraints.minWidth = explicitWidth
+        preparedConstraints.maxWidth = explicitWidth
+      }
+      if let explicitHeight = stylePropertyValue(StyleKeys.height, as: Double.self) {
+        preparedConstraints.minHeight = explicitHeight 
+        preparedConstraints.maxHeight = explicitHeight 
+      }
+      return preparedConstraints.constrain(layoutInstance!.layout(constraints: preparedConstraints))
     }
 
     public enum StyleKeys: String, StyleKey, ExperimentalDefaultStyleKeys {

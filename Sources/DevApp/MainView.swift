@@ -76,7 +76,8 @@ public class MainView: Experimental.ComposedWidget {
       Experimental.Container(styleProperties: {
         ($0.layout, SimpleLinearLayout.self)
         (SimpleLinearLayout.ParentKeys.direction, $layoutDirection)
-        ($0.padding, Insets(all: 128))
+        //($0.padding, Insets(all: 128))
+        ($0.width, 800.0)
         ($0.background, Color.blue)
       }) {
         Experimental.Style(".test-container") {
@@ -111,6 +112,7 @@ public class MainView: Experimental.ComposedWidget {
 
         Experimental.Container(classes: ["test-container"], styleProperties: {
           ($0.padding, Insets(all: 16))
+          (SimpleLinearLayout.ChildKeys.grow, 1.0)
         }) {
           Experimental.Text("WSOW")
         }
@@ -118,7 +120,7 @@ public class MainView: Experimental.ComposedWidget {
         layoutDirection = .column
       }
 
-      Column {
+      /*Column {
         Experimental.List($items) { item in
           Experimental.Button {
             Experimental.Text(styleProperties: {
@@ -126,7 +128,7 @@ public class MainView: Experimental.ComposedWidget {
             }, String(item))
           }
         }
-      }
+      }*/
     }
   }
 

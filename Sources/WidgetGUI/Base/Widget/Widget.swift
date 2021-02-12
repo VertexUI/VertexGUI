@@ -21,7 +21,7 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     open var key: String?
 
     public var debugDescription: String {
-        "\(name) \(id) \(treePath)"
+        "\(name) \(id) \(classes) \(treePath)"
     } 
     /* end identification */
 

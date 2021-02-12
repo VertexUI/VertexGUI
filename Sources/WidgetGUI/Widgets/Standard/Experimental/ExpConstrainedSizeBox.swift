@@ -45,9 +45,7 @@ extension Experimental {
       return constraints.constrain(rootChild!.size)
     }
 
-    public enum StyleKeys: String, StyleKey, ExperimentalDefaultStyleKeys {
-      case width
-      case height 
+    public struct StyleKeys: ExperimentalDefaultStyleKeys {
     }
   }
 }
