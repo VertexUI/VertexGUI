@@ -2,6 +2,8 @@ import GfxMath
 
 extension Experimental {
   public class Container: Widget, ExperimentalStylableWidget {
+    private let content: ExperimentalMultiChildContentBuilder.Content
+
     @FromStyle(key: StyleKeys.layout)
     private var layoutType: Layout.Type = SimpleLinearLayout.self
     private var layoutInstance: Layout?
@@ -15,13 +17,18 @@ extension Experimental {
     public init(
       classes: [String]? = nil,
       @Experimental.StylePropertiesBuilder styleProperties stylePropertiesBuilder: (StyleKeys.Type) -> Experimental.StyleProperties = { _ in [] },
-      @MultiChildContentBuilder content contentBuilder: @escaping () -> MultiChildContentBuilder.Result) {
-        let content = contentBuilder()
+      @ExperimentalMultiChildContentBuilder content contentBuilder: @escaping () -> ExperimentalMultiChildContentBuilder.Content) {
+        content = contentBuilder()
         super.init()
 
-        self.contentChildren = content.childrenBuilder()
+        self.contentChildren = content.widgets
+        _ = content.onChanged { [unowned self] in 
+          contentChildren = content.widgets
+          requestRemountChildren()
+          updateLayoutInstance()
+        }
 
-        self.experimentalProvidedStyles.append(contentsOf: content.experimentalStyles)
+        self.experimentalProvidedStyles.append(contentsOf: content.styles)
         if let classes = classes {
           self.classes = classes
         }

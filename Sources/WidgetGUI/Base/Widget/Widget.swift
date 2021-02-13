@@ -742,7 +742,14 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     open func performBuild() {
         
     }
-    
+
+    /** Use if children are added after the initial mount, build phase. Executes immediately.
+    // TODO: consider whether executing this in root tick handling would be better
+    */   
+    public final func requestRemountChildren() {
+        mountChildren(oldChildren: [])
+    }
+
     /**
     Checks whether the state of the old children can be transferred to the new children and if yes, applies it.
     */
@@ -791,24 +798,28 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     }
 
     public func mountChild(_ child: Widget, treePath: TreePath, with replacementContext: ReplacementContext? = nil) {
-        child.mount(parent: self, treePath: treePath, context: context, lifecycleBus: lifecycleBus, with: replacementContext)
+        if child.parent === self {
+            child.treePath = treePath
+        } else {
+            child.mount(parent: self, treePath: treePath, context: context, lifecycleBus: lifecycleBus, with: replacementContext)
 
-        _ = child.onBoxConfigChanged { [unowned self, unowned child] _ in
-            handleChildBoxConfigChanged(child: child)
-        }
-
-        _ = child.onSizeChanged { [unowned self, unowned child] _ in
-            // TODO: maybe need special relayout flag / function
-            Logger.log("Size of child \(child) of parent \(self) changed.".with(fg: .blue, style: .bold), level: .Message, context: .WidgetLayouting)
-            if layouted && !layouting {
-                Logger.log("Performing layout on parent parent.", level: .Message, context: .WidgetLayouting)
-                invalidateLayout()
+            _ = child.onBoxConfigChanged { [unowned self, unowned child] _ in
+                handleChildBoxConfigChanged(child: child)
             }
-        }
-        
-        _ = child.onFocusChanged { [weak self] in
-            if let self = self {
-                self.focused = $0
+
+            _ = child.onSizeChanged { [unowned self, unowned child] _ in
+                // TODO: maybe need special relayout flag / function
+                Logger.log("Size of child \(child) of parent \(self) changed.".with(fg: .blue, style: .bold), level: .Message, context: .WidgetLayouting)
+                if layouted && !layouting {
+                    Logger.log("Performing layout on parent parent.", level: .Message, context: .WidgetLayouting)
+                    invalidateLayout()
+                }
+            }
+            
+            _ = child.onFocusChanged { [weak self] in
+                if let self = self {
+                    self.focused = $0
+                }
             }
         }
     }
@@ -1057,6 +1068,10 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         self.previousConstraints = constraints
     }
 
+    /** Layout the content of a widget. Should be implemented by subclasses.
+    - Returns: The size of the layouted content. The returned size may exceed or
+    fall short of the given constraints.
+    */
     open func performLayout(constraints: BoxConstraints) -> DSize2 {
         fatalError("performLayout(constraints:) not implemented.")
     }

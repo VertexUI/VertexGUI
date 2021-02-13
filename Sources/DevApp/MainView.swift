@@ -4,7 +4,7 @@ import SwiftGUI
 public class MainView: Experimental.ComposedWidget {
 
   @ExperimentalReactiveProperties.MutableProperty
-  private var text: String = "initial Text"
+  private var text: String = "initial reactive Text"
 
   @ExperimentalReactiveProperties.MutableProperty
   var items: [String] = (0..<40).map { _ in "WOWO" }
@@ -13,9 +13,25 @@ public class MainView: Experimental.ComposedWidget {
   var layoutDirection: SimpleLinearLayout.Direction = .row
 
   override public func performBuild() {
-    rootChild = Experimental.SimpleColumn { [unowned self] in
+    rootChild = Experimental.Container(styleProperties: {
+      (SimpleLinearLayout.ParentKeys.direction, SimpleLinearLayout.Direction.column)
+      ($0.background, Color.white)
+    }) { [unowned self] in
       Experimental.DefaultTheme()
 
+      Experimental.Text("NON REACTIVE TEXT")
+
+      ReactiveContent($text) {
+        Experimental.Text(text)
+      }
+
+      Experimental.Button {
+        Experimental.Text("Change the reactive text")
+      }.onClick {
+        text = "second reactive text"
+      }
+
+      /*
       /*Experimental.Button {
         Experimental.Text("WOWOWWOOW")
       }
@@ -46,6 +62,7 @@ public class MainView: Experimental.ComposedWidget {
           ($0.width, 600.0)
           ($0.background, Color.yellow)
         }) {
+
 
           Experimental.Button() {
             Experimental.Text("add child content")
@@ -108,7 +125,7 @@ public class MainView: Experimental.ComposedWidget {
       }.onClick {
         layoutDirection = .column
       }
-      }
+      }*/
 
       /*Column {
         Experimental.List($items) { item in
