@@ -17,7 +17,7 @@ extension Experimental {
     private var placeholderVisibility: Visibility = .visible
 
     @Reference
-    private var stackContainer: Experimental.Stack
+    private var stackContainer: Experimental.Container
     @Reference
     private var textWidget: Experimental.Text
     @Reference
@@ -109,7 +109,9 @@ extension Experimental {
 
     override public func performBuild() {
       children = [
-        Experimental.Stack { [unowned self] in
+        Experimental.Container(styleProperties: {
+          ($0.layout, AbsoluteLayout.self)
+        }) { [unowned self] in
           Experimental.Text(styleProperties: {
             ($0.textColor, Color.white)
             ($0.fontSize, 24.0)
@@ -129,7 +131,8 @@ extension Experimental {
     }
 
     override public func getContentBoxConfig() -> BoxConfig {
-      stackContainer.boxConfig
+      print("stack container box config", stackContainer.boxConfig)
+      return stackContainer.boxConfig
     }
 
     override public func performLayout(constraints: BoxConstraints) -> DSize2 {
