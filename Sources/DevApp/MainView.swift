@@ -35,36 +35,23 @@ public class MainView: Experimental.ComposedWidget {
         drawingContext.drawRect(rect: DRect(min: .zero, size: DSize2(200, 200)), paint: Paint(color: .red))
       }*/
 
-      /*Experimental.ConstrainedSizeBox(styleProperties: {
-        ($0.width, 300.0)
-        ($0.height, 300.0)
-      }) {
         
+      Experimental.Container(styleProperties: {
+        ($0.overflowY, Overflow.scroll)
+        ($0.overflowX, Overflow.scroll)
+        ($0.width, 300.0)
+      }) {
         Experimental.Container(styleProperties: {
-          ($0.overflowY, Overflow.scroll)
-          ($0.overflowX, Overflow.scroll)
+          ($0.padding, Insets(all: 128))
+          ($0.width, 600.0)
+          ($0.background, Color.yellow)
         }) {
 
-          Experimental.SimpleColumn() {
-
-            Experimental.ConstrainedSizeBox(styleProperties: {
-              ($0.width, 500)
-              ($0.height, 500)
-            }) {
-
-              Experimental.Container(styleProperties: {
-                ($0.padding, Insets(all: 128))
-                ($0.background, Color.yellow)
-              }) {
-
-                Experimental.Button() {
-                  Experimental.Text("add child content")
-                }
-              }
-            }
+          Experimental.Button() {
+            Experimental.Text("add child content")
           }
         }
-      }*/
+      }
 
       //NestedWidget(NestedData(content: "level1", children: []))
 

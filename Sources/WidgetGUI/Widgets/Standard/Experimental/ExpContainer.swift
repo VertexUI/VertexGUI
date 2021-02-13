@@ -88,7 +88,7 @@ extension Experimental {
     }
 
     override public func performLayout(constraints: BoxConstraints) -> DSize2 {
-      layoutInstance!.layout(constraints: constraints)
+      max(constraints.minSize, layoutInstance!.layout(constraints: constraints))
     }
 
     public enum StyleKeys: String, StyleKey, ExperimentalDefaultStyleKeys {
