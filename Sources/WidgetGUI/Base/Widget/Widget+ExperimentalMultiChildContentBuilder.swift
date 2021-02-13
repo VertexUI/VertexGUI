@@ -4,23 +4,23 @@ import Events
 extension Widget {
   @_functionBuilder
   public struct ExperimentalMultiChildContentBuilder {
-    public static func buildExpression(_ widget: Widget) -> Partial {
-      .widgets([widget])
+    public static func buildExpression(_ widget: Widget) -> [Partial] {
+      [.widgets([widget])]
     }
 
-    public static func buildExpression(_ style: Experimental.Style) -> Partial {
-      .style(style)
+    public static func buildExpression(_ style: Experimental.Style) -> [Partial] {
+      [.style(style)]
     }
 
-    public static func buildExpression(_ reactiveContent: ReactiveContent) -> Partial {
-      .reactive(reactiveContent)
+    public static func buildExpression(_ reactiveContent: ReactiveContent) -> [Partial] {
+      [.reactive(reactiveContent)]
     }
 
-    public static func buildEither(first: Partial) -> Partial {
+    public static func buildEither(first: [Partial]) -> [Partial] {
       first
     }
 
-    public static func buildEither(second: Partial) -> Partial {
+    public static func buildEither(second: [Partial]) -> [Partial] {
       second
     }
 
@@ -28,7 +28,7 @@ extension Widget {
       partials
     }
 
-    public static func buildBlock(_ partials: [Partial]) -> [Partial] {
+    public static func buildBlock(_ partials: [Partial]...) -> [Partial] {
       partials.flatMap { $0 }
     }
 
@@ -135,19 +135,19 @@ extension Widget {
 
   @_functionBuilder
   public struct ReactiveContentBuilder {
-    public static func buildExpression(_ widget: Widget) -> Partial {
-      .widgets([widget])
+    public static func buildExpression(_ widget: Widget) -> [Partial] {
+      [.widgets([widget])]
     }
 
-    public static func buildExpression(_ style: Experimental.Style) -> Partial {
-      .style(style)
+    public static func buildExpression(_ style: Experimental.Style) -> [Partial] {
+      [.style(style)]
     }
 
-    public static func buildEither(first: Partial) -> Partial {
+    public static func buildEither(first: [Partial]) -> [Partial] {
       first
     }
 
-    public static func buildEither(second: Partial) -> Partial {
+    public static func buildEither(second: [Partial]) -> [Partial] {
       second
     }
 
@@ -155,7 +155,7 @@ extension Widget {
       partials
     }
 
-    public static func buildBlock(_ partials: [Partial]) -> [Partial] {
+    public static func buildBlock(_ partials: [Partial]...) -> [Partial] {
       partials.flatMap { $0 }
     }
 
