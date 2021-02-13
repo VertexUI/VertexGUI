@@ -46,9 +46,11 @@ public class TodoAppView: SingleChildWidget {
   private func buildMenu() -> Widget {
     Experimental.Container(styleProperties: {
       ($0.layout, SimpleLinearLayout.self)
+      ($0.maxWidth, 200.0)
+      (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.stretch)
       (SimpleLinearLayout.ParentKeys.direction, SimpleLinearLayout.Direction.column)
     }) { [unowned self] in
-      //buildSearch()
+      buildSearch()
 
       Experimental.Container(styleProperties: {
         ($0.padding, Insets(all: 64))
@@ -76,17 +78,23 @@ public class TodoAppView: SingleChildWidget {
         }
       }
 
-      Experimental.Container(styleProperties: {
+      /*Experimental.Container(styleProperties: {
         ($0.overflowY, Overflow.scroll)
         (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.stretch)
         ($0.background, Color.yellow)
-      }) {
-        Experimental.List(ExperimentalReactiveProperties.ComputedProperty(compute: {
+        (SimpleLinearLayout.ChildKeys.shrink, 1.0)
+      }) {*/
+        Experimental.List(styleProperties: {
+          ($0.overflowY, Overflow.scroll)
+          (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.stretch)
+          ($0.background, Color.yellow)
+          (SimpleLinearLayout.ChildKeys.shrink, 1.0)
+        }, ExperimentalReactiveProperties.ComputedProperty(compute: {
           todoStore.state.lists
         }, dependencies: [todoStore.$state])) {
           buildMenuListItem(for: $0)
         }
-      }
+      //}
     }
   }
 
@@ -116,33 +124,25 @@ public class TodoAppView: SingleChildWidget {
   }
 
   private func buildMenuListItem(for list: TodoList) -> Widget {
-    MouseArea {
+    Experimental.Container(styleProperties: {
+      ($0.padding, Insets(all: 16))
+      ($0.borderWidth, BorderWidth(bottom: 1.0))
+      ($0.borderColor, Color.white)
+    }) {
       Experimental.Container(styleProperties: {
-        ($0.padding, Insets(all: 16))
-        ($0.borderWidth, BorderWidth(bottom: 1.0))
-        ($0.borderColor, Color.white)
+        ($0.background, list.color)
+        ($0.padding, Insets(all: 8))
+        (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.center)
       }) {
-
-        Row(spacing: 16) {
-          Row.Item(crossAlignment: .Center) {
-            Experimental.Container(styleProperties: {
-              ($0.background, list.color)
-              ($0.padding, Insets(all: 8))
-            }) {
-              MaterialIcon(.formatListBulletedSquare, color: .white)
-            }
-          }
-
-          Row.Item(crossAlignment: .Center) {
-            Experimental.Text(styleProperties: {
-              ($0.textColor, Color.white)
-            }, list.name).with(classes: ["list-item-name"])
-          }
-        }
+        MaterialIcon(.formatListBulletedSquare, color: .white)
       }
-    } onClick: { [unowned self] _ in
+
+      Experimental.Text(styleProperties: {
+        ($0.textColor, Color.black)
+        (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.center)
+      }, list.name).with(classes: ["list-item-name"])
+    }.onClick { [unowned self] in
       navigationStore.commit(.updateMainViewRoute(.selectedList(list.id)))
-      //mode = .SelectedList
     }
   }
 
@@ -150,49 +150,33 @@ public class TodoAppView: SingleChildWidget {
     return Experimental.Container(styleProperties: { _ in
       (SimpleLinearLayout.ChildKeys.grow, 1.0)
       (SimpleLinearLayout.ParentKeys.direction, SimpleLinearLayout.Direction.column)
+      (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.center)
     }) { [unowned self] in
       Space(DSize2(0, 0)).connect(ref: $activeViewTopSpace)
 
-      Experimental.Build(ExperimentalReactiveProperties.ComputedProperty(compute: {
-        navigationStore.state.mainViewRoute
-      }, dependencies: [navigationStore.$state])) {
-
+      ReactiveContent(navigationStore.$state) {
         switch navigationStore.state.mainViewRoute {
         case .none:
-          return Space(.zero)
+          Experimental.Text(styleProperties: {
+            ($0.textColor, Color.white)
+            ($0.fontSize, 24.0)
+            ($0.fontWeight, FontWeight.bold)
+            ($0.opacity, 0.5)
+            (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.center)
+          }, "no list selected")
+
         case let .selectedList(id):
-          return TodoListView(listId: ExperimentalReactiveProperties.ComputedProperty(compute: {
+          TodoListView(listId: ExperimentalReactiveProperties.ComputedProperty(compute: {
             if case let .selectedList(id) = navigationStore.state.mainViewRoute {
               return id
             }
             return -1
           }, dependencies: [navigationStore.$state]))
+
         case .searchResults:
-          return SearchResultsView()
+          SearchResultsView()
         }
       }
-
-      /*Column.Item(grow: 1, crossAlignment: .Stretch) {
-        Padding(all: 32) {
-          ObservingBuilder($mode) {
-            switch mode {
-            case .SelectedList:
-              return ObservingBuilder(store.getters.$selectedList.compute { $0?.id }) {
-                if let list = store.getters.selectedList {
-                  return TodoListView(store.getters.$selectedList.compute { $0! })
-                } else {
-                  return Center {
-                    Text("No list selected.", fontSize: 24, fontWeight: .bold, color: .grey)
-                  }
-                }
-              }
-
-            case .Search:
-              return SearchResultsView()
-            }
-          }
-        }
-      }*/
     }
   }
 
