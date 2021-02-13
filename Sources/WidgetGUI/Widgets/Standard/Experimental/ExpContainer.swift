@@ -3,7 +3,7 @@ import GfxMath
 extension Experimental {
   public class Container: Widget, ExperimentalStylableWidget {
     @FromStyle(key: StyleKeys.layout)
-    private var layoutType: Layout.Type = AbsoluteLayout.self
+    private var layoutType: Layout.Type = SimpleLinearLayout.self
     private var layoutInstance: Layout?
 
     private var childrenLayoutPropertiesHandlerRemovers: [() -> ()] = []

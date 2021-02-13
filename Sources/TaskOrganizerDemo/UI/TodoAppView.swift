@@ -38,68 +38,56 @@ public class TodoAppView: SingleChildWidget {
     }) { [unowned self] in
       Experimental.DefaultTheme()
 
-      Experimental.SimpleColumn {
-        //Column.Item(grow: 1, crossAlignment: .Stretch) {
-          Row {
-            //Row.Item(grow: 0, crossAlignment: .Stretch) {
-              buildMenu()
-            //}
-
-            //Row.Item(grow: 1, crossAlignment: .Stretch) {
-              buildActiveView()
-            //}
-          }
-        //}
-      }
+      buildMenu()
+      buildActiveView()
     }
   }
 
   private func buildMenu() -> Widget {
-    //ConstrainedSize(minSize: DSize2(400, 0), maxSize: DSize2(400, .infinity)) { 
-      Column { [unowned self] in
-        Column.Item(crossAlignment: .Stretch) {
-          buildSearch()
+    Experimental.Container(styleProperties: {
+      ($0.layout, SimpleLinearLayout.self)
+      (SimpleLinearLayout.ParentKeys.direction, SimpleLinearLayout.Direction.column)
+    }) { [unowned self] in
+      //buildSearch()
+
+      Experimental.Container(styleProperties: {
+        ($0.padding, Insets(all: 64))
+      }) {
+        Experimental.Style(".button", Experimental.Button.self) {
+          ($0.background, Color.yellow)
+          ($0.padding, Insets(all: 16))
+          ($0.foreground, Color.white)
         }
 
-        Experimental.Container(styleProperties: {
-          ($0.padding, Insets(all: 64))
-        }) {
-          Experimental.Style(".button", Experimental.Button.self) {
-            ($0.background, Color.yellow)
-            ($0.padding, Insets(all: 16))
-            ($0.foreground, Color.white)
-          }
-
-          Experimental.Style(".button:hover") {
-            Experimental.StyleProperties(Experimental.Button.self) {
-              ($0.background, Color.red)
-            }
-          }
-
-          Experimental.Button(classes: ["button"]) {
-            Experimental.Text(styleProperties: {
-              ($0.fontWeight, FontWeight.bold)
-              ($0.fontSize, 20.0)
-              ($0.textColor, Color.black)
-            }, "New List")
-          }.onClick { [unowned self] in
-            handleNewListClick()
+        Experimental.Style(".button:hover") {
+          Experimental.StyleProperties(Experimental.Button.self) {
+            ($0.background, Color.red)
           }
         }
 
-        Column.Item(crossAlignment: .Stretch) {
-          Experimental.Container(styleProperties: {
-            ($0.overflowY, Overflow.scroll)
-          }) {
-            Experimental.List(ExperimentalReactiveProperties.ComputedProperty(compute: {
-              todoStore.state.lists
-            }, dependencies: [todoStore.$state])) {
-              buildMenuListItem(for: $0)
-            }
-          }
+        Experimental.Button(classes: ["button"]) {
+          Experimental.Text(styleProperties: {
+            ($0.fontWeight, FontWeight.bold)
+            ($0.fontSize, 20.0)
+            ($0.textColor, Color.black)
+          }, "New List")
+        }.onClick { [unowned self] in
+          handleNewListClick()
         }
       }
-    //}
+
+      Experimental.Container(styleProperties: {
+        ($0.overflowY, Overflow.scroll)
+        (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.stretch)
+        ($0.background, Color.yellow)
+      }) {
+        Experimental.List(ExperimentalReactiveProperties.ComputedProperty(compute: {
+          todoStore.state.lists
+        }, dependencies: [todoStore.$state])) {
+          buildMenuListItem(for: $0)
+        }
+      }
+    }
   }
 
   private func buildSearch() -> Widget {
@@ -159,51 +147,52 @@ public class TodoAppView: SingleChildWidget {
   }
 
   private func buildActiveView() -> Widget {
-    return Background(fill: appTheme.backgroundColor) { [unowned self] in
-      Column {
-        Space(DSize2(0, 0)).connect(ref: $activeViewTopSpace)
+    return Experimental.Container(styleProperties: { _ in
+      (SimpleLinearLayout.ChildKeys.grow, 1.0)
+      (SimpleLinearLayout.ParentKeys.direction, SimpleLinearLayout.Direction.column)
+    }) { [unowned self] in
+      Space(DSize2(0, 0)).connect(ref: $activeViewTopSpace)
 
-        Experimental.Build(ExperimentalReactiveProperties.ComputedProperty(compute: {
-          navigationStore.state.mainViewRoute
-        }, dependencies: [navigationStore.$state])) {
+      Experimental.Build(ExperimentalReactiveProperties.ComputedProperty(compute: {
+        navigationStore.state.mainViewRoute
+      }, dependencies: [navigationStore.$state])) {
 
-          switch navigationStore.state.mainViewRoute {
-          case .none:
-            return Space(.zero)
-          case let .selectedList(id):
-            return TodoListView(listId: ExperimentalReactiveProperties.ComputedProperty(compute: {
-              if case let .selectedList(id) = navigationStore.state.mainViewRoute {
-                return id
-              }
-              return -1
-            }, dependencies: [navigationStore.$state]))
-          case .searchResults:
-            return SearchResultsView()
-          }
+        switch navigationStore.state.mainViewRoute {
+        case .none:
+          return Space(.zero)
+        case let .selectedList(id):
+          return TodoListView(listId: ExperimentalReactiveProperties.ComputedProperty(compute: {
+            if case let .selectedList(id) = navigationStore.state.mainViewRoute {
+              return id
+            }
+            return -1
+          }, dependencies: [navigationStore.$state]))
+        case .searchResults:
+          return SearchResultsView()
         }
+      }
 
-        /*Column.Item(grow: 1, crossAlignment: .Stretch) {
-          Padding(all: 32) {
-            ObservingBuilder($mode) {
-              switch mode {
-              case .SelectedList:
-                return ObservingBuilder(store.getters.$selectedList.compute { $0?.id }) {
-                  if let list = store.getters.selectedList {
-                    return TodoListView(store.getters.$selectedList.compute { $0! })
-                  } else {
-                    return Center {
-                      Text("No list selected.", fontSize: 24, fontWeight: .bold, color: .grey)
-                    }
+      /*Column.Item(grow: 1, crossAlignment: .Stretch) {
+        Padding(all: 32) {
+          ObservingBuilder($mode) {
+            switch mode {
+            case .SelectedList:
+              return ObservingBuilder(store.getters.$selectedList.compute { $0?.id }) {
+                if let list = store.getters.selectedList {
+                  return TodoListView(store.getters.$selectedList.compute { $0! })
+                } else {
+                  return Center {
+                    Text("No list selected.", fontSize: 24, fontWeight: .bold, color: .grey)
                   }
                 }
-
-              case .Search:
-                return SearchResultsView()
               }
+
+            case .Search:
+              return SearchResultsView()
             }
           }
-        }*/
-      }
+        }
+      }*/
     }
   }
 

@@ -73,6 +73,7 @@ public class MainView: Experimental.ComposedWidget {
       } onClick: {
         items.append(items.last! + 1)
       }*/
+      Experimental.Container {
       Experimental.Container(styleProperties: {
         ($0.layout, SimpleLinearLayout.self)
         (SimpleLinearLayout.ParentKeys.direction, $layoutDirection)
@@ -119,6 +120,7 @@ public class MainView: Experimental.ComposedWidget {
         }
       }.onClick {
         layoutDirection = .column
+      }
       }
 
       /*Column {

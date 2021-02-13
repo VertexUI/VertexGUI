@@ -111,7 +111,7 @@ open class Root: Parent {
   }
   
   open func layout() {
-    rootWidget.layout(constraints: BoxConstraints(minSize: bounds.size, maxSize: bounds.size))
+    rootWidget.layout(constraints: BoxConstraints(size: bounds.size))
   }
 
   @discardableResult

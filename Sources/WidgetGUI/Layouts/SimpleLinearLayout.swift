@@ -17,22 +17,38 @@ public class SimpleLinearLayout: Layout {
 
   @LayoutProperty(key: ParentKeys.direction)
   var direction: Direction
+  var axisIndices: (primaryAxisIndex: Int, secondaryAxisIndex: Int) {
+    switch direction {
+    case .row:
+      return (0, 1)
+    case .column:
+      return (1, 0)
+    }
+  }
 
   override public func getBoxConfig() -> BoxConfig {
-    widgets[0].boxConfig
+    let (primaryAxisIndex, secondaryAxisIndex) = axisIndices
+
+    var accumulatedConfig = BoxConfig(preferredSize: .zero, minSize: .zero, maxSize: .infinity)
+    for widget in widgets {
+      accumulatedConfig.preferredSize[primaryAxisIndex] += widget.boxConfig.preferredSize[primaryAxisIndex]
+      if widget.boxConfig.preferredSize[secondaryAxisIndex] > accumulatedConfig.preferredSize[secondaryAxisIndex] {
+        accumulatedConfig.preferredSize[secondaryAxisIndex] = widget.boxConfig.preferredSize[secondaryAxisIndex]
+      }
+      accumulatedConfig.minSize[primaryAxisIndex] += widget.boxConfig.minSize[primaryAxisIndex]
+      if widget.boxConfig.minSize[secondaryAxisIndex] > accumulatedConfig.minSize[secondaryAxisIndex] {
+        accumulatedConfig.minSize[secondaryAxisIndex] = widget.boxConfig.minSize[secondaryAxisIndex]
+      }
+      /*accumulatedConfig.maxSize[primaryAxisIndex] += widget.boxConfig.maxSize[primaryAxisIndex]
+      if widget.boxConfig.maxSize[secondaryAxisIndex] > accumulatedConfig.maxSize[secondaryAxisIndex] {
+        accumulatedConfig.maxSize[secondaryAxisIndex] = widget.boxConfig.maxSize[secondaryAxisIndex]
+      }*/
+    }
+    return accumulatedConfig
   }
 
   override public func layout(constraints: BoxConstraints) -> DSize2 {
-    let primaryAxisIndex: Int
-    let secondaryAxisIndex: Int
-    switch direction {
-    case .row:
-      primaryAxisIndex = 0
-      secondaryAxisIndex = 1
-    case .column:
-      primaryAxisIndex = 1
-      secondaryAxisIndex = 0
-    }
+    let (primaryAxisIndex, secondaryAxisIndex) = axisIndices
 
     var totalGrowWeight = 0.0
     var totalShrinkWeight = 0.0
