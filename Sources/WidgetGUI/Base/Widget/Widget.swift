@@ -992,11 +992,14 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         }
         
         let targetSize = newUnconstrainedContentSize + padding.aggregateSize + borderWidth.aggregateSize
-        size = boxConfigConstraints.constrain(targetSize)
+
+        // TODO: check here
+        var finalSizeConstraints = boxConfigConstraints
+        if overflowY == .scroll {
+            finalSizeConstraints.maxSize.height = boxConfigConstraints.constrain(constraints.maxSize).height
+        }
+        size = finalSizeConstraints.constrain(targetSize)
         
-        // depending on whether scrolling is enabled, these two values may or may not be used
-        //maxScrollOffset = .zero
-        //minScrollOffset = DVec2(size - targetSize)
         scrollableLength = DVec2(targetSize - size)
 
         // TODO: implement logic for overflow == .auto

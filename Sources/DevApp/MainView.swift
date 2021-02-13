@@ -42,6 +42,19 @@ public class MainView: Experimental.ComposedWidget {
         }
       }
 
+      Experimental.Container(styleProperties: {
+        ($0.background, Color.blue)
+        ($0.maxHeight, 100.0)
+        ($0.width, 300.0)
+      }) {
+        Experimental.Container(styleProperties: {
+          ($0.minHeight, 200.0)
+          ($0.background, Color.yellow)
+        }) {
+          Experimental.Text("text")
+        }
+      }
+
       Experimental.Text("NON REACTIVE TEXT")
 
       ReactiveContent($text) {

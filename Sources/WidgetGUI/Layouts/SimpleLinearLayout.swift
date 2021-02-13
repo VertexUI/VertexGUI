@@ -125,7 +125,18 @@ public class SimpleLinearLayout: Layout {
         var targetSize = DSize2.zero
         targetSize[primaryAxisIndex] = widget.size[primaryAxisIndex] + primaryAxisGrowSpace
         targetSize[secondaryAxisIndex] = widget.size[secondaryAxisIndex]
-        var widgetConstraints = BoxConstraints(size: targetSize)
+        let widgetConstraints = BoxConstraints(size: targetSize)
+        widget.layout(constraints: widgetConstraints)
+      }
+
+      let shrinkWeight = widget.stylePropertyValue(ChildKeys.shrink, as: Double.self)!
+      if deltaAccumulatedSize[primaryAxisIndex] < 0 && shrinkWeight > 0 {
+        let relativeShrinkWeight = shrinkWeight / totalShrinkWeight
+        let primaryAxisShrinkSpace = deltaAccumulatedSize[primaryAxisIndex] * relativeShrinkWeight
+        var targetSize = DSize2.zero
+        targetSize[primaryAxisIndex] = widget.size[primaryAxisIndex] + primaryAxisShrinkSpace
+        targetSize[secondaryAxisIndex] = widget.size[secondaryAxisIndex]
+        let widgetConstraints = BoxConstraints(size: targetSize)
         widget.layout(constraints: widgetConstraints)
       }
 

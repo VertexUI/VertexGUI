@@ -13,7 +13,6 @@ extension Experimental {
             }
           }
           self.invalidateLayout()
-          self.invalidateRenderState()
         }
       }
     }
@@ -40,12 +39,7 @@ extension Experimental {
         }
       }
 
-      return constraints.constrain(DSize2(maxWidth, currentPosition.y))
-    }
-
-    override public func renderContent() -> RenderObject? {
-      //print("EXP LIST RENDERS", children)
-      return super.renderContent()
+      return DSize2(maxWidth, currentPosition.y)
     }
   }
 
@@ -118,6 +112,8 @@ extension Experimental {
       if mounted {
         itemLayoutContainer.children = itemWidgets
       }
+
+      (parent as? Widget)?.invalidateLayout()
     }
 
     override public func performBuild() {
@@ -128,13 +124,13 @@ extension Experimental {
      // }
     }
 
-    override public func performLayout(constraints: BoxConstraints) -> DSize2 {
+    /*override public func performLayout(constraints: BoxConstraints) -> DSize2 {
       //print("EXP LIST LAYOUTING")
       return super.performLayout(constraints: constraints)
-    }
+    }*/
 
     private func updateDisplayedItems() {
-      let currentFirstIndex = firstDisplayedIndex
+      //let currentFirstIndex = firstDisplayedIndex
 
       //let currentScrollOffsets = scrollArea.offsets
       //let currentScrollProgress = scrollArea.scrollProgress
