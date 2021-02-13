@@ -19,6 +19,29 @@ public class MainView: Experimental.ComposedWidget {
     }) { [unowned self] in
       Experimental.DefaultTheme()
 
+      Experimental.Container(styleProperties: {
+        ($0.width, 800.0)
+        ($0.minWidth, 1000.0)
+      }) {
+        Experimental.Container(styleProperties: {
+          ($0.minWidth, 400.0)
+          ($0.maxWidth, 500.0)
+          ($0.minHeight, 400.0)
+          ($0.background, Color.red)
+          (SimpleLinearLayout.ChildKeys.grow, 1.0)
+        }) {
+          Experimental.Text("NONE")
+        }
+
+        Experimental.Container(styleProperties: {
+          (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.stretch)
+          ($0.maxHeight, 200.0)
+          ($0.background, Color.blue)
+        }) {
+          Experimental.Text("NONE 2")
+        }
+      }
+
       Experimental.Text("NON REACTIVE TEXT")
 
       ReactiveContent($text) {

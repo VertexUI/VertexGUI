@@ -10,6 +10,18 @@ public extension ExperimentalDefaultStyleKeys {
   static var height: String {
     "height"
   }
+  static var minWidth: String {
+    "minWidth"
+  }
+  static var minHeight: String {
+    "minHeight"
+  }
+  static var maxWidth: String {
+    "maxWidth"
+  }
+  static var maxHeight: String {
+    "maxHeight"
+  }
   static var padding: String {
     "padding"
   }

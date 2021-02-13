@@ -457,12 +457,16 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     }
 
     private func setupBoxConfigUpdateTriggers() {
-        _ = stylePropertiesResolver.onResolvedPropertyValuesChanged { [unowned self] in
-            let oldWidth = $0.old[StyleKeys.width] as? Double
-            let newWidth = $0.new[StyleKeys.width] as? Double
-            let oldHeight = $0.old[StyleKeys.height] as? Double
-            let newHeight = $0.new[StyleKeys.height] as? Double
-            if oldWidth != newWidth || oldHeight != newHeight {
+        _ = stylePropertiesResolver.onResolvedPropertyValuesChanged { [unowned self] data in
+            let compareKeys = [
+                StyleKeys.width, StyleKeys.height, StyleKeys.minWidth, StyleKeys.minHeight,
+                StyleKeys.maxWidth, StyleKeys.maxHeight
+            ]
+            if compareKeys.contains(where: {
+                let old = data.old[$0] as? Double
+                let new = data.new[$0] as? Double
+                return old != new
+            }) {
                 invalidateBoxConfig()
             }
         }
@@ -476,28 +480,9 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
             )
         }, dependencies: [$autoScrollingEnabled, $overflowX, $overflowY])
         
-        //updateScrollOffsetProperty()
-        //updateScrollEventHandlers()
-
         _ = onDestroy(self.$scrollingEnabled.onChanged { [unowned self] _ in
-            //updateScrollOffsetProperty()
             updateScrollEventHandlers()
         })
-    }
-
-    private func updateScrollOffsetProperty() {
-        /*if scrollingEnabled.x || scrollingEnabled.y {
-            self._currentScrollOffset.reinit(compute: { [unowned self] in
-                DVec2(pseudoScrollBarX.scrollProgress * width, pseudoScrollBarY.scrollProgress * height)
-            }, apply: { [unowned self] in
-                pseudoScrollBarX.scrollProgress = $0.x / width
-                pseudoScrollBarY.scrollProgress = $0.y / height
-            }, dependencies: [pseudoScrollBarX.$scrollProgress, pseudoScrollBarY.$scrollProgress])
-        } else {
-            self._currentScrollOffset.reinit(compute: {
-                .zero
-            }, apply: { _ in }, dependencies: [])
-        }*/
     }
 
     private func updateScrollEventHandlers() {
@@ -754,47 +739,12 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     Checks whether the state of the old children can be transferred to the new children and if yes, applies it.
     */
     private final func mountChildren(oldChildren: [Widget]) {
-        /*var keyedChildren: [String: Widget] = [:]
-        var checkChildren: [Widget] = oldChildren
-
-        while let child = checkChildren.popLast() {
-            if let key = child.key {
-                keyedChildren[key] = child
-            }
-
-            checkChildren.append(contentsOf: child.children)
-        }*/
-
-        /* OLD CODE TAKEN OUT OF MOUNT
-        // TODO: reimplement state retaining
-        for i in 0..<children.count {
-            let oldChild: Widget?
-            if let oldSelf = oldSelf {
-                oldChild = oldSelf.children.count > i ? oldSelf.children[i] : nil
-            } else {
-                oldChild = nil
-            }
-
-            let childContext = oldChild == nil && context == nil ? nil : ReplacementContext(
-                previousWidget: oldChild, keyedWidgets: replacementContext?.keyedWidgets ?? [:])
-        
-            mountChild(children[i], with: childContext)
-        }
-        */
-
         var iterator = visitChildren()
         var i = 0
         while let child = iterator.next() {
-            //let newChild = children[i]
-            //let oldChild: Widget? = oldChildren.count > i ? oldChildren[i] : nil
-            //let childContext = ReplacementContext(previousWidget: oldChild, keyedWidgets: keyedChildren)
             mountChild(child, treePath: self.treePath/i, with: ReplacementContext(previousWidget: nil, keyedWidgets: [:]))
             i += 1
         }
-
-       /* for child in oldChildren {
-            child.destroy()
-        }*/
     }
 
     public func mountChild(_ child: Widget, treePath: TreePath, with replacementContext: ReplacementContext? = nil) {
@@ -903,6 +853,28 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         boxConfig += paddingSize
         let borderSize = borderWidth.aggregateSize
         boxConfig += borderSize
+
+        if let explicitMinWidth = stylePropertyValue(StyleKeys.minWidth, as: Double.self) {
+            boxConfig.minSize.width = explicitMinWidth
+            boxConfig.preferredSize.width = max(boxConfig.minSize.width, boxConfig.preferredSize.width)
+            boxConfig.maxSize.width = max(boxConfig.minSize.width, boxConfig.maxSize.width)
+        }
+        if let explicitMinHeight = stylePropertyValue(StyleKeys.minHeight, as: Double.self) {
+            boxConfig.minSize.height = explicitMinHeight
+            boxConfig.preferredSize.height = max(boxConfig.minSize.height, boxConfig.preferredSize.height)
+            boxConfig.maxSize.height = max(boxConfig.minSize.height, boxConfig.maxSize.height)
+        }
+
+        if let explicitMaxWidth = stylePropertyValue(StyleKeys.maxWidth, as: Double.self) {
+            boxConfig.maxSize.width = explicitMaxWidth 
+            boxConfig.preferredSize.width = min(boxConfig.maxSize.width, boxConfig.preferredSize.width)
+            boxConfig.minSize.width = min(boxConfig.minSize.width, boxConfig.maxSize.width)
+        }
+        if let explicitMaxHeight = stylePropertyValue(StyleKeys.maxHeight, as: Double.self) {
+            boxConfig.maxSize.height = explicitMaxHeight 
+            boxConfig.preferredSize.height = min(boxConfig.maxSize.height, boxConfig.preferredSize.height)
+            boxConfig.minSize.height = min(boxConfig.minSize.height, boxConfig.maxSize.height)
+        }
 
         if let explicitWidth = stylePropertyValue(StyleKeys.width, as: Double.self) {
             boxConfig.minSize.width = explicitWidth
