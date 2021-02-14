@@ -14,6 +14,10 @@ extension Experimental {
     public static func buildExpression<P: ReactiveProperty>(_ expression: (StyleKey, P)) -> Experimental.StyleProperty where P.Value: StyleValue {
       Experimental.StyleProperty(key: expression.0, value: expression.1)
     }
+
+    public static func buildExpression(_ expression: (StyleKey, SpecialStyleValue)) -> Experimental.StyleProperty {
+      Experimental.StyleProperty(key: expression.0, value: expression.1)
+    }
     
     public static func buildBlock(_ properties: Experimental.StyleProperty...) -> [Experimental.StyleProperty] {
       properties

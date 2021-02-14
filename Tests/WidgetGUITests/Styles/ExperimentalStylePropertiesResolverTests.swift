@@ -14,7 +14,7 @@ class ExperimentalStylePropertiesResolverTests: XCTestCase {
   }
 
   func testSimpleDirectPropertiesOnly() {
-    var resolver = Experimental.StylePropertiesResolver(propertySupportDefinitions: propertySupportDefinitions)
+    let resolver = Experimental.StylePropertiesResolver(propertySupportDefinitions: propertySupportDefinitions)
     resolver.directProperties = [
       Experimental.StyleProperties {
         (Properties.property1, 1.0)
@@ -32,7 +32,7 @@ class ExperimentalStylePropertiesResolverTests: XCTestCase {
   }
 
   func testSimpleOnlyStyle() {
-    var resolver = Experimental.StylePropertiesResolver(propertySupportDefinitions: propertySupportDefinitions)
+    let resolver = Experimental.StylePropertiesResolver(propertySupportDefinitions: propertySupportDefinitions)
     resolver.styles = [
       Experimental.Style("") {
         (Properties.property1, 1.0)
@@ -49,9 +49,31 @@ class ExperimentalStylePropertiesResolverTests: XCTestCase {
     XCTAssertEqual(resolver[Properties.property2], 4.0)
   }
 
+  func testInheritValue() {
+    let resolver = Experimental.StylePropertiesResolver(propertySupportDefinitions: propertySupportDefinitions)
+    resolver.directProperties = [
+      Experimental.StyleProperties {
+        (Properties.property1, .inherit)
+      }
+    ]
+    resolver.styles = [
+      Experimental.Style("") {
+        (Properties.property2, .inherit)
+      }
+    ]
+    resolver.inheritableValues = [
+      Properties.property1.asString: 1.0,
+      Properties.property2.asString: 2.0
+    ]
+    resolver.resolve()
+
+    XCTAssertEqual(resolver[Properties.property1], 1.0)
+    XCTAssertEqual(resolver[Properties.property2], 2.0)
+  }
+
   func testDirectReactiveInputNonReactiveOutput() {
-    var resolver = Experimental.StylePropertiesResolver(propertySupportDefinitions: propertySupportDefinitions)
-    var reactiveInputProperty = ExperimentalReactiveProperties.MutableProperty(1.0)
+    let resolver = Experimental.StylePropertiesResolver(propertySupportDefinitions: propertySupportDefinitions)
+    let reactiveInputProperty = ExperimentalReactiveProperties.MutableProperty(1.0)
     resolver.directProperties = [
       Experimental.StyleProperties {
         (Properties.property1, reactiveInputProperty)
@@ -66,7 +88,7 @@ class ExperimentalStylePropertiesResolverTests: XCTestCase {
   }
 
   func testDirectNonReactiveInputReactiveOutput() {
-    var resolver = Experimental.StylePropertiesResolver(propertySupportDefinitions: propertySupportDefinitions)
+    let resolver = Experimental.StylePropertiesResolver(propertySupportDefinitions: propertySupportDefinitions)
     resolver.directProperties = [
       Experimental.StyleProperties {
         (Properties.property1, 1.0)
@@ -99,7 +121,7 @@ class ExperimentalStylePropertiesResolverTests: XCTestCase {
   }
 
   func testDirectReactiveInputReactiveOutput() {
-    var resolver = Experimental.StylePropertiesResolver(propertySupportDefinitions: propertySupportDefinitions)
+    let resolver = Experimental.StylePropertiesResolver(propertySupportDefinitions: propertySupportDefinitions)
     let inputProperty = MutableProperty<Double>()
     resolver.directProperties = [
       Experimental.StyleProperties {
@@ -136,11 +158,32 @@ class ExperimentalStylePropertiesResolverTests: XCTestCase {
     XCTAssertEqual(outputProperty.value, 2)
   }
 
+  func testReactiveInputReactiveOutputInherit() {
+    let resolver = Experimental.StylePropertiesResolver(propertySupportDefinitions: propertySupportDefinitions)
+    let inputProperty = MutableProperty<StyleValue>()
+    resolver.directProperties = [
+      Experimental.StyleProperties {
+        (Properties.property1, inputProperty)
+      }
+    ]
+    resolver.inheritableValues = [
+      Properties.property1.asString: 1.0
+    ]
+    let outputProperty: ObservableProperty<Double?> = resolver[reactive: Properties.property1]
+    resolver.resolve()
+
+    inputProperty.value = SpecialStyleValue.inherit
+    XCTAssertEqual(resolver[Properties.property1], 1.0)
+    XCTAssertEqual(outputProperty.value, 1.0)
+  }
+
   static var allTests = [
     ("testSimpleDirectPropertiesOnly", testSimpleDirectPropertiesOnly),
     ("testSimpleOnlyStyle", testSimpleOnlyStyle),
+    ("testInheritValue", testInheritValue),
     ("testDirectReactiveInputNonReactiveOutput", testDirectReactiveInputNonReactiveOutput),
     ("testDirectNonReactiveInputReactiveOutput", testDirectNonReactiveInputReactiveOutput),
-    ("testDirectReactiveInputReactiveOutput", testDirectReactiveInputReactiveOutput)
+    ("testDirectReactiveInputReactiveOutput", testDirectReactiveInputReactiveOutput),
+    ("testReactiveInputReactiveOutputInherit", testReactiveInputReactiveOutputInherit)
   ]
 }

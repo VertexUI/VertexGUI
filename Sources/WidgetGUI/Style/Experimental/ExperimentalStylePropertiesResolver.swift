@@ -6,6 +6,7 @@ extension Experimental {
     public var propertySupportDefinitions: Experimental.StylePropertySupportDefinitions
     public var styles: [Experimental.Style] = []
     public var directProperties: [Experimental.StyleProperties] = []
+    public var inheritableValues: [String: StyleValue?] = [:]
 
     internal var resolvedPropertyValues: [String: StyleValue?] = [:] {
       didSet {
@@ -99,7 +100,7 @@ extension Experimental {
 
       var resolvedValues = [String: StyleValue?]()
       for (key, property) in mergedProperties {
-        let propertyDefinition = propertySupportDefinitions[key]
+        //let propertyDefinition = propertySupportDefinitions[key]
 
         switch property.value {
         case let .static(value):
@@ -117,10 +118,10 @@ extension Experimental {
           }
           observableHandlerRemovers[key]!.append(contentsOf: [
             reactiveProperty.onHasValueChanged { [unowned self, unowned reactiveProperty] in
-              resolvedPropertyValues[key] = reactiveProperty.value ?? propertyDefinition?.defaultValue
+              updateSingleResolvedValue(key: key, newValue: reactiveProperty.value)
             },
             reactiveProperty.onChanged { [unowned self] in
-              resolvedPropertyValues[key] = $0.new ?? propertyDefinition?.defaultValue
+              updateSingleResolvedValue(key: key, newValue: $0.new)
             }
           ])
         } 
@@ -128,8 +129,26 @@ extension Experimental {
       for propertyDefinition in propertySupportDefinitions {
         resolvedValues[propertyDefinition.key.asString] = resolvedValues[propertyDefinition.key.asString] ?? propertyDefinition.defaultValue
       }
+      for (key, value) in resolvedValues {
+        resolvedValues[key] = inheritOrKeepCurrent(value: value, for: key)
+      }
 
       self.resolvedPropertyValues = resolvedValues
+    }
+
+    private func updateSingleResolvedValue(key: StyleKey, newValue: StyleValue?) {
+      var processed = newValue ?? propertySupportDefinitions[key.asString]?.defaultValue
+      processed = inheritOrKeepCurrent(value: processed, for: key)
+      resolvedPropertyValues[key.asString] = processed
+    }
+
+    private func inheritOrKeepCurrent(value: StyleValue?, for key: StyleKey) -> StyleValue? {
+      if let special = value as? SpecialStyleValue {
+        if special == .inherit {
+          return inheritableValues[key.asString] ?? nil
+        }
+      }
+      return value
     }
   }
 }
