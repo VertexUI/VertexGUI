@@ -19,7 +19,7 @@ class BuildTests: XCTestCase {
     }
     property.value = "test1"
     XCTAssertEqual(onBuildInvalidatedCallCount, 1)
-    root.mockTick()
+    root.tick()
     property.value = "test2"
     XCTAssertEqual(onBuildInvalidatedCallCount, 2)
   }

@@ -9,7 +9,7 @@ class ExperimentalStylePropertySupportDefinitionsTests: XCTestCase {
     var definitions2 = Experimental.StylePropertySupportDefinitions {
       ("property2", type: .specific(String.self))
     }
-    var merged = try! Experimental.StylePropertySupportDefinitions(merge: definitions1, definitions2)
+    var merged = try! Experimental.StylePropertySupportDefinitions(merge: [definitions1, definitions2])
     XCTAssertEqual(merged.definitions.count, 2)
     XCTAssertEqual(merged.definitions.map { $0.key.asString }, ["property1", "property2"])
 
@@ -21,7 +21,7 @@ class ExperimentalStylePropertySupportDefinitionsTests: XCTestCase {
     }
     var errorInstance: Experimental.StylePropertySupportDefinitions.MergingError? = nil
     do {
-      merged = try Experimental.StylePropertySupportDefinitions(merge: definitions1, definitions2)
+      merged = try Experimental.StylePropertySupportDefinitions(merge: [definitions1, definitions2])
     } catch let error as Experimental.StylePropertySupportDefinitions.MergingError {
       errorInstance = error
     } catch {

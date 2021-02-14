@@ -3,7 +3,6 @@ import XCTest
 #if !canImport(ObjectiveC)
   public func allTests() -> [XCTestCaseEntry] {
     [
-      testCase(FlexTests.allTests),
       testCase(StyleSelectorTests.allTests),
       testCase(StyleTests.allTests),
       testCase(ExperimentalStyleTests.allTests),
@@ -17,7 +16,9 @@ import XCTest
       testCase(ExperimentalStyleParserTests.allTests),
       testCase(StylableWidgetTests.allTests),
       testCase(ReactivePropertyTests.allTests),
-      testCase(BuildTests.allTests)
+      testCase(BuildTests.allTests),
+      //testCase(FlexTests.allTests), old flex widget
+      testCase(ContainerTests.allTests)
     ]
   }
 #endif

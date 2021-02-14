@@ -258,7 +258,7 @@ final class StyleTests: XCTestCase {
     showWidget2 = true
 
     rootWidget.invalidateBuild()
-    mockRoot.mockTick()
+    mockRoot.tick()
 
     XCTAssertEqual(widget1.appliedStyles.count, 1)
     XCTAssertEqual(widget2.appliedStyles.count, 1)
@@ -456,12 +456,12 @@ final class StyleTests: XCTestCase {
     XCTAssertEqual(widget.appliedStyles.count, 3)
 
     widget.classes = ["class-2", "class-3"]
-    root.mockTick()
+    root.tick()
     
     XCTAssertEqual(widget.appliedStyles.count, 4)
 
     widget.mode = .mode2
-    root.mockTick()
+    root.tick()
 
     XCTAssertEqual(widget.appliedStyles.count, 5)
   }

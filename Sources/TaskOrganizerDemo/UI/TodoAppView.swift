@@ -49,7 +49,6 @@ public class TodoAppView: SingleChildWidget {
       ($0.maxWidth, 200.0)
       (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.stretch)
       (SimpleLinearLayout.ParentKeys.direction, SimpleLinearLayout.Direction.column)
-      ($0.background, Color.grey)
     }) { [unowned self] in
       buildSearch()
 
@@ -88,7 +87,6 @@ public class TodoAppView: SingleChildWidget {
       Experimental.List(styleProperties: {
         ($0.overflowY, Overflow.scroll)
         (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.stretch)
-        ($0.background, Color.yellow)
         (SimpleLinearLayout.ChildKeys.shrink, 1.0)
       }, ExperimentalReactiveProperties.ComputedProperty(compute: {
         todoStore.state.lists
@@ -139,7 +137,7 @@ public class TodoAppView: SingleChildWidget {
       }
 
       Experimental.Text(styleProperties: {
-        ($0.textColor, Color.black)
+        ($0.textColor, Color.white)
         (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.center)
       }, list.name).with(classes: ["list-item-name"])
     }.onClick { [unowned self] in

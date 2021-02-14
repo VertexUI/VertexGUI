@@ -85,7 +85,7 @@ class ExperimentalStyleManagerTests: XCTestCase {
       rootWidget.mount(parent: self, treePath: [], context: widgetContext!, lifecycleBus: widgetLifecycleBus)
     }
 
-    public func mockTick() {
+    public func tick() {
       tick(Tick(deltaTime: 0, totalTime: 0))
     }
   }

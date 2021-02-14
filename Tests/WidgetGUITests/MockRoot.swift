@@ -16,7 +16,7 @@ class MockRoot: Root {
       requestCursor: { _ in {} } )
   }
 
-  public func mockTick() {
+  public func tick() {
     tick(Tick(deltaTime: 0, totalTime: 0))
   }
 }

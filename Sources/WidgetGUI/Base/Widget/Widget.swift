@@ -998,18 +998,23 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         
         let targetSize = newUnconstrainedContentSize + padding.aggregateSize + borderWidth.aggregateSize
         
+        // warning: this description is possibly outdated
         // final size constraints are used to determine the size of a scroll container
         // the perform layout outputs the size of the whole content
         // -> the content can have any size, because it can be scrolled,
         // therefore it is ok to just apply the max constraints passed in by the parent
         // to the whole widget -> content whill be scrollable if it overflows
-        var finalSizeConstraints = boxConfigConstraints
+        /*var finalSizeConstraints = boxConfigConstraints
         if overflowX == .scroll {
             finalSizeConstraints.maxSize.width = boxConfigConstraints.constrain(constraints.maxSize).width
         }
         if overflowY == .scroll {
             finalSizeConstraints.maxSize.height = boxConfigConstraints.constrain(constraints.maxSize).height
-        }
+        }*/
+        let finalSizeConstraints = BoxConstraints(
+            minSize: boxConfigConstraints.constrain(constraints.minSize),
+            maxSize: boxConfigConstraints.constrain(constraints.maxSize)
+        )
         size = finalSizeConstraints.constrain(targetSize)
         /*print("LAYOUT", self)
         print("size", size)

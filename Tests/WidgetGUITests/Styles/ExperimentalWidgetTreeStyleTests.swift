@@ -169,11 +169,11 @@ class ExperimentalWidgetTreeStyleTests: XCTestCase {
     XCTAssertEqual(reference1.referenced!.stylePropertyValue(TestWidget.StyleKeys.property1) as? Double, 1.0)
 
     reference1.referenced!.pseudoClass1Enabled = true
-    root.mockTick()
+    root.tick()
     XCTAssertEqual(reference1.referenced!.stylePropertyValue(TestWidget.StyleKeys.property1) as? Double, 2.0)
 
     reference1.referenced!.pseudoClass1Enabled = false
-    root.mockTick()
+    root.tick()
     XCTAssertEqual(reference1.referenced!.stylePropertyValue(TestWidget.StyleKeys.property1) as? Double, 1.0)
   }
 
