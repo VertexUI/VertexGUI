@@ -152,6 +152,107 @@ class ContainerTests: XCTestCase, LayoutTest {
     )
   }
 
+  func testSimpleLinearRowMultiChildGrow() {
+    let innerRef1 = Reference<Widget>() 
+    let innerRef2 = Reference<Widget>() 
+    let innerRef3 = Reference<Widget>() 
+    let outerRef = Reference<Widget>()
+    let root = Root(rootWidget: Experimental.Container {
+      Experimental.Container(styleProperties: {
+        ($0.layout, SimpleLinearLayout.self)
+        ($0.width, 560.0)
+        (SimpleLinearLayout.ParentKeys.direction, SimpleLinearLayout.Direction.row)
+      }) {
+        ExplicitSizeWidget(preferredSize: DSize2(80, 40)).with(styleProperties: { _ in
+          (SimpleLinearLayout.ChildKeys.shrink, 1.0)
+          (SimpleLinearLayout.ChildKeys.grow, 1.0)
+        }).connect(ref: innerRef1)
+        ExplicitSizeWidget(preferredSize: DSize2(120, 70)).with(styleProperties: { _ in
+          (SimpleLinearLayout.ChildKeys.shrink, 1.0)
+          (SimpleLinearLayout.ChildKeys.grow, 2.0)
+        }).connect(ref: innerRef2)
+        ExplicitSizeWidget(size: DSize2(80, 60)).with(styleProperties: { _ in
+          (SimpleLinearLayout.ChildKeys.shrink, 1.0)
+          (SimpleLinearLayout.ChildKeys.grow, 1.0)
+        }).connect(ref: innerRef3)
+      }.connect(ref: outerRef)
+    })
+    root.bounds.size = DSize2(800, 400)
+
+    XCTAssertEqual(outerRef.referenced!.size, DSize2(560, 70))
+    XCTAssertEqual(innerRef1.referenced!.size, DSize2(150, 40))
+    XCTAssertEqual(innerRef2.referenced!.size, DSize2(260, 70))
+    XCTAssertEqual(innerRef3.referenced!.size, DSize2(80, 60))
+  }
+
+  func testSimpleLinearRowMultiChildShrink() {
+    let innerRef1 = Reference<Widget>() 
+    let innerRef2 = Reference<Widget>() 
+    let innerRef3 = Reference<Widget>() 
+    let outerRef = Reference<Widget>()
+    let root = Root(rootWidget: Experimental.Container {
+      Experimental.Container(styleProperties: {
+        ($0.layout, SimpleLinearLayout.self)
+        ($0.width, 200.0)
+        (SimpleLinearLayout.ParentKeys.direction, SimpleLinearLayout.Direction.row)
+      }) {
+        ExplicitSizeWidget(preferredSize: DSize2(160, 40)).with(styleProperties: { _ in
+          (SimpleLinearLayout.ChildKeys.shrink, 1.0)
+          (SimpleLinearLayout.ChildKeys.grow, 1.0)
+        }).connect(ref: innerRef1)
+        ExplicitSizeWidget(preferredSize: DSize2(140, 70)).with(styleProperties: { _ in
+          (SimpleLinearLayout.ChildKeys.shrink, 2.0)
+          (SimpleLinearLayout.ChildKeys.grow, 1.0)
+        }).connect(ref: innerRef2)
+        ExplicitSizeWidget(size: DSize2(100, 60)).with(styleProperties: { _ in
+          (SimpleLinearLayout.ChildKeys.shrink, 1.0)
+          (SimpleLinearLayout.ChildKeys.grow, 1.0)
+        }).connect(ref: innerRef3)
+      }.connect(ref: outerRef)
+    })
+    root.bounds.size = DSize2(800, 400)
+
+    XCTAssertEqual(outerRef.referenced!.size, DSize2(200, 70))
+    XCTAssertEqual(innerRef1.referenced!.size, DSize2(110, 40))
+    XCTAssertEqual(innerRef2.referenced!.size, DSize2(40, 70))
+    XCTAssertEqual(innerRef3.referenced!.size, DSize2(100, 60))
+  }
+
+  func testSimpleLinearRowMultiChildStretch() {
+    let innerRef1 = Reference<Widget>() 
+    let innerRef2 = Reference<Widget>() 
+    let innerRef3 = Reference<Widget>() 
+    let outerRef = Reference<Widget>()
+    let root = Root(rootWidget: Experimental.Container {
+      Experimental.Container(styleProperties: {
+        ($0.layout, SimpleLinearLayout.self)
+        (SimpleLinearLayout.ParentKeys.direction, SimpleLinearLayout.Direction.row)
+      }) {
+        ExplicitSizeWidget(preferredSize: DSize2(160, 40)).with(styleProperties: { _ in
+          (SimpleLinearLayout.ChildKeys.shrink, 1.0)
+          (SimpleLinearLayout.ChildKeys.grow, 1.0)
+          (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.stretch)
+        }).connect(ref: innerRef1)
+        ExplicitSizeWidget(preferredSize: DSize2(140, 70)).with(styleProperties: { _ in
+          (SimpleLinearLayout.ChildKeys.shrink, 1.0)
+          (SimpleLinearLayout.ChildKeys.grow, 1.0)
+          (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.stretch)
+        }).connect(ref: innerRef2)
+        ExplicitSizeWidget(size: DSize2(100, 60)).with(styleProperties: { _ in
+          (SimpleLinearLayout.ChildKeys.shrink, 1.0)
+          (SimpleLinearLayout.ChildKeys.grow, 1.0)
+          (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.stretch)
+        }).connect(ref: innerRef3)
+      }.connect(ref: outerRef)
+    })
+    root.bounds.size = DSize2(800, 400)
+
+    XCTAssertEqual(outerRef.referenced!.size, DSize2(400, 70))
+    XCTAssertEqual(innerRef1.referenced!.size, DSize2(160, 70))
+    XCTAssertEqual(innerRef2.referenced!.size, DSize2(140, 70))
+    XCTAssertEqual(innerRef3.referenced!.size, DSize2(100, 60))
+  }
+
   static var allTests = [
     ("testSimpleLinearRowOneFixedChild", testSimpleLinearRowOneFixedChild),
     ("testSimpleLinearRowOneOverflowingChild", testSimpleLinearRowOneOverflowingChild),
@@ -160,6 +261,9 @@ class ContainerTests: XCTestCase, LayoutTest {
     ("testSimpleLinearRowOneOverflowingChildScrollXY", testSimpleLinearRowOneOverflowingChildScrollXY),
     ("testSimpleLinearRowOneChildGrow", testSimpleLinearRowOneChildGrow),
     ("testSimpleLinearRowOneChildShrink", testSimpleLinearRowOneChildShrink),
-    ("testSimpleLinearRowOneChildStretch", testSimpleLinearRowOneChildStretch)
+    ("testSimpleLinearRowOneChildStretch", testSimpleLinearRowOneChildStretch),
+    ("testSimpleLinearRowMultiChildGrow", testSimpleLinearRowMultiChildGrow),
+    ("testSimpleLinearRowMultiChildShrink", testSimpleLinearRowMultiChildShrink),
+    ("testSimpleLinearRowMultiChildStretch", testSimpleLinearRowMultiChildStretch)
   ]
 }
