@@ -28,7 +28,7 @@ extension Experimental {
       var maxWidth = 0.0
 
       for child in children {
-        let childConstraints = BoxConstraints(minSize: .zero, maxSize: constraints.maxSize)
+        let childConstraints = BoxConstraints(minSize: DSize2(constraints.minWidth, 0), maxSize: constraints.maxSize)
         child.layout(constraints: childConstraints)
 
         child.position = currentPosition

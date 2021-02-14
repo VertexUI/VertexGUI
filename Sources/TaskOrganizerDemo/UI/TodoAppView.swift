@@ -49,6 +49,7 @@ public class TodoAppView: SingleChildWidget {
       ($0.maxWidth, 200.0)
       (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.stretch)
       (SimpleLinearLayout.ParentKeys.direction, SimpleLinearLayout.Direction.column)
+      ($0.background, Color.grey)
     }) { [unowned self] in
       buildSearch()
 
@@ -84,16 +85,16 @@ public class TodoAppView: SingleChildWidget {
         ($0.background, Color.yellow)
         (SimpleLinearLayout.ChildKeys.shrink, 1.0)
       }) {*/
-        Experimental.List(styleProperties: {
-          ($0.overflowY, Overflow.scroll)
-          (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.stretch)
-          ($0.background, Color.yellow)
-          (SimpleLinearLayout.ChildKeys.shrink, 1.0)
-        }, ExperimentalReactiveProperties.ComputedProperty(compute: {
-          todoStore.state.lists
-        }, dependencies: [todoStore.$state])) {
-          buildMenuListItem(for: $0)
-        }
+      Experimental.List(styleProperties: {
+        ($0.overflowY, Overflow.scroll)
+        (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.stretch)
+        ($0.background, Color.yellow)
+        (SimpleLinearLayout.ChildKeys.shrink, 1.0)
+      }, ExperimentalReactiveProperties.ComputedProperty(compute: {
+        todoStore.state.lists
+      }, dependencies: [todoStore.$state])) {
+        buildMenuListItem(for: $0)
+      }
       //}
     }
   }

@@ -984,11 +984,9 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         )
         var contentConstraints: BoxConstraints = constrainedParentConstraints - padding.aggregateSize - borderWidth.aggregateSize
         if overflowX == .scroll {
-            contentConstraints.minSize.x = 0
             contentConstraints.maxSize.x = .infinity
         }
         if overflowY == .scroll {
-            contentConstraints.minSize.y = 0
             contentConstraints.maxSize.y = .infinity
         }
         
@@ -999,7 +997,12 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         }
         
         let targetSize = newUnconstrainedContentSize + padding.aggregateSize + borderWidth.aggregateSize
-
+        
+        // final size constraints are used to determine the size of a scroll container
+        // the perform layout outputs the size of the whole content
+        // -> the content can have any size, because it can be scrolled,
+        // therefore it is ok to just apply the max constraints passed in by the parent
+        // to the whole widget -> content whill be scrollable if it overflows
         var finalSizeConstraints = boxConfigConstraints
         if overflowX == .scroll {
             finalSizeConstraints.maxSize.width = boxConfigConstraints.constrain(constraints.maxSize).width
@@ -1008,6 +1011,14 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
             finalSizeConstraints.maxSize.height = boxConfigConstraints.constrain(constraints.maxSize).height
         }
         size = finalSizeConstraints.constrain(targetSize)
+        /*print("LAYOUT", self)
+        print("size", size)
+        print("target size", targetSize)
+        print("constraints", constraints)
+        print("content constraints", contentConstraints)
+        print("box config constraints", boxConfigConstraints)
+        print("final size constraints", finalSizeConstraints)
+        print("------------")*/
         
         scrollableLength = DVec2(targetSize - size)
 
