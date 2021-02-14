@@ -854,6 +854,13 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         let borderSize = borderWidth.aggregateSize
         boxConfig += borderSize
 
+        if overflowX == .scroll {
+            boxConfig.minSize.width = 0
+        }
+        if overflowY == .scroll {
+            boxConfig.minSize.height = 0
+        }
+
         if let explicitMinWidth = stylePropertyValue(StyleKeys.minWidth, as: Double.self) {
             boxConfig.minSize.width = explicitMinWidth
             boxConfig.preferredSize.width = max(boxConfig.minSize.width, boxConfig.preferredSize.width)
@@ -993,8 +1000,10 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         
         let targetSize = newUnconstrainedContentSize + padding.aggregateSize + borderWidth.aggregateSize
 
-        // TODO: check here
         var finalSizeConstraints = boxConfigConstraints
+        if overflowX == .scroll {
+            finalSizeConstraints.maxSize.width = boxConfigConstraints.constrain(constraints.maxSize).width
+        }
         if overflowY == .scroll {
             finalSizeConstraints.maxSize.height = boxConfigConstraints.constrain(constraints.maxSize).height
         }

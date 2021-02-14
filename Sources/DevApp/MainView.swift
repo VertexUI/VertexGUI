@@ -20,29 +20,60 @@ public class MainView: Experimental.ComposedWidget {
       Experimental.DefaultTheme()
 
       Experimental.Container(styleProperties: {
-        ($0.width, 800.0)
+        ($0.width, 200.0)
+        ($0.height, 300.0)
         ($0.minWidth, 1000.0)
+        ($0.background, Color.grey)
       }) {
         Experimental.Container(styleProperties: {
-          ($0.minWidth, 400.0)
-          ($0.maxWidth, 500.0)
-          ($0.minHeight, 400.0)
+          //($0.minWidth, 400.0)
+          //($0.maxWidth, 500.0)
+          //($0.minHeight, 400.0)
+          ($0.overflowX, Overflow.scroll)
+          ($0.overflowY, Overflow.scroll)
           ($0.background, Color.red)
-          (SimpleLinearLayout.ChildKeys.grow, 1.0)
+          (SimpleLinearLayout.ChildKeys.shrink, 1.0)
         }) {
-          Experimental.Text("NONE")
+          //Experimental.Text("NONE")
+          Experimental.Container(styleProperties: {
+            ($0.width, 600.0)
+            ($0.height, 200.0)
+            ($0.background, Color.green)
+          }) {
+            Experimental.Text("WOW")
+          }
         }
 
-        Experimental.Container(styleProperties: {
+        /*Experimental.Container(styleProperties: {
           (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.stretch)
           ($0.maxHeight, 200.0)
           ($0.background, Color.blue)
         }) {
           Experimental.Text("NONE 2")
-        }
+        }*/
       }
 
       Experimental.Container(styleProperties: {
+        ($0.background, Color.grey)
+        ($0.height, 200.0)
+        (SimpleLinearLayout.ParentKeys.direction, SimpleLinearLayout.Direction.column)
+      }) {
+        Experimental.Container(styleProperties: {
+          (SimpleLinearLayout.ChildKeys.shrink, 1.0)
+          ($0.overflowY, Overflow.scroll)
+          ($0.background, Color.yellow)
+        }) {
+          Experimental.Container(styleProperties: {
+            ($0.width, 500.0)
+            ($0.height, 500.0)
+            ($0.background, Color.green)
+          }) {
+            Experimental.Text("WOW")
+          }
+        }
+      }
+
+      /*Experimental.Container(styleProperties: {
         ($0.background, Color.blue)
         ($0.maxHeight, 100.0)
         ($0.width, 300.0)
@@ -65,7 +96,7 @@ public class MainView: Experimental.ComposedWidget {
         Experimental.Text("Change the reactive text")
       }.onClick {
         text = "second reactive text"
-      }
+      }*/
 
       /*
       /*Experimental.Button {
