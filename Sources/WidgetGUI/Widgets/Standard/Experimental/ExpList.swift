@@ -10,9 +10,12 @@ extension Experimental {
           for (index, child) in children.enumerated() {
             if !child.mounted {
               self.mountChild(child, treePath: treePath/index)
+              child.stylePropertiesResolver.resolve()
             }
           }
+          self.invalidateBoxConfig()
           self.invalidateLayout()
+          self.invalidateMatchedStyles()
         }
       }
     }
@@ -20,7 +23,24 @@ extension Experimental {
     internal init() {}
 
     override public func getContentBoxConfig() -> BoxConfig {
-      BoxConfig(preferredSize: .zero)
+      var result = BoxConfig(preferredSize: .zero)
+      for child in children {
+        if child.boxConfig.preferredSize.width > result.preferredSize.width {
+          result.preferredSize.width = child.boxConfig.preferredSize.width
+        }
+        result.preferredSize.height += child.boxConfig.preferredSize.height
+
+        if child.boxConfig.minSize.width > result.minSize.width {
+          result.minSize.width = child.boxConfig.minSize.width
+        }
+        result.minSize.height += child.boxConfig.minSize.height
+
+        if child.boxConfig.maxSize.width > result.maxSize.width {
+          result.maxSize.width = child.boxConfig.maxSize.width
+        }
+        result.maxSize.height += child.boxConfig.maxSize.height
+      }
+      return result
     }
 
     override public func performLayout(constraints: BoxConstraints) -> DSize2 {

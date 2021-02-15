@@ -134,6 +134,7 @@ public class TodoAppView: SingleChildWidget {
       Experimental.Text(styleProperties: { 
         (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.center)
         ($0.foreground, Color.white)
+        ($0.padding, Insets(left: 8))
       }, list.name).with(classes: ["list-item-name"])
     }.onClick { [unowned self] in
       navigationStore.commit(.updateMainViewRoute(.selectedList(list.id)))

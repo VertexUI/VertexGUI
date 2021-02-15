@@ -90,24 +90,5 @@ extension Experimental {
     public func measureText(_ text: String) -> DSize2 {
       context.measureText(text: text, paint: TextPaint(fontConfig: fontConfig, color: color))
     }
-
-    override public func renderContent() -> RenderObject? {
-      let maxWidth = wrap ? bounds.size.width : nil
-
-      if let previousContent = renderState.mainContent as? TextRenderObject {
-        previousContent.text = transformedText
-        previousContent.fontConfig = fontConfig
-        previousContent.color = color
-        previousContent.topLeft = globalPosition
-        previousContent.maxWidth = maxWidth
-        return previousContent
-      } else {
-        return TextRenderObject(
-          transformedText, fontConfig: fontConfig, color: color,
-          topLeft: globalPosition, maxWidth: maxWidth)
-      }
-    }
-
-    public typealias StyleKeys = Experimental.AnyDefaultStyleKeys
   }
 }

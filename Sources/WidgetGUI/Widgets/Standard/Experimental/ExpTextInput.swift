@@ -131,7 +131,6 @@ extension Experimental {
     }
 
     override public func getContentBoxConfig() -> BoxConfig {
-      print("stack container box config", stackContainer.boxConfig)
       return stackContainer.boxConfig
     }
 

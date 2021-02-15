@@ -294,13 +294,19 @@ open class Root: Parent {
             childDrawingContext.drawRect(rect: DRect(min: .zero, size: widget.size), paint: Paint(color: widget.background))
           }
 
-          if let leafWidget = widget as? LeafWidget {
-            leafWidget.draw(childDrawingContext)
-          }
-
           // TODO: probably the border should be drawn after all children have been drawn, to avoid the border being overlpassed
           if widget.borderColor != .transparent && widget.borderWidth != .zero {
             drawBorders(childDrawingContext, widget: widget)
+          }
+
+          if widget.padding.left != 0 || widget.padding.top != 0 {
+            childDrawingContext.transform(.translate(DVec2(widget.padding.left, widget.padding.top)))
+          }
+
+          childDrawingContext.lock()
+
+          if let leafWidget = widget as? LeafWidget {
+            leafWidget.draw(childDrawingContext)
           }
 
           childDrawingContext.endDrawing()

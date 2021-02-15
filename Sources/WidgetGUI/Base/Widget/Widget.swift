@@ -993,10 +993,6 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         
         let newUnconstrainedContentSize = performLayout(constraints: contentConstraints)
 
-        for child in children {
-            child.position += DVec2(padding.left, padding.top)
-        }
-        
         let targetSize = newUnconstrainedContentSize + padding.aggregateSize + borderWidth.aggregateSize
         
         // warning: this description is possibly outdated
