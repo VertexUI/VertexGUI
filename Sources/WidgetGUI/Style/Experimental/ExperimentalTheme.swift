@@ -21,7 +21,7 @@ extension Experimental {
           }
 
           Experimental.Style(StyleSelector(StyleSelectorPart(extendsParent: false, opensScope: false, type: Experimental.Text.self)), Experimental.Text.self) {
-            ($0.textColor, Color.white)
+            ($0.foreground, Color.white)
             ($0.fontSize, 24.0)
           }
         },

@@ -17,7 +17,10 @@ open class Root: Parent {
   }
 
   public var rootWidget: Widget
-  open var widgetContext: WidgetContext? {
+
+  var globalStylePropertySupportDefinitions = Experimental.defaultStylePropertySupportDefinitions 
+  var globalStyles = Experimental.defaultGlobalStyles 
+  var widgetContext: WidgetContext? {
     didSet {
       if let widgetContext = widgetContext {
         widgetContext.debugLayout = debugLayout
@@ -96,13 +99,15 @@ open class Root: Parent {
       createWindow: createWindow,
       requestCursor: requestCursor,
       queueLifecycleMethodInvocation: { [unowned self] in widgetLifecycleManager.queue($0, target: $1, sender: $2, reason: $3) },
-      lifecycleMethodInvocationSignalBus: Bus<Widget.LifecycleMethodInvocationSignal>()
+      lifecycleMethodInvocationSignalBus: Bus<Widget.LifecycleMethodInvocationSignal>(),
+      globalStylePropertySupportDefinitions: globalStylePropertySupportDefinitions
     )
     
     _ = rootWidget.onBoxConfigChanged { [unowned self] _ in
       layout()
     }
 
+    rootWidget.provideStyles(globalStyles)
     rootWidget.mount(parent: self, treePath: [], context: widgetContext!, lifecycleBus: widgetLifecycleBus)
     //rootWidget.focusContext = focusContext
 

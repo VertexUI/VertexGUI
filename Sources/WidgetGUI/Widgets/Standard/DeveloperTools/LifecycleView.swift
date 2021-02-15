@@ -158,7 +158,7 @@ public class LifecycleView: Experimental.ComposedWidget {
         ($0.padding, Insets(all: 8))
 
         Experimental.Style(".method-name", Experimental.Text.self) {
-          ($0.textColor, Color.black)
+          ($0.foreground, Color.black)
           ($0.fontSize, 16.0)
         }
       }

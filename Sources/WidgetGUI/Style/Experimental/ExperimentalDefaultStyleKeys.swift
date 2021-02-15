@@ -49,9 +49,6 @@ public extension ExperimentalDefaultStyleKeys {
   static var overflowY: String {
     "overflowY"
   }
-  static var textColor: String {
-    "textColor"
-  }
   static var textTransform: String {
     "textTransform"
   }

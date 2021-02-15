@@ -27,15 +27,16 @@ public class MainView: Experimental.ComposedWidget {
         ($0.background, Color.grey)
       }) {
         Experimental.Container(classes: ["middle"], styleProperties: {
-          //($0.minWidth, 400.0)
+          ($0.width, .inherit)
+          ($0.foreground, Color.white)
           //($0.maxWidth, 500.0)
           //($0.minHeight, 400.0)
           //($0.overflowX, Overflow.scroll)
-          ($0.overflowY, Overflow.scroll)
-          (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.stretch)
+          //($0.overflowY, Overflow.scroll)
+          //(SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.stretch)
           ($0.background, Color.red)
           //(SimpleLinearLayout.ChildKeys.shrink, 1.0)
-          (SimpleLinearLayout.ChildKeys.grow, 1.0)
+          //(SimpleLinearLayout.ChildKeys.grow, 1.0)
         }) {
           Experimental.Text("NONE")
           /*Experimental.List(classes: ["end"], styleProperties: {

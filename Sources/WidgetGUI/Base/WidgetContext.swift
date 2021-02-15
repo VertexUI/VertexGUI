@@ -42,6 +42,8 @@ public class WidgetContext {
         _getKeyStates()
     }
 
+    public let globalStylePropertySupportDefinitions: Experimental.StylePropertySupportDefinitions
+
     public init(
         window: Window,
         getTextBoundsSize: @escaping (_ text: String, _ fontConfig: FontConfig, _ maxWidth: Double?) -> DSize2,
@@ -52,7 +54,8 @@ public class WidgetContext {
         createWindow: @escaping (_ guiRootBuilder: @autoclosure () -> Root, _ options: Window.Options) -> Window,
         requestCursor: @escaping (_ cursor: Cursor) -> () -> Void,
         queueLifecycleMethodInvocation: @escaping (Widget.LifecycleMethod, Widget, Widget, Widget.LifecycleMethodInvocationReason) -> (),
-        lifecycleMethodInvocationSignalBus: Bus<Widget.LifecycleMethodInvocationSignal>) {
+        lifecycleMethodInvocationSignalBus: Bus<Widget.LifecycleMethodInvocationSignal>,
+        globalStylePropertySupportDefinitions: Experimental.StylePropertySupportDefinitions) {
             self.window = window
             self._getTextBoundsSize = getTextBoundsSize
             self._measureText = measureText
@@ -63,6 +66,7 @@ public class WidgetContext {
             self._requestCursor = requestCursor
             self._queueLifecycleMethodInvocation = queueLifecycleMethodInvocation
             self.lifecycleMethodInvocationSignalBus = lifecycleMethodInvocationSignalBus
+            self.globalStylePropertySupportDefinitions = globalStylePropertySupportDefinitions
     }
 
     public func getTextBoundsSize(_ text: String, fontConfig: FontConfig, maxWidth: Double? = nil) -> DSize2 {

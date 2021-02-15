@@ -113,13 +113,13 @@ extension Experimental {
           ($0.layout, AbsoluteLayout.self)
         }) { [unowned self] in
           Experimental.Text(styleProperties: {
-            ($0.textColor, Color.white)
+            ($0.foreground, Color.white)
             ($0.fontSize, 24.0)
           }, $text).connect(ref: $textWidget)
 
           Experimental.Text(styleProperties: {
             ($0.opacity, 0.5)
-            ($0.textColor, Color.white)
+            ($0.foreground, Color.white)
             ($0.fontSize, 24.0)
             ($0.visibility, $placeholderVisibility)
           }, $placeholderText)

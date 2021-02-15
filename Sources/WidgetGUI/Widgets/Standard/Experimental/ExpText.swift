@@ -8,7 +8,7 @@ extension Experimental {
     private var text: String
 
     private var color: Color {
-      stylePropertyValue(StyleKeys.textColor, as: Color.self) ?? Color.black
+      stylePropertyValue(StyleKeys.foreground, as: Color.self) ?? Color.black
     }
     private var transform: TextTransform {
       stylePropertyValue(StyleKeys.textTransform, as: TextTransform.self) ?? TextTransform.none
@@ -108,9 +108,6 @@ extension Experimental {
       }
     }
 
-    /*public enum StyleKeys: String, StyleKey, ExperimentalDefaultStyleKeys {
-
-    }*/
     public typealias StyleKeys = Experimental.AnyDefaultStyleKeys
   }
 }

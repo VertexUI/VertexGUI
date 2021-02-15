@@ -38,7 +38,7 @@ public class TodoListView: SingleChildWidget {
     ScrollArea(scrollX: .Never) { [unowned self] in
       Column(spacing: 16) {
         Experimental.Text(styleProperties: {
-          ($0.textColor, Color.white)
+          ($0.foreground, Color.white)
         }, "DISPLAY A LIST!")
         /*ObservingBuilder($nameEditMode) {
           if nameEditMode {

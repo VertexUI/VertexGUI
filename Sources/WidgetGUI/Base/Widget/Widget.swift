@@ -215,10 +215,18 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
 
     /** Style property support declared by the Widget instance's context. */
     public var experimentalSupportedGlobalStyleProperties: Experimental.StylePropertySupportDefinitions {
-        []
+        if let context = _context {
+            return context.globalStylePropertySupportDefinitions
+        } else {
+            return []
+        }
     }
-    /** For which globally defined properties should the lifecycle management of this Widget be done automatically.
-    Example: rerendering if a color property changes. */
+    /** 
+    // TODO: this property is not used yet, added as a reminder to implement such functionality.
+
+    For which globally defined properties should the lifecycle management of this Widget be done automatically.
+    Example: rerendering if a color property changes.
+    */
     public var globalPropertyKeysWithAutomaticLifecycleManagement: [StyleKey] {
         []
     }
@@ -614,50 +622,30 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         with replacementContext: ReplacementContext? = nil) {
             self.context = context
             self.setupContext()
+
+            self.stylePropertiesResolver.propertySupportDefinitions = experimentalMergedSupportedStyleProperties
+
             self.lifecycleBus = lifecycleBus
             
-                var oldSelf: Widget? = replacementContext?.previousWidget
-                if let replacementContext = replacementContext {
-                    if let newKey = self.key {
-                        oldSelf = replacementContext.keyedWidgets[newKey]
-                    }
+            self.parent = parent
 
-                    if let newSelf = self as? (Widget & AnyStatefulWidget), let oldSelf = oldSelf as? (Widget & AnyStatefulWidget) {
-                        var attemptStateReplace = false
+            setupInhertiableStylePropertiesValues()
 
-                        if  let newKey = newSelf.key,
-                            let oldKey = oldSelf.key,
-                            oldKey == newKey {
-                                attemptStateReplace = true
-                        } else if newSelf.key == nil, oldSelf.key == nil {
-                            attemptStateReplace = true
-                        }
+            self.treePath = treePath
 
-                        if attemptStateReplace && type(of: newSelf) == type(of: oldSelf) {
-                            newSelf.anyState = oldSelf.anyState
-                        }
-                    }
-                }
-            
-                self.parent = parent
+            resolveDependencies()
 
-                setupInhertiableStylePropertiesValues()
+            onDependenciesInjected.invokeHandlers(())
 
-                self.treePath = treePath
+            addedToParent()
 
-                resolveDependencies()
+            build()
+    
+            mounted = true
 
-                onDependenciesInjected.invokeHandlers(())
+            onMounted.invokeHandlers(Void())
 
-                addedToParent()
-
-                build()
-        
-                mounted = true
-
-                onMounted.invokeHandlers(Void())
-
-                invalidateMatchedStyles()
+            invalidateMatchedStyles()
     }
 
     private func setupInhertiableStylePropertiesValues() {

@@ -71,29 +71,23 @@ public class TodoAppView: SingleChildWidget {
           Experimental.Text(styleProperties: {
             ($0.fontWeight, FontWeight.bold)
             ($0.fontSize, 20.0)
-            ($0.textColor, Color.black)
+            ($0.foreground, Color.black)
           }, "New List")
         }.onClick { [unowned self] in
           handleNewListClick()
         }
       }
 
-      /*Experimental.Container(styleProperties: {
-        ($0.overflowY, Overflow.scroll)
-        (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.stretch)
-        ($0.background, Color.yellow)
-        (SimpleLinearLayout.ChildKeys.shrink, 1.0)
-      }) {*/
       Experimental.List(styleProperties: {
         ($0.overflowY, Overflow.scroll)
         (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.stretch)
         (SimpleLinearLayout.ChildKeys.shrink, 1.0)
+        ($0.foreground, Color.white)
       }, ExperimentalReactiveProperties.ComputedProperty(compute: {
         todoStore.state.lists
       }, dependencies: [todoStore.$state])) {
         buildMenuListItem(for: $0)
       }
-      //}
     }
   }
 
@@ -127,6 +121,7 @@ public class TodoAppView: SingleChildWidget {
       ($0.padding, Insets(all: 16))
       ($0.borderWidth, BorderWidth(bottom: 1.0))
       ($0.borderColor, Color.white)
+      ($0.foreground, Color.white)
     }) {
       Experimental.Container(styleProperties: {
         ($0.background, list.color)
@@ -136,9 +131,9 @@ public class TodoAppView: SingleChildWidget {
         MaterialIcon(.formatListBulletedSquare, color: .white)
       }
 
-      Experimental.Text(styleProperties: {
-        ($0.textColor, Color.white)
+      Experimental.Text(styleProperties: { 
         (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.center)
+        ($0.foreground, Color.white)
       }, list.name).with(classes: ["list-item-name"])
     }.onClick { [unowned self] in
       navigationStore.commit(.updateMainViewRoute(.selectedList(list.id)))
@@ -157,7 +152,7 @@ public class TodoAppView: SingleChildWidget {
         switch navigationStore.state.mainViewRoute {
         case .none:
           Experimental.Text(styleProperties: {
-            ($0.textColor, Color.white)
+            ($0.foreground, Color.white)
             ($0.fontSize, 24.0)
             ($0.fontWeight, FontWeight.bold)
             ($0.opacity, 0.5)
