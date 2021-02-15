@@ -4,6 +4,7 @@ public class SimpleLinearLayout: Layout {
   override public var parentPropertySupportDefinitions: Experimental.StylePropertySupportDefinitions {
     Experimental.StylePropertySupportDefinitions {
       (ParentKeys.direction, type: .specific(Direction.self), default: Direction.row)
+      (ParentKeys.justifyContent, type: .specific(Justify.self), default: Justify.start)
     }
   }
 
@@ -17,6 +18,9 @@ public class SimpleLinearLayout: Layout {
 
   @LayoutProperty(key: ParentKeys.direction)
   var direction: Direction
+  @LayoutProperty(key: ParentKeys.justifyContent)
+  var justifyContent: Justify
+
   var axisIndices: (primaryAxisIndex: Int, secondaryAxisIndex: Int) {
     switch direction {
     case .row:
@@ -111,7 +115,7 @@ public class SimpleLinearLayout: Layout {
 
     accumulatedSize[primaryAxisIndex] = currentPrimaryAxisPosition
     constrainedAccumulatedSize = constraints.constrain(accumulatedSize)
-    let deltaAccumulatedSize = constrainedAccumulatedSize - accumulatedSize
+    var deltaAccumulatedSize = constrainedAccumulatedSize - accumulatedSize
 
     // resolve main axis
     currentPrimaryAxisPosition = 0
@@ -144,6 +148,25 @@ public class SimpleLinearLayout: Layout {
     }
 
     accumulatedSize[primaryAxisIndex] = currentPrimaryAxisPosition
+    constrainedAccumulatedSize = constraints.constrain(accumulatedSize)
+    deltaAccumulatedSize = constrainedAccumulatedSize - accumulatedSize
+
+    // apply justify content
+    if deltaAccumulatedSize[primaryAxisIndex] > 0 {
+      switch justifyContent {
+      case .start:
+        break
+      case .center:
+        let mainAxisStartEndSpace = deltaAccumulatedSize[primaryAxisIndex] / 2
+        for widget in widgets {
+          widget.position[primaryAxisIndex] += mainAxisStartEndSpace
+        }
+      case .end:
+        for widget in widgets {
+          widget.position[primaryAxisIndex] += deltaAccumulatedSize[primaryAxisIndex]
+        }
+      }
+    }
 
     return accumulatedSize 
   }
@@ -156,8 +179,13 @@ public class SimpleLinearLayout: Layout {
     case start, center, end, stretch
   }
 
+  public enum Justify {
+    case start, center, end
+  }
+
   public enum ParentKeys: String, StyleKey {
     case direction
+    case justifyContent
   }
 
   public enum ChildKeys: String, StyleKey {

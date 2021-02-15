@@ -1,5 +1,6 @@
 import XCTest
 import GfxMath
+import ExperimentalReactiveProperties
 @testable import WidgetGUI
 
 class ContainerTests: XCTestCase, LayoutTest {
@@ -253,6 +254,49 @@ class ContainerTests: XCTestCase, LayoutTest {
     XCTAssertEqual(innerRef3.referenced!.size, DSize2(100, 60))
   }
 
+  func testSimpleLinearRowMultiChildJustifyContent() {
+    let innerRef1 = Reference<Widget>() 
+    let innerRef2 = Reference<Widget>() 
+    let outerRef = Reference<Widget>()
+    let justifyProperty = ExperimentalReactiveProperties.MutableProperty<SimpleLinearLayout.Justify>()
+    let root = Root(rootWidget: Experimental.Container {
+      Experimental.Container(styleProperties: {
+        ($0.layout, SimpleLinearLayout.self)
+        (SimpleLinearLayout.ParentKeys.direction, SimpleLinearLayout.Direction.row)
+        (SimpleLinearLayout.ParentKeys.justifyContent, justifyProperty)
+        ($0.width, 500.0)
+      }) {
+        ExplicitSizeWidget(preferredSize: DSize2(160, 40)).connect(ref: innerRef1)
+        ExplicitSizeWidget(preferredSize: DSize2(140, 70)).connect(ref: innerRef2)
+      }.connect(ref: outerRef)
+    })
+    root.bounds.size = DSize2(800, 400)
+
+    justifyProperty.value = .end
+    root.tick()
+    XCTAssertEqual(outerRef.referenced!.size, DSize2(500, 70))
+    XCTAssertEqual(innerRef1.referenced!.size, DSize2(160, 40))
+    XCTAssertEqual(innerRef2.referenced!.size, DSize2(140, 70))
+    XCTAssertEqual(innerRef1.referenced!.position, DVec2(200, 0))
+    XCTAssertEqual(innerRef2.referenced!.position, DVec2(360, 0))
+
+    justifyProperty.value = .center
+    root.tick()
+    XCTAssertEqual(outerRef.referenced!.size, DSize2(500, 70))
+    XCTAssertEqual(innerRef1.referenced!.size, DSize2(160, 40))
+    XCTAssertEqual(innerRef2.referenced!.size, DSize2(140, 70))
+    XCTAssertEqual(innerRef1.referenced!.position, DVec2(100, 0))
+    XCTAssertEqual(innerRef2.referenced!.position, DVec2(260, 0))
+
+    justifyProperty.value = .start
+    root.tick()
+    XCTAssertEqual(outerRef.referenced!.size, DSize2(500, 70))
+    XCTAssertEqual(innerRef1.referenced!.size, DSize2(160, 40))
+    XCTAssertEqual(innerRef2.referenced!.size, DSize2(140, 70))
+    XCTAssertEqual(innerRef1.referenced!.position, DVec2(0, 0))
+    XCTAssertEqual(innerRef2.referenced!.position, DVec2(160, 0))
+  }
+
   static var allTests = [
     ("testSimpleLinearRowOneFixedChild", testSimpleLinearRowOneFixedChild),
     ("testSimpleLinearRowOneOverflowingChild", testSimpleLinearRowOneOverflowingChild),
@@ -264,6 +308,7 @@ class ContainerTests: XCTestCase, LayoutTest {
     ("testSimpleLinearRowOneChildStretch", testSimpleLinearRowOneChildStretch),
     ("testSimpleLinearRowMultiChildGrow", testSimpleLinearRowMultiChildGrow),
     ("testSimpleLinearRowMultiChildShrink", testSimpleLinearRowMultiChildShrink),
-    ("testSimpleLinearRowMultiChildStretch", testSimpleLinearRowMultiChildStretch)
+    ("testSimpleLinearRowMultiChildStretch", testSimpleLinearRowMultiChildStretch),
+    ("testSimpleLinearRowMultiChildJustifyContent", testSimpleLinearRowMultiChildJustifyContent)
   ]
 }
