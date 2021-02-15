@@ -64,6 +64,9 @@ public extension ExperimentalDefaultStyleKeys {
   static var fontStyle: String {
     "fontStyle"
   }
+  static var transform: String {
+    "transform"
+  }
 }
 
 extension Experimental {

@@ -42,6 +42,7 @@ class CumulatedValuesProcessor {
         widget.cumulatedTransforms = currentTransforms
 
         if widget.children.count > 0 {
+          // TODO: maybe scroll translation should be added here instead of by accessing parent in getTransforms
           queuedIterations.append((widget.visitChildren(), currentTransforms))
         }
       }
@@ -51,6 +52,7 @@ class CumulatedValuesProcessor {
   func getTransforms(_ widget: Widget) -> [DTransform2] {
     var transforms = [DTransform2]()
     transforms.append(.translate(widget.position))
+    transforms.append(contentsOf: widget.styleTransforms)
     if let parent = widget.parent as? Widget {
       if parent.padding.left != 0 || parent.padding.top != 0 {
         transforms.append(.translate(DVec2(parent.padding.left, parent.padding.top)))

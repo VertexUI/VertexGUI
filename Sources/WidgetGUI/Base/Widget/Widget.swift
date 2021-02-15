@@ -311,6 +311,9 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
 
     @FromStyle(key: Experimental.AnyDefaultStyleKeys.padding)
     public var padding: Insets = .zero
+    
+    @FromStyle(key: Experimental.AnyDefaultStyleKeys.transform)
+    public var styleTransforms: [DTransform2] = []
 
     @FromStyle(key: Experimental.AnyDefaultStyleKeys.overflowX)
     public var overflowX: Overflow = .show

@@ -3,17 +3,17 @@ import GfxMath
 open class DrawingContext {
   public let backend: DrawingBackend 
 
-  public private(set) var inherentTransforms: [Transform] = []
+  public private(set) var inherentTransforms: [DTransform2] = []
   public private(set) var inherentOpacity: Double = 1
   public private(set) var inherentClip: DRect?
-  private var transforms: [Transform] = []
+  private var transforms: [DTransform2] = []
   public var opacity: Double = 1 {
     willSet {
       checkFailOpacity(newValue)
     }
   }
   private var currentClip: DRect?
-  public var mergedTransforms: [Transform] {
+  public var mergedTransforms: [DTransform2] {
     inherentTransforms + transforms
   }
   public var mergedOpacity: Double {
@@ -66,22 +66,7 @@ open class DrawingContext {
   }
 
   private func preprocess(_ point: DVec2) -> DVec2 {
-    var currentPoint = point
-    for transform in mergedTransforms {
-      switch transform {
-      case let .translate(translation):
-        currentPoint = currentPoint + translation
-      case let .scale(scale, origin):
-        if let origin = origin {
-          currentPoint -= origin
-        }
-        currentPoint *= scale
-        if let origin = origin {
-          currentPoint += origin
-        }
-      }
-    }
-    return currentPoint
+    mergedTransforms.transform(point: point)
   }
 
   public func preprocess(_ rect: DRect) -> DRect {
@@ -109,11 +94,11 @@ open class DrawingContext {
     return processed
   }
 
-  public func transform(_ transform: Transform) {
+  public func transform(_ transform: DTransform2) {
     self.transforms.append(transform)
   }
 
-  public func transform(_ transforms: [Transform]) {
+  public func transform(_ transforms: [DTransform2]) {
     self.transforms.append(contentsOf: transforms)
   }
 
@@ -169,10 +154,5 @@ open class DrawingContext {
 
   open func endDrawing() {
     backend.deactivate()
-  }
-
-  public enum Transform {
-    case translate(DVec2)
-    case scale(DVec2, origin: DVec2? = nil)
   }
 }
