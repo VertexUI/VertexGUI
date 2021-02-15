@@ -640,6 +640,9 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
                 }
             
                 self.parent = parent
+
+                setupInhertiableStylePropertiesValues()
+
                 self.treePath = treePath
 
                 resolveDependencies()
@@ -655,6 +658,16 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
                 onMounted.invokeHandlers(Void())
 
                 invalidateMatchedStyles()
+    }
+
+    private func setupInhertiableStylePropertiesValues() {
+        if let parent = parent as? Widget {
+            stylePropertiesResolver.inheritableValues = parent.stylePropertiesResolver.resolvedPropertyValues
+            _ = parent.stylePropertiesResolver.onResolvedPropertyValuesChanged { [unowned self] _ in
+                stylePropertiesResolver.inheritableValues = parent.stylePropertiesResolver.resolvedPropertyValues
+                stylePropertiesResolver.resolve()
+            }
+        }
     }
 
     private final func resolveDependencies() {

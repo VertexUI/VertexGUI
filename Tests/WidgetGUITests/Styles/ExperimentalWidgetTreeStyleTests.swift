@@ -203,7 +203,27 @@ class ExperimentalWidgetTreeStyleTests: XCTestCase {
   }
 
   func testPropertyValueInheritReactive() {
+    let reference1 = Reference<TestWidget>()
+    let reference2 = Reference<TestWidget>()
+    let inputProperty1 = ExperimentalReactiveProperties.MutableProperty<StyleValue>()
+    let inputProperty2 = ExperimentalReactiveProperties.MutableProperty<StyleValue>()
+    let root = MockRoot(rootWidget: TestWidget(true, buildInternal: nil) {
+      Experimental.Style(".class-1", TestWidget.self) {
+        ($0.property1, inputProperty1)
+      }
 
+      TestWidget(true, buildInternal: nil) {
+        TestWidget(true).with(styleProperties: {
+          ($0.property1, inputProperty2)
+        }).connect(ref: reference2)
+      }.with(classes: ["class-1"]).connect(ref: reference1)
+    })
+    let outputProperty = reference2.referenced!.stylePropertyValue(reactive: TestWidget.StyleKeys.property1)
+
+    inputProperty1.value = "test"
+    inputProperty2.value = SpecialStyleValue.inherit
+    XCTAssertEqual(reference1.referenced!.stylePropertyValue(TestWidget.StyleKeys.property1) as? String, "test")
+    XCTAssertEqual(outputProperty.value as? String, "test")
   }
 
   static var allTests = [
@@ -212,6 +232,7 @@ class ExperimentalWidgetTreeStyleTests: XCTestCase {
     ("testFullTree", testFullTree),
     ("testSimpleRealWidgets", testSimpleRealWidgets),
     ("testPseudoClassUpdate", testPseudoClassUpdate),
-    ("testPropertyValueInherit", testPropertyValueInherit)
+    ("testPropertyValueInherit", testPropertyValueInherit),
+    ("testPropertyValueInheritReactive", testPropertyValueInheritReactive)
   ]
 }
