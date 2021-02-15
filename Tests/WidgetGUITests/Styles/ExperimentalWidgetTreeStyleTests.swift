@@ -10,12 +10,13 @@ class ExperimentalWidgetTreeStyleTests: XCTestCase {
 
     var pseudoClass1Enabled: Bool = false {
       didSet {
-        notifySelectorChanged()
+        if pseudoClass1Enabled {
+          enablePseudoClass(PseudoClasses.pseudoClass1)
+        } else {
+          disablePseudoClass(PseudoClasses.pseudoClass1)
+        }
       }
     }
-    /*override var pseudoClasses: [String] {
-      pseudoClass1Enabled ? ["pseudo-class-1"] : []
-    }*/
 
     init(_ createsStyleScope: Bool, buildInternal: ((MultiChildContentBuilder.ChildrenBuilder?) -> [Widget])?,
       @MultiChildContentBuilder content buildContent: () -> MultiChildContentBuilder.Result) {
@@ -45,6 +46,10 @@ class ExperimentalWidgetTreeStyleTests: XCTestCase {
     enum StyleKeys: String, StyleKey, ExperimentalDefaultStyleKeys {
       case property1
       case property2
+    }
+
+    enum PseudoClasses: String, PseudoClass {
+      case pseudoClass1 
     }
   }
 
@@ -149,7 +154,6 @@ class ExperimentalWidgetTreeStyleTests: XCTestCase {
     })
 
     XCTAssertEqual(reference1.referenced!.stylePropertyValue(Experimental.Button.StyleKeys.background) as? Color, Color.red)
-    XCTAssertEqual(reference1.referenced!.children[0].stylePropertyValue(Experimental.Container.StyleKeys.background) as? Color, Color.red)
   }
 
   func testPseudoClassUpdate() {
@@ -159,7 +163,7 @@ class ExperimentalWidgetTreeStyleTests: XCTestCase {
         ($0.property1, 1.0)
       }
 
-      Experimental.Style(".class-1:pseudo-class-1", TestWidget.self) {
+      Experimental.Style(".class-1:pseudoClass1", TestWidget.self) {
         ($0.property1, 2.0)
       }
 
@@ -177,11 +181,37 @@ class ExperimentalWidgetTreeStyleTests: XCTestCase {
     XCTAssertEqual(reference1.referenced!.stylePropertyValue(TestWidget.StyleKeys.property1) as? Double, 1.0)
   }
 
+  func testPropertyValueInherit() {
+    let reference1 = Reference<TestWidget>()
+    let reference2 = Reference<TestWidget>()
+    let root = MockRoot(rootWidget: TestWidget(true, buildInternal: nil) {
+      Experimental.Style(".class-1", TestWidget.self) {
+        ($0.property1, 1.0)
+        ($0.property2, 2.0)
+      }
+
+      TestWidget(true, buildInternal: nil) {
+        TestWidget(true).with(styleProperties: {
+          ($0.property1, .inherit)
+        }).connect(ref: reference2)
+      }.with(classes: ["class-1"]).connect(ref: reference1)
+    })
+
+    XCTAssertEqual(reference1.referenced!.stylePropertyValue(TestWidget.StyleKeys.property1) as? Double, 1.0)
+    XCTAssertEqual(reference2.referenced!.stylePropertyValue(TestWidget.StyleKeys.property1) as? Double, 1.0)
+    XCTAssertNil(reference2.referenced!.stylePropertyValue(TestWidget.StyleKeys.property2))
+  }
+
+  func testPropertyValueInheritReactive() {
+
+  }
+
   static var allTests = [
     ("testSimpleOneWidget", testSimpleOneWidget),
     ("testOneWidgetWithReactiveInputOutput", testOneWidgetWithReactiveInputOutput),
     ("testFullTree", testFullTree),
     ("testSimpleRealWidgets", testSimpleRealWidgets),
-    ("testPseudoClassUpdate", testPseudoClassUpdate)
+    ("testPseudoClassUpdate", testPseudoClassUpdate),
+    ("testPropertyValueInherit", testPropertyValueInherit)
   ]
 }
