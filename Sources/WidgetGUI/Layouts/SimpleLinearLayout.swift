@@ -4,6 +4,7 @@ public class SimpleLinearLayout: Layout {
   override public var parentPropertySupportDefinitions: Experimental.StylePropertySupportDefinitions {
     Experimental.StylePropertySupportDefinitions {
       (ParentKeys.direction, type: .specific(Direction.self), default: Direction.row)
+      (ParentKeys.alignContent, type: .specific(Align.self), default: Align.start)
       (ParentKeys.justifyContent, type: .specific(Justify.self), default: Justify.start)
     }
   }
@@ -12,12 +13,14 @@ public class SimpleLinearLayout: Layout {
     Experimental.StylePropertySupportDefinitions {
       (ChildKeys.grow, type: .specific(Double.self), default: 0.0)
       (ChildKeys.shrink, type: .specific(Double.self), default: 0.0)
-      (ChildKeys.alignSelf, type: .specific(Align.self), default: Align.start)
+      (ChildKeys.alignSelf, type: .specific(Align.self))
     }
   }
 
   @LayoutProperty(key: ParentKeys.direction)
   var direction: Direction
+  @LayoutProperty(key: ParentKeys.alignContent)
+  var alignContent: Align
   @LayoutProperty(key: ParentKeys.justifyContent)
   var justifyContent: Justify
 
@@ -90,7 +93,7 @@ public class SimpleLinearLayout: Layout {
       widgetConstraints.maxSize[secondaryAxisIndex] = constraints.maxSize[secondaryAxisIndex]
 
       // TODO: implement property definitions forwarding to children!
-      switch widget.stylePropertyValue(ChildKeys.alignSelf, as: Align.self)! {
+      switch widget.stylePropertyValue(ChildKeys.alignSelf, as: Align.self) ?? alignContent {
       case .start:
         widget.position[secondaryAxisIndex] = 0
      
@@ -185,6 +188,7 @@ public class SimpleLinearLayout: Layout {
 
   public enum ParentKeys: String, StyleKey {
     case direction
+    case alignContent
     case justifyContent
   }
 
