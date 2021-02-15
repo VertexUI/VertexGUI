@@ -3,21 +3,25 @@ import GfxMath
 import VisualAppBase
 import ReactiveProperties
 
-public class TaskCompletionButton: Widget, GUIMouseEventConsumer {
-    private var color: Color
-    private let preferredSize = DSize2(32, 32)
-    @ObservableProperty private var completed: Bool
+public class TaskCompletionButton: Widget, LeafWidget {
+    @FromStyle(key: StyleKeys.foreground)
+    private var color: Color = .white
+    private let preferredSize = DSize2(16, 16)
+    private var completed: Bool
 
-    public init(_ completed: ObservableProperty<Bool>, color: Color, onClick onClickHandler: ((_ event: GUIMouseButtonClickEvent) -> ())? = nil) {
-        self._completed = completed
-        self.color = color
-        super.init()
-        _ = onDestroy(self.$completed.onChanged { [unowned self] _ in
-            invalidateRenderState()
-        })
-        if let handler = onClickHandler {
-            _ = onClick.addHandler(handler)
-        }
+    public init(
+        classes: [String]? = nil,
+        @Experimental.StylePropertiesBuilder styleProperties buildStyleProperties: (StyleKeys.Type) -> Experimental.StyleProperties = { _ in [] },
+        _ completed: Bool, onClick onClickHandler: (() -> ())? = nil) {
+            self.completed = completed
+            super.init()
+            if let classes = classes {
+                self.classes.append(contentsOf: classes)
+            }
+            self.with(buildStyleProperties(StyleKeys.self))
+            if let handler = onClickHandler {
+                onClick(handler)
+            }
     }
 
     override public func getContentBoxConfig() -> BoxConfig {
@@ -28,23 +32,10 @@ public class TaskCompletionButton: Widget, GUIMouseEventConsumer {
         constraints.constrain(preferredSize)
     }
 
-    public func consume(_ event: GUIMouseEvent) {
-        if let event = event as? GUIMouseButtonClickEvent {
-            onClick.invokeHandlers(event)
-        }
-    }
-
-    override public func renderContent() -> RenderObject? {
-        RenderObject.Container {
-            RenderObject.RenderStyle(strokeWidth: 2, strokeColor: FixedRenderValue(color)) {
-                RenderObject.Ellipse(globalBounds)
-            }
-
-            if completed {
-                RenderObject.RenderStyle(fillColor: color) {
-                    RenderObject.Ellipse(DRect(center: globalBounds.center, size: globalBounds.size * 0.8))
-                }
-            }
+    public func draw(_ drawingContext: DrawingContext) {
+        drawingContext.drawCircle(center: DVec2(size / 2), radius: size.min()! * 0.9, paint: Paint(strokeWidth: 1.0, strokeColor: color))
+        if completed {
+            drawingContext.drawCircle(center: DVec2(size / 2), radius: size.min()! * 0.8, paint: Paint(color: color))
         }
     }
 }

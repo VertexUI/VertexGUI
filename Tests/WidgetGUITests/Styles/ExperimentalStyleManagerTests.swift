@@ -80,7 +80,8 @@ class ExperimentalStyleManagerTests: XCTestCase {
         createWindow: createWindow,
         requestCursor: requestCursor,
         queueLifecycleMethodInvocation: { [unowned self] in widgetLifecycleManager.queue($0, target: $1, sender: $2, reason: $3) },
-        lifecycleMethodInvocationSignalBus: Bus<Widget.LifecycleMethodInvocationSignal>()
+        lifecycleMethodInvocationSignalBus: Bus<Widget.LifecycleMethodInvocationSignal>(),
+        globalStylePropertySupportDefinitions: []
       )
       rootWidget.mount(parent: self, treePath: [], context: widgetContext!, lifecycleBus: widgetLifecycleBus)
     }

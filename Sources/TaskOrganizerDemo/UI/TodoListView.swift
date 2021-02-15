@@ -1,7 +1,7 @@
 import SwiftGUI
 import ExperimentalReactiveProperties
 
-public class TodoListView: SingleChildWidget {
+public class TodoListView: Experimental.ComposedWidget {
   @Inject
   private var store: TodoStore
 
@@ -9,6 +9,7 @@ public class TodoListView: SingleChildWidget {
   private var listId: Int
   @ExperimentalReactiveProperties.ComputedProperty
   private var list: TodoList
+  @ExperimentalReactiveProperties.MutableProperty
   private var editable: Bool
   private var checkable: Bool
   private var expandedItemIndices: Set<Int> = []
@@ -30,16 +31,50 @@ public class TodoListView: SingleChildWidget {
     _ = onDependenciesInjected { [unowned self] in
       self.$list.reinit(compute: { [unowned self] in
         store.state.lists.first { $0.id == listId }!
-      }, dependencies: [$listId])
+      }, dependencies: [$listId, store.$state])
     }
   }
 
-  override public func buildChild() -> Widget {
-    ScrollArea(scrollX: .Never) { [unowned self] in
-      Column(spacing: 16) {
+  override public func performBuild() {
+    rootChild = Experimental.Container(styleProperties: { _ in
+      (SimpleLinearLayout.ParentKeys.direction, SimpleLinearLayout.Direction.column)
+    }) { [unowned self] in
+
+      Experimental.Container(styleProperties: { _ in
+        (SimpleLinearLayout.ParentKeys.alignContent, SimpleLinearLayout.Align.center)
+      }) {
+
         Experimental.Text(styleProperties: {
           ($0.foreground, Color.white)
-        }, "DISPLAY A LIST!")
+          ($0.fontWeight, FontWeight.bold)
+          ($0.fontSize, 36.0)
+        }, list.name)
+
+        Space(DSize2(24, 0))
+
+        ReactiveContent($editable) {
+          if editable {
+            Experimental.Button {
+              Experimental.Text("add todo")
+            } onClick: {
+              handleAddTodoClick()
+            }
+          }
+        }
+      }
+
+      Space(DSize2(0, 48))
+
+      Experimental.List(styleProperties: {
+        (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.stretch)
+        (SimpleLinearLayout.ChildKeys.shrink, 1.0)
+        ($0.overflowY, Overflow.scroll)
+      }, ExperimentalReactiveProperties.ComputedProperty<[TodoItem]>(compute: {
+        list.items
+      }, dependencies: [$list])) {
+        build(todo: $0)
+      }
+    }
         /*ObservingBuilder($nameEditMode) {
           if nameEditMode {
             Row(spacing: 16) {
@@ -94,21 +129,13 @@ public class TodoListView: SingleChildWidget {
             }
           }
         }*/
-      }
-    }
   }
 
-  /*@Flex.ItemBuilder private func build(todo: TodoItem, index: Int) -> [Flex.Item] {
+  func build(todo: TodoItem) -> Widget {
     TodoListItemView(todo, editable: editable, checkable: checkable)
-
-    Column.Item(crossAlignment: .Stretch) {
-      Padding(left: 40 + 48) {
-        Divider(color: .grey, axis: .Horizontal, thickness: 1)
-      }
-    }
   }
 
   private func handleAddTodoClick() {
     store.commit(.AddItem(listId: list.id))
-  }*/
+  }
 }

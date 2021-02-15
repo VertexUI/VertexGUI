@@ -1,6 +1,6 @@
 import SwiftGUI
 
-public class TodoListItemView: SingleChildWidget {
+public class TodoListItemView: Experimental.ComposedWidget {
   @Inject
   private var store: TodoStore
   private var item: TodoItem
@@ -14,10 +14,29 @@ public class TodoListItemView: SingleChildWidget {
     self.item = item
     self.editable = editable
     self.checkable = checkable
+    super.init()
   }
 
-  override public func buildChild() -> Widget {
-    MouseArea { [unowned self] in
+  override public func performBuild() {
+    rootChild = Experimental.Container { [unowned self] in
+      buildStyle()
+
+      TaskCompletionButton(classes: ["completion-button"], styleProperties: { _ in
+        (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.center)
+      }, item.completed) {
+        if checkable {
+          var updatedItem = item
+          updatedItem.completed = !updatedItem.completed
+          store.dispatch(.UpdateTodoItem(updatedItem))
+        }
+      }
+
+      Experimental.Text(styleProperties: {
+        (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.center)
+        ($0.padding, Insets(left: 32))
+      }, item.description)
+    }
+    /*MouseArea { [unowned self] in
       Padding(all: 16) {
         Row(spacing: 48) {
           Row.Item(crossAlignment: .Center) {
@@ -77,6 +96,23 @@ public class TodoListItemView: SingleChildWidget {
               }
             }
           }
+        }
+      }
+    }*/
+  }
+
+  func buildStyle() -> Experimental.Style {
+    Experimental.Style("&") {
+      ($0.foreground, Color.white)
+      ($0.padding, Insets(all: 32))
+      ($0.borderColor, Color.white)
+      ($0.borderWidth, BorderWidth(bottom: 1.0))
+
+      Experimental.Style(".completion-button") {
+        ($0.foreground, AppTheme.primaryColor)
+        
+        Experimental.Style("&:hover") {
+          ($0.foreground, AppTheme.primaryColor.darkened(40))
         }
       }
     }

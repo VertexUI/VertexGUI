@@ -38,6 +38,8 @@ public class TodoAppView: SingleChildWidget {
     }) { [unowned self] in
       Experimental.DefaultTheme()
 
+      buildStyle()
+
       buildMenu()
       buildActiveView()
     }
@@ -95,8 +97,12 @@ public class TodoAppView: SingleChildWidget {
     Experimental.Container(styleProperties: {
       ($0.background, AppTheme.backgroundColor)
       ($0.padding, Insets(all: 32))
+      (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.stretch)
     }) { [unowned self] in
-      Experimental.TextInput(mutableText: ExperimentalReactiveProperties.MutableComputedProperty(compute: {
+      Experimental.TextInput(styleProperties: { _ in
+        (SimpleLinearLayout.ChildKeys.shrink, 1.0)
+        (SimpleLinearLayout.ChildKeys.grow, 1.0)
+      }, mutableText: ExperimentalReactiveProperties.MutableComputedProperty(compute: {
         searchStore.state.searchQuery
       }, apply: {
         searchStore.commit(.updateQuery($0))
@@ -117,11 +123,10 @@ public class TodoAppView: SingleChildWidget {
   }
 
   private func buildMenuListItem(for list: TodoList) -> Widget {
-    Experimental.Container(styleProperties: {
+    Experimental.Container(classes: ["menu-item"], styleProperties: {
       ($0.padding, Insets(all: 16))
       ($0.borderWidth, BorderWidth(bottom: 1.0))
       ($0.borderColor, Color.white)
-      ($0.foreground, Color.white)
     }) {
       Experimental.Container(styleProperties: {
         ($0.background, list.color)
@@ -133,7 +138,6 @@ public class TodoAppView: SingleChildWidget {
 
       Experimental.Text(styleProperties: { 
         (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.center)
-        ($0.foreground, Color.white)
         ($0.padding, Insets(left: 8))
       }, list.name).with(classes: ["list-item-name"])
     }.onClick { [unowned self] in
@@ -145,7 +149,8 @@ public class TodoAppView: SingleChildWidget {
     return Experimental.Container(styleProperties: { _ in
       (SimpleLinearLayout.ChildKeys.grow, 1.0)
       (SimpleLinearLayout.ParentKeys.direction, SimpleLinearLayout.Direction.column)
-      (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.center)
+      (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.stretch)
+      (SimpleLinearLayout.ParentKeys.justifyContent, SimpleLinearLayout.Justify.center)
     }) { [unowned self] in
       Space(DSize2(0, 0)).connect(ref: $activeViewTopSpace)
 
@@ -166,7 +171,12 @@ public class TodoAppView: SingleChildWidget {
               return id
             }
             return -1
-          }, dependencies: [navigationStore.$state]))
+          }, dependencies: [navigationStore.$state])).with(styleProperties: {
+            ($0.padding, Insets(top: 48, left: 48))
+            (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.stretch)
+            (SimpleLinearLayout.ChildKeys.grow, 1.0)
+            (SimpleLinearLayout.ChildKeys.shrink, 1.0)
+          })
 
         case .searchResults:
           SearchResultsView()
@@ -177,5 +187,19 @@ public class TodoAppView: SingleChildWidget {
 
   private func handleNewListClick() {
     todoStore.commit(.AddList)
+  }
+
+  private func buildStyle() -> Experimental.Style {
+    Experimental.Style("&") {
+      Experimental.Style(".menu-item") {
+        ($0.foreground, Color.white)
+        ($0.background, Color.transparent)
+      }
+
+      Experimental.Style(".menu-item:hover") {
+        ($0.background, AppTheme.primaryColor)
+        ($0.foreground, Color.black)
+      }
+    }
   }
 }
