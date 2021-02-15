@@ -4,7 +4,11 @@ import SwiftGUI
 public class MainView: Experimental.ComposedWidget {
 
   @ExperimentalReactiveProperties.MutableProperty
-  private var text: String = "initial reactive Text"
+  private var flag: Bool = false
+  @ExperimentalReactiveProperties.MutableProperty
+  private var text1: String = "initial reactive Text 1"
+  @ExperimentalReactiveProperties.MutableProperty
+  private var text2: String = "initial reactive Text 2"
 
   @ExperimentalReactiveProperties.MutableProperty
   var items: [String] = (0..<40).map { _ in "WOWO" }
@@ -18,6 +22,22 @@ public class MainView: Experimental.ComposedWidget {
       ($0.background, Color.white)
     }) { [unowned self] in
       Experimental.DefaultTheme()
+
+      ReactiveContent($text1) {
+        Experimental.Text(text1)
+
+        Experimental.Button {
+          Experimental.Text("toggle flag")
+        } onClick: {
+          flag = true
+        }
+      
+        ReactiveContent($flag) {
+          if flag {
+            Experimental.Text($text2)
+          }
+        }
+      }
 
       Experimental.Container(classes: ["start"], styleProperties: {
         ($0.width, 600.0)
@@ -234,7 +254,7 @@ public class MainView: Experimental.ComposedWidget {
       }) { [unowned self] in
         Experimental.SimpleColumn {
           Experimental.Text(styleProperties: {
-            ($0.textColor, Color.black)
+            ($0.foreground, Color.black)
           }, data.content)
 
           Experimental.Container(styleProperties: {
