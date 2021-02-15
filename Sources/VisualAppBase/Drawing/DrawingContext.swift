@@ -144,6 +144,10 @@ open class DrawingContext {
     backend.drawRect(rect: preprocess(rect), paint: preprocess(paint))
   }
 
+  public func drawCircle(center: DVec2, radius: Double, paint: Paint) {
+    backend.drawCircle(center: preprocess(center), radius: radius, paint: paint)
+  }
+
   open func drawRoundedRect() {
 
   }

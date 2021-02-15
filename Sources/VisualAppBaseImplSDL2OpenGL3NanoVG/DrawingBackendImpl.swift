@@ -23,6 +23,29 @@ open class SDL2OpenGL3NanoVGDrawingBackend: DrawingBackend {
     nvgResetScissor(surface.nvg)
   }
 
+  func with(paint: Paint, block: () -> ()) {
+    var performFill = false
+    var performStroke = false
+    if let color = paint.color {
+      nvgFillColor(surface.nvg, color.toNVG())
+      performFill = true
+    }
+    if let strokeWidth = paint.strokeWidth, let strokeColor = paint.strokeColor {
+      nvgStrokeWidth(surface.nvg, Float(strokeWidth))
+      nvgStrokeColor(surface.nvg, strokeColor.toNVG())
+      performStroke = true
+    }
+
+    block()
+
+    if performFill {
+      nvgFill(surface.nvg)
+    }
+    if performStroke {
+      nvgStroke(surface.nvg)
+    }
+  }
+
   override open func drawLine(from start: DVec2, to end: DVec2, paint: Paint) {
     var performFill = false
     var performStroke = false
@@ -74,6 +97,13 @@ open class SDL2OpenGL3NanoVGDrawingBackend: DrawingBackend {
     }
     if performStroke {
       nvgStroke(surface.nvg)
+    }
+  }
+
+  override open func drawCircle(center: DVec2, radius: Double, paint: Paint) {
+    with(paint: paint) {
+      nvgBeginPath(surface.nvg)
+      nvgCircle(surface.nvg, Float(center.x), Float(center.y), Float(radius))
     }
   }
 

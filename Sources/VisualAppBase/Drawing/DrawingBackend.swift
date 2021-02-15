@@ -23,6 +23,10 @@ open class DrawingBackend {
     fatalError("drawRect() not implemented")
   }
 
+  open func drawCircle(center: DVec2, radius: Double, paint: Paint) {
+    fatalError("drawCircle() not implemented")
+  }
+
   open func drawRoundedRect() {
 
   }
