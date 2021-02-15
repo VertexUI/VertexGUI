@@ -9,8 +9,16 @@ extension Experimental {
 
     private let _draw: (DrawingContext) -> ()
 
-    public init(draw: @escaping (DrawingContext) -> ()) {
-      self._draw = draw
+    public init(
+      classes: [String]? = nil,
+      @Experimental.StylePropertiesBuilder styleProperties buildStyleProperties: (StyleKeys.Type) -> Experimental.StyleProperties = { _ in [] },
+      draw: @escaping (DrawingContext) -> ()) {
+        self._draw = draw
+        super.init()
+        if let classes = classes {
+          self.classes.append(contentsOf: classes)
+        }
+        self.with(buildStyleProperties(StyleKeys.self))
     }
 
     override public func getContentBoxConfig() -> BoxConfig {
