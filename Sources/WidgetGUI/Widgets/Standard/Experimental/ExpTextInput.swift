@@ -4,7 +4,7 @@ import VisualAppBase
 import ExperimentalReactiveProperties
 
 extension Experimental {
-  public final class TextInput: Widget, ExperimentalStylableWidget, GUIKeyEventConsumer, GUITextEventConsumer
+  public final class TextInput: ComposedWidget, ExperimentalStylableWidget, GUIKeyEventConsumer, GUITextEventConsumer
   {
     @ExperimentalReactiveProperties.MutableProperty
     public var text: String
@@ -15,6 +15,11 @@ extension Experimental {
 
     @ExperimentalReactiveProperties.MutableProperty
     private var placeholderVisibility: Visibility = .visible
+
+    @ExperimentalReactiveProperties.MutableProperty
+    private var caretPositionTranslation: DVec2 = .zero
+    @ExperimentalReactiveProperties.ComputedProperty
+    private var caretPositionTransforms: [DTransform2]
 
     @Reference
     private var stackContainer: Experimental.Container
@@ -79,6 +84,10 @@ extension Experimental {
           updatePlaceholderVisibility()
         }
 
+        self.$caretPositionTransforms.reinit(compute: { [unowned self] in
+          [.translate(caretPositionTranslation)]
+        }, dependencies: [$caretPositionTranslation])
+
         self.focusable = true
     }
 
@@ -108,35 +117,40 @@ extension Experimental {
     }
 
     override public func performBuild() {
-      children = [
-        Experimental.Container(styleProperties: {
-          ($0.layout, AbsoluteLayout.self)
-        }) { [unowned self] in
-          Experimental.Text(styleProperties: {
-            ($0.foreground, Color.white)
-            ($0.fontSize, 24.0)
-          }, $text).connect(ref: $textWidget)
+      rootChild = Experimental.Container(styleProperties: {
+        ($0.layout, AbsoluteLayout.self)
+        ($0.overflowX, Overflow.cut)
+        ($0.background, Color.grey)
+      }) { [unowned self] in
+        Experimental.Text(styleProperties: {
+          ($0.foreground, Color.white)
+          ($0.fontSize, 24.0)
+          ($0.transform, $caretPositionTransforms)
+        }, $text).connect(ref: $textWidget)
 
-          Experimental.Text(styleProperties: {
-            ($0.opacity, 0.5)
-            ($0.foreground, Color.white)
-            ($0.fontSize, 24.0)
-            ($0.visibility, $placeholderVisibility)
-          }, $placeholderText)
-        }.connect(ref: $stackContainer).onClick { [unowned self] in
-          handleClick($0)
-        },
-        Experimental.Drawing(draw: self.drawCaret).connect(ref: $caretWidget)
-      ]
+        Experimental.Text(styleProperties: {
+          ($0.opacity, 0.5)
+          ($0.foreground, Color.white)
+          ($0.fontSize, 24.0)
+          ($0.visibility, $placeholderVisibility)
+        }, $placeholderText)
+        
+        Experimental.Drawing(draw: drawCaret).connect(ref: $caretWidget).with(styleProperties: {
+          ($0.width, 0.0)
+          ($0.height, 0.0)
+          ($0.transform, $caretPositionTransforms)
+        })
+      }.connect(ref: $stackContainer).onClick { [unowned self] in
+        handleClick($0)
+      }
     }
 
     override public func getContentBoxConfig() -> BoxConfig {
-      return stackContainer.boxConfig
+      BoxConfig(preferredSize: stackContainer.boxConfig.preferredSize)
     }
 
     override public func performLayout(constraints: BoxConstraints) -> DSize2 {
       stackContainer.layout(constraints: constraints)
-      caretWidget.layout(constraints: BoxConstraints(size: stackContainer.size))
       return constraints.constrain(stackContainer.size)
     }
 
@@ -147,7 +161,7 @@ extension Experimental {
     private func handleClick(_ event: GUIMouseButtonClickEvent) {
       requestFocus()
 
-      let localX = event.position.x - textWidget.globalPosition.x
+      let localX = event.position.x - stackContainer.globalPosition.x - caretPositionTranslation.x
       var maxIndexBelowX = 0
       var previousSubstringSize = DSize2.zero
 
@@ -187,6 +201,7 @@ extension Experimental {
                 at: textBuffer.index(textBuffer.startIndex, offsetBy: caretIndex - 1))
               caretIndex -= 1
               syncText()
+              updateCaretPositionTransforms()
             }
           }
         case .Delete:
@@ -199,10 +214,12 @@ extension Experimental {
         case .ArrowLeft:
           if caretIndex > 0 {
             caretIndex -= 1
+            updateCaretPositionTransforms()
           }
         case .ArrowRight:
           if caretIndex < textBuffer.count {
             caretIndex += 1
+            updateCaretPositionTransforms()
           }
         default:
           break
@@ -218,7 +235,20 @@ extension Experimental {
             at: textBuffer.index(textBuffer.startIndex, offsetBy: caretIndex))
           caretIndex += event.text.count
           syncText()
+          updateCaretPositionTransforms()
         }
+      }
+    }
+
+    private func updateCaretPositionTransforms() {
+      let caretPositionX = textWidget.measureText(String(text.prefix(caretIndex))).width
+      if caretPositionX > stackContainer.width {
+        let nextCharX = textWidget.measureText(String(text.prefix(caretIndex + 1))).width
+        let currentCharWidth = nextCharX - caretPositionX
+        let extraGap = stackContainer.width * 0.1
+        caretPositionTranslation = DVec2(-caretPositionX + stackContainer.width - currentCharWidth - extraGap, 0)
+      } else if caretPositionX + caretPositionTranslation.x < 0 {
+        caretPositionTranslation = DVec2(-caretPositionX, 0)
       }
     }
 
@@ -227,7 +257,7 @@ extension Experimental {
       caretBlinkTime += timestamp - lastDrawTimestamp
       lastDrawTimestamp = timestamp
 
-      var caretTranslationX = textWidget.measureText(String(text.prefix(caretIndex))).width + caretWidth / 2
+      let caretTranslationX = textWidget.measureText(String(text.prefix(caretIndex))).width + caretWidth / 2
 
       drawingContext.drawLine(
         from: DVec2(caretTranslationX, textWidget.position.y),
