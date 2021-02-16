@@ -29,12 +29,12 @@ public final class Background: SingleChildWidget, ConfigurableWidget {
             with(config: Config(fill: fill, shape: shape))
     }
 
-    override public func addedToParent() {
+    /*override public func addedToParent() {
         _computedConfig = combineConfigsComputed()
         _ = onDestroy(_computedConfig.onChanged { [unowned self] _ in
             invalidateRenderState()
         })
-    }
+    }*/
 
     override public func buildChild() -> Widget {
         inputChild

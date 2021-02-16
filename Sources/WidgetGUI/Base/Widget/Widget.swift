@@ -41,6 +41,8 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
                 return parent.context
             }
             
+            print(self)
+            print("PARENT", self.parent, self.mounted, self.built)
             fatalError("tried to access context when it was not yet available")
         }
 
@@ -191,6 +193,7 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     }
 
     public private(set) var mounted = false
+    public private(set) var built = false
     // TODO: maybe something better
     public var layoutable: Bool {
         mounted/* && constraints != nil*/ && context != nil
@@ -403,6 +406,7 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     public internal(set) var onParentChanged = EventHandlerManager<Parent?>()
     public let onDependenciesInjected = WidgetEventHandlerManager<Void>()
     public internal(set) var onMounted = EventHandlerManager<Void>()
+    public let onBuilt = WidgetEventHandlerManager<Void>()
     public let onBuildInvalidated = WidgetEventHandlerManager<Void>()
     public internal(set) var onTick = WidgetEventHandlerManager<Tick>()
     public internal(set) var onBoxConfigInvalidated = WidgetEventHandlerManager<Void>()
@@ -640,13 +644,19 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
 
             onDependenciesInjected.invokeHandlers(())
 
-            addedToParent()
-
-            build()
-    
             mounted = true
 
             onMounted.invokeHandlers(Void())
+
+            if let style = buildStyle() {
+                experimentalProvidedStyles.insert(style, at: 0)
+            }
+
+            build()
+
+            built = true
+
+            onBuilt.invokeHandlers(Void())
 
             invalidateMatchedStyles()
     }
@@ -687,7 +697,9 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         }
     }
 
-    open func addedToParent() {
+    /** called after mounted, before build phase, dependencies available, result inserted as the first provided style */
+    open func buildStyle() -> Experimental.Style? {
+      nil
     }
 
     // TODO: maybe rename to inMount or something like that

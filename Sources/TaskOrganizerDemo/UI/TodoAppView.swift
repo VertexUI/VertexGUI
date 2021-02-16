@@ -36,12 +36,12 @@ public class TodoAppView: SingleChildWidget {
     Experimental.Container(styleProperties: {
       ($0.background, AppTheme.backgroundColor)
     }) { [unowned self] in
-      Experimental.DefaultTheme()
-
       buildStyle()
 
       buildMenu()
       buildActiveView()
+
+      Experimental.DefaultTheme()
     }
   }
 
@@ -189,7 +189,7 @@ public class TodoAppView: SingleChildWidget {
     todoStore.commit(.AddList)
   }
 
-  private func buildStyle() -> Experimental.Style {
+  override public func buildStyle() -> Experimental.Style {
     Experimental.Style("&") {
       Experimental.Style(".menu-item") {
         ($0.foreground, Color.white)

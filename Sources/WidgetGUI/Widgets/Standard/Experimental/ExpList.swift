@@ -96,7 +96,7 @@ extension Experimental {
         _ = self.onDestroy(self.$items.onChanged { [unowned self] in
           processItemUpdate(old: $0.old, new: $0.new)
         })
-        _ = self.onMounted { [unowned self] in
+        _ = self.onBuilt { [unowned self] in
           processItemUpdate(old: [], new: items)
         }
         _ = self.onLayoutingFinished { [unowned self] _ in

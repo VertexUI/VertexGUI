@@ -117,10 +117,7 @@ extension Experimental {
     }
 
     override public func performBuild() {
-      rootChild = Experimental.Container(styleProperties: {
-        ($0.layout, AbsoluteLayout.self)
-        ($0.overflowX, Overflow.cut)
-      }) { [unowned self] in
+      rootChild = Experimental.Container { [unowned self] in
         Experimental.Text(styleProperties: {
           ($0.foreground, Color.white)
           ($0.fontSize, 24.0)
@@ -141,6 +138,19 @@ extension Experimental {
         })
       }.connect(ref: $stackContainer).onClick { [unowned self] in
         handleClick($0)
+      }
+    }
+
+    override public func buildStyle() -> Experimental.Style {
+      Experimental.Style("&", Self.self) { _ in
+        /*($0.padding, Insets(all: 16))
+        ($0.foreground, Color.black)
+        ($0.background, Color.white)*/
+
+        Experimental.Style("& Container", Experimental.Container.self) {
+          ($0.layout, AbsoluteLayout.self)
+          ($0.overflowX, Overflow.cut)
+        }
       }
     }
 

@@ -110,13 +110,13 @@ open class Root: Parent {
       globalStylePropertySupportDefinitions: globalStylePropertySupportDefinitions
     )
     
-    _ = rootWidget.onBoxConfigChanged { [unowned self] _ in
-      layout()
-    }
-
     rootWidget.provideStyles(globalStyles)
     rootWidget.mount(parent: self, treePath: [], context: widgetContext!, lifecycleBus: widgetLifecycleBus)
     //rootWidget.focusContext = focusContext
+
+    _ = rootWidget.onBoxConfigChanged { [unowned self] _ in
+      layout()
+    }
 
     styleManager.setup()
     experimentalStyleManager.processTree(rootWidget)

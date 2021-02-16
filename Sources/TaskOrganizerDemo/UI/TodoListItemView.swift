@@ -101,7 +101,7 @@ public class TodoListItemView: Experimental.ComposedWidget {
     }*/
   }
 
-  func buildStyle() -> Experimental.Style {
+  override public func buildStyle() -> Experimental.Style {
     Experimental.Style("&") {
       ($0.foreground, Color.white)
       ($0.padding, Insets(all: 32))

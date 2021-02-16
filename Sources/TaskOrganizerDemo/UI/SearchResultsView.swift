@@ -10,7 +10,7 @@ public class SearchResultsView: SingleChildWidget {
   @ComputedProperty
   private var searchQuery: String?*/
 
-  override public func addedToParent() {
+  //override public func addedToParent() {
     /*_searchResult.dependencies = [store.$state.any]
     _searchResult.compute = { [unowned self] in
       store.state.searchResult
@@ -19,7 +19,7 @@ public class SearchResultsView: SingleChildWidget {
     _searchQuery.compute = { [unowned self] in
       store.state.searchQuery
     }*/
-  }
+  //}
 
   override public func buildChild() -> Widget {
     /*ObservingBuilder($searchResult, $searchQuery) { [unowned self] in

@@ -145,7 +145,7 @@ public class LifecycleView: Experimental.ComposedWidget {
     }
   }
 
-  private func buildStyle() -> Experimental.Style {
+  override public func buildStyle() -> Experimental.Style {
     Experimental.Style("&", Experimental.Container.self) {
       ($0.background, Color.white)
 

@@ -20,6 +20,7 @@ extension Experimental {
       self.rootChild = content.child()
       super.init()
       self.experimentalProvidedStyles.append(contentsOf: content.experimentalStyles)
+      self.createsStyleScope = true
     }
 
     public convenience init(
@@ -33,6 +34,10 @@ extension Experimental {
         self.with(stylePropertiesBuilder(StyleKeys.self))
     }
 
+    override open func performBuild() {
+      contentChildren = rootChild != nil ? [rootChild!] : []
+    }
+
     override open func getContentBoxConfig() -> BoxConfig {
       rootChild!.getBoxConfig()
     }
@@ -40,10 +45,6 @@ extension Experimental {
     override open func performLayout(constraints: BoxConstraints) -> DSize2 {
       rootChild?.layout(constraints: constraints)
       return rootChild?.size ?? .zero
-    }
-
-    override open func renderContent() -> RenderObject? {
-      return rootChild?.render(reason: .renderContentOfParent(self))
     }
   }
 }
