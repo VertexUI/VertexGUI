@@ -68,9 +68,15 @@ open class WidgetsApp: EventfulObject {
 
         #if DEBUG
         _ = window.onKey { [unowned self] in
-            if let event = $0 as? KeyUpEvent, event.key == Key.F12 {
-                openDevTools(for: windowContexts[windowId]!.window)
-           }
+            if let event = $0 as? KeyDownEvent {
+                if event.key == .F12 {
+                    openDevTools(for: windowContexts[windowId]!.window)
+                } else if event.key == .Plus && baseApp.system.keyStates[.LeftCtrl] {
+                    guiRoots[windowId]!.scale += 0.1
+                } else if event.key == .Minus && baseApp.system.keyStates[.LeftCtrl] {
+                    guiRoots[windowId]!.scale -= 0.1
+                }
+            }
         }
         #endif
         

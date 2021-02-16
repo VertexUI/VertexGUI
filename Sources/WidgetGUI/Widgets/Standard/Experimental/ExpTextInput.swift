@@ -120,7 +120,6 @@ extension Experimental {
       rootChild = Experimental.Container(styleProperties: {
         ($0.layout, AbsoluteLayout.self)
         ($0.overflowX, Overflow.cut)
-        ($0.background, Color.grey)
       }) { [unowned self] in
         Experimental.Text(styleProperties: {
           ($0.foreground, Color.white)

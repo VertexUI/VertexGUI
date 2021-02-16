@@ -1,7 +1,6 @@
 /// representing keys on a standard american keyboard
 /// which means: Key.Y will represent the Key that gives the letter z on german keyboards
 /// prefix N for number keys, e.g. N0 --> 0
-/// prefix L for letter keys, e.g. B --> B
 public enum Key: CaseIterable {
 
     case ArrowUp, ArrowRight, ArrowDown, ArrowLeft
@@ -9,6 +8,8 @@ public enum Key: CaseIterable {
     case Return, Enter, Backspace, Delete, Space, Escape
 
     case LeftShift, LeftCtrl, LeftAlt
+
+    case Plus, Minus
 
     case N0, N1, N2, N3, N4, N5, N6, N7, N8, N9
     

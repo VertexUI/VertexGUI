@@ -8,7 +8,14 @@ open class Root: Parent {
   open var bounds: DRect = DRect(min: DPoint2(0, 0), size: DSize2(0, 0)) {
     didSet {
       layout()
-      rootWidget.invalidateRenderState()
+    }
+  }
+  /** example: scale 2.0 -> the size of the root widget is halved
+  and all coordinates and sizes are scaled by two (from the top left corner)
+  -> content will be twice the size (e.g. text, images, fixed size widgets) */
+  public var scale = 1.0 {
+    didSet {
+      layout()
     }
   }
 
@@ -47,7 +54,7 @@ open class Root: Parent {
   //private var focusContext = FocusContext()
 
   /* event propagation */
-  lazy private var mouseEventManager = WidgetTreeMouseEventManager(rootWidget: rootWidget)
+  lazy private var mouseEventManager = WidgetTreeMouseEventManager(root: self)
   private var mouseMoveEventBurstLimiter = BurstLimiter(minDelay: 0.015)
   /* end event propagation */
 
@@ -116,7 +123,7 @@ open class Root: Parent {
   }
   
   open func layout() {
-    rootWidget.layout(constraints: BoxConstraints(size: bounds.size))
+    rootWidget.layout(constraints: BoxConstraints(size: bounds.size / scale))
   }
 
   @discardableResult
@@ -252,8 +259,12 @@ open class Root: Parent {
   }
 
   open func draw(_ drawingContext: DrawingContext) {
+    let rootDrawingContext = drawingContext.clone()
+    rootDrawingContext.transform(.scale(DVec2(scale, scale)))
+    rootDrawingContext.lock()
+
     var iterationStates = [(Parent, DrawingContext, Widget.ChildIterator)]()
-    iterationStates.append((self, drawingContext, Widget.ChildIterator() { [unowned self] in
+    iterationStates.append((self, rootDrawingContext, Widget.ChildIterator() { [unowned self] in
       $0 == 0 ? rootWidget : nil
     }))
 

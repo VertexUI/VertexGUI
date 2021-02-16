@@ -55,7 +55,7 @@ public class TodoAppView: SingleChildWidget {
       buildSearch()
 
       Experimental.Container(styleProperties: {
-        ($0.padding, Insets(all: 64))
+        ($0.padding, Insets(all: 32))
       }) {
         Experimental.Style(".button", Experimental.Button.self) {
           ($0.background, Color.yellow)

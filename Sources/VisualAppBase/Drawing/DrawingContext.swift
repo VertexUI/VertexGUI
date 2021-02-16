@@ -69,6 +69,10 @@ open class DrawingContext {
     mergedTransforms.transform(point: point)
   }
 
+  private func preprocess(_ size: DSize2) -> DSize2 {
+    mergedTransforms.transform(size: size)
+  }
+
   public func preprocess(_ rect: DRect) -> DRect {
     let min = preprocess(rect.min)
     let max = preprocess(rect.max)
@@ -91,6 +95,7 @@ open class DrawingContext {
     if let color = paint.color {
       processed.color = color.adjusted(alpha: UInt8(mergedOpacity * color.aFrac * 255))
     }
+    processed.fontConfig.size = preprocess(DSize2(0, processed.fontConfig.size)).height
     return processed
   }
 

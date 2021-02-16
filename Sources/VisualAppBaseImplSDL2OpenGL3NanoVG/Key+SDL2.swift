@@ -34,6 +34,9 @@ public extension Key {
         case asSDLKeycode(SDLK_d): self = .D
         case asSDLKeycode(SDLK_w): self = .W
 
+        case asSDLKeycode(SDLK_PLUS): self = .Plus
+        case asSDLKeycode(SDLK_MINUS): self = .Minus
+
         case asSDLKeycode(SDLK_F1): self = .F1
         case asSDLKeycode(SDLK_F2): self = .F2
         case asSDLKeycode(SDLK_F3): self = .F3
