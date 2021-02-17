@@ -10,14 +10,13 @@ extension Experimental {
 
     internal var resolvedPropertyValues: [String: StyleValue?] = [:] {
       didSet {
-        onResolvedPropertyValuesChanged.invokeHandlers((old: oldValue, new: resolvedPropertyValues))
-
         // TODO: only update for actually changed values
         // TODO: maybe all of this logic should be put below resolve()?
         for (key, basis) in observableBases {
           let newValue = resolvedPropertyValues[key] ?? nil
           basis.value = newValue
         }
+        onResolvedPropertyValuesChanged.invokeHandlers((old: oldValue, new: resolvedPropertyValues))
       }
     }
     /** used as backing for ObservableProperties for resolved values */

@@ -19,11 +19,13 @@ public class MainView: Experimental.ComposedWidget {
   override public func performBuild() {
     rootChild = Experimental.Container(styleProperties: {
       (SimpleLinearLayout.ParentKeys.direction, SimpleLinearLayout.Direction.column)
-      ($0.background, Color.white)
+      ($0.background, Color.black)
     }) { [unowned self] in
+      Experimental.TextInput(mutableText: $text1)
+
       Experimental.DefaultTheme()
 
-      ReactiveContent($text1) {
+      /*ReactiveContent($text1) {
         Experimental.Text(text1)
 
         Experimental.Button {
@@ -74,7 +76,7 @@ public class MainView: Experimental.ComposedWidget {
         }) {
           Experimental.Text("NONE 2")
         }*/
-      }
+      }*/
 
       /*Experimental.Container(styleProperties: {
         ($0.background, Color.grey)

@@ -94,7 +94,6 @@ open class SDL2OpenGL3NanoVGWindow: Window {
     SDL2OpenGL3NanoVGSystem.windows[id] = self
 
     invalidateSize()
-    print("RESOLUTION", resolution)
     invalidatePosition()
     invalidateInputFocus()
   }

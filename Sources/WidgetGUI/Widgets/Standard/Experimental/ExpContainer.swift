@@ -35,12 +35,11 @@ extension Experimental {
         self.with(stylePropertiesBuilder(StyleKeys.self))
 
         _ = stylePropertiesResolver.onResolvedPropertyValuesChanged { [unowned self] in
-          let oldLayoutProperty = $0.old[StyleKeys.layout.asString]
-          let newLayoutProperty = $0.new[StyleKeys.layout.asString]
+          let oldLayoutType = $0.old[StyleKeys.layout.asString] as? Layout.Type
+          let newLayoutType = $0.new[StyleKeys.layout.asString] as? Layout.Type
 
-          if let oldLayoutType = oldLayoutProperty as? Layout.Type,
-            let newLayoutType = newLayoutProperty as? Layout.Type,
-            ObjectIdentifier(oldLayoutType) != ObjectIdentifier(newLayoutType) {
+          if (oldLayoutType != nil && newLayoutType != nil && ObjectIdentifier(oldLayoutType!) != ObjectIdentifier(newLayoutType!)) ||
+            (oldLayoutType == nil && newLayoutType != nil) || (oldLayoutType != nil && newLayoutType == nil) {
               updateLayoutInstance()
           } else {
             updateLayoutInstanceProperties()
@@ -58,8 +57,6 @@ extension Experimental {
       layoutInstance = layoutType.init(widgets: contentChildren, layoutPropertyValues: [:])
       stylePropertiesResolver.propertySupportDefinitions = experimentalMergedSupportedStyleProperties
       stylePropertiesResolver.resolve()
-
-      //updateLayoutInstanceProperties()
 
       if layoutInstance!.childPropertySupportDefinitions.count > 0 {
         for child in contentChildren {

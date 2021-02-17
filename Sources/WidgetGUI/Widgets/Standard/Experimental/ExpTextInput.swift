@@ -269,8 +269,8 @@ extension Experimental {
       let caretTranslationX = textWidget.measureText(String(text.prefix(caretIndex))).width + caretWidth / 2
 
       drawingContext.drawLine(
-        from: DVec2(caretTranslationX, textWidget.position.y),
-        to: DVec2(caretTranslationX, textWidget.position.y + textWidget.height),
+        from: DVec2(caretTranslationX, 0),
+        to: DVec2(caretTranslationX, textWidget.height),
         paint: Paint(strokeWidth: caretWidth, strokeColor: Color.yellow.adjusted(alpha: UInt8(caretBlinkProgress * 255))))
     }
 

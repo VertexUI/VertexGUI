@@ -48,7 +48,7 @@ public class TodoAppView: SingleChildWidget {
   private func buildMenu() -> Widget {
     Experimental.Container(styleProperties: {
       ($0.layout, SimpleLinearLayout.self)
-      ($0.maxWidth, 200.0)
+      ($0.width, 200.0)
       (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.stretch)
       (SimpleLinearLayout.ParentKeys.direction, SimpleLinearLayout.Direction.column)
     }) { [unowned self] in
@@ -95,7 +95,6 @@ public class TodoAppView: SingleChildWidget {
 
   private func buildSearch() -> Widget {
     Experimental.Container(styleProperties: {
-      ($0.background, AppTheme.backgroundColor)
       ($0.padding, Insets(all: 32))
       (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.stretch)
     }) { [unowned self] in
