@@ -2,7 +2,6 @@ import Foundation
 import GfxMath
 import VisualAppBase
 import ColorizeSwift
-import ReactiveProperties
 import ExperimentalReactiveProperties
 import Events
 
@@ -381,7 +380,7 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     /// Flag whether to show bounds and sizes for debugging purposes.
     //@MutableProperty
     ////internal var _debugLayout: Bool?
-    @ReactiveProperties.MutableProperty
+    @ExperimentalReactiveProperties.MutableProperty
     public var debugLayout: Bool = false/* {
         get {
             _debugLayout ?? context.debugLayout
@@ -391,7 +390,7 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
             _debugLayout = newValue
         }
     }*/
-    @ReactiveProperties.MutableProperty
+    @ExperimentalReactiveProperties.MutableProperty
     public var layoutDebuggingColor = Color.red
     private let layoutDebuggingTextFontConfig = FontConfig(family: defaultFontFamily, size: 16, weight: .regular, style: .normal)
     // if true, highlight the Widget when bursts of calls to functions such as layout or render occur

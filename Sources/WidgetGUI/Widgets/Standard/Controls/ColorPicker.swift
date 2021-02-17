@@ -1,7 +1,6 @@
 import GfxMath
 import VisualAppBase
-import ReactiveProperties
-
+/*
 public class ColorPicker: Experimental.ComposedWidget { 
   @MutableProperty
   public var color: Color
@@ -201,4 +200,4 @@ extension ColorPicker {
       color = Color(r, g, b, a)
     }
   }
-}
+}*/

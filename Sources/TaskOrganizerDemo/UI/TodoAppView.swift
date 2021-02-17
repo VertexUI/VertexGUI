@@ -22,7 +22,7 @@ public class TodoAppView: Experimental.ComposedWidget {
   @Reference
   private var activeViewTopSpace: Space
 
-  /*@ReactiveProperties.MutableProperty
+  /*@ExperimentalReactiveProperties.MutableProperty
   private var mode: Mode = .SelectedList*/
 
   @ExperimentalReactiveProperties.MutableProperty

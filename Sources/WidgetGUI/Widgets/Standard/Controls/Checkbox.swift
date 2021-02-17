@@ -1,6 +1,5 @@
 import VisualAppBase
 import GfxMath
-import ReactiveProperties
 /*
 public class Checkbox: Widget, GUIMouseEventConsumer {
   @MutableProperty

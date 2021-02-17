@@ -1,5 +1,5 @@
 import GfxMath
-import ReactiveProperties
+import ExperimentalReactiveProperties
 import Events
 
 public class WidgetNestingView: Experimental.ComposedWidget {

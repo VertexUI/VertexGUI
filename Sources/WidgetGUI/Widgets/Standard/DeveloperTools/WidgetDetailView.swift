@@ -1,4 +1,4 @@
-import ReactiveProperties
+import ExperimentalReactiveProperties
 
 public class WidgetDetailView: Experimental.ComposedWidget {
   private let inspectedWidget: Widget

@@ -4,7 +4,6 @@ import XCTest
   public func allTests() -> [XCTestCaseEntry] {
     [
       testCase(StyleSelectorTests.allTests),
-      testCase(StyleTests.allTests),
       testCase(ExperimentalStyleTests.allTests),
       testCase(ExperimentalStylePropertySupportDefinitionsTests.allTests),
       testCase(ExperimentalStylePropertyTests.allTests),
@@ -17,7 +16,6 @@ import XCTest
       testCase(StylableWidgetTests.allTests),
       testCase(ReactivePropertyTests.allTests),
       testCase(BuildTests.allTests),
-      //testCase(FlexTests.allTests), old flex widget
       testCase(ContainerTests.allTests)
     ]
   }

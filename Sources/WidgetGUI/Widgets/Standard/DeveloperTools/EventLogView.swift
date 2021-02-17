@@ -1,6 +1,6 @@
 import GfxMath
 import VisualAppBase
-import ReactiveProperties
+import ExperimentalReactiveProperties
 import Events
 
 public class EventLogView: Experimental.ComposedWidget {

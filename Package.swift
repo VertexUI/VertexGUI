@@ -52,11 +52,6 @@ let package = Package(
         ),
 
         .target(
-            name: "ReactiveProperties",
-            dependencies: ["Events"]
-        ),
-
-        .target(
             name: "ExperimentalReactiveProperties",
             dependencies: ["Events"]
         ),
@@ -68,7 +63,7 @@ let package = Package(
         .target(
                 // TODO: maybe rename to SwiftApplicationFramework or so...? or split to SwiftApplicationFramework and SwiftUIFramework
             name: "WidgetGUI",
-            dependencies: ["VisualAppBase", "Events", "ReactiveProperties", "ExperimentalReactiveProperties", "GfxMath", "Runtime", "ColorizeSwift", "Easing"],
+            dependencies: ["VisualAppBase", "Events", "ExperimentalReactiveProperties", "GfxMath", "Runtime", "ColorizeSwift", "Easing"],
             resources: [.process("Resources")]
         ),
 
@@ -103,7 +98,7 @@ let package = Package(
 
         .target(
             name: "SwiftGUI",
-            dependencies: ["VisualAppBase", "VisualAppBaseImplSDL2OpenGL3NanoVG", "WidgetGUI", "Events", "ReactiveProperties", "GfxMath"],
+            dependencies: ["VisualAppBase", "VisualAppBaseImplSDL2OpenGL3NanoVG", "ExperimentalReactiveProperties", "WidgetGUI", "Events", "GfxMath"],
             resources: [.process("Resources")]
         ),
 
@@ -118,6 +113,6 @@ let package = Package(
         
         .testTarget(name: "WidgetGUITests", dependencies: ["SwiftGUI", "ExperimentalReactiveProperties"]),
 
-        .testTarget(name: "ReactivePropertiesTests", dependencies: ["ReactiveProperties", "ExperimentalReactiveProperties"])
+        .testTarget(name: "ReactivePropertiesTests", dependencies: ["ExperimentalReactiveProperties"])
     ]
 )

@@ -1,12 +1,12 @@
 import Foundation
 import VisualAppBase
-import ReactiveProperties
+import ExperimentalReactiveProperties
 import ExperimentalReactiveProperties
 
 public class DeveloperToolsView: Experimental.ComposedWidget {
   private let inspectedRoot: Root
 
-  @ReactiveProperties.MutableProperty
+  @ExperimentalReactiveProperties.MutableProperty
   private var activeTab: Tab = .Lifecycle
   
   private var messages = WidgetBus<WidgetInspectionMessage>.MessageBuffer()
@@ -14,7 +14,7 @@ public class DeveloperToolsView: Experimental.ComposedWidget {
   @ExperimentalReactiveProperties.MutableProperty
   private var widgetLifecycleMethodInvocationSignalGroups: [Int: Widget.LifecycleMethodInvocationSignalGroup] = [:]
 
-  @ReactiveProperties.MutableProperty
+  @ExperimentalReactiveProperties.MutableProperty
   private var inspectedWidget: Widget?
 
   public init(_ inspectedRoot: Root) {
