@@ -2,6 +2,8 @@ import ReactiveProperties
 import SwiftGUI 
 
 public class MainView: ComposedWidget {
+  @Inject
+  var someInjectedData: String
 
   @MutableProperty
   private var flag: Bool = false
@@ -19,11 +21,15 @@ public class MainView: ComposedWidget {
   override public func performBuild() {
     rootChild = Container(styleProperties: {
       (SimpleLinearLayout.ParentKeys.direction, SimpleLinearLayout.Direction.column)
-      ($0.background, Color.black)
+      ($0.background, Color.grey)
     }) { [unowned self] in
       TextInput(mutableText: $text1)
 
       DefaultTheme()
+
+      Text(someInjectedData)
+
+      NestedWidget(NestedData(content: "level1", children: []))
 
       /*ReactiveContent($text1) {
         Text(text1)
@@ -161,8 +167,6 @@ public class MainView: ComposedWidget {
           }
         }
       }
-
-      //NestedWidget(NestedData(content: "level1", children: []))
 
       /*Button {
         Text("add item")

@@ -14,6 +14,10 @@ extension Widget {
       entries = []
     }
 
+    public func iterate() -> Iterator {
+      Iterator(entries: entries)
+    }
+
     public func iterateSubTreeRoots() -> Iterator {
       // TODO: implement iterator in such a way that when a new item is added to the queue
       // this item is inserted into the iterator at the correct position -> if at a higher level

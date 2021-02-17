@@ -16,14 +16,13 @@ open class TodoApp: WidgetsApp {
     private var navigationStore = NavigationStore()
 
     public init() {
-        guiRoot = WidgetGUI.Root(
-            rootWidget: DependencyProvider(provide: [
-                Dependency(todoStore),
-                Dependency(searchStore),
-                Dependency(navigationStore)
-            ]) {
-                TodoAppView()
+        guiRoot = WidgetGUI.Root(rootWidget: Container(styleProperties: { _ in
+            (SimpleLinearLayout.ParentKeys.alignContent, SimpleLinearLayout.Align.stretch)
+        }) {
+            TodoAppView().with(styleProperties: { _ in
+                (SimpleLinearLayout.ChildKeys.grow, 1.0)
             })
+        }.provide(dependencies: todoStore, searchStore, navigationStore))
         guiRoot.renderObjectSystemEnabled = false
         super.init(baseApp: SDL2OpenGL3NanoVGVisualApp())
     }

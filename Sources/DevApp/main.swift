@@ -1,12 +1,17 @@
 import SwiftGUI
 
 public class DevApp: WidgetsApp {
+  @MutableProperty
+  var myValue = "my first reactive wow"
+
   public init() {
     super.init(baseApp: SDL2OpenGL3NanoVGVisualApp())
   }
 
   override open func setup() {
-    let guiRoot = WidgetGUI.Root(rootWidget: MainView())
+    let guiRoot = WidgetGUI.Root(rootWidget: Container {
+      MainView()
+    }.provide(dependencies: "THIS STRING IS A DEP"))
     guiRoot.renderObjectSystemEnabled = false 
 
     let window = createWindow(guiRoot: guiRoot, options: Window.Options(background: Color(20, 36, 50, 255)), immediate: true)

@@ -3,7 +3,7 @@ import GfxMath
 
 open class ComposedWidget: Widget {
   open var rootChild: Widget?
-  override open var children: [Widget] {
+  override open var contentChildren: [Widget] {
     get {
       rootChild == nil ? [] : [rootChild!]
     }
@@ -12,7 +12,7 @@ open class ComposedWidget: Widget {
     }
   }
 
-  public init() {}
+  override public init() {}
 
   public init(contentBuilder: () -> SingleChildContentBuilder.Result) {
     let content = contentBuilder()
@@ -31,10 +31,6 @@ open class ComposedWidget: Widget {
         self.classes = classes
       }
       self.with(stylePropertiesBuilder(StyleKeys.self))
-  }
-
-  override open func performBuild() {
-    contentChildren = rootChild != nil ? [rootChild!] : []
   }
 
   override open func getContentBoxConfig() -> BoxConfig {

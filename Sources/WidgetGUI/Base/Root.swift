@@ -48,6 +48,8 @@ open class Root: Parent {
   private var rerenderWidgets = WidgetBuffer()
   private var matchedStylesInvalidatedWidgets = WidgetBuffer()
 
+  lazy var treeManager = WidgetTreeManager(widgetContext: widgetContext!, widgetLifecycleBus: widgetLifecycleBus)
+  lazy var styleManager = StyleManager()
   lazy var cumulatedValuesProcessor = CumulatedValuesProcessor(self)
   /* end Widget lifecycle management */
 
@@ -57,8 +59,6 @@ open class Root: Parent {
   lazy private var mouseEventManager = WidgetTreeMouseEventManager(root: self)
   private var mouseMoveEventBurstLimiter = BurstLimiter(minDelay: 0.015)
   /* end event propagation */
-
-  lazy private var styleManager = StyleManager()
 
   /* debugging
   --------------------------
@@ -108,10 +108,12 @@ open class Root: Parent {
       lifecycleMethodInvocationSignalBus: Bus<Widget.LifecycleMethodInvocationSignal>(),
       globalStylePropertySupportDefinitions: globalStylePropertySupportDefinitions
     )
-    
-    rootWidget.provideStyles(globalStyles)
-    rootWidget.mount(parent: self, treePath: [], context: widgetContext!, lifecycleBus: widgetLifecycleBus)
+
+    //rootWidget.mount(parent: self, treePath: [], context: widgetContext!, lifecycleBus: widgetLifecycleBus)
     //rootWidget.focusContext = focusContext
+    treeManager.mountAsRoot(widget: rootWidget, root: self)
+    treeManager.buildSubTree(rootWidget: rootWidget)
+    rootWidget.provideStyles(globalStyles)
 
     _ = rootWidget.onBoxConfigChanged { [unowned self] _ in
       layout()
@@ -174,11 +176,18 @@ open class Root: Parent {
     debugManager.beginLifecycleMethod(.build)
     for widget in rebuildWidgets {
       if !widget.destroyed {
-        widget.build()
+        //widget.build()
+        treeManager.buildChildren(of: widget)
       }
     }
     debugManager.endLifecycleMethod(.build)
     rebuildWidgets.clear()
+
+    var iterator = widgetLifecycleManager.queues[.updateChildren]!.iterate()
+    while let queueEntry = iterator.next() {
+      treeManager.updateChildren(of: queueEntry.target)
+    }
+    widgetLifecycleManager.queues[.updateChildren]!.clear()
 
     // TODO: check whether any parent of the widget was already processed (which automatically leads to a reprocessing of the styles)
     // TODO: or rather follow the pattern of invalidate...()? --> invalidateStyle()

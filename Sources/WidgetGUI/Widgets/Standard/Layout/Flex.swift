@@ -54,7 +54,7 @@ public class Flex: Widget {
 
   override open func performBuild() {
     items = buildItems()
-    children = items.map {
+    contentChildren = items.map {
       $0.content
     }
   }

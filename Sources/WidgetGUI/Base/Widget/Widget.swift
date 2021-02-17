@@ -40,8 +40,6 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
                 return parent.context
             }
             
-            print(self)
-            print("PARENT", self.parent, self.mounted, self.built)
             fatalError("tried to access context when it was not yet available")
         }
 
@@ -64,7 +62,7 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
             }
         }
     }
-    public private(set) var treePath: TreePath = []
+    public internal(set) var treePath: TreePath = []
     /** The topmost parent or the widget instance itself if not mounted into a parent. */
     public var rootParent: Widget {
         var maxParent = parent as? Widget
@@ -74,11 +72,19 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         return maxParent ?? self
     }
 
-    public lazy var children: [Widget] = []
-    public var contentChildren: [Widget] {
-        get { children }
-        set { children = newValue }
+    public var children: [Widget] {
+        var result = contentChildren
+        if scrollingEnabled.x {
+            result.append(pseudoScrollBarX)
+        }
+        if scrollingEnabled.y {
+            result.append(pseudoScrollBarY)
+        }
+        return result
     }
+    public var contentChildren: [Widget] = []
+
+    public var providedDependencies: [Dependency] = []
     /* end tree properties */
 
     /* lifecycle
@@ -191,8 +197,8 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         }
     }
 
-    public private(set) var mounted = false
-    public private(set) var built = false
+    public internal(set) var mounted = false
+    public internal(set) var built = false
     // TODO: maybe something better
     public var layoutable: Bool {
         mounted/* && constraints != nil*/ && context != nil
@@ -428,10 +434,9 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     
     private var unregisterAnyParentChangedHandler: EventHandlerManager<Parent?>.UnregisterCallback?
 	
-    public init(children: [Widget] = []) {
+    public init() {
         self.id = Self.nextId
         Self.nextId += 1
-        self.children = children
         self.styleScope = Widget.activeStyleScope
         
         setupWidgetEventHandlerManagers()
@@ -563,7 +568,7 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         return self
     }
 
-    private final func setupContext() {
+    final func setupContext() {
         contextOnTickHandlerRemover = context.onTick({ [weak self] in
           if let self = self {
             self.onTick.invokeHandlers($0)
@@ -584,7 +589,7 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
 
     // TODO: this is work in progress, possibly one step towards a new approach to child handling
     public func visitChildren() -> ChildIterator {
-        var internalChildren = [Widget]()
+        /*var internalChildren = [Widget]()
         if scrollingEnabled.x {
             internalChildren.append(pseudoScrollBarX)
         }
@@ -594,10 +599,10 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         
         var contentIterator = visitContentChildren()
         var contentIteratorActive = true
-        var internalStartIndex = 0
-
-        return ChildIterator() {
-            if contentIteratorActive {
+        var internalStartIndex = 0*/
+        
+        return ChildIterator() { [unowned self] in
+            /*if contentIteratorActive {
                 if let next = contentIterator.next() {
                     return next
                 } else {
@@ -606,7 +611,8 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
                 }
             }
 
-            return ($0 - internalStartIndex) < internalChildren.count ? internalChildren[$0 - internalStartIndex] : nil
+            return ($0 - internalStartIndex) < internalChildren.count ? internalChildren[$0 - internalStartIndex] : nil*/
+            return $0 < self.children.count ? self.children[$0] : nil
         }
     }
 
@@ -614,11 +620,11 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     open func visitContentChildren() -> ChildIterator {
         // default implementation, fallback to old children array
         ChildIterator() { [unowned self] in
-            $0 < children.count ? children[$0] : nil
+            $0 < contentChildren.count ? contentChildren[$0] : nil
         }
     }
 
-    public final func mount(
+    /*public final func mount(
         parent: Parent,
         treePath: TreePath,
         context: WidgetContext,
@@ -656,9 +662,9 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
             onBuilt.invokeHandlers(Void())
 
             invalidateMatchedStyles()
-    }
+    }*/
 
-    private func setupInhertiableStylePropertiesValues() {
+    func setupInhertiableStylePropertiesValues() {
         if let parent = parent as? Widget {
             stylePropertiesResolver.inheritableValues = parent.stylePropertiesResolver.resolvedPropertyValues
             _ = parent.stylePropertiesResolver.onResolvedPropertyValuesChanged { [unowned self] _ in
@@ -668,7 +674,7 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         }
     }
 
-    private final func resolveDependencies() {
+    /*private final func resolveDependencies() {
         var injectables = [AnyInject]()
         
         let mirror = Mirror(reflecting: self)
@@ -692,7 +698,7 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
                 }
             }
         }
-    }
+    }*/
 
     /** called after mounted, before build phase, dependencies available, result inserted as the first provided style */
     open func buildStyle() -> Style? {
@@ -700,7 +706,7 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     }
 
     // TODO: maybe rename to inMount or something like that
-    public final func build() {
+    /*public final func build() {
         // TODO: check for invalid build
         // TODO: preserve state when it is the second build / n > 0 th build
 
@@ -735,7 +741,7 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         invalidateBoxConfig()
         invalidateLayout()
         invalidateRenderState()
-    }
+    }*/
 
     open func performBuild() {
         
@@ -744,14 +750,14 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     /** Use if children are added after the initial mount, build phase. Executes immediately.
     // TODO: consider whether executing this in root tick handling would be better
     */   
-    public final func requestRemountChildren() {
-        mountChildren(oldChildren: [])
+    public final func requestUpdateChildren() {
+        context.queueLifecycleMethodInvocation(.updateChildren, target: self, sender: self, reason: .undefined)
     }
 
     /**
     Checks whether the state of the old children can be transferred to the new children and if yes, applies it.
     */
-    private final func mountChildren(oldChildren: [Widget]) {
+    /*private final func mountChildren(oldChildren: [Widget]) {
         var iterator = visitChildren()
         var i = 0
         while let child = iterator.next() {
@@ -785,7 +791,7 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
                 }
             }
         }
-    }
+    }*/
 
     @inlinable
     public final func invalidateBuild() {
@@ -824,7 +830,7 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         onBuildInvalidated.invokeHandlers()
     }
 
-    private final func handleChildBoxConfigChanged(child: Widget) {
+    final func handleChildBoxConfigChanged(child: Widget) {
         Logger.log("Box config of child: \(child) of parent \(self) changed.".with(fg: .blue, style: .bold), level: .Message, context: .WidgetLayouting)
 
         if layouted && !layouting {
@@ -861,6 +867,10 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     }
 
     final public func getBoxConfig() -> BoxConfig {
+        if !built {
+            return BoxConfig(preferredSize: .zero)
+        }
+
         var boxConfig = getContentBoxConfig()
         let paddingSize = padding.aggregateSize
         boxConfig += paddingSize
