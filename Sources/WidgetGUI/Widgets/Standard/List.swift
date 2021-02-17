@@ -13,9 +13,9 @@ private class InternalList: Widget {
           }
         }*/
         self.requestUpdateChildren()
-        self.invalidateBoxConfig()
-        self.invalidateLayout()
-        self.invalidateMatchedStyles()
+        //self.invalidateBoxConfig()
+        //self.invalidateLayout()
+        //self.invalidateMatchedStyles()
       }
     }
   }

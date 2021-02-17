@@ -68,7 +68,7 @@ public class WidgetTreeManager {
 
     onBuilt.invokeHandlers(Void())*/
 
-    //invalidateMatchedStyles()
+    widget.invalidateMatchedStyles()
   }
 
   public func buildChildren(of widget: Widget) {
@@ -85,6 +85,8 @@ public class WidgetTreeManager {
 
     widget.buildInvalid = false
     widget.built = true
+
+    widget.onBuilt.invokeHandlers(Void())
 
     widget.invalidateBoxConfig()
     widget.invalidateLayout()
