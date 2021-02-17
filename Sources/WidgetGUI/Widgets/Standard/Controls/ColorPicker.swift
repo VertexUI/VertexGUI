@@ -1,7 +1,7 @@
 import GfxMath
 import VisualAppBase
 /*
-public class ColorPicker: Experimental.ComposedWidget { 
+public class ColorPicker: ComposedWidget { 
   @MutableProperty
   public var color: Color
 
@@ -148,7 +148,7 @@ extension ColorPicker {
     }
   }
 
-  internal class RGBATextColorPicker: Experimental.ComposedWidget {
+  internal class RGBATextColorPicker: ComposedWidget {
     @MutableProperty
     public var color: Color
     @MutableProperty

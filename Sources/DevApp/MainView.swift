@@ -1,54 +1,54 @@
-import ExperimentalReactiveProperties
+import ReactiveProperties
 import SwiftGUI 
 
-public class MainView: Experimental.ComposedWidget {
+public class MainView: ComposedWidget {
 
-  @ExperimentalReactiveProperties.MutableProperty
+  @MutableProperty
   private var flag: Bool = false
-  @ExperimentalReactiveProperties.MutableProperty
+  @MutableProperty
   private var text1: String = "initial reactive Text 1"
-  @ExperimentalReactiveProperties.MutableProperty
+  @MutableProperty
   private var text2: String = "initial reactive Text 2"
 
-  @ExperimentalReactiveProperties.MutableProperty
+  @MutableProperty
   var items: [String] = (0..<40).map { _ in "WOWO" }
 
-  @ExperimentalReactiveProperties.MutableProperty
+  @MutableProperty
   var layoutDirection: SimpleLinearLayout.Direction = .row
 
   override public func performBuild() {
-    rootChild = Experimental.Container(styleProperties: {
+    rootChild = Container(styleProperties: {
       (SimpleLinearLayout.ParentKeys.direction, SimpleLinearLayout.Direction.column)
       ($0.background, Color.black)
     }) { [unowned self] in
-      Experimental.TextInput(mutableText: $text1)
+      TextInput(mutableText: $text1)
 
-      Experimental.DefaultTheme()
+      DefaultTheme()
 
       /*ReactiveContent($text1) {
-        Experimental.Text(text1)
+        Text(text1)
 
-        Experimental.Button {
-          Experimental.Text("toggle flag")
+        Button {
+          Text("toggle flag")
         } onClick: {
           flag = true
         }
       
         ReactiveContent($flag) {
           if flag {
-            Experimental.Text($text2)
+            Text($text2)
           }
         }
       }
 
-      Experimental.Container(classes: ["start"], styleProperties: {
+      Container(classes: ["start"], styleProperties: {
         ($0.width, 600.0)
         ($0.height, 300.0)
         ($0.minWidth, 1000.0)
         (SimpleLinearLayout.ParentKeys.direction, SimpleLinearLayout.Direction.column)
         ($0.background, Color.grey)
       }) {
-        Experimental.Container(classes: ["middle"], styleProperties: {
+        Container(classes: ["middle"], styleProperties: {
           ($0.width, .inherit)
           ($0.foreground, Color.white)
           //($0.maxWidth, 500.0)
@@ -60,117 +60,117 @@ public class MainView: Experimental.ComposedWidget {
           //(SimpleLinearLayout.ChildKeys.shrink, 1.0)
           //(SimpleLinearLayout.ChildKeys.grow, 1.0)
         }) {
-          Experimental.Text("NONE")
-          /*Experimental.List(classes: ["end"], styleProperties: {
+          Text("NONE")
+          /*List(classes: ["end"], styleProperties: {
             //(SimpleLinearLayout.ChildKeys.grow, 1.0)
             ($0.background, Color.green)
-          }, ExperimentalReactiveProperties.StaticProperty([1, 2, 3, 4])) { _ in
-            Experimental.Text("This is a looong text")
+          }, StaticProperty([1, 2, 3, 4])) { _ in
+            Text("This is a looong text")
           }*/
         }
 
-        /*Experimental.Container(styleProperties: {
+        /*Container(styleProperties: {
           (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.stretch)
           ($0.maxHeight, 200.0)
           ($0.background, Color.blue)
         }) {
-          Experimental.Text("NONE 2")
+          Text("NONE 2")
         }*/
       }*/
 
-      /*Experimental.Container(styleProperties: {
+      /*Container(styleProperties: {
         ($0.background, Color.grey)
         ($0.height, 200.0)
         (SimpleLinearLayout.ParentKeys.direction, SimpleLinearLayout.Direction.column)
       }) {
-        Experimental.Container(styleProperties: {
+        Container(styleProperties: {
           (SimpleLinearLayout.ChildKeys.shrink, 1.0)
           ($0.overflowY, Overflow.scroll)
           ($0.background, Color.yellow)
         }) {
-          Experimental.Container(styleProperties: {
+          Container(styleProperties: {
             ($0.width, 500.0)
             ($0.height, 500.0)
             ($0.background, Color.green)
           }) {
-            Experimental.Text("WOW")
+            Text("WOW")
           }
         }
       }*/
 
-      /*Experimental.Container(styleProperties: {
+      /*Container(styleProperties: {
         ($0.background, Color.blue)
         ($0.maxHeight, 100.0)
         ($0.width, 300.0)
       }) {
-        Experimental.Container(styleProperties: {
+        Container(styleProperties: {
           ($0.minHeight, 200.0)
           ($0.background, Color.yellow)
         }) {
-          Experimental.Text("text")
+          Text("text")
         }
       }
 
-      Experimental.Text("NON REACTIVE TEXT")
+      Text("NON REACTIVE TEXT")
 
       ReactiveContent($text) {
-        Experimental.Text(text)
+        Text(text)
       }
 
-      Experimental.Button {
-        Experimental.Text("Change the reactive text")
+      Button {
+        Text("Change the reactive text")
       }.onClick {
         text = "second reactive text"
       }*/
 
       /*
-      /*Experimental.Button {
-        Experimental.Text("WOWOWWOOW")
+      /*Button {
+        Text("WOWOWWOOW")
       }
 
-      Experimental.TextInput(styleProperties: {
+      TextInput(styleProperties: {
         ($0.borderWidth, BorderWidth(bottom: 2.0))
         ($0.borderColor, Color.yellow)
         ($0.padding, Insets(all: 8))
       }, mutableText: $text)
 
-      Experimental.Text(styleProperties: {
+      Text(styleProperties: {
         ($0.textColor, Color.white)
       }, $text)
 
-      Experimental.Drawing { drawingContext in
+      Drawing { drawingContext in
         //drawingContext.clip(rect: DRect(min: .zero, max: DVec2(200, 200)))
         drawingContext.drawRect(rect: DRect(min: .zero, size: DSize2(200, 200)), paint: Paint(color: .red))
       }*/
 
         
-      Experimental.Container(styleProperties: {
+      Container(styleProperties: {
         ($0.overflowY, Overflow.scroll)
         ($0.overflowX, Overflow.scroll)
         ($0.width, 300.0)
       }) {
-        Experimental.Container(styleProperties: {
+        Container(styleProperties: {
           ($0.padding, Insets(all: 128))
           ($0.width, 600.0)
           ($0.background, Color.yellow)
         }) {
 
 
-          Experimental.Button() {
-            Experimental.Text("add child content")
+          Button() {
+            Text("add child content")
           }
         }
       }
 
       //NestedWidget(NestedData(content: "level1", children: []))
 
-      /*Experimental.Button {
-        Experimental.Text("add item")
+      /*Button {
+        Text("add item")
       } onClick: {
         items.append(items.last! + 1)
       }*/
-      Experimental.Container {
-      Experimental.Container(styleProperties: {
+      Container {
+      Container(styleProperties: {
         ($0.layout, SimpleLinearLayout.self)
         (SimpleLinearLayout.ParentKeys.direction, $layoutDirection)
         //($0.padding, Insets(all: 128))
@@ -178,41 +178,41 @@ public class MainView: Experimental.ComposedWidget {
         ($0.height, 1000.0)
         ($0.background, Color.blue)
       }) {
-        Experimental.Style(".test-container") {
+        Style(".test-container") {
           ($0.background, Color.green)
 
-          Experimental.Style("&:hover") {
+          Style("&:hover") {
             ($0.background, Color.red)
             (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.stretch)
           }
         }
 
-        Experimental.Container(styleProperties: {
+        Container(styleProperties: {
           ($0.padding, Insets(all: 43))
           ($0.background, Color.yellow)
         }) {
-          Experimental.Text("CONTAINER TWO")
+          Text("CONTAINER TWO")
         }
 
-        Experimental.Container(styleProperties: {
+        Container(styleProperties: {
           ($0.background, Color.orange)
           (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.center)
         }) {
-          Experimental.Text("CONTAINER THREE")
+          Text("CONTAINER THREE")
         }
 
-        Experimental.Container(styleProperties: {
+        Container(styleProperties: {
           ($0.background, Color.green)
           (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.end)
         }) {
-          Experimental.Text("CONTAINER FOUR")
+          Text("CONTAINER FOUR")
         }
 
-        Experimental.Container(classes: ["test-container"], styleProperties: {
+        Container(classes: ["test-container"], styleProperties: {
           ($0.padding, Insets(all: 16))
           (SimpleLinearLayout.ChildKeys.grow, 1.0)
         }) {
-          Experimental.Text("WSOW")
+          Text("WSOW")
         }
       }.onClick {
         layoutDirection = .column
@@ -220,9 +220,9 @@ public class MainView: Experimental.ComposedWidget {
       }*/
 
       /*Column {
-        Experimental.List($items) { item in
-          Experimental.Button {
-            Experimental.Text(styleProperties: {
+        List($items) { item in
+          Button {
+            Text(styleProperties: {
               ($0.textColor, Color.white)
             }, String(item))
           }
@@ -236,10 +236,10 @@ public class MainView: Experimental.ComposedWidget {
     var children: [NestedData]
   }
 
-  class NestedWidget: Experimental.ComposedWidget {
-    @ExperimentalReactiveProperties.MutableProperty
+  class NestedWidget: ComposedWidget {
+    @MutableProperty
     var data: NestedData
-    @ExperimentalReactiveProperties.ComputedProperty
+    @ComputedProperty
     var childData: [NestedData]
 
     public init(_ data: NestedData) {
@@ -251,27 +251,25 @@ public class MainView: Experimental.ComposedWidget {
     }
 
     override func performBuild() {
-      rootChild = Experimental.Container(styleProperties: {
+      rootChild = Container(styleProperties: {
         ($0.padding, Insets(left: 16))
       }) { [unowned self] in
-        Experimental.SimpleColumn {
-          Experimental.Text(styleProperties: {
-            ($0.foreground, Color.black)
-          }, data.content)
+        Text(styleProperties: {
+          ($0.foreground, Color.black)
+        }, data.content)
 
-          Experimental.Container(styleProperties: {
-            ($0.padding, Insets(all: 32))
-          }) {
-            Experimental.Button() {
-              Experimental.Text("add child content")
-            }.onClick {
-              data.children.append(NestedData(content: "child", children: []))
-            }
+        Container(styleProperties: {
+          ($0.padding, Insets(all: 32))
+        }) {
+          Button() {
+            Text("add child content")
+          }.onClick {
+            data.children.append(NestedData(content: "child", children: []))
           }
+        }
 
-          Experimental.List($childData) {
-            NestedWidget($0)
-          }
+        List($childData) {
+          NestedWidget($0)
         }
       }
     }

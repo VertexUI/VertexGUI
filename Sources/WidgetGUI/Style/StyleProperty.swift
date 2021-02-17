@@ -1,48 +1,79 @@
-import GfxMath
+import ReactiveProperties
+import Events
 
-public protocol AnyStyleProperty: class {
-  var anyValue: Any? { get set }
-
-  static func compareAnyValues(_ value1: Any?, _ value2: Any?) -> Bool
-} 
-
-public func == (lhs: AnyStyleProperty, rhs: AnyStyleProperty) -> Bool {
-  type(of: lhs) == type(of: rhs) && type(of: lhs).compareAnyValues(lhs.anyValue, rhs.anyValue) 
-}
-
-@propertyWrapper
-public class StyleProperty<Value: Equatable>: Equatable, AnyStyleProperty {
-  public var wrappedValue: Value?
-
-  public var anyValue: Any? {
-    get {
-      return wrappedValue
+public class StyleProperty: EventfulObject {
+  public var key: StyleKey
+  private var _value: Value
+  public var value: Value {
+    _value
+  }/* {
+    switch _value {
+    case let .static(value):
+      return value
+    case let .reactive(wrapper):
+      return wrapper.value
     }
-
-    set {
-      if newValue == nil {
-        wrappedValue = nil
-      } else {
-        wrappedValue = newValue as! Value
-      } 
-    }
-  }
-
-  public init(wrappedValue: Value?) {
-    self.wrappedValue = nil
-  }
-
-  public static func compareAnyValues(_ value1: Any?, _ value2: Any?) -> Bool {
-    if value1 == nil && value2 == nil {
+  }*/
+  public var canChange: Bool {
+    if case let .reactive(_) = _value {
       return true
-    } else if let value1 = value1 as? Value, let value2 = value2 as? Value {
-      return value1 == value2
-    } else {
-      return false
     }
+    return false
   }
 
-  public static func == (lhs: StyleProperty, rhs: StyleProperty) -> Bool {
-    lhs.wrappedValue == rhs.wrappedValue
+  /** place something in here to avoid it's deallocation for the lifetime of the StyleProperty */
+  private var ownedObjects: [AnyObject] = []
+
+  public let onChanged = EventHandlerManager<Void>()
+
+  public init(key: StyleKey, value: StyleValue) {
+    self.key = key
+    self._value = .static(value)
+  }
+
+  public init<P: ReactiveProperty>(key: StyleKey, value valueProperty: P) where P.Value == StyleValue? {
+    self.key = key
+    
+    /*let computedWrapperProperty = ComputedProperty<StyleValue?>(compute: {
+      valueProperty.value
+    }, dependencies: [valueProperty])*/
+
+    let derivedObservableProperty = ObservableProperty<StyleValue?>()
+    derivedObservableProperty.bind(valueProperty)
+
+    self._value = .reactive(derivedObservableProperty)
+
+    _ = derivedObservableProperty.onChanged { _ in
+      self.onChanged.invokeHandlers()
+    }
+    //self.ownedObjects.append(computedWrapperProperty)
+  }
+
+  public init<P: ReactiveProperty>(key: StyleKey, value valueProperty: P) where P.Value: StyleValue {
+    self.key = key
+
+    let computedWrapperProperty = ComputedProperty<StyleValue?>(compute: {
+      Optional(valueProperty.value)
+    }, dependencies: [valueProperty])
+
+    let derivedObservableProperty = ObservableProperty<StyleValue?>()
+    derivedObservableProperty.bind(computedWrapperProperty)
+
+    self._value = .reactive(derivedObservableProperty)
+
+    _ = derivedObservableProperty.onChanged { _ in
+      self.onChanged.invokeHandlers()
+    }
+
+    self.ownedObjects.append(computedWrapperProperty)
+  }
+
+  deinit {
+    removeAllEventHandlers()
+  }
+
+  public enum Value {
+    case `static`(StyleValue?)
+    case reactive(ObservableProperty<StyleValue?>)
   }
 }

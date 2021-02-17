@@ -1,13 +1,13 @@
 import GfxMath
 import VisualAppBase
-import ExperimentalReactiveProperties
+import ReactiveProperties
 
 extension Widget {
   public class ScrollBar: Widget, LeafWidget {
     public var track: Color = Color.red
     private let orientation: Orientation
 
-    @ExperimentalReactiveProperties.MutableProperty
+    @MutableProperty
     public var scrollProgress = 0.0
     public var maxScrollProgress = 0.0
 

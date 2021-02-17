@@ -1,11 +1,11 @@
 import GfxMath
 
 public class AbsoluteLayout: Layout {
-  override public var parentPropertySupportDefinitions: Experimental.StylePropertySupportDefinitions {
+  override public var parentPropertySupportDefinitions: StylePropertySupportDefinitions {
     []
   }
 
-  override public var childPropertySupportDefinitions: Experimental.StylePropertySupportDefinitions {
+  override public var childPropertySupportDefinitions: StylePropertySupportDefinitions {
     []
   }
 

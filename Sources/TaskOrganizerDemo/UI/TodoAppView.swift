@@ -1,7 +1,7 @@
 import SwiftGUI
-import ExperimentalReactiveProperties
+import ReactiveProperties
 
-public class TodoAppView: Experimental.ComposedWidget {
+public class TodoAppView: ComposedWidget {
   public enum Mode {
     case SelectedList, Search
   }
@@ -22,14 +22,14 @@ public class TodoAppView: Experimental.ComposedWidget {
   @Reference
   private var activeViewTopSpace: Space
 
-  /*@ExperimentalReactiveProperties.MutableProperty
+  /*@MutableProperty
   private var mode: Mode = .SelectedList*/
 
-  @ExperimentalReactiveProperties.MutableProperty
+  @MutableProperty
   private var searchQuery: String = ""
 
   override public func performBuild() {
-    rootChild = Experimental.Container(styleProperties: {
+    rootChild = Container(styleProperties: {
       ($0.background, AppTheme.backgroundColor)
     }) { [unowned self] in
       buildStyle()
@@ -37,12 +37,12 @@ public class TodoAppView: Experimental.ComposedWidget {
       buildMenu()
       buildActiveView()
 
-      Experimental.DefaultTheme()
+      DefaultTheme()
     }
   }
 
   private func buildMenu() -> Widget {
-    Experimental.Container(styleProperties: {
+    Container(styleProperties: {
       ($0.layout, SimpleLinearLayout.self)
       ($0.width, 200.0)
       (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.stretch)
@@ -50,23 +50,23 @@ public class TodoAppView: Experimental.ComposedWidget {
     }) { [unowned self] in
       buildSearch()
 
-      Experimental.Container(styleProperties: {
+      Container(styleProperties: {
         ($0.padding, Insets(all: 32))
       }) {
-        Experimental.Style(".button", Experimental.Button.self) {
+        Style(".button", Button.self) {
           ($0.background, Color.yellow)
           ($0.padding, Insets(all: 16))
           ($0.foreground, Color.white)
         }
 
-        Experimental.Style(".button:hover") {
-          Experimental.StyleProperties(Experimental.Button.self) {
+        Style(".button:hover") {
+          StyleProperties(Button.self) {
             ($0.background, Color.red)
           }
         }
 
-        Experimental.Button(classes: ["button"]) {
-          Experimental.Text(styleProperties: {
+        Button(classes: ["button"]) {
+          Text(styleProperties: {
             ($0.fontWeight, FontWeight.bold)
             ($0.fontSize, 20.0)
             ($0.foreground, Color.black)
@@ -76,12 +76,12 @@ public class TodoAppView: Experimental.ComposedWidget {
         }
       }
 
-      Experimental.List(styleProperties: {
+      List(styleProperties: {
         ($0.overflowY, Overflow.scroll)
         (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.stretch)
         (SimpleLinearLayout.ChildKeys.shrink, 1.0)
         ($0.foreground, Color.white)
-      }, ExperimentalReactiveProperties.ComputedProperty(compute: {
+      }, ComputedProperty(compute: {
         todoStore.state.lists
       }, dependencies: [todoStore.$state])) {
         buildMenuListItem(for: $0)
@@ -90,14 +90,14 @@ public class TodoAppView: Experimental.ComposedWidget {
   }
 
   private func buildSearch() -> Widget {
-    Experimental.Container(styleProperties: {
+    Container(styleProperties: {
       ($0.padding, Insets(all: 32))
       (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.stretch)
     }) { [unowned self] in
-      Experimental.TextInput(styleProperties: { _ in
+      TextInput(styleProperties: { _ in
         (SimpleLinearLayout.ChildKeys.shrink, 1.0)
         (SimpleLinearLayout.ChildKeys.grow, 1.0)
-      }, mutableText: ExperimentalReactiveProperties.MutableComputedProperty(compute: {
+      }, mutableText: MutableComputedProperty(compute: {
         searchStore.state.searchQuery
       }, apply: {
         searchStore.commit(.updateQuery($0))
@@ -107,7 +107,7 @@ public class TodoAppView: Experimental.ComposedWidget {
           Spaceholder(display: ReactiveProperties.ComputedProperty<Bool>([$mode.any]) { [unowned self] in
             return mode == .Search
           }, dimension: .Vertical) {
-            Experimental.Button {
+            Button {
               Text("cancel")
             } onClick: {
               mode = .SelectedList
@@ -118,12 +118,12 @@ public class TodoAppView: Experimental.ComposedWidget {
   }
 
   private func buildMenuListItem(for list: TodoList) -> Widget {
-    Experimental.Container(classes: ["menu-item"], styleProperties: {
+    Container(classes: ["menu-item"], styleProperties: {
       ($0.padding, Insets(all: 16))
       ($0.borderWidth, BorderWidth(bottom: 1.0))
       ($0.borderColor, Color.white)
     }) {
-      Experimental.Container(styleProperties: {
+      Container(styleProperties: {
         ($0.background, list.color)
         ($0.padding, Insets(all: 8))
         (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.center)
@@ -132,7 +132,7 @@ public class TodoAppView: Experimental.ComposedWidget {
         //MaterialIcon(.formatListBulletedSquare, color: .white)
       }
 
-      Experimental.Text(styleProperties: { 
+      Text(styleProperties: { 
         (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.center)
         ($0.padding, Insets(left: 8))
       }, list.name).with(classes: ["list-item-name"])
@@ -142,7 +142,7 @@ public class TodoAppView: Experimental.ComposedWidget {
   }
 
   private func buildActiveView() -> Widget {
-    return Experimental.Container(styleProperties: { _ in
+    return Container(styleProperties: { _ in
       (SimpleLinearLayout.ChildKeys.grow, 1.0)
       (SimpleLinearLayout.ParentKeys.direction, SimpleLinearLayout.Direction.column)
       (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.stretch)
@@ -153,7 +153,7 @@ public class TodoAppView: Experimental.ComposedWidget {
       ReactiveContent(navigationStore.$state) {
         switch navigationStore.state.mainViewRoute {
         case .none:
-          Experimental.Text(styleProperties: {
+          Text(styleProperties: {
             ($0.foreground, Color.white)
             ($0.fontSize, 24.0)
             ($0.fontWeight, FontWeight.bold)
@@ -162,7 +162,7 @@ public class TodoAppView: Experimental.ComposedWidget {
           }, "no list selected")
 
         case let .selectedList(id):
-          TodoListView(listId: ExperimentalReactiveProperties.ComputedProperty(compute: {
+          TodoListView(listId: ComputedProperty(compute: {
             if case let .selectedList(id) = navigationStore.state.mainViewRoute {
               return id
             }
@@ -185,14 +185,14 @@ public class TodoAppView: Experimental.ComposedWidget {
     todoStore.commit(.AddList)
   }
 
-  override public func buildStyle() -> Experimental.Style {
-    Experimental.Style("&") {
-      Experimental.Style(".menu-item") {
+  override public func buildStyle() -> Style {
+    Style("&") {
+      Style(".menu-item") {
         ($0.foreground, Color.white)
         ($0.background, Color.transparent)
       }
 
-      Experimental.Style(".menu-item:hover") {
+      Style(".menu-item:hover") {
         ($0.background, AppTheme.primaryColor)
         ($0.foreground, Color.black)
       }

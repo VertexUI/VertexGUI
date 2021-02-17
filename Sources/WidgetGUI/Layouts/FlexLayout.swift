@@ -1,14 +1,14 @@
 import GfxMath
 
 public class FlexLayout: Layout {
-  override public var parentPropertySupportDefinitions: Experimental.StylePropertySupportDefinitions {
-    Experimental.StylePropertySupportDefinitions {
+  override public var parentPropertySupportDefinitions: StylePropertySupportDefinitions {
+    StylePropertySupportDefinitions {
       (ParentKeys.direction, type: .specific(Direction.self), default: Direction.row)
     }
   }
 
-  override public var childPropertySupportDefinitions: Experimental.StylePropertySupportDefinitions {
-    Experimental.StylePropertySupportDefinitions {
+  override public var childPropertySupportDefinitions: StylePropertySupportDefinitions {
+    StylePropertySupportDefinitions {
       (ChildKeys.grow, type: .specific(Double.self))
       (ChildKeys.alignSelf, type: .specific(FlexAlign.self))
     }

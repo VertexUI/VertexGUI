@@ -19,7 +19,7 @@ class WidgetStyleScopeApplicationTests: XCTestCase {
         self.buildInternal = buildInternal
         super.init()
         self.createsStyleScope = createsStyleScope
-        self.experimentalProvidedStyles.append(contentsOf: content.experimentalStyles)
+        self.providedStyles.append(contentsOf: content.styles)
     }
 
   init(_ createsStyleScope: Bool,
@@ -153,25 +153,25 @@ class WidgetStyleScopeApplicationTests: XCTestCase {
     let reference2 = Reference<TestWidget>()
     let reference3 = Reference<TestWidget>()
     let root = MockRoot(rootWidget: TestWidget(true, buildInternal: nil) {
-      Experimental.Style("") {}
+      Style("") {}
 
       TestWidget(true, buildInternal: { _ in
         [
           TestWidget(true, buildInternal: nil) {
-            Experimental.Style("") {
-              Experimental.Style("") {}
+            Style("") {
+              Style("") {}
             }
           }.connect(ref: reference3)
         ]
       }).provideStyles([
-        Experimental.Style("") {}
+        Style("") {}
       ]).connect(ref: reference2)
     }.connect(ref: reference1))
 
-    XCTAssertEqual(reference1.referenced!.experimentalProvidedStyles[0].sourceScope, Widget.rootStyleScope)
-    XCTAssertEqual(reference2.referenced!.experimentalProvidedStyles[0].sourceScope, Widget.rootStyleScope)
-    XCTAssertEqual(reference3.referenced!.experimentalProvidedStyles[0].sourceScope, reference2.referenced!.id)
-    XCTAssertEqual(reference3.referenced!.experimentalProvidedStyles[0].children[0].sourceScope, reference2.referenced!.id)
+    XCTAssertEqual(reference1.referenced!.providedStyles[0].sourceScope, Widget.rootStyleScope)
+    XCTAssertEqual(reference2.referenced!.providedStyles[0].sourceScope, Widget.rootStyleScope)
+    XCTAssertEqual(reference3.referenced!.providedStyles[0].sourceScope, reference2.referenced!.id)
+    XCTAssertEqual(reference3.referenced!.providedStyles[0].children[0].sourceScope, reference2.referenced!.id)
   }
 
   static var allTests = [

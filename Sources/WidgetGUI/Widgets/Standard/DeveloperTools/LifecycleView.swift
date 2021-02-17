@@ -1,23 +1,23 @@
-import ExperimentalReactiveProperties
+import ReactiveProperties
 import GfxMath
 
-public class LifecycleView: Experimental.ComposedWidget {
+public class LifecycleView: ComposedWidget {
   private var lifecycleMethodInvocationSignalBuffer: Bus<LifecycleMethodInvocationSignal>.MessageBuffer
 
-  @ExperimentalReactiveProperties.ObservableProperty
+  @ObservableProperty
   private var invocationSignalGroups: [Int: LifecycleMethodInvocationSignalGroup]
 
-  @ExperimentalReactiveProperties.MutableProperty
+  @MutableProperty
   private var invocationInfoItems: [LifecycleMethodInvocationSignal] = []
 
-  @ExperimentalReactiveProperties.MutableProperty
+  @MutableProperty
   private var methodInvocationCounts: [LifecycleMethod: Int] = LifecycleMethod.allCases.reduce(into: [:]) {
     $0[$1] = 0
   }
 
-  @ExperimentalReactiveProperties.MutableProperty
+  @MutableProperty
   private var showSignals: Bool = false
-  @ExperimentalReactiveProperties.MutableProperty
+  @MutableProperty
   private var showSignalGroups: Bool = false
 
   public init<P: ReactiveProperty>(
@@ -41,65 +41,61 @@ public class LifecycleView: Experimental.ComposedWidget {
   }
 
   override public func performBuild() {
-    rootChild = Experimental.Container() { [unowned self] in
+    rootChild = Container() { [unowned self] in
       buildStyle()
 
-      Experimental.SimpleColumn {
-        buildStatistics()
+      buildStatistics()
 
-        Experimental.SimpleRow {
-          Experimental.Button {
-            Experimental.Build($showSignals) {
-              if showSignals {
-                Experimental.Text("hide signals")
-              } else {
-                Experimental.Text("show signals")
-              }
-            }
-          }.onClick {
-            showSignals = !showSignals
-          }
-
-          Experimental.Button {
-            Experimental.Build($showSignalGroups) {
-              if showSignals {
-                Experimental.Text("hide signal groups")
-              } else {
-                Experimental.Text("show signal groups")
-              }
-            }
-          }.onClick {
-            showSignalGroups = !showSignalGroups
-          }
-        }
-
-        Experimental.Build($showSignals) {
+      Button {
+        Build($showSignals) {
           if showSignals {
-            Experimental.List($invocationInfoItems) {
-              buildSignal($0)
-            }
+            Text("hide signals")
           } else {
-            Space(.zero)
+            Text("show signals")
           }
         }
+      }.onClick {
+        showSignals = !showSignals
+      }
 
-        Experimental.Build($showSignalGroups) {
-          if showSignalGroups {
-            Experimental.List(ExperimentalReactiveProperties.ComputedProperty(compute: {
-              Array(invocationSignalGroups.values)
-            }, dependencies: [$invocationSignalGroups])) {
-              buildSignalGroup($0)
-            }
+      Button {
+        Build($showSignalGroups) {
+          if showSignals {
+            Text("hide signal groups")
           } else {
-            Space(.zero)
+            Text("show signal groups")
           }
+        }
+      }.onClick {
+        showSignalGroups = !showSignalGroups
+      }
+
+      Build($showSignals) {
+        if showSignals {
+          List($invocationInfoItems) {
+            buildSignal($0)
+          }
+        } else {
+          Space(.zero)
+        }
+      }
+
+      Build($showSignalGroups) {
+        if showSignalGroups {
+          List(ComputedProperty(compute: {
+            Array(invocationSignalGroups.values)
+          }, dependencies: [$invocationSignalGroups])) {
+            buildSignalGroup($0)
+          }
+        } else {
+          Space(.zero)
         }
       }
     }
   }
 
   private func buildStatistics() -> Widget {
-    Experimental.SimpleRow { [unowned self] in
+    Container { [unowned self] in
       buildStatistic(for: .mount)
       buildStatistic(for: .build)
       buildStatistic(for: .layout)
@@ -108,62 +104,56 @@ public class LifecycleView: Experimental.ComposedWidget {
   }
 
   private func buildStatistic(for method: LifecycleMethod) -> Widget {
-    Experimental.Container(classes: ["method-invocation-count-container"]) { [unowned self] in
-      Experimental.SimpleRow {
-        Experimental.Text(String(describing: method))
-        Experimental.Text(ComputedProperty(compute: {
-          return String(methodInvocationCounts[method]!)
-        }, dependencies: [$methodInvocationCounts]))
-      }
+    Container(classes: ["method-invocation-count-container"]) { [unowned self] in
+      Text(String(describing: method))
+      Text(ComputedProperty(compute: {
+        return String(methodInvocationCounts[method]!)
+      }, dependencies: [$methodInvocationCounts]))
     }
   }
 
   private func buildSignal(_ signal: Widget.LifecycleMethodInvocationSignal) -> Widget {
-    Experimental.Container(classes: ["signal"]) {
-      Experimental.SimpleColumn {
-        Experimental.Text(classes: ["method-name"], "method \(signal.method)")
+    Container(classes: ["signal"]) {
+      Text(classes: ["method-name"], "method \(signal.method)")
 
-        switch signal {
-        case let .started(_, _, _, timestamp):
-          Experimental.Text("started at: \(timestamp)")
-        default:
-          Space(.zero)
-        }
+      switch signal {
+      case let .started(_, _, _, timestamp):
+        Text("started at: \(timestamp)")
+      default:
+        Space(.zero)
       }
     }
   }
 
   private func buildSignalGroup(_ group: Widget.LifecycleMethodInvocationSignalGroup) -> Widget {
-    Experimental.Container(classes: ["signal-group"]) { [unowned self] in
-      Experimental.SimpleColumn {
-        Experimental.Text(classes: ["method-name"], "method \(group.method)")
+    Container(classes: ["signal-group"]) { [unowned self] in
+      Text(classes: ["method-name"], "method \(group.method)")
 
-        group.signals.map {
-          buildSignal($0)
-        }
-      }
+      /*group.signals.map {
+        buildSignal($0)
+      }*/
     }
   }
 
-  override public func buildStyle() -> Experimental.Style {
-    Experimental.Style("&", Experimental.Container.self) {
+  override public func buildStyle() -> Style {
+    Style("&", Container.self) {
       ($0.background, Color.white)
 
-      Experimental.Style(".method-invocation-count-container", Experimental.Container.self) {
+      Style(".method-invocation-count-container", Container.self) {
         ($0.padding, Insets(all: 16))
       }
 
-      Experimental.Style(".signal", Experimental.Container.self) {
+      Style(".signal", Container.self) {
         ($0.background, Color.white)
         ($0.padding, Insets(all: 8))
 
-        Experimental.Style(".method-name", Experimental.Text.self) {
+        Style(".method-name", Text.self) {
           ($0.foreground, Color.black)
           ($0.fontSize, 16.0)
         }
       }
 
-      Experimental.Style(".signal-group", Experimental.Container.self) {
+      Style(".signal-group", Container.self) {
         ($0.background, Color.white)
         ($0.padding, Insets(all: 16))
       }

@@ -1,4 +1,4 @@
-public class DependencyProvider: Experimental.ComposedWidget {
+public class DependencyProvider: ComposedWidget {
   public internal(set) var dependencies: [Dependency]
   private var childBuilder: () -> Widget
 

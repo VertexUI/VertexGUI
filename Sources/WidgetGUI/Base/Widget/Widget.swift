@@ -2,7 +2,7 @@ import Foundation
 import GfxMath
 import VisualAppBase
 import ColorizeSwift
-import ExperimentalReactiveProperties
+import ReactiveProperties
 import Events
 
 open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
@@ -216,7 +216,7 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     public internal(set) var pseudoClasses = Set<String>()
 
     /** Style property support declared by the Widget instance's context. */
-    public var experimentalSupportedGlobalStyleProperties: Experimental.StylePropertySupportDefinitions {
+    public var supportedGlobalStyleProperties: StylePropertySupportDefinitions {
         if let context = _context {
             return context.globalStylePropertySupportDefinitions
         } else {
@@ -236,14 +236,14 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     Given as a dictionary so that the parent can add properties in groups and conveniently update the groups instead
     of reapplying everything.
     */
-    public var experimentalSupportedParentStyleProperties: [String: Experimental.StylePropertySupportDefinitions] = [:]
+    public var supportedParentStyleProperties: [String: StylePropertySupportDefinitions] = [:]
     /** Style property support declared by this Widget instance. */
-    open var experimentalSupportedStyleProperties: Experimental.StylePropertySupportDefinitions { [] }
+    open var supportedStyleProperties: StylePropertySupportDefinitions { [] }
     /** */
-    public var experimentalMergedSupportedStyleProperties: Experimental.StylePropertySupportDefinitions {
+    public var mergedSupportedStyleProperties: StylePropertySupportDefinitions {
             do {
-                return try Experimental.StylePropertySupportDefinitions(merge: [experimentalSupportedGlobalStyleProperties] +
-                    experimentalSupportedParentStyleProperties.values + [experimentalSupportedStyleProperties])
+                return try StylePropertySupportDefinitions(merge: [supportedGlobalStyleProperties] +
+                    supportedParentStyleProperties.values + [supportedStyleProperties])
             } catch {
                 fatalError("error while merging style property support definitions in Widget: \(self), error: \(error)")
             }
@@ -251,7 +251,7 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
 
     /** All properties from matched styles and direct properties merged,
     validated and filtered according to the support definitions.  */
-    public internal(set) var experimentalAppliedStyleProperties: [Experimental.StyleProperty] = []
+    public internal(set) var appliedStyleProperties: [StyleProperty] = []
 
     /** whether this Widget creates a new scope for the children which it itself instantiates */
     public var createsStyleScope: Bool = false {
@@ -274,77 +274,75 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         return block()
     }
 
-    public var providedStyles: [AnyStyle] = []
     /** Styles which can be applied to this Widget instance or any of 
     it's children (deep) according to their selector. */
-    public var experimentalProvidedStyles: [Experimental.Style] = []
+    public var providedStyles: [Style] = []
 
-    internal var appliedStyles: [AnyStyle] = []
     internal var matchedStylesInvalid = false
     /** Styles whose selectors match this Widget instance. */
-    internal var experimentalMatchedStyles: [Experimental.Style] = [] {
+    internal var matchedStyles: [Style] = [] {
         didSet {
-            if experimentalMatchedStyles.count != oldValue.count || !experimentalMatchedStyles.allSatisfy({ style in oldValue.contains { $0 === style } }) {
-                stylePropertiesResolver.styles = experimentalMatchedStyles
+            if matchedStyles.count != oldValue.count || !matchedStyles.allSatisfy({ style in oldValue.contains { $0 === style } }) {
+                stylePropertiesResolver.styles = matchedStyles
                 stylePropertiesResolver.resolve()
             }
         }
     }
     /** Style properties that are applied to this Widget instance directly
     without any selector based testing. */
-    public internal(set) var experimentalDirectStyleProperties: [Experimental.StyleProperties] = [] {
+    public internal(set) var directStyleProperties: [StyleProperties] = [] {
         didSet {
-            stylePropertiesResolver.directProperties = experimentalDirectStyleProperties
+            stylePropertiesResolver.directProperties = directStyleProperties
             stylePropertiesResolver.resolve()
         }
     }
 
-    lazy internal var stylePropertiesResolver = Experimental.StylePropertiesResolver(
-        propertySupportDefinitions: experimentalMergedSupportedStyleProperties,
+    lazy internal var stylePropertiesResolver = StylePropertiesResolver(
+        propertySupportDefinitions: mergedSupportedStyleProperties,
         widget: self)
 
     // TODO: maybe this belongs into the layout section instead of in the style section?
     // TODO: maybe even create a separate section for universal properties?
-    /*@FromStyle(key: Experimental.AnyDefaultStyleKeys.width)
+    /*@FromStyle(key: AnyDefaultStyleKeys.width)
     public var explicitWidth: Double = 0
 
-    @FromStyle(key: Experimental.AnyDefaultStyleKeys.height)
+    @FromStyle(key: AnyDefaultStyleKeys.height)
     public var explicitHeight: Double = 0*/
 
-    @FromStyle(key: Experimental.AnyDefaultStyleKeys.padding)
+    @FromStyle(key: AnyDefaultStyleKeys.padding)
     public var padding: Insets = .zero
     
-    @FromStyle(key: Experimental.AnyDefaultStyleKeys.transform)
+    @FromStyle(key: AnyDefaultStyleKeys.transform)
     public var styleTransforms: [DTransform2] = []
 
-    @FromStyle(key: Experimental.AnyDefaultStyleKeys.overflowX)
+    @FromStyle(key: AnyDefaultStyleKeys.overflowX)
     public var overflowX: Overflow = .show
 
-    @FromStyle(key: Experimental.AnyDefaultStyleKeys.overflowY)
+    @FromStyle(key: AnyDefaultStyleKeys.overflowY)
     public var overflowY: Overflow = .show
 
-    @FromStyle(key: Experimental.AnyDefaultStyleKeys.opacity)
+    @FromStyle(key: AnyDefaultStyleKeys.opacity)
     public var opacity: Double = 1
 
-    @FromStyle(key: Experimental.AnyDefaultStyleKeys.visibility)
+    @FromStyle(key: AnyDefaultStyleKeys.visibility)
     public var visibility: Visibility = .visible
 
-    @FromStyle(key: Experimental.AnyDefaultStyleKeys.borderWidth)
+    @FromStyle(key: AnyDefaultStyleKeys.borderWidth)
     public var borderWidth: BorderWidth = .zero
 
-    @FromStyle(key: Experimental.AnyDefaultStyleKeys.borderColor)
+    @FromStyle(key: AnyDefaultStyleKeys.borderColor)
     public var borderColor: Color = .transparent
 
-    @FromStyle(key: Experimental.AnyDefaultStyleKeys.background)
+    @FromStyle(key: AnyDefaultStyleKeys.background)
     public var background: Color = .transparent
     /* end style */
 
     /* scrolling
     ------------------------------------
     */
-    @ExperimentalReactiveProperties.MutableProperty
+    @MutableProperty
     internal var autoScrollingEnabled = (x: false, y: false)
-    @ExperimentalReactiveProperties.ComputedProperty
+    @ComputedProperty
     internal var scrollingEnabled: (x: Bool, y: Bool)/* {
         didSet {
             updateScrollEventHandlers()
@@ -353,7 +351,7 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     /** removers for event handlers that are registered to manage scrolling */
     private var scrollEventHandlerRemovers: [() -> ()] = []
     private var scrollingSpeed = 20.0
-    @ExperimentalReactiveProperties.MutableProperty
+    @MutableProperty
     internal var currentScrollOffset: DVec2 = .zero
    /* /** should be set in layout, if scrolling is enabled */
     internal var maxScrollOffset: DVec2 = .zero
@@ -380,7 +378,7 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     /// Flag whether to show bounds and sizes for debugging purposes.
     //@MutableProperty
     ////internal var _debugLayout: Bool?
-    @ExperimentalReactiveProperties.MutableProperty
+    @MutableProperty
     public var debugLayout: Bool = false/* {
         get {
             _debugLayout ?? context.debugLayout
@@ -390,7 +388,7 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
             _debugLayout = newValue
         }
     }*/
-    @ExperimentalReactiveProperties.MutableProperty
+    @MutableProperty
     public var layoutDebuggingColor = Color.red
     private let layoutDebuggingTextFontConfig = FontConfig(family: defaultFontFamily, size: 16, weight: .regular, style: .normal)
     // if true, highlight the Widget when bursts of calls to functions such as layout or render occur
@@ -629,7 +627,7 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
             self.context = context
             self.setupContext()
 
-            self.stylePropertiesResolver.propertySupportDefinitions = experimentalMergedSupportedStyleProperties
+            self.stylePropertiesResolver.propertySupportDefinitions = mergedSupportedStyleProperties
 
             self.lifecycleBus = lifecycleBus
             
@@ -648,7 +646,7 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
             onMounted.invokeHandlers(Void())
 
             if let style = buildStyle() {
-                experimentalProvidedStyles.insert(style, at: 0)
+                providedStyles.insert(style, at: 0)
             }
 
             build()
@@ -697,7 +695,7 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     }
 
     /** called after mounted, before build phase, dependencies available, result inserted as the first provided style */
-    open func buildStyle() -> Experimental.Style? {
+    open func buildStyle() -> Style? {
       nil
     }
 

@@ -1,67 +1,31 @@
-public protocol AnyStyleProperties: CustomDebugStringConvertible {
-  //var selector: StyleSelector? { get set }
-  //var subStyles: [AnyStyle]? { get set }
-  func getProperties() -> [(name: String, wrapper: AnyStyleProperty)]
-}
+public struct StyleProperties: Sequence, ExpressibleByArrayLiteral {
+  public var properties: [StyleProperty]
 
-extension AnyStyleProperties {
-  public func getProperties() -> [(name: String, wrapper: AnyStyleProperty)] {
-    var properties = [(name: String, wrapper: AnyStyleProperty)]()
-    let mirror = Mirror(reflecting: self)
-    for child in mirror.children {
-      if let property = child.value as? AnyStyleProperty {
-        properties.append((name: child.label!, wrapper: property))
-      }
-    }
-    return properties
+  public init<K>(_ keys: K.Type, @StylePropertiesBuilder _ build: (K.Type) -> StyleProperties) {
+    self = build(keys)
   }
 
-  public var debugDescription: String {
-    let properties = getProperties()
-    return "\(type(of: self)): \(properties.map { "\($0.name): \($0.wrapper.anyValue)" })"
-  }
-}
-
-public func == (lhs: AnyStyleProperties, rhs: AnyStyleProperties) -> Bool {
-  let properties1 = lhs.getProperties()
-  let properties2 = rhs.getProperties()
-
-  for property1 in properties1 {
-    // TODO: FINISH COMPARISON FUNCTION
-    if !properties2.contains { $0.name == property1.name && $0.wrapper == property1.wrapper } {
-      return false
-    }
+  public init<W: StylableWidget>(_ widget: W.Type, @StylePropertiesBuilder _ build: (W.StyleKeys.Type) -> StyleProperties) {
+    self = build(widget.StyleKeys)
   }
 
-  return true
-}
-
-public protocol StyleProperties: AnyStyleProperties {
-  init()
-  //init(_ selector: StyleSelector, _ configure: (inout Self) -> ())
-  init(_ configure: (inout Self) -> ())
-
-  //func sub(@StyleBuilder _ styles: () -> [AnyStyle])
-}
-
-extension StyleProperties {
-  /*public init(_ selector: StyleSelector, _ configure: (inout Self) -> ()) {
-    self.init()
-    self.selector = selector
-    configure(&self)
-  }*/
-
-  public init(_ configure: (inout Self) -> ()) {
-    self.init()
-    configure(&self)
+  public init(@StylePropertiesBuilder _ build: () -> StyleProperties) {
+    self = build()
   }
 
+  public init(_ properties: [StyleProperty]) {
+    self.properties = properties
+  }
 
+  public init(arrayLiteral properties: StyleProperty...) {
+    self.init(properties)
+  }
 
-  /*mutating public func sub(@StyleBuilder _ styles: () -> [AnyStyle]) {
-    if subStyles == nil {
-      subStyles = []
-    }
-    subStyles!.append(contentsOf: styles())
-  }*/
+  public func makeIterator() -> Array<StyleProperty>.Iterator {
+    properties.makeIterator()
+  }
+
+  public var count: Int {
+    properties.count
+  }
 }

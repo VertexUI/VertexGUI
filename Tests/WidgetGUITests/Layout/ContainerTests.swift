@@ -1,17 +1,17 @@
 import XCTest
 import GfxMath
-import ExperimentalReactiveProperties
+import ReactiveProperties
 @testable import WidgetGUI
 
 class ContainerTests: XCTestCase, LayoutTest {
   func _testOneChild(
-    @Experimental.StylePropertiesBuilder styleProperties stylePropertiesBuilder: (Experimental.Container.StyleKeys.Type) -> Experimental.StyleProperties,
+    @StylePropertiesBuilder styleProperties stylePropertiesBuilder: (Container.StyleKeys.Type) -> StyleProperties,
     child: Widget,
     rootSize: DSize2,
     assert: (_ outer: Widget, _ inner: Widget) -> ()) {
       let innerRef = Reference<Widget>() 
       let outerRef = Reference<Widget>()
-      let root = Root(rootWidget: Experimental.Container(styleProperties: stylePropertiesBuilder) {
+      let root = Root(rootWidget: Container(styleProperties: stylePropertiesBuilder) {
         child.connect(ref: innerRef)
       }.connect(ref: outerRef))
       root.bounds.size = rootSize
@@ -22,7 +22,7 @@ class ContainerTests: XCTestCase, LayoutTest {
   func testSimpleLinearRowOneFixedChild() {
     let innerRef = Reference<Widget>() 
     let outerRef = Reference<Widget>()
-    let root = Root(rootWidget: Experimental.Container(styleProperties: {
+    let root = Root(rootWidget: Container(styleProperties: {
       ($0.layout, SimpleLinearLayout.self)
       (SimpleLinearLayout.ParentKeys.direction, SimpleLinearLayout.Direction.row)
     }) {
@@ -37,7 +37,7 @@ class ContainerTests: XCTestCase, LayoutTest {
   func testSimpleLinearRowOneOverflowingChild() {
     let innerRef = Reference<Widget>() 
     let outerRef = Reference<Widget>()
-    let root = Root(rootWidget: Experimental.Container(styleProperties: {
+    let root = Root(rootWidget: Container(styleProperties: {
       ($0.layout, SimpleLinearLayout.self)
       (SimpleLinearLayout.ParentKeys.direction, SimpleLinearLayout.Direction.row)
     }) {
@@ -158,8 +158,8 @@ class ContainerTests: XCTestCase, LayoutTest {
     let innerRef2 = Reference<Widget>() 
     let innerRef3 = Reference<Widget>() 
     let outerRef = Reference<Widget>()
-    let root = Root(rootWidget: Experimental.Container {
-      Experimental.Container(styleProperties: {
+    let root = Root(rootWidget: Container {
+      Container(styleProperties: {
         ($0.layout, SimpleLinearLayout.self)
         ($0.width, 560.0)
         (SimpleLinearLayout.ParentKeys.direction, SimpleLinearLayout.Direction.row)
@@ -191,8 +191,8 @@ class ContainerTests: XCTestCase, LayoutTest {
     let innerRef2 = Reference<Widget>() 
     let innerRef3 = Reference<Widget>() 
     let outerRef = Reference<Widget>()
-    let root = Root(rootWidget: Experimental.Container {
-      Experimental.Container(styleProperties: {
+    let root = Root(rootWidget: Container {
+      Container(styleProperties: {
         ($0.layout, SimpleLinearLayout.self)
         ($0.width, 200.0)
         (SimpleLinearLayout.ParentKeys.direction, SimpleLinearLayout.Direction.row)
@@ -224,8 +224,8 @@ class ContainerTests: XCTestCase, LayoutTest {
     let innerRef2 = Reference<Widget>() 
     let innerRef3 = Reference<Widget>() 
     let outerRef = Reference<Widget>()
-    let root = Root(rootWidget: Experimental.Container {
-      Experimental.Container(styleProperties: {
+    let root = Root(rootWidget: Container {
+      Container(styleProperties: {
         ($0.layout, SimpleLinearLayout.self)
         (SimpleLinearLayout.ParentKeys.direction, SimpleLinearLayout.Direction.row)
       }) {
@@ -258,9 +258,9 @@ class ContainerTests: XCTestCase, LayoutTest {
     let innerRef1 = Reference<Widget>() 
     let innerRef2 = Reference<Widget>() 
     let outerRef = Reference<Widget>()
-    let justifyProperty = ExperimentalReactiveProperties.MutableProperty<SimpleLinearLayout.Justify>()
-    let root = Root(rootWidget: Experimental.Container {
-      Experimental.Container(styleProperties: {
+    let justifyProperty = MutableProperty<SimpleLinearLayout.Justify>()
+    let root = Root(rootWidget: Container {
+      Container(styleProperties: {
         ($0.layout, SimpleLinearLayout.self)
         (SimpleLinearLayout.ParentKeys.direction, SimpleLinearLayout.Direction.row)
         (SimpleLinearLayout.ParentKeys.justifyContent, justifyProperty)
@@ -302,8 +302,8 @@ class ContainerTests: XCTestCase, LayoutTest {
     let innerRef2 = Reference<Widget>() 
     let innerRef3 = Reference<Widget>() 
     let outerRef = Reference<Widget>()
-    let root = Root(rootWidget: Experimental.Container {
-      Experimental.Container(styleProperties: {
+    let root = Root(rootWidget: Container {
+      Container(styleProperties: {
         ($0.layout, SimpleLinearLayout.self)
         (SimpleLinearLayout.ParentKeys.direction, SimpleLinearLayout.Direction.row)
         (SimpleLinearLayout.ParentKeys.alignContent, SimpleLinearLayout.Align.center)

@@ -1,9 +1,9 @@
 import GfxMath
 import VisualAppBase
-import ExperimentalReactiveProperties
+import ReactiveProperties
 import Events
 
-public class EventLogView: Experimental.ComposedWidget {
+public class EventLogView: ComposedWidget {
   private let inspectedRoot: Root
 
   @ObservableProperty

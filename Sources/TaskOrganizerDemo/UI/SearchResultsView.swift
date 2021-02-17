@@ -1,6 +1,6 @@
 import SwiftGUI
 
-public class SearchResultsView: Experimental.ComposedWidget {
+public class SearchResultsView: ComposedWidget {
   @Inject
   private var store: TodoStore
 

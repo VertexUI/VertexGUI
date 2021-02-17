@@ -10,7 +10,7 @@ public class TaskCompletionButton: Widget, LeafWidget {
 
     public init(
         classes: [String]? = nil,
-        @Experimental.StylePropertiesBuilder styleProperties buildStyleProperties: (StyleKeys.Type) -> Experimental.StyleProperties = { _ in [] },
+        @StylePropertiesBuilder styleProperties buildStyleProperties: (StyleKeys.Type) -> StyleProperties = { _ in [] },
         _ completed: Bool, onClick onClickHandler: (() -> ())? = nil) {
             self.completed = completed
             super.init()

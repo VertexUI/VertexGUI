@@ -1,11 +1,11 @@
 import XCTest
 @testable import WidgetGUI
-@testable import ExperimentalReactiveProperties
+@testable import ReactiveProperties
 
 class BuildTests: XCTestCase {
   func testInvalidationWithMutableProperty() {
     let property = MutableProperty<String>()
-    let widget = Experimental.Build(property) {
+    let widget = Build(property) {
       if property.hasValue {
         MockLeafWidget()
       } else {

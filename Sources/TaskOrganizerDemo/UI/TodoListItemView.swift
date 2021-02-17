@@ -1,6 +1,6 @@
 import SwiftGUI
 
-public class TodoListItemView: Experimental.ComposedWidget {
+public class TodoListItemView: ComposedWidget {
   @Inject
   private var store: TodoStore
   private var item: TodoItem
@@ -18,7 +18,7 @@ public class TodoListItemView: Experimental.ComposedWidget {
   }
 
   override public func performBuild() {
-    rootChild = Experimental.Container { [unowned self] in
+    rootChild = Container { [unowned self] in
       buildStyle()
 
       TaskCompletionButton(classes: ["completion-button"], styleProperties: { _ in
@@ -31,7 +31,7 @@ public class TodoListItemView: Experimental.ComposedWidget {
         }
       }
 
-      Experimental.Text(styleProperties: {
+      Text(styleProperties: {
         (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.center)
         ($0.padding, Insets(left: 32))
       }, item.description)
@@ -75,7 +75,7 @@ public class TodoListItemView: Experimental.ComposedWidget {
                     }()
                   }
 
-                  Experimental.Button {
+                  Button {
                     Text("done")
                   } onClick: {
                     var updatedItem = item
@@ -101,17 +101,17 @@ public class TodoListItemView: Experimental.ComposedWidget {
     }*/
   }
 
-  override public func buildStyle() -> Experimental.Style {
-    Experimental.Style("&") {
+  override public func buildStyle() -> Style {
+    Style("&") {
       ($0.foreground, Color.white)
       ($0.padding, Insets(all: 32))
       ($0.borderColor, Color.white)
       ($0.borderWidth, BorderWidth(bottom: 1.0))
 
-      Experimental.Style(".completion-button") {
+      Style(".completion-button") {
         ($0.foreground, AppTheme.primaryColor)
         
-        Experimental.Style("&:hover") {
+        Style("&:hover") {
           ($0.foreground, AppTheme.primaryColor.darkened(40))
         }
       }

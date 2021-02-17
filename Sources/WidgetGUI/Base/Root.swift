@@ -25,8 +25,8 @@ open class Root: Parent {
 
   public var rootWidget: Widget
 
-  var globalStylePropertySupportDefinitions = Experimental.defaultStylePropertySupportDefinitions 
-  var globalStyles = Experimental.defaultGlobalStyles 
+  var globalStylePropertySupportDefinitions = defaultStylePropertySupportDefinitions 
+  var globalStyles = defaultGlobalStyles 
   var widgetContext: WidgetContext? {
     didSet {
       if let widgetContext = widgetContext {
@@ -58,8 +58,7 @@ open class Root: Parent {
   private var mouseMoveEventBurstLimiter = BurstLimiter(minDelay: 0.015)
   /* end event propagation */
 
-  lazy private var styleManager = StyleManager(rootWidget: rootWidget)
-  lazy private var experimentalStyleManager = Experimental.StyleManager()
+  lazy private var styleManager = StyleManager()
 
   /* debugging
   --------------------------
@@ -118,8 +117,7 @@ open class Root: Parent {
       layout()
     }
 
-    styleManager.setup()
-    experimentalStyleManager.processTree(rootWidget)
+    styleManager.processTree(rootWidget)
   }
   
   open func layout() {
@@ -180,15 +178,13 @@ open class Root: Parent {
       }
     }
     debugManager.endLifecycleMethod(.build)
-    styleManager.refresh(Array(rebuildWidgets))
     rebuildWidgets.clear()
 
     // TODO: check whether any parent of the widget was already processed (which automatically leads to a reprocessing of the styles)
     // TODO: or rather follow the pattern of invalidate...()? --> invalidateStyle()
-    styleManager.refresh(Array(matchedStylesInvalidatedWidgets))
     for widget in matchedStylesInvalidatedWidgets {
       if !widget.destroyed && widget.mounted {
-        experimentalStyleManager.processTree(widget)
+        styleManager.processTree(widget)
       }
     }
     matchedStylesInvalidatedWidgets.clear()

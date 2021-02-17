@@ -1,8 +1,8 @@
 import GfxMath
-import ExperimentalReactiveProperties
+import ReactiveProperties
 import Events
 
-public class WidgetNestingView: Experimental.ComposedWidget {
+public class WidgetNestingView: ComposedWidget {
   private let inspectedWidget: Widget
   private let depth: Int
   @MutableProperty

@@ -1,20 +1,20 @@
 import Foundation
 import VisualAppBase
-import ExperimentalReactiveProperties
-import ExperimentalReactiveProperties
+import ReactiveProperties
+import ReactiveProperties
 
-public class DeveloperToolsView: Experimental.ComposedWidget {
+public class DeveloperToolsView: ComposedWidget {
   private let inspectedRoot: Root
 
-  @ExperimentalReactiveProperties.MutableProperty
+  @MutableProperty
   private var activeTab: Tab = .Lifecycle
   
   private var messages = WidgetBus<WidgetInspectionMessage>.MessageBuffer()
   private var widgetLifecycleMethodInvocationSignalBuffer = Bus<Widget.LifecycleMethodInvocationSignal>.MessageBuffer()
-  @ExperimentalReactiveProperties.MutableProperty
+  @MutableProperty
   private var widgetLifecycleMethodInvocationSignalGroups: [Int: Widget.LifecycleMethodInvocationSignalGroup] = [:]
 
-  @ExperimentalReactiveProperties.MutableProperty
+  @MutableProperty
   private var inspectedWidget: Widget?
 
   public init(_ inspectedRoot: Root) {
@@ -37,23 +37,23 @@ public class DeveloperToolsView: Experimental.ComposedWidget {
 
   /*override public func buildChild() -> Widget {
     Experimental.SimpleRow { [unowned self] in
-      Experimental.DefaultTheme()
+      DefaultTheme()
 
       Column(spacing: 16) {
         Row {
-          Experimental.Button {
+          Button {
             Text("Inspector")
           } onClick: {
             activeTab = .Inspector
           }
 
-          Experimental.Button {
+          Button {
             Text("Event Cumulation")
           } onClick: {
             activeTab = .EventRoll
           }
 
-          Experimental.Button {
+          Button {
             Text("Event Log")
           } onClick: {
             activeTab = .EventLog

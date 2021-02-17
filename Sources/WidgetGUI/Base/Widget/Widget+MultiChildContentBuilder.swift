@@ -9,8 +9,8 @@ extension Widget {
       IntermediateResult(childrenBuildFunctions: [widgetBuildFunction])
     }
 
-    public static func buildExpression(_ style: Experimental.Style) -> IntermediateResult {
-      IntermediateResult(experimentalStyles: [style])
+    public static func buildExpression(_ style: Style) -> IntermediateResult {
+      IntermediateResult(styles: [style])
     }
 
     public static func buildEither(first: IntermediateResult) -> IntermediateResult {
@@ -28,7 +28,7 @@ extension Widget {
     public static func buildBlock(_ results: [IntermediateResult]) -> IntermediateResult {
       results.reduce(into: IntermediateResult()) {
         $0.childrenBuildFunctions.append(contentsOf: $1.childrenBuildFunctions)
-        $0.experimentalStyles.append(contentsOf: $1.experimentalStyles)
+        $0.styles.append(contentsOf: $1.styles)
       }
     }
 
@@ -37,17 +37,17 @@ extension Widget {
         childrenBuilder: ChildrenBuilder(
           buildFunctions: intermediate.childrenBuildFunctions, 
           associatedStyleScope: Widget.activeStyleScope),
-        experimentalStyles: intermediate.experimentalStyles)
+        styles: intermediate.styles)
     }
 
     public struct IntermediateResult {
       public var childrenBuildFunctions: [() -> [Widget]] = []
-      public var experimentalStyles: [Experimental.Style] = []
+      public var styles: [Style] = []
     }
 
     public struct Result {
       public var childrenBuilder: ChildrenBuilder
-      public var experimentalStyles: [Experimental.Style]
+      public var styles: [Style]
     }
 
     public struct ChildrenBuilder {

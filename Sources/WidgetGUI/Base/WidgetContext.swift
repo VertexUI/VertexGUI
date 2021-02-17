@@ -42,7 +42,7 @@ public class WidgetContext {
         _getKeyStates()
     }
 
-    public let globalStylePropertySupportDefinitions: Experimental.StylePropertySupportDefinitions
+    public let globalStylePropertySupportDefinitions: StylePropertySupportDefinitions
 
     public init(
         window: Window,
@@ -55,7 +55,7 @@ public class WidgetContext {
         requestCursor: @escaping (_ cursor: Cursor) -> () -> Void,
         queueLifecycleMethodInvocation: @escaping (Widget.LifecycleMethod, Widget, Widget, Widget.LifecycleMethodInvocationReason) -> (),
         lifecycleMethodInvocationSignalBus: Bus<Widget.LifecycleMethodInvocationSignal>,
-        globalStylePropertySupportDefinitions: Experimental.StylePropertySupportDefinitions) {
+        globalStylePropertySupportDefinitions: StylePropertySupportDefinitions) {
             self.window = window
             self._getTextBoundsSize = getTextBoundsSize
             self._measureText = measureText

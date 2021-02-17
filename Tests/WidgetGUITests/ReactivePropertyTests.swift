@@ -1,10 +1,10 @@
 import XCTest
 @testable import SwiftGUI
-@testable import ExperimentalReactiveProperties
+@testable import ReactiveProperties
 
 final class ReactivePropertyTests: XCTestCase {
   class UniDirectionalBindingSourceWidget: Widget {
-    @ExperimentalReactiveProperties.MutableProperty
+    @MutableProperty
     var property1: String
     
     init<P1: MutablePropertyProtocol>(property1: P1) where P1.Value == String {
@@ -14,7 +14,7 @@ final class ReactivePropertyTests: XCTestCase {
   }
 
   class UniDirectionalBindingSinkWidget: Widget {
-    @ExperimentalReactiveProperties.MutableProperty
+    @MutableProperty
     var property1: String
 
     init<P1: ReactiveProperty>(property1: P1) where P1.Value == String {
@@ -24,7 +24,7 @@ final class ReactivePropertyTests: XCTestCase {
   }
 
   class BiDirectionalBindingWidget: Widget {
-    @ExperimentalReactiveProperties.MutableProperty
+    @MutableProperty
     var property1: String
 
     let onEvent1 = EventHandlerManager<String>()
@@ -44,7 +44,7 @@ final class ReactivePropertyTests: XCTestCase {
   }
 
   class MutableComputedPropertyWidget: Widget {
-    @ExperimentalReactiveProperties.MutableComputedProperty
+    @MutableComputedProperty
     var property1: String
 
     init<P1: MutablePropertyProtocol>(property1 passedIn1: P1) where P1.Value == String {
@@ -57,11 +57,11 @@ final class ReactivePropertyTests: XCTestCase {
   }
 
   class MutableComputedPropertyWithDelayedDependencyAvailabilityWidget: Widget {
-    @ExperimentalReactiveProperties.MutableComputedProperty
+    @MutableComputedProperty
     var property1: String
 
     @Inject
-    var dependency1: ExperimentalReactiveProperties.MutableProperty<String>
+    var dependency1: MutableProperty<String>
 
     let onEvent1 = EventHandlerManager<String>()
 
@@ -81,7 +81,7 @@ final class ReactivePropertyTests: XCTestCase {
   }
 
   func testOneWidgetToAnotherUniDirectionalPropertyBinding() {
-    let mutableProperty = ExperimentalReactiveProperties.MutableProperty<String>()
+    let mutableProperty = MutableProperty<String>()
 
     let reference1 = Reference<UniDirectionalBindingSourceWidget>()
     let reference2 = Reference<UniDirectionalBindingSinkWidget>()
@@ -98,7 +98,7 @@ final class ReactivePropertyTests: XCTestCase {
   }
 
   func testUniDirectionalPropertyBindingWidgetPropertyDestroyed() {
-    let passedInProperty = ExperimentalReactiveProperties.MutableProperty<String>()
+    let passedInProperty = MutableProperty<String>()
     let widget = UniDirectionalBindingSinkWidget(property1: passedInProperty)
     let root = MockRoot(rootWidget: widget)
 
@@ -111,7 +111,7 @@ final class ReactivePropertyTests: XCTestCase {
   }
 
   func testBiDirectionalBindingWithWidget() {
-    let passedInProperty = ExperimentalReactiveProperties.MutableProperty<String>("test1")
+    let passedInProperty = MutableProperty<String>("test1")
     let widget = BiDirectionalBindingWidget(property1: passedInProperty)
     let root = MockRoot(rootWidget: widget)
     var widgetEvent1Fired = false
@@ -135,7 +135,7 @@ final class ReactivePropertyTests: XCTestCase {
   }
 
   func testBiDirectionalBindingWidgetBindingPropertyDestroyed() {
-    let passedInProperty = ExperimentalReactiveProperties.MutableProperty<String>()
+    let passedInProperty = MutableProperty<String>()
     let widget = BiDirectionalBindingWidget(property1: passedInProperty)
     let root = MockRoot(rootWidget: widget)
 
@@ -148,7 +148,7 @@ final class ReactivePropertyTests: XCTestCase {
   }
 
   func testMutableComputedPropertyWidgetOperatingOnPassedInProperty() {
-    let passedInProperty = ExperimentalReactiveProperties.MutableProperty<String>("test0")
+    let passedInProperty = MutableProperty<String>("test0")
     let widget = MutableComputedPropertyWidget(property1: passedInProperty)
     let root = MockRoot(rootWidget: widget)
     
@@ -164,7 +164,7 @@ final class ReactivePropertyTests: XCTestCase {
   }
 
   func testMutableComputedPropertyWithDelayedDependencyAvailabilityWidget() {
-    let dependency = ExperimentalReactiveProperties.MutableProperty<String>("test1")
+    let dependency = MutableProperty<String>("test1")
     let widget = MutableComputedPropertyWithDelayedDependencyAvailabilityWidget()
     let root = MockRoot(rootWidget: DependencyProvider(provide: [Dependency(dependency)]) {
       widget
@@ -184,7 +184,7 @@ final class ReactivePropertyTests: XCTestCase {
   }
 
   func testWidgetTreeDefinitionWithOnTheFlyMutableComputedProperty() {
-    let dependency = ExperimentalReactiveProperties.MutableProperty("test1")
+    let dependency = MutableProperty("test1")
     let reference = Reference<BiDirectionalBindingWidget>()
     let root = MockRoot(rootWidget: MockContainerWidget {
       MockContainerWidget {
@@ -208,7 +208,7 @@ final class ReactivePropertyTests: XCTestCase {
   func testWidgetDeinitializedIfSelfCapturedInPropertyHandlers() {
     let reference = Reference<MutableComputedPropertyWithDelayedDependencyAvailabilityWidget>()
     var root = Optional(MockRoot(rootWidget: DependencyProvider(provide: [
-      Dependency(ExperimentalReactiveProperties.MutableProperty("test"))]) {
+      Dependency(MutableProperty("test"))]) {
         MutableComputedPropertyWithDelayedDependencyAvailabilityWidget().connect(ref: reference)
     }))
 

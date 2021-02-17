@@ -1,11 +1,11 @@
 import Foundation
-import ExperimentalReactiveProperties
+import ReactiveProperties
 import GfxMath
 import VisualAppBase
 import Path
 import Swim
 
-public class EventCumulationView: Experimental.ComposedWidget {
+public class EventCumulationView: ComposedWidget {
   internal typealias Event = WidgetInspectionMessage.MessageContent
 
   private let inspectedRoot: Root
@@ -17,8 +17,8 @@ public class EventCumulationView: Experimental.ComposedWidget {
   ]
 
   private var data = CumulationData()
-  lazy private var barChartData: [Event: ExperimentalReactiveProperties.MutableProperty<Experimental.BarChart.Data>] =
-    Dictionary(uniqueKeysWithValues: cumulatedEvents.map { ($0, ExperimentalReactiveProperties.MutableProperty([])) })
+  lazy private var barChartData: [Event: MutableProperty<BarChart.Data>] =
+    Dictionary(uniqueKeysWithValues: cumulatedEvents.map { ($0, MutableProperty([])) })
 
   private var lastUpdateTimestamp = 0.0
   private let updateInterval = 0.5
@@ -43,8 +43,8 @@ public class EventCumulationView: Experimental.ComposedWidget {
       Experimental.SimpleColumn {
         cumulatedEvents.map { event in
           Experimental.SimpleColumn {
-            Experimental.Text(classes: ["event-name-label"], event.rawValue)
-            Experimental.Container(classes: ["bar-chart-container"]) {
+            Text(classes: ["event-name-label"], event.rawValue)
+            Container(classes: ["bar-chart-container"]) {
               Experimental.BarChart(barChartData[event]!)
             }.with {
               $0.debugLayout = true
@@ -52,13 +52,13 @@ public class EventCumulationView: Experimental.ComposedWidget {
           }
         }
       }.provideStyles([
-        Experimental.Style(".event-name-label-container") {
+        Style(".event-name-label-container") {
           ($0.padding, Insets(all: 16))
         },
-        Experimental.Style(".event-name-label", Experimental.Text.self) {
+        Style(".event-name-label", Text.self) {
           ($0.fontSize, 24.0)
         },
-        Experimental.Style(".bar-chart-container", Experimental.Container.self) {
+        Style(".bar-chart-container", Container.self) {
           ($0.padding, Insets(all: 32))
         }
       ])

@@ -1,24 +1,24 @@
 import SwiftGUI
-import ExperimentalReactiveProperties
+import ReactiveProperties
 
-public class TodoListView: Experimental.ComposedWidget {
+public class TodoListView: ComposedWidget {
   @Inject
   private var store: TodoStore
 
-  @ExperimentalReactiveProperties.ObservableProperty
+  @ObservableProperty
   private var listId: Int
-  @ExperimentalReactiveProperties.ComputedProperty
+  @ComputedProperty
   private var list: TodoList
-  @ExperimentalReactiveProperties.MutableProperty
+  @MutableProperty
   private var editable: Bool
   private var checkable: Bool
   private var expandedItemIndices: Set<Int> = []
 
-  @ExperimentalReactiveProperties.MutableProperty
+  @MutableProperty
   private var nameEditMode: Bool = false
   private var updatedNameBuffer: String = ""
 
-  @ExperimentalReactiveProperties.MutableProperty
+  @MutableProperty
   private var editingItemIndex: Int? = nil
   private var updatedItemDescription: String = ""
 
@@ -36,15 +36,15 @@ public class TodoListView: Experimental.ComposedWidget {
   }
 
   override public func performBuild() {
-    rootChild = Experimental.Container(styleProperties: { _ in
+    rootChild = Container(styleProperties: { _ in
       (SimpleLinearLayout.ParentKeys.direction, SimpleLinearLayout.Direction.column)
     }) { [unowned self] in
 
-      Experimental.Container(styleProperties: { _ in
+      Container(styleProperties: { _ in
         (SimpleLinearLayout.ParentKeys.alignContent, SimpleLinearLayout.Align.center)
       }) {
 
-        Experimental.Text(styleProperties: {
+        Text(styleProperties: {
           ($0.foreground, Color.white)
           ($0.fontWeight, FontWeight.bold)
           ($0.fontSize, 36.0)
@@ -54,8 +54,8 @@ public class TodoListView: Experimental.ComposedWidget {
 
         ReactiveContent($editable) {
           if editable {
-            Experimental.Button {
-              Experimental.Text("add todo")
+            Button {
+              Text("add todo")
             } onClick: {
               handleAddTodoClick()
             }
@@ -65,11 +65,11 @@ public class TodoListView: Experimental.ComposedWidget {
 
       Space(DSize2(0, 48))
 
-      Experimental.List(styleProperties: {
+      List(styleProperties: {
         (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.stretch)
         (SimpleLinearLayout.ChildKeys.shrink, 1.0)
         ($0.overflowY, Overflow.scroll)
-      }, ExperimentalReactiveProperties.ComputedProperty<[TodoItem]>(compute: {
+      }, ComputedProperty<[TodoItem]>(compute: {
         list.items
       }, dependencies: [$list])) {
         build(todo: $0)
@@ -97,8 +97,8 @@ public class TodoListView: Experimental.ComposedWidget {
                 return textField
               }()
 
-              Experimental.Button {
-                Experimental.Text("done")
+              Button {
+                Text("done")
               } onClick: {
                 store.commit(.UpdateListName(updatedNameBuffer, listId: list.id))
                 nameEditMode = false
@@ -115,8 +115,8 @@ public class TodoListView: Experimental.ComposedWidget {
         }
 
         if editable {
-          Experimental.Button {
-            Experimental.Text("Add Todo")
+          Button {
+            Text("Add Todo")
           } onClick: { [unowned self] in
             handleAddTodoClick()
           }

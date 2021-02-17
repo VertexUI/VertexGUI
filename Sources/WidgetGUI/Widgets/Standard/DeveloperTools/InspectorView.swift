@@ -1,4 +1,4 @@
-public class InspectorView: Experimental.ComposedWidget {
+public class InspectorView: ComposedWidget {
   private let inspectedRoot: Root
 
   public let onInspectWidget = WidgetEventHandlerManager<Widget>()

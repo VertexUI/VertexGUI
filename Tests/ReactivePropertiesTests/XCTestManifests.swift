@@ -4,10 +4,10 @@ import XCTest
   public func allTests() -> [XCTestCaseEntry] {
     [
       testCase(StaticPropertyTests.allTests),
-      testCase(ExperimentalMutablePropertyTests.allTests),
+      testCase(MutablePropertyTests.allTests),
       testCase(ComputedPropertyTests.allTests),
       testCase(MutableComputedPropertyTests.allTests),
-      testCase(ExperimentalObservablePropertyTests.allTests),
+      testCase(ObservablePropertyTests.allTests),
       testCase(UniDirectionalPropertyBindingTests.allTests),
       testCase(BiDirectionalPropertyBindingTests.allTests),
       testCase(DependencyRecorderTests.allTests)

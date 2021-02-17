@@ -2,11 +2,11 @@ import GfxMath
 
 open class Layout {
   /** layout properties that are set on the parent widget */
-  open var parentPropertySupportDefinitions: Experimental.StylePropertySupportDefinitions {
+  open var parentPropertySupportDefinitions: StylePropertySupportDefinitions {
     fatalError("parentPropertySupportDefinitions not implemented")
   }
   /** layout properties that are set per child */
-  open var childPropertySupportDefinitions: Experimental.StylePropertySupportDefinitions {
+  open var childPropertySupportDefinitions: StylePropertySupportDefinitions {
     fatalError("childPropertySupportDefinitions not implemented")
   }
   public internal(set) var widgets: [Widget]

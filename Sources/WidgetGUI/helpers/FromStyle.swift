@@ -1,4 +1,4 @@
-import ExperimentalReactiveProperties
+import ReactiveProperties
 
 @propertyWrapper
 public class FromStyle<Value: StyleValue>: FromStyleProtocol {
@@ -6,7 +6,7 @@ public class FromStyle<Value: StyleValue>: FromStyleProtocol {
 
   private var key: StyleKey
 
-  @ExperimentalReactiveProperties.ObservableProperty
+  @ObservableProperty
   private var value: Value?
 
   private let defaultValue: Value
@@ -19,8 +19,8 @@ public class FromStyle<Value: StyleValue>: FromStyleProtocol {
     }
   }
 
-  private var _projectedValue = ExperimentalReactiveProperties.ComputedProperty<Value>()
-  public var projectedValue: ExperimentalReactiveProperties.ComputedProperty<Value> {
+  private var _projectedValue = ComputedProperty<Value>()
+  public var projectedValue: ComputedProperty<Value> {
     _projectedValue
   }
 

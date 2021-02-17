@@ -1,72 +1,43 @@
-public protocol AnyStyle {
-  var anyProperties: AnyStyleProperties { get set }
-  var selector: StyleSelector? { get set }
-  var subStyles: [AnyStyle] { get set }
-  var extendsParent: Bool { get }
-
-  /**
-  - Returns: `true` (if the selector is nil and widget implements StylableWidget and `widget.acceptsStyleProperties` returns `true`) or (if `selector.selects` returns true)
-  */
-  func applies(to widget: Widget) -> Bool
-}
-
-extension AnyStyle {
-  public var extendsParent: Bool {
-    selector == nil ? false : selector!.extendsParent
-  }
-
-  public func applies(to widget: Widget) -> Bool {
-    if selector == nil, let widget = widget as? StylableWidget, widget.acceptsStyleProperties(anyProperties) {
-      return true
-    } else if let selector = selector {
-      return selector.selects(widget)
-    } else {
-      return false
-    }
-  }
-}
-
-public func == (lhs: AnyStyle, rhs: AnyStyle) -> Bool {
-  lhs.selector == rhs.selector && lhs.anyProperties == rhs.anyProperties
-}
-
-public func != (lhs: AnyStyle, rhs: AnyStyle) -> Bool {
-  !(lhs == rhs)
-}
-
-public struct Style<Properties: StyleProperties>: AnyStyle {
-  public var properties: Properties 
-  public var anyProperties: AnyStyleProperties {
-    get {
-      properties
-    }
-    set {
-      properties = newValue as! Properties
-    }
-  }
-  public var selector: StyleSelector?
-  public var subStyles: [AnyStyle] = []
+public class Style {
+  public var selector: StyleSelector
+  public var properties: StyleProperties
+  public var children: [Style]
+  public var sourceScope: UInt
+  public private(set) var parent: Style?
   
-  public init(_ selector: StyleSelector? = nil, @StyleBuilder _ configure: (inout Properties) -> [AnyStyle]) {
+  public init(_ selector: StyleSelector, _ properties: StyleProperties, _ children: [Style]) {
     self.selector = selector
-    self.properties = Properties()
-    self.subStyles = configure(&properties)
+    self.properties = properties
+    self.children = children
+    self.sourceScope = Widget.activeStyleScope
+    applyAsParent()
   }
 
-  public init(_ selector: StyleSelector? = nil, @StyleBuilder _ buildSubStyles: () -> [AnyStyle]) {
-    self.selector = selector
-    self.properties = Properties()
-    self.subStyles = buildSubStyles()
+  public convenience init(selector: StyleSelector, properties: StyleProperties, children: [Style]) {
+    self.init(selector, properties, children)
   }
 
-  /*public init(_ selector: StyleSelector? = nil, _ configure: (inout Properties) -> ()) {
-    self.selector = selector
-    self.properties = Properties()
-    configure(&properties)
-  }*/
+  public convenience init(_ selector: StyleSelector, @StyleBuilder content contentBuilder: () -> StyleBuilder.IntermediateResult) {
+    let content = contentBuilder()
+    self.init(selector, StyleProperties(content.properties), content.children)
+  }
 
-  /*public init(_ selector: StyleSelector? = nil, @StyleBuilder _ configure: (inout Properties) -> [AnyStyle], @StyleBuilder sub buildSubStyles: () -> [AnyStyle]) {
-    self.init(selector, configure)
-    self.subStyles = buildSubStyles()
-  }*/
+  public convenience init(_ selector: StyleSelector, @StyleBuilder content contentBuilder: (AnyDefaultStyleKeys.Type) -> StyleBuilder.IntermediateResult) {
+    let content = contentBuilder(AnyDefaultStyleKeys.self)
+    self.init(selector, StyleProperties(content.properties), content.children)
+  }
+
+  public convenience init<W: StylableWidget>(
+    _ selector: StyleSelector,
+    _ widget: W.Type,
+    @StyleBuilder content contentBuilder: (W.StyleKeys.Type) -> StyleBuilder.IntermediateResult) {
+      let content = contentBuilder(W.StyleKeys.self)
+      self.init(selector, StyleProperties(content.properties), content.children)
+  }
+
+  private func applyAsParent() {
+    for child in children {
+      child.parent = self
+    }
+  }
 }

@@ -1,16 +1,16 @@
 import GfxMath
 
 public class SimpleLinearLayout: Layout {
-  override public var parentPropertySupportDefinitions: Experimental.StylePropertySupportDefinitions {
-    Experimental.StylePropertySupportDefinitions {
+  override public var parentPropertySupportDefinitions: StylePropertySupportDefinitions {
+    StylePropertySupportDefinitions {
       (ParentKeys.direction, type: .specific(Direction.self), default: Direction.row)
       (ParentKeys.alignContent, type: .specific(Align.self), default: Align.start)
       (ParentKeys.justifyContent, type: .specific(Justify.self), default: Justify.start)
     }
   }
 
-  override public var childPropertySupportDefinitions: Experimental.StylePropertySupportDefinitions {
-    Experimental.StylePropertySupportDefinitions {
+  override public var childPropertySupportDefinitions: StylePropertySupportDefinitions {
+    StylePropertySupportDefinitions {
       (ChildKeys.grow, type: .specific(Double.self), default: 0.0)
       (ChildKeys.shrink, type: .specific(Double.self), default: 0.0)
       (ChildKeys.alignSelf, type: .specific(Align.self))

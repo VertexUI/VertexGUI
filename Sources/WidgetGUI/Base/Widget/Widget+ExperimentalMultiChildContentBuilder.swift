@@ -1,14 +1,14 @@
-import ExperimentalReactiveProperties
+import ReactiveProperties
 import Events
 
 extension Widget {
   @_functionBuilder
-  public struct ExperimentalMultiChildContentBuilder {
+  public struct multiChildContentBuilder {
     public static func buildExpression(_ widget: Widget) -> [Partial] {
       [.widgets([widget])]
     }
 
-    public static func buildExpression(_ style: Experimental.Style) -> [Partial] {
+    public static func buildExpression(_ style: Style) -> [Partial] {
       [.style(style)]
     }
 
@@ -41,14 +41,14 @@ extension Widget {
     }
 
     public enum Partial {
-      case style(Experimental.Style)
+      case style(Style)
       case widgets([Widget])
       case reactive(ReactiveContent)
     }
 
     public class Content {
       public let partials: [Partial]
-      public var styles: [Experimental.Style] = []
+      public var styles: [Style] = []
       public var widgets: [Widget] = []
 
       private var reactiveRanges: [Int: (styles: Range<Int>, widgets: Range<Int>)] = [:]
@@ -110,13 +110,13 @@ extension Widget {
 
   public class ReactiveContent {
     let proxyDependencies: [AnyReactiveProperty]
-    let builder: () -> ExperimentalMultiChildContentBuilder.Content
+    let builder: () -> multiChildContentBuilder.Content
     let associatedStyleScope: UInt
-    public internal(set) var content: ExperimentalMultiChildContentBuilder.Content
+    public internal(set) var content: multiChildContentBuilder.Content
 
     public let onContentChanged = EventHandlerManager<Void>()
 
-    public init<P1: ReactiveProperty>(_ dependency: P1, @ExperimentalMultiChildContentBuilder content builder: @escaping () -> ExperimentalMultiChildContentBuilder.Content) {
+    public init<P1: ReactiveProperty>(_ dependency: P1, @multiChildContentBuilder content builder: @escaping () -> multiChildContentBuilder.Content) {
       let proxyDependency = ObservableProperty<P1.Value>()
       proxyDependency.bind(dependency)
       self.proxyDependencies = [proxyDependency]

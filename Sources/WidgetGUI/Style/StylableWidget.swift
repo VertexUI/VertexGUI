@@ -1,14 +1,11 @@
 public protocol StylableWidget: Widget {
-  /**
-  - Returns: `true` if the Widget can handle and apply the given type of StyleProperties. `false` if not.
-  */
-  func acceptsStyleProperties(_ properties: AnyStyleProperties) -> Bool
-
-  func acceptsStyle(_ style: AnyStyle) -> Bool
+  associatedtype StyleKeys: DefaultStyleKeys
 }
 
 extension StylableWidget {
-  public func acceptsStyle(_ style: AnyStyle) -> Bool {
-    acceptsStyleProperties(style.anyProperties)
+  @discardableResult
+  public func with(@StylePropertiesBuilder styleProperties build: (Self.StyleKeys.Type) -> StyleProperties) -> Widget {
+    self.directStyleProperties.append(build(StyleKeys.self))
+    return self
   }
 }
