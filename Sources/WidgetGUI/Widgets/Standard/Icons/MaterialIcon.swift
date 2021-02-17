@@ -3,9 +3,11 @@ import Foundation
 import VisualAppBase
 
 // TODO: actually these are MaterialDESIGNIcons (not from google) --> use the google ones
-public class MaterialIcon: SingleChildWidget {
-  private let identifier: Identifier
-  private let color: Color
+public class MaterialIcon {
+  //private let identifier: Identifier
+
+  public init() {}
+  /*private let color: Color
   private static let materialFontFamily = FontFamily(
     name: "Material Icons",
     faces: [
@@ -25,5 +27,5 @@ public class MaterialIcon: SingleChildWidget {
     Text(
       String(Unicode.Scalar(identifier.code)!), fontFamily: MaterialIcon.materialFontFamily,
       color: color)
-  }
+  }*/
 }

@@ -1,6 +1,6 @@
 import SwiftGUI
 
-public class SearchResultsView: SingleChildWidget {
+public class SearchResultsView: Experimental.ComposedWidget {
   @Inject
   private var store: TodoStore
 
@@ -21,7 +21,7 @@ public class SearchResultsView: SingleChildWidget {
     }*/
   //}
 
-  override public func buildChild() -> Widget {
+  //override public func buildChild() -> Widget {
     /*ObservingBuilder($searchResult, $searchQuery) { [unowned self] in
       Column(spacing: 48) {
 
@@ -36,6 +36,6 @@ public class SearchResultsView: SingleChildWidget {
         }*/
       }
     }*/
-    Space(.zero)
-  }
+  //  Space(.zero)
+  //}
 }

@@ -1,7 +1,7 @@
 import SwiftGUI
 import ExperimentalReactiveProperties
 
-public class TodoAppView: SingleChildWidget {
+public class TodoAppView: Experimental.ComposedWidget {
   public enum Mode {
     case SelectedList, Search
   }
@@ -28,12 +28,8 @@ public class TodoAppView: SingleChildWidget {
   @ExperimentalReactiveProperties.MutableProperty
   private var searchQuery: String = ""
 
-  public init() {
-    super.init()
-  }
-
-  override public func buildChild() -> Widget {
-    Experimental.Container(styleProperties: {
+  override public func performBuild() {
+    rootChild = Experimental.Container(styleProperties: {
       ($0.background, AppTheme.backgroundColor)
     }) { [unowned self] in
       buildStyle()
@@ -132,7 +128,8 @@ public class TodoAppView: SingleChildWidget {
         ($0.padding, Insets(all: 8))
         (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.center)
       }) {
-        MaterialIcon(.formatListBulletedSquare, color: .white)
+        Space(.zero)
+        //MaterialIcon(.formatListBulletedSquare, color: .white)
       }
 
       Experimental.Text(styleProperties: { 

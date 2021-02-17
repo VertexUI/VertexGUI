@@ -1,7 +1,7 @@
 import GfxMath
 import VisualAppBase
 import ReactiveProperties
-
+/*
 public class ToggleButton<Value: Equatable>: SingleChildWidget, GUIMouseEventConsumer {
   private let leftValue: Value
   private let rightValue: Value
@@ -109,3 +109,4 @@ extension ToggleButton {
   }
 }
 
+*/

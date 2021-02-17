@@ -2,7 +2,7 @@ import GfxMath
 import ReactiveProperties
 import Events
 
-public class WidgetNestingView: SingleChildWidget {
+public class WidgetNestingView: Experimental.ComposedWidget {
   private let inspectedWidget: Widget
   private let depth: Int
   @MutableProperty
@@ -16,9 +16,10 @@ public class WidgetNestingView: SingleChildWidget {
     if depth < 10 {
       self.expanded = true
     }
+    super.init()
   }
 
-  override public func buildChild() -> Widget {
+  /*override public func buildChild() -> Widget {
     Column { [unowned self] in
       Row {
         MouseArea {
@@ -58,5 +59,5 @@ public class WidgetNestingView: SingleChildWidget {
         }
       }
     }
-  }
+  }*/
 }

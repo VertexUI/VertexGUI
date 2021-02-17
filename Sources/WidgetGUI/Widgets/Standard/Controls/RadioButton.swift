@@ -1,7 +1,7 @@
 import VisualAppBase
 import GfxMath
 import ReactiveProperties
-
+/*
 public class RadioButton: Widget, GUIMouseEventConsumer {
   @MutableProperty
   public var checked: Bool
@@ -44,4 +44,4 @@ public class RadioButton: Widget, GUIMouseEventConsumer {
       checked = !checked
     }
   }
-}
+}*/

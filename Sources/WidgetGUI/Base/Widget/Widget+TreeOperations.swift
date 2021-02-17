@@ -75,32 +75,4 @@ extension Widget {
 
         return nil
     }
-
-    /// Retrieve a config of a given type from any parent. If there are multiple configs in the hierarchy,
-    /// properties get overwritten by deeper nested configs.
-    public final func getConfig<Config: PartialConfigProtocol>(ofType type: Config.Type) -> ComputedProperty<Config?> {
-        let configProviders = getParents(ofType: ConfigProvider.self)
-
-        // TODO: if the config providers change, because the parent is swapped and child is retained
-        // the returned computed property needs to be setup again!
-
-        return ComputedProperty(configProviders.map { $0.$configs.any }) { [unowned self] in
-          // need to fetch the providers again, because if using the variable
-          // from outside the closure, it will create a strong reference
-          // and because the parents also hold references to their children,
-          // a retain cycle will be created
-          let configProviders = getParents(ofType: ConfigProvider.self)
-
-          let configs = configProviders.compactMap {
-              $0.retrieveConfig(ofType: type)
-          }
-
-          if configs.count == 0 {
-              return nil
-          }
-
-          let resultConfig = type.merged(partials: configs)
-          return resultConfig
-        }
-    }
 }

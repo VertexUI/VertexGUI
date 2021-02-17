@@ -81,6 +81,12 @@ Additionally there could be some interesting applications of [Swift for Tensorfl
 
 ## Concepts
 
+<br>
+
+**OUTDATED**
+
+<br>
+
 - RenderObject
   - organized as a tree structure
   - leaf RenderObjects: e.g. Text, Rectangle, Path, describe a specific drawable thing

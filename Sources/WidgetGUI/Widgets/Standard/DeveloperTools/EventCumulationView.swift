@@ -5,7 +5,7 @@ import VisualAppBase
 import Path
 import Swim
 
-public class EventCumulationView: SingleChildWidget {
+public class EventCumulationView: Experimental.ComposedWidget {
   internal typealias Event = WidgetInspectionMessage.MessageContent
 
   private let inspectedRoot: Root
@@ -32,13 +32,13 @@ public class EventCumulationView: SingleChildWidget {
     _ = onTick { [unowned self] _ in
       let currentTimestamp = Date.timeIntervalSinceReferenceDate
       if currentTimestamp - lastUpdateTimestamp > updateInterval {
-        checkUpdateGraph()
+        //checkUpdateGraph()
         lastUpdateTimestamp = currentTimestamp
       }
     }
   }
   
-  override public func buildChild() -> Widget {
+  /*override public func buildChild() -> Widget {
     Row { [unowned self] in
       Experimental.SimpleColumn {
         cumulatedEvents.map { event in
@@ -112,7 +112,7 @@ public class EventCumulationView: SingleChildWidget {
       let rawBarChartData = data[event]
       barChartData[event]!.value = rawBarChartData.timeCounts.sorted(by: { $0.0 < $1.0 }).map { (String($0.0), Double($0.1)) }
     }
-  }
+  }*/
 }
 
 extension EventCumulationView {

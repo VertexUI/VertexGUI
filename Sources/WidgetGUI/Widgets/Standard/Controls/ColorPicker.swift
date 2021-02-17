@@ -2,15 +2,16 @@ import GfxMath
 import VisualAppBase
 import ReactiveProperties
 
-public class ColorPicker: SingleChildWidget {
+public class ColorPicker: Experimental.ComposedWidget { 
   @MutableProperty
   public var color: Color
 
   public init(bind mutableColor: MutablePropertyBinding<Color>) {
     self._color = mutableColor
+    super.init()
   }
 
-  override public func buildChild() -> Widget {
+  /*override public func buildChild() -> Widget {
     Column { [unowned self] in      
       Row(spacing: 32) {
         ColorFieldColorPicker(bind: $color.binding)
@@ -28,7 +29,7 @@ public class ColorPicker: SingleChildWidget {
         }
       }
     }
-  }
+  }*/
 }
 
 extension ColorPicker {
@@ -148,7 +149,7 @@ extension ColorPicker {
     }
   }
 
-  internal class RGBATextColorPicker: SingleChildWidget {
+  internal class RGBATextColorPicker: Experimental.ComposedWidget {
     @MutableProperty
     public var color: Color
     @MutableProperty
@@ -172,7 +173,7 @@ extension ColorPicker {
       _ = self.$alphaText.onChanged { [unowned self] _ in checkUpdateColor() }
     }
 
-    override public func buildChild() -> Widget {
+    /*override public func buildChild() -> Widget {
       Column { [unowned self] in
         Text("R:")
         TextField(bind: $redText)
@@ -183,7 +184,7 @@ extension ColorPicker {
         Text("A:")
         TextField(bind: $alphaText)
       }
-    }
+    }*/
 
     private func checkUpdateTexts() {
       self.redText = String(color.r)

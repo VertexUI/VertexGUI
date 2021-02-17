@@ -99,7 +99,7 @@ public class LifecycleView: Experimental.ComposedWidget {
   }
 
   private func buildStatistics() -> Widget {
-    SimpleRow { [unowned self] in
+    Experimental.SimpleRow { [unowned self] in
       buildStatistic(for: .mount)
       buildStatistic(for: .build)
       buildStatistic(for: .layout)
@@ -109,7 +109,7 @@ public class LifecycleView: Experimental.ComposedWidget {
 
   private func buildStatistic(for method: LifecycleMethod) -> Widget {
     Experimental.Container(classes: ["method-invocation-count-container"]) { [unowned self] in
-      SimpleRow {
+      Experimental.SimpleRow {
         Experimental.Text(String(describing: method))
         Experimental.Text(ComputedProperty(compute: {
           return String(methodInvocationCounts[method]!)

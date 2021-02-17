@@ -1,13 +1,14 @@
 import ReactiveProperties
 
-public class WidgetDetailView: SingleChildWidget {
+public class WidgetDetailView: Experimental.ComposedWidget {
   private let inspectedWidget: Widget
 
   public init(_ inspectedWidget: Widget) {
     self.inspectedWidget = inspectedWidget
+    super.init()
   }
 
-  override public func buildChild() -> Widget {
+  /*override public func buildChild() -> Widget {
     Column(spacing: 24) { [unowned self] in
       Text("Widget \(inspectedWidget)")
 
@@ -23,5 +24,5 @@ public class WidgetDetailView: SingleChildWidget {
         ColorPicker(bind: inspectedWidget.$layoutDebuggingColor.binding)
       }
     }
-  }
+  }*/
 }

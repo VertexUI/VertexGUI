@@ -1,4 +1,4 @@
-public class DependencyProvider: SingleChildWidget {
+public class DependencyProvider: Experimental.ComposedWidget {
   public internal(set) var dependencies: [Dependency]
   private var childBuilder: () -> Widget
 
@@ -7,10 +7,11 @@ public class DependencyProvider: SingleChildWidget {
   ) {
     self.dependencies = dependencies
     self.childBuilder = childBuilder
+    super.init()
   }
 
-  override public func buildChild() -> Widget {
-    childBuilder()
+  override public func performBuild() {
+    rootChild = childBuilder()
   }
 
   public func getDependency(ofType requestedType: Any.Type) -> Dependency? {

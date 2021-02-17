@@ -3,7 +3,7 @@ import VisualAppBase
 import ReactiveProperties
 import ExperimentalReactiveProperties
 
-public class DeveloperToolsView: SingleChildWidget {
+public class DeveloperToolsView: Experimental.ComposedWidget {
   private let inspectedRoot: Root
 
   @ReactiveProperties.MutableProperty
@@ -35,7 +35,7 @@ public class DeveloperToolsView: SingleChildWidget {
     })
   }
 
-  override public func buildChild() -> Widget {
+  /*override public func buildChild() -> Widget {
     Experimental.SimpleRow { [unowned self] in
       Experimental.DefaultTheme()
 
@@ -103,7 +103,7 @@ public class DeveloperToolsView: SingleChildWidget {
 
   deinit {
     print("DEINITIALIZED DEV TOOLS VIEW")
-  }
+  }*/
 }
 
 extension DeveloperToolsView {

@@ -3,7 +3,7 @@ import VisualAppBase
 import ReactiveProperties
 import Events
 
-public class EventLogView: SingleChildWidget {
+public class EventLogView: Experimental.ComposedWidget {
   private let inspectedRoot: Root
 
   @ObservableProperty
@@ -20,9 +20,10 @@ public class EventLogView: SingleChildWidget {
       if let handler = inspectWidgetRequestHandler {
         onInspectWidgetRequest.addHandler(handler)
       }
+      super.init()
   }
 
-  override public func buildChild() -> Widget {
+  /*override public func buildChild() -> Widget {
     List($messages) { [unowned self] in
       buildInspectionMessageItem(message: $0)
     }
@@ -93,5 +94,5 @@ public class EventLogView: SingleChildWidget {
     } onClick: { _ in
       action()
     }
-  }
+  }*/
 }

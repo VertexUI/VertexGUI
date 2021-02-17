@@ -71,8 +71,6 @@ extension Experimental {
 
     @Reference
     private var itemLayoutContainer: InternalList
-    @Reference
-    private var scrollArea: ScrollArea
 
     private let childBuilder: (Item) -> Widget
 
