@@ -25,12 +25,18 @@ public class WidgetTreeManager {
 
   public func updateChildren(of widget: Widget) {
     for (index, child) in widget.children.enumerated() {
+      var anyChildChanged = false
       if child.parent as? Widget !== widget {
+        anyChildChanged = true
         mount(widget: child, parent: widget, treePath: widget.treePath/index)
         setupChildParentInfluence(parent: widget, child: child)
         if !child.built {
           buildSubTree(rootWidget: child)
         }
+      }
+      if anyChildChanged {
+        widget.invalidateBoxConfig()
+        widget.invalidateLayout()
       }
     }
   }

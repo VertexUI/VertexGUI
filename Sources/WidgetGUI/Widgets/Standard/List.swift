@@ -3,23 +3,6 @@ import VisualAppBase
 import GfxMath
 
 private class InternalList: Widget {
-  override internal var contentChildren: [Widget] {
-    didSet {
-      if mounted {
-        /*for (index, child) in children.enumerated() {
-          if !child.mounted {
-            //self.mountChild(child, treePath: treePath/index)
-            child.stylePropertiesResolver.resolve()
-          }
-        }*/
-        self.requestUpdateChildren()
-        //self.invalidateBoxConfig()
-        //self.invalidateLayout()
-        //self.invalidateMatchedStyles()
-      }
-    }
-  }
-
   override public func getContentBoxConfig() -> BoxConfig {
     var result = BoxConfig(preferredSize: .zero)
     for child in children {
@@ -128,8 +111,6 @@ public class List<Item: Equatable>: ComposedWidget {
     if mounted {
       itemLayoutContainer.contentChildren = itemWidgets
     }
-
-    (parent as? Widget)?.invalidateLayout()
   }
 
   override public func performBuild() {

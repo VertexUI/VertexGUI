@@ -23,7 +23,6 @@ public class Container: Widget, StylableWidget {
       self.contentChildren = content.widgets
       _ = content.onChanged { [unowned self] in 
         contentChildren = content.widgets
-        requestUpdateChildren()
         updateLayoutInstance()
       }
 

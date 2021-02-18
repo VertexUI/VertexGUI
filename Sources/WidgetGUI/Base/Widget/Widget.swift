@@ -82,7 +82,13 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         }
         return result
     }
-    public var contentChildren: [Widget] = []
+    public var contentChildren: [Widget] = [] {
+        didSet {
+            if mounted && built {
+                requestUpdateChildren()
+            }
+        }
+    }
 
     public var providedDependencies: [Dependency] = []
     /* end tree properties */
