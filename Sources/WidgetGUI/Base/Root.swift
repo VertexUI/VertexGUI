@@ -191,47 +191,51 @@ open class Root: Parent {
 
     // TODO: check whether any parent of the widget was already processed (which automatically leads to a reprocessing of the styles)
     // TODO: or rather follow the pattern of invalidate...()? --> invalidateStyle()
+    var partialStartTime = Date.timeIntervalSinceReferenceDate
     for widget in matchedStylesInvalidatedWidgets {
       if !widget.destroyed && widget.mounted {
         styleManager.processTree(widget)
       }
     }
+    //print("RESTYLE COUNT", matchedStylesInvalidatedWidgets.count)
+    //print("RESTLYE TOOK", Date.timeIntervalSinceReferenceDate - partialStartTime)
     matchedStylesInvalidatedWidgets.clear()
 
-    for widget in reboxConfigWidgets {
-      if widget.mounted {
-        widget.updateBoxConfig()
+    partialStartTime = Date.timeIntervalSinceReferenceDate
+    let boxConfigQueue = widgetLifecycleManager.queues[.updateBoxConfig]!
+    var boxConfigIterator = boxConfigQueue.iterate()
+    while let entry = boxConfigIterator.next() {
+      if entry.target.mounted {
+        entry.target.updateBoxConfig()
       }
     }
-    reboxConfigWidgets.clear()
+    //print("REBOX COUNT", boxConfigQueue.entries.count)
+    //print("REBOX TOOK", Date.timeIntervalSinceReferenceDate - partialStartTime)
+    boxConfigQueue.clear()
+    //reboxConfigWidgets.clear()
     
     //print("relayout widgets count", relayoutWidgets.count)
+    let startTimeTwo = Date.timeIntervalSinceReferenceDate
     debugManager.beginLifecycleMethod(.layout)
-    for widget in relayoutWidgets {
+    let layoutQueue = widgetLifecycleManager.queues[.layout]!
+    var layoutIterator = layoutQueue.iterate()
+    while let entry = layoutIterator.next() {
       // the widget should only be relayouted if it hasn't been layouted before
       // if it hasn't been layouted before it will be layouted during
       // the first layout pass started by rootWidget.layout()
-      if widget.layouted && !widget.destroyed {
-        widget.layout(constraints: widget.previousConstraints!)
+      if entry.target.layouted && !entry.target.destroyed {
+        entry.target.layout(constraints: entry.target.previousConstraints!)
       }
     }
+    //print("LAYOUT COUNT", layoutQueue.entries.count)
+    //print("LAYOUT TOOK", Date.timeIntervalSinceReferenceDate - startTimeTwo)
+    layoutQueue.clear()
     debugManager.endLifecycleMethod(.layout)
-    relayoutWidgets.clear()
+    //relayoutWidgets.clear()
 
+    partialStartTime = Date.timeIntervalSinceReferenceDate
     cumulatedValuesProcessor.processQueue()
-
-    if renderObjectSystemEnabled {
-      // TODO: is it good to put this here or better in render()?
-      //print("rerender widgets count", rerenderWidgets.count)
-      debugManager.beginLifecycleMethod(.render)
-      for widget in rerenderWidgets {
-        if !widget.destroyed {
-          widget.updateRenderState(reason: .rootTick)
-        }
-      }
-      debugManager.endLifecycleMethod(.render)
-      rerenderWidgets.clear()
-    }
+    //print("CUMULATED VALUES TOOK", Date.timeIntervalSinceReferenceDate - partialStartTime)
 
     removeOnAdd()
     widgetLifecycleMessages.clear()

@@ -950,10 +950,8 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
             return
         }
         boxConfigInvalid = true
-        lifecycleBus.publish(WidgetLifecycleMessage(sender: self, content: .BoxConfigInvalidated))
-        #if DEBUG
-        context.inspectionBus.publish(WidgetInspectionMessage(sender: self, content: .BoxConfigInvalidated))
-        #endif
+        context.queueLifecycleMethodInvocation(.updateBoxConfig, target: self, sender: self, reason: .undefined)
+        //lifecycleBus.publish(WidgetLifecycleMessage(sender: self, content: .BoxConfigInvalidated))
         onBoxConfigInvalidated.invokeHandlers(Void())
     }
 
@@ -1115,18 +1113,10 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
 
     @usableFromInline
     internal final func _invalidateLayout() {
-        #if (DEBUG)
-        if countCalls {
-            callCounter.count(.InvalidateLayout)
-        }
-        context.inspectionBus.publish(
-            WidgetInspectionMessage(
-                sender: self,
-                content: .LayoutInvalidated))
-        #endif
         layoutInvalid = true
+        context.queueLifecycleMethodInvocation(.layout, target: self, sender: self, reason: .undefined)
         onLayoutInvalidated.invokeHandlers(Void())
-        lifecycleBus.publish(WidgetLifecycleMessage(sender: self, content: .LayoutInvalidated))
+        //lifecycleBus.publish(WidgetLifecycleMessage(sender: self, content: .LayoutInvalidated))
     }
 
     /**

@@ -1,13 +1,17 @@
 import VisualAppBase
+import Events
 
 extension Widget {
   public class LifecycleMethodInvocationQueue {
     var entries: [Entry] = []
 
+    let onEntryAdded = EventHandlerManager<Entry>()
+
     public init() {}
 
     public func queue(_ entry: Entry) {
       entries.append(entry)
+      onEntryAdded.invokeHandlers(entry)
     }
 
     public func clear() {
@@ -15,7 +19,11 @@ extension Widget {
     }
 
     public func iterate() -> Iterator {
-      Iterator(entries: entries)
+      let iterator = Iterator(entries: entries)
+      _ = iterator.onDestroy(onEntryAdded.addHandler { [unowned iterator] in
+        iterator.entries.append($0)
+      })
+      return iterator
     }
 
     public func iterateSubTreeRoots() -> Iterator {
@@ -58,6 +66,8 @@ extension Widget {
 
     public class Iterator: IteratorProtocol {
       var entries: [Entry]
+      var ownedObjects: [Any] = []
+      let onDestroy = EventHandlerManager<Void>()
 
       public init(entries: [Entry]) {
         self.entries = entries
@@ -65,6 +75,10 @@ extension Widget {
 
       public func next() -> Entry? {
         entries.popLast()
+      }
+
+      deinit {
+        onDestroy.invokeHandlers()
       }
     }
   }
