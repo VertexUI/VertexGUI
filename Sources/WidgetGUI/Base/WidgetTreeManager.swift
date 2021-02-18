@@ -1,3 +1,4 @@
+import Foundation
 import VisualAppBase
 
 public class WidgetTreeManager {
@@ -33,6 +34,8 @@ public class WidgetTreeManager {
         if !child.built {
           buildSubTree(rootWidget: child)
         }
+      } else {
+        child.treePath = widget.treePath/index
       }
       if anyChildChanged {
         widget.invalidateBoxConfig()
@@ -74,6 +77,7 @@ public class WidgetTreeManager {
 
     onBuilt.invokeHandlers(Void())*/
 
+    widget.context.queueLifecycleMethodInvocation(.resolveCumulatedValues, target: widget, sender: widget, reason: .undefined)
     widget.invalidateMatchedStyles()
   }
 

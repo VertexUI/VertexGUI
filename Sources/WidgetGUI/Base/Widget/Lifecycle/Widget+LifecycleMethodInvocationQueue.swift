@@ -24,7 +24,20 @@ extension Widget {
       // than currently at, add it as the item for the next iteration (items already iterated are discarded by the iterator)
       // and remove the items below it
       // if it is not included in a tree path already in the iterator, add it to the end
-      Iterator(entries: entries)
+      var byTreePath: [TreePath: Entry] = [:]
+      outer: for entry in entries {
+        for (otherPath, otherEntry) in byTreePath {
+          if entry.target.treePath.isParent(of: otherPath) {
+            byTreePath[otherPath] = nil
+          } else if otherPath.isParent(of: entry.target.treePath) {
+            continue outer
+          }
+        }
+
+        byTreePath[entry.target.treePath] = entry
+      }
+
+      return Iterator(entries: Array(byTreePath.values))
     }
 
     public class Entry {
