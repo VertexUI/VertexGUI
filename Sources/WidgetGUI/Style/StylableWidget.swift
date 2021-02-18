@@ -8,4 +8,8 @@ extension StylableWidget {
     self.directStyleProperties.append(build(StyleKeys.self))
     return self
   }
+  
+  public func with(classes: [String], styleProperties: (Self.StyleKeys.Type) -> ()) {
+    
+  }
 }

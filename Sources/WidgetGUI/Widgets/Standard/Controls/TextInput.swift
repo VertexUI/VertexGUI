@@ -279,5 +279,7 @@ public final class TextInput: ComposedWidget, StylableWidget, GUIKeyEventConsume
     }
   }
 
-  public typealias StyleKeys = AnyDefaultStyleKeys
+  public enum StyleKeys: String, StyleKey, DefaultStyleKeys {
+    case caretColor
+  }
 }

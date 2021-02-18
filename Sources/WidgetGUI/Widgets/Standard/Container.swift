@@ -1,7 +1,7 @@
 import GfxMath
 
 public class Container: Widget, StylableWidget {
-  private let content: multiChildContentBuilder.Content
+  private let content: ExperimentalMultiChildContentBuilder.Content
 
   @FromStyle(key: StyleKeys.layout)
   private var layoutType: Layout.Type = SimpleLinearLayout.self
@@ -16,7 +16,7 @@ public class Container: Widget, StylableWidget {
   public init(
     classes: [String]? = nil,
     @StylePropertiesBuilder styleProperties stylePropertiesBuilder: (StyleKeys.Type) -> StyleProperties = { _ in [] },
-    @multiChildContentBuilder content contentBuilder: @escaping () -> multiChildContentBuilder.Content) {
+    @ExperimentalMultiChildContentBuilder content contentBuilder: @escaping () -> ExperimentalMultiChildContentBuilder.Content) {
       content = contentBuilder()
       super.init()
 

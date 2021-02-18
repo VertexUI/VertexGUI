@@ -1,7 +1,7 @@
 import ReactiveProperties
 import SwiftGUI 
 
-public class MainView: ComposedWidget {
+public class MainView: ComposedWidget, ChildAcceptorWidget {
   @Inject
   var someInjectedData: String
 
@@ -18,12 +18,19 @@ public class MainView: ComposedWidget {
   @MutableProperty
   var layoutDirection: SimpleLinearLayout.Direction = .row
 
+  static let TestSlot1 = Slot(key: "testSlot1", data: Void.self)
+  /*static var slots: [AnySlot] = [
+    TestSlot1
+  ]*/
+
   override public func performBuild() {
     rootChild = Container(styleProperties: {
       (SimpleLinearLayout.ParentKeys.direction, SimpleLinearLayout.Direction.column)
       ($0.background, Color.grey)
     }) { [unowned self] in
-      TextInput(mutableText: $text1)
+      TextInput(mutableText: $text1).with(styleProperties: {
+        ($0.caretColor, Color.red)
+      })
 
       DefaultTheme()
 

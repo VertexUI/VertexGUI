@@ -3,7 +3,7 @@ import Events
 
 extension Widget {
   @_functionBuilder
-  public struct multiChildContentBuilder {
+  public struct ExperimentalMultiChildContentBuilder {
     public static func buildExpression(_ widget: Widget) -> [Partial] {
       [.widgets([widget])]
     }
@@ -110,13 +110,13 @@ extension Widget {
 
   public class ReactiveContent {
     let proxyDependencies: [AnyReactiveProperty]
-    let builder: () -> multiChildContentBuilder.Content
+    let builder: () -> ExperimentalMultiChildContentBuilder.Content
     let associatedStyleScope: UInt
-    public internal(set) var content: multiChildContentBuilder.Content
+    public internal(set) var content: ExperimentalMultiChildContentBuilder.Content
 
     public let onContentChanged = EventHandlerManager<Void>()
 
-    public init<P1: ReactiveProperty>(_ dependency: P1, @multiChildContentBuilder content builder: @escaping () -> multiChildContentBuilder.Content) {
+    public init<P1: ReactiveProperty>(_ dependency: P1, @ExperimentalMultiChildContentBuilder content builder: @escaping () -> ExperimentalMultiChildContentBuilder.Content) {
       let proxyDependency = ObservableProperty<P1.Value>()
       proxyDependency.bind(dependency)
       self.proxyDependencies = [proxyDependency]
