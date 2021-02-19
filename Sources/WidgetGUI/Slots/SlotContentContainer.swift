@@ -3,10 +3,10 @@ public class SlotContentContainer<D>: AnySlotContentContainer {
   public var anySlot: AnySlot {
     slot
   }
-  var build: (D) -> [Widget]
+  var build: (D) -> ExpDirectContent
   var associatedStyleScope: UInt
 
-  public init(slot: Slot<D>, build: @escaping (D) -> [Widget]) {
+  public init(slot: Slot<D>, @ExpDirectContentBuilder build: @escaping (D) -> ExpDirectContent) {
     self.slot = slot
     self.build = build
     self.associatedStyleScope = Widget.activeStyleScope

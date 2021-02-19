@@ -1,4 +1,4 @@
-@_functionBuilder
+/*@_functionBuilder
 public class SlotWidgetContentBuilder {
 
   public static func buildExpression(_ container: AnySlotContentContainer) -> [Partial] {
@@ -44,4 +44,4 @@ public class SlotWidgetContentBuilder {
       return nil
     }
   }
-}
+}*/

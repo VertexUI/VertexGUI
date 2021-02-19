@@ -32,7 +32,7 @@ public class MainView: ComposedWidget, SlotAcceptingWidget {
 
       DefaultTheme()
 
-      testSlot1()
+      //testSlot1()
 
       Text(someInjectedData)
 

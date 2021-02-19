@@ -3,13 +3,14 @@ public protocol SlotAcceptingWidget: Widget {
 
 extension SlotAcceptingWidget {
   public func content(
-    @SlotWidgetContentBuilder content buildContent: () -> SlotWidgetContentBuilder.Result
+    @ExpSlottingContentBuilder content buildContent: () -> ExpSlottingContent 
   ) -> Self {
-    let builderResult = buildContent()
+    let content = buildContent()
+    // TODO: could set the default slot here
     let mirror = Mirror(reflecting: self)
     for child in mirror.children {
       if let slotContent = child.value as? AnySlotContent {
-        slotContent.anyContainer = builderResult.getContent(for: slotContent.anySlot)
+        slotContent.anyContainer = content.getSlotContentDefinition(for: slotContent.anySlot)
       }
     }
     return self

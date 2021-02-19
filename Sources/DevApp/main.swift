@@ -12,7 +12,7 @@ public class DevApp: WidgetsApp {
     let guiRoot = WidgetGUI.Root(rootWidget: Container {
       MainView().content {
         MainView.TestSlot1 {
-          [Text("WOW THIS IS A SLOT TEXT")]
+          Text("WOW THIS IS A SLOT TEXT")
         }
       }
     }.provide(dependencies: "THIS STRING IS A DEP"))
