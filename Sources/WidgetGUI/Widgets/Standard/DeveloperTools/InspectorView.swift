@@ -8,13 +8,9 @@ public class InspectorView: ComposedWidget {
     super.init()
   }
 
-  /*override public func buildChild() -> Widget {
-    Background(fill: .white) { [unowned self] in
-      Column {
-        WidgetNestingView(inspectedRoot.rootWidget).onInspect.chain {
-          onInspectWidget.invokeHandlers($0)
-        }
-      }
+  override public func performBuild() {
+    rootChild = WidgetNestingView(inspectedRoot.rootWidget).onInspect.chain { [unowned self] in
+      onInspectWidget.invokeHandlers($0)
     }
-  }*/
+  }
 }

@@ -35,6 +35,24 @@ public class DeveloperToolsView: ComposedWidget {
     })
   }
 
+  override public func performBuild() {
+    rootChild = Container(styleProperties: {
+      (SimpleLinearLayout.ParentKeys.direction, SimpleLinearLayout.Direction.column)
+      ($0.overflowY, Overflow.scroll)
+    }) { [unowned self] in
+      InspectorView(inspectedRoot)
+    }
+  }
+
+  override public func buildStyle() -> Style {
+    Style("&") {
+      ($0.background, developerToolsTheme.backgroundColor)
+      ($0.foreground, developerToolsTheme.textColorOnBackground)
+
+      developerToolsTheme.styles
+    }
+  }
+
   /*override public func buildChild() -> Widget {
     Experimental.SimpleRow { [unowned self] in
       DefaultTheme()
