@@ -55,6 +55,9 @@ public extension DefaultStyleKeys {
   static var wrapText: String {
     "wrapText"
   }
+  static var fontFamily: String {
+    "fontFamily"
+  }
   static var fontSize: String {
     "fontSize"
   }

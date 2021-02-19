@@ -17,7 +17,7 @@ public class Text: Widget, LeafWidget, StylableWidget {
   }
   private var fontConfig: FontConfig {
     FontConfig(
-      family: defaultFontFamily,
+      family: stylePropertyValue(StyleKeys.fontFamily, as: FontFamily.self) ?? defaultFontFamily,
       size: stylePropertyValue(StyleKeys.fontSize, as: Double.self) ?? 12,
       weight: stylePropertyValue(StyleKeys.fontWeight, as: FontWeight.self) ?? .regular,
       style: stylePropertyValue(StyleKeys.fontStyle, as: FontStyle.self) ?? .normal
