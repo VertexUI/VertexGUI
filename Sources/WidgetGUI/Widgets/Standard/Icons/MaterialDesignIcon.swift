@@ -3,11 +3,9 @@ import Foundation
 import VisualAppBase
 
 // TODO: actually these are MaterialDESIGNIcons (not from google) --> use the google ones
-public class MaterialIcon {
-  //private let identifier: Identifier
+public class MaterialDesignIcon: ComposedWidget {
+  private let identifier: Identifier
 
-  public init() {}
-  /*private let color: Color
   private static let materialFontFamily = FontFamily(
     name: "Material Icons",
     faces: [
@@ -18,14 +16,14 @@ public class MaterialIcon {
       )
     ])
 
-  public init(_ identifier: Identifier, color: Color = .black) {
+  public init(_ identifier: Identifier) {
     self.identifier = identifier
-    self.color = color
+    super.init()
   }
 
-  override public func buildChild() -> Widget {
-    Text(
-      String(Unicode.Scalar(identifier.code)!), fontFamily: MaterialIcon.materialFontFamily,
-      color: color)
-  }*/
+  override public func performBuild() {
+    rootChild = Text(styleProperties: {
+      ($0.fontFamily, MaterialDesignIcon.materialFontFamily)
+    }, String(Unicode.Scalar(identifier.code)!))
+  }
 }

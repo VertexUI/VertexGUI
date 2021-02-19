@@ -1,4 +1,4 @@
-extension MaterialIcon {
+extension MaterialDesignIcon {
 
     public struct Identifier {
 
