@@ -2,18 +2,17 @@ public protocol SlotAcceptingWidget: Widget {
 }
 
 extension SlotAcceptingWidget {
-  public func with(
-    classes: [String],
-    @StylePropertiesBuilder styleProperties: (Widget.StyleKeys.Type) -> Void,
+  public func content(
     @SlotWidgetContentBuilder content buildContent: () -> SlotWidgetContentBuilder.Result
-  ) {
+  ) -> Self {
     let builderResult = buildContent()
     let mirror = Mirror(reflecting: self)
     for child in mirror.children {
       if let slotContent = child.value as? AnySlotContent {
-        slotContent.container = builderResult.getContent(for: slotContent.anySlot)
+        slotContent.anyContainer = builderResult.getContent(for: slotContent.anySlot)
       }
     }
+    return self
   }
 }
 

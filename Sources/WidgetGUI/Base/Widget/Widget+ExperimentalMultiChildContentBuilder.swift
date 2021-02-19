@@ -8,6 +8,10 @@ extension Widget {
       [.widgets([widget])]
     }
 
+    public static func buildExpression(_ widgets: [Widget]) -> [Partial] {
+      [.widgets(widgets)]
+    }
+
     public static func buildExpression(_ style: Style) -> [Partial] {
       [.style(style)]
     }

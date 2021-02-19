@@ -10,7 +10,11 @@ public class DevApp: WidgetsApp {
 
   override open func setup() {
     let guiRoot = WidgetGUI.Root(rootWidget: Container {
-      MainView()
+      MainView().content {
+        MainView.TestSlot1 {
+          [Text("WOW THIS IS A SLOT TEXT")]
+        }
+      }
     }.provide(dependencies: "THIS STRING IS A DEP"))
     guiRoot.renderObjectSystemEnabled = false 
 

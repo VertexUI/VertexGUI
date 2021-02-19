@@ -1,6 +1,6 @@
 public class SlotContentContainer<D>: AnySlotContentContainer {
   var slot: Slot<D> 
-  var anySlot: AnySlot {
+  public var anySlot: AnySlot {
     slot
   }
   var build: (D) -> [Widget]
@@ -13,6 +13,6 @@ public class SlotContentContainer<D>: AnySlotContentContainer {
   }
 }
 
-internal protocol AnySlotContentContainer {
+public protocol AnySlotContentContainer {
   var anySlot: AnySlot { get }
 }

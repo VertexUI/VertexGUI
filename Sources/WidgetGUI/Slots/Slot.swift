@@ -6,6 +6,14 @@ public class Slot<D>: AnySlot {
     self.key = key
     self.dataType = data
   }
+
+  public func callAsFunction(build: @escaping (D) -> [Widget]) -> SlotContentContainer<D> {
+    SlotContentContainer(slot: self, build: build)
+  }
+
+  public func callAsFunction(build: @escaping () -> [Widget]) -> SlotContentContainer<D> where D == Void {
+    SlotContentContainer(slot: self, build: { _ in build() })
+  }
 }
 
 public protocol AnySlot: class {
