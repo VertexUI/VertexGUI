@@ -34,8 +34,17 @@ public class MainView: ComposedWidget, SlotAcceptingWidget {
 
       //testSlot1()
       NewContainer().content {
-        NewContainer.DefaultSlot {
-          Text("WOW IT'S THE TEXT FROM THE NEW CONTAINER")
+        /*NewContainer.DefaultSlot {
+          Text("WOW IT'S THE TEXT FROM THE NEW CONTAINER \(text1)")
+        }*/
+        Dynamic($text1) {
+          NewContainer.DefaultSlot {
+            Text("WOW IT'S THE TEXT FROM THE NEW CONTAINER \(text1)")
+
+            Dynamic($text2) {
+              Text("ANd this is the second text nested 2! \(text2)")
+            }
+          }
         }
       }
 

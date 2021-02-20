@@ -4,12 +4,13 @@ public class SlotContentContainer<D>: AnySlotContentContainer {
     slot
   }
   var build: (D) -> [ExpDirectContent.Partial]
-  var associatedStyleScope: UInt
 
   public init(slot: Slot<D>, @ExpDirectContentBuilder build: @escaping (D) -> [ExpDirectContent.Partial]) {
     self.slot = slot
-    self.build = build
-    self.associatedStyleScope = Widget.activeStyleScope
+    let associatedStyleScope = Widget.activeStyleScope
+    self.build = { data in
+      Widget.inStyleScope(associatedStyleScope, block: { build(data) })
+    }
   }
 }
 

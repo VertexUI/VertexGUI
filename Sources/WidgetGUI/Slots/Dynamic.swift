@@ -1,24 +1,40 @@
 import ReactiveProperties
+import Events
 
-public class Dynamic {
+public class Dynamic<C: ExpContentProtocol> {
   var associatedStyleScope: UInt
 
-  public init<P: ReactiveProperty>(_ dependency: P) {
+  let content: C
+
+  let onDependenciesChanged = EventHandlerManager<Void>()
+
+  // have dependency: as part of function signature
+  // because the specific initializers in the extensions
+  // do not, this prevenets the specific initializer from
+  // calling itself
+  init<P: ReactiveProperty>(dependency: P, build: @escaping () -> [C.Partial]) {
     self.associatedStyleScope = Widget.activeStyleScope
-  }
-
-  public func callAsFunction(@ExpDirectContentBuilder build: () -> ExpDirectContent) -> ExpDirectContent {
-    /*let partials = buildPartials()   
-    let content = ExpDirectContent(partials: partials)
-    onUpdateDynamic {// or whatever
-      Widget.inStyleScope(associatedStyleScope) {
-        content.partials = buildPartials()
+    let partials = build()
+    self.content = C(partials: partials)
+    // don't need to update content anymore after it is destroyed
+    // it's necessary to manual destroy because this Dynamic object
+    // is captured within the handler, to avoid early deallocation
+    _ = content.onDestroy(onDependenciesChanged { [unowned content] in
+      Widget.inStyleScope(self.associatedStyleScope) {
+        self.content.partials = build()
       }
-    }*/
-    build()
+    })
   }
+}
 
-  public func callAsFunction(@ExpSlottingContentBuilder build: () -> ExpSlottingContent) -> ExpSlottingContent {
-    build()
+extension Dynamic where C == ExpDirectContent {
+  public convenience init<P: ReactiveProperty>(_ dependency: P, @ExpDirectContentBuilder build: @escaping () -> [C.Partial]) {
+    self.init(dependency: dependency, build: build)
+  }
+}
+
+extension Dynamic where C == ExpSlottingContent {
+  public convenience init<P: ReactiveProperty>(_ dependency: P, @ExpSlottingContentBuilder build: @escaping () -> [C.Partial]) {
+    self.init(dependency: dependency, build: build)
   }
 }

@@ -1,19 +1,14 @@
-class TestClass {
-  @TestWrapper
-  public var testVar: String
-
-  func wow() {
+public struct Callable {
+  public init() {
 
   }
 
-  static var theFunctions = [
-    (wow)
-  ]
+  func callAsFunction(_ block: () -> ()) {
+    block()
+    print("CALL")
+  }
 }
 
-@propertyWrapper
-class TestWrapper {
-  public var wrappedValue: String {
-    "wow"
-  }
+Callable()() {
+  print("IN BLOCk")
 }

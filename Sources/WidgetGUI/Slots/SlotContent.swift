@@ -7,8 +7,8 @@ public class SlotContent<D>: AnySlotContent {
 
   var anyContainer: AnySlotContentContainer? = nil {
     didSet {
-      print("DID SET CONAINER", oldValue, anyContainer)
       if oldValue !== anyContainer {
+        print("DID UPDATE A CONTAINER", oldValue, anyContainer)
         resolveContent()
       }
     }

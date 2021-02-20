@@ -8,6 +8,10 @@ public struct ExpDirectContentBuilder {
     [.content(content)]
   }
 
+  public static func buildExpression(_ dynamic: Dynamic<ExpDirectContent>) -> [ExpDirectContent.Partial] {
+    [.content(dynamic.content)]
+  }
+
   public static func buildBlock(_ partials: [ExpDirectContent.Partial]...) -> [ExpDirectContent.Partial] {
     partials.flatMap { $0 }
   }
@@ -31,6 +35,10 @@ public struct ExpSlottingContentBuilder {
     [.slotContentDefinition(slotContentDefinition)]
   }
 
+  public static func buildExpression(_ dynamic: Dynamic<ExpSlottingContent>) -> [ExpSlottingContent.Partial] {
+    [.slottingContent(dynamic.content)]
+  }
+
   public static func buildBlock(_ partials: [ExpSlottingContent.Partial]...) -> [ExpSlottingContent.Partial] {
     partials.flatMap { $0 }
   }
@@ -41,12 +49,5 @@ public struct ExpSlottingContentBuilder {
 
   public static func buildFinalResult(_ partials: [ExpSlottingContent.Partial]) -> ExpSlottingContent {
     ExpSlottingContent(partials: partials)
-  }
-}
-
-@_functionBuilder
-public struct ExpSlottingContentWithDefaultSlotBuilder {
-  public static func buildExpression(_ widget: Widget) -> [ExpSlottingContent.Partial] {
-    [.widget(widget)]
   }
 }

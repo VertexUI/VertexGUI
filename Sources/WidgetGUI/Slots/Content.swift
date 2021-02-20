@@ -1,18 +1,34 @@
 import Events
 
-public class ExpContent {
-  public let onChanged = EventHandlerManager<Void>()
+public protocol ExpContentProtocol: class {
+  associatedtype Partial
+
+  var partials: [Partial] { get set }
+
+  var onDestroy: EventHandlerManager<Void> { get }
+
+  init(partials: [Partial])
 }
 
-public class ExpDirectContent: ExpContent {
-  var partials: [Partial] = [] {
+public class ExpContent: EventfulObject {
+  public let onChanged = EventHandlerManager<Void>()
+  public let onDestroy = EventHandlerManager<Void>()
+
+  deinit {
+    onDestroy.invokeHandlers()
+    removeAllEventHandlers()
+  }
+}
+
+public class ExpDirectContent: ExpContent, ExpContentProtocol {
+  public var partials: [Partial] = [] {
     didSet {
       resolve()
     }
   }
   public var widgets: [Widget] = []
 
-  public init(partials: [Partial]) {
+  public required init(partials: [Partial]) {
     self.partials = partials
     super.init()
     resolve()
@@ -39,15 +55,15 @@ extension ExpDirectContent {
   }
 }
 
-public class ExpSlottingContent: ExpContent {
-  var partials: [Partial] = [] {
+public class ExpSlottingContent: ExpContent, ExpContentProtocol {
+  public var partials: [Partial] = [] {
     didSet {
       resolve()
     }
   }
   public var slotContentDefinitions = [AnySlotContentContainer]()
 
-  public init(partials: [Partial]) {
+  public required init(partials: [Partial]) {
     self.partials = partials
     super.init()
     resolve()
@@ -55,6 +71,7 @@ public class ExpSlottingContent: ExpContent {
 
   func resolve() {
     slotContentDefinitions = []
+    //print("RESOLVE EXP SLOTTING")
     for partial in partials {
       switch partial {
       case let .widget(widget):
@@ -62,7 +79,8 @@ public class ExpSlottingContent: ExpContent {
       case let .slotContentDefinition(definition):
         slotContentDefinitions.append(definition)
       case let .slottingContent(nestedSlotContent):
-        print("IMPLMENT NESTED SLOT CONTENT RESOLVE")
+        slotContentDefinitions.append(contentsOf: nestedSlotContent.slotContentDefinitions)
+        print("IMPLMENT UPDATE NESTED SLOT CONTENT")
       }
     }
   }
