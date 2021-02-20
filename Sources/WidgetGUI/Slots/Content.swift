@@ -5,6 +5,7 @@ public protocol ExpContentProtocol: class {
 
   var partials: [Partial] { get set }
 
+  var onChanged: EventHandlerManager<Void> { get }
   var onDestroy: EventHandlerManager<Void> { get }
 
   init(partials: [Partial])
@@ -40,11 +41,16 @@ public class ExpDirectContent: ExpContent, ExpContentProtocol {
       switch partial {
       case let .widget(widget):
         widgets.append(widget)
-      case let .content(content):
-        widgets.append(contentsOf: content.widgets)
+      case let .content(nestedContent):
+        widgets.append(contentsOf: nestedContent.widgets)
+        _ = nestedContent.onChanged {
+          print("NESTED CHANGED")
+        }
         print("IMPLEMENT RESOLVE UPDATE OF NESTED CONTENT")
       }
     }
+
+    onChanged.invokeHandlers()
   }
 }
 
@@ -62,6 +68,8 @@ public class ExpSlottingContent: ExpContent, ExpContentProtocol {
     }
   }
   public var slotContentDefinitions = [AnySlotContentContainer]()
+  var replacementRanges = [Int: Range<Int>]()
+  var nestedHandlerRemovers = [() -> ()]()
 
   public required init(partials: [Partial]) {
     self.partials = partials
@@ -70,17 +78,42 @@ public class ExpSlottingContent: ExpContent, ExpContentProtocol {
   }
 
   func resolve() {
+    for remove in nestedHandlerRemovers {
+      remove()
+    }
     slotContentDefinitions = []
-    //print("RESOLVE EXP SLOTTING")
-    for partial in partials {
+    replacementRanges = [:]
+    nestedHandlerRemovers = []
+
+    for (index, partial) in partials.enumerated() {
       switch partial {
       case let .widget(widget):
         print("IMPLEMENT WIDGET RESOLVE")
       case let .slotContentDefinition(definition):
         slotContentDefinitions.append(definition)
       case let .slottingContent(nestedSlotContent):
-        slotContentDefinitions.append(contentsOf: nestedSlotContent.slotContentDefinitions)
-        print("IMPLMENT UPDATE NESTED SLOT CONTENT")
+        let nestedDefinitions = nestedSlotContent.slotContentDefinitions
+
+        replacementRanges[index] = slotContentDefinitions.count..<(slotContentDefinitions.count + nestedDefinitions.count)
+
+        slotContentDefinitions.append(contentsOf: nestedDefinitions)
+
+        nestedHandlerRemovers.append(nestedSlotContent.onChanged { [unowned self] in
+          let nestedDefinitions = nestedSlotContent.slotContentDefinitions
+          self.slotContentDefinitions.replaceSubrange(replacementRanges[index]!, with: nestedDefinitions)
+          updateReplacementRanges(from: index, deltaLength: nestedDefinitions.count - replacementRanges[index]!.count)
+          onChanged.invokeHandlers()
+        })
+      }
+    }
+
+    onChanged.invokeHandlers()
+  }
+
+  func updateReplacementRanges(from index: Int, deltaLength: Int) {
+    for (rangeIndex, range) in replacementRanges {
+      if rangeIndex >= index {
+        replacementRanges[rangeIndex] = range.lowerBound..<(range.upperBound + deltaLength)
       }
     }
   }
@@ -92,6 +125,10 @@ public class ExpSlottingContent: ExpContent, ExpContentProtocol {
       }
     }
     return nil
+  }
+
+  deinit {
+    print("DEINITILAIZED SLOTTING CONTENT")
   }
 }
 

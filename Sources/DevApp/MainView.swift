@@ -41,9 +41,9 @@ public class MainView: ComposedWidget, SlotAcceptingWidget {
           NewContainer.DefaultSlot {
             Text("WOW IT'S THE TEXT FROM THE NEW CONTAINER \(text1)")
 
-            Dynamic($text2) {
+            /*Dynamic($text2) {
               Text("ANd this is the second text nested 2! \(text2)")
-            }
+            }*/
           }
         }
       }
