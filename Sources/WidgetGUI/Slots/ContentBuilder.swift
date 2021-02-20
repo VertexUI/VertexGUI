@@ -4,6 +4,10 @@ public struct ExpDirectContentBuilder {
     [.widget(widget)]
   }
 
+  public static func buildExpression(_ content: ExpDirectContent) -> [ExpDirectContent.Partial] {
+    [.content(content)]
+  }
+
   public static func buildBlock(_ partials: [ExpDirectContent.Partial]...) -> [ExpDirectContent.Partial] {
     partials.flatMap { $0 }
   }

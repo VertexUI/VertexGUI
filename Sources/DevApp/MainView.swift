@@ -19,7 +19,7 @@ public class MainView: ComposedWidget, SlotAcceptingWidget {
   var layoutDirection: SimpleLinearLayout.Direction = .row
 
   static let TestSlot1 = Slot(key: "testSlot1", data: Void.self)
-  private var testSlot1 = SlotContent(slot: MainView.TestSlot1)
+  private var testSlot1 = SlotContent(MainView.TestSlot1)
 
   override public func performBuild() {
     rootChild = Container(styleProperties: {
@@ -33,6 +33,11 @@ public class MainView: ComposedWidget, SlotAcceptingWidget {
       DefaultTheme()
 
       //testSlot1()
+      NewContainer().content {
+        NewContainer.DefaultSlot {
+          Text("WOW IT'S THE TEXT FROM THE NEW CONTAINER")
+        }
+      }
 
       Text(someInjectedData)
 
