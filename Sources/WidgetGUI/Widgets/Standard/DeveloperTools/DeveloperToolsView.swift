@@ -6,6 +6,8 @@ import ReactiveProperties
 public class DeveloperToolsView: ComposedWidget {
   private let inspectedRoot: Root
 
+  private let store = DeveloperTools.Store()
+
   @MutableProperty
   private var activeTab: Tab = .Lifecycle
   
@@ -38,10 +40,11 @@ public class DeveloperToolsView: ComposedWidget {
   override public func performBuild() {
     rootChild = Container(styleProperties: {
       (SimpleLinearLayout.ParentKeys.direction, SimpleLinearLayout.Direction.column)
+      (SimpleLinearLayout.ParentKeys.alignContent, SimpleLinearLayout.Align.stretch)
       ($0.overflowY, Overflow.scroll)
     }) { [unowned self] in
-      InspectorView(inspectedRoot)
-    }
+      DeveloperTools.InspectorView()
+    }.provide(dependencies: store, inspectedRoot)
   }
 
   override public func buildStyle() -> Style {

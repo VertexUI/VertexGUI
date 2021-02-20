@@ -1,16 +1,20 @@
-public class InspectorView: ComposedWidget {
-  private let inspectedRoot: Root
+import GfxMath
 
-  public let onInspectWidget = WidgetEventHandlerManager<Widget>()
-  
-  public init(_ inspectedRoot: Root) {
-    self.inspectedRoot = inspectedRoot
-    super.init()
-  }
+extension DeveloperTools {
+  public class InspectorView: ComposedWidget {
+    @Inject
+    var inspectedRoot: Root
+    @Inject
+    var store: DeveloperTools.Store
 
-  override public func performBuild() {
-    rootChild = WidgetNestingView(inspectedRoot.rootWidget).onInspect.chain { [unowned self] in
-      onInspectWidget.invokeHandlers($0)
+    override public func performBuild() {
+      rootChild = Container { [unowned self] in
+        DeveloperTools.WidgetNestingView(inspectedRoot.rootWidget)
+
+        DeveloperTools.WidgetPropertiesView().with(styleProperties: { _ in
+          (SimpleLinearLayout.ChildKeys.grow, 1.0)
+        })
+      }
     }
   }
 }
