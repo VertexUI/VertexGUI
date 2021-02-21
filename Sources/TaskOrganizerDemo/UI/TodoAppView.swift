@@ -29,42 +29,26 @@ public class TodoAppView: ComposedWidget {
   private var searchQuery: String = ""
 
   override public func performBuild() {
-    rootChild = Container(styleProperties: {
+    rootChild = Container().with(styleProperties: {
       ($0.background, AppTheme.backgroundColor)
-    }) { [unowned self] in
-      buildStyle()
-
+    }).withContent { [unowned self] in
       buildMenu()
       buildActiveView()
-
-      DefaultTheme()
     }
   }
 
   private func buildMenu() -> Widget {
-    Container(styleProperties: {
+    Container().with(styleProperties: {
       ($0.layout, SimpleLinearLayout.self)
       ($0.width, 200.0)
       (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.stretch)
       (SimpleLinearLayout.ParentKeys.direction, SimpleLinearLayout.Direction.column)
-    }) { [unowned self] in
+    }).withContent { [unowned self] in
       buildSearch()
 
-      Container(styleProperties: {
+      Container().with(styleProperties: {
         ($0.padding, Insets(all: 32))
-      }) {
-        Style(".button", Button.self) {
-          ($0.background, Color.yellow)
-          ($0.padding, Insets(all: 16))
-          ($0.foreground, Color.white)
-        }
-
-        Style(".button:hover") {
-          StyleProperties(Button.self) {
-            ($0.background, Color.red)
-          }
-        }
-
+      }).withContent {
         Button(classes: ["button"]) {
           Text(styleProperties: {
             ($0.fontWeight, FontWeight.bold)
@@ -83,7 +67,7 @@ public class TodoAppView: ComposedWidget {
         (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.stretch)
         (SimpleLinearLayout.ChildKeys.shrink, 1.0)
         ($0.foreground, Color.white)
-      }).content {
+      }).withContent {
         $0.itemSlot {
           buildMenuListItem(for: $0)
         }
@@ -92,10 +76,10 @@ public class TodoAppView: ComposedWidget {
   }
 
   private func buildSearch() -> Widget {
-    Container(styleProperties: {
+    Container().with(styleProperties: {
       ($0.padding, Insets(all: 32))
       (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.stretch)
-    }) { [unowned self] in
+    }).withContent { [unowned self] in
       TextInput(styleProperties: { _ in
         (SimpleLinearLayout.ChildKeys.shrink, 1.0)
         (SimpleLinearLayout.ChildKeys.grow, 1.0)
@@ -120,16 +104,16 @@ public class TodoAppView: ComposedWidget {
   }
 
   private func buildMenuListItem(for list: TodoList) -> Widget {
-    Container(classes: ["menu-item"], styleProperties: {
+    Container().with(classes: ["menu-item"], styleProperties: {
       ($0.padding, Insets(all: 16))
       ($0.borderWidth, BorderWidth(bottom: 1.0))
       ($0.borderColor, Color.white)
-    }) {
-      Container(styleProperties: {
+    }).withContent {
+      Container().with(styleProperties: {
         ($0.background, list.color)
         ($0.padding, Insets(all: 8))
         (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.center)
-      }) {
+      }).withContent {
         Space(.zero)
         //MaterialIcon(.formatListBulletedSquare, color: .white)
       }
@@ -144,15 +128,15 @@ public class TodoAppView: ComposedWidget {
   }
 
   private func buildActiveView() -> Widget {
-    return Container(styleProperties: { _ in
+    return Container().with(styleProperties: { _ in
       (SimpleLinearLayout.ChildKeys.grow, 1.0)
       (SimpleLinearLayout.ParentKeys.direction, SimpleLinearLayout.Direction.column)
       (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.stretch)
       (SimpleLinearLayout.ParentKeys.justifyContent, SimpleLinearLayout.Justify.center)
-    }) { [unowned self] in
+    }).withContent { [unowned self] in
       Space(DSize2(0, 0)).connect(ref: $activeViewTopSpace)
 
-      ReactiveContent(navigationStore.$state) {
+      Dynamic(navigationStore.$state) {
         switch navigationStore.state.mainViewRoute {
         case .none:
           Text(styleProperties: {
@@ -189,6 +173,20 @@ public class TodoAppView: ComposedWidget {
 
   override public func buildStyle() -> Style {
     Style("&") {
+      FlatTheme(primaryColor: AppTheme.primaryColor, secondaryColor: AppTheme.primaryColor, backgroundColor: AppTheme.backgroundColor).styles
+
+      Style(".button", Button.self) {
+        ($0.background, Color.yellow)
+        ($0.padding, Insets(all: 16))
+        ($0.foreground, Color.white)
+      }
+
+      Style(".button:hover") {
+        StyleProperties(Button.self) {
+          ($0.background, Color.red)
+        }
+      }
+
       Style(".menu-item") {
         ($0.foreground, Color.white)
         ($0.background, Color.transparent)

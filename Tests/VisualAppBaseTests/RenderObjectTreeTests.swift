@@ -130,7 +130,7 @@ final class RenderObjectTreeTests: XCTestCase {
         _ = bus.onUpwardMessage {
             messageBuffer.append($0)
 
-            switch $0.content {
+            switch $0.withContent {
             case .transitionStarted:
 
                 transitionCount += 1
@@ -188,7 +188,7 @@ final class RenderObjectTreeTests: XCTestCase {
         var transitionCount = 0
 
         _ = testedNode!.bus.onUpwardMessage {
-            switch $0.content {
+            switch $0.withContent {
             case .transitionStarted:
 
                 transitionCount += 1

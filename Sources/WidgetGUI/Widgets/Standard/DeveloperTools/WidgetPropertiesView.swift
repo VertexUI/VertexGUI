@@ -7,13 +7,13 @@ extension DeveloperTools {
     var store: DeveloperTools.Store
 
     override public func performBuild() {
-      rootChild = Container { [unowned self] in
-        ReactiveContent(store.$state) {
+      rootChild = Container().withContent { [unowned self] in
+        Dynamic(store.$state) {
           if let inspectedWidget = store.state.inspectedWidget {
-            Container(styleProperties: { _ in
+            Container().with(styleProperties: { _ in
               (SimpleLinearLayout.ChildKeys.grow, 1.0)
               (SimpleLinearLayout.ParentKeys.direction, SimpleLinearLayout.Direction.column)
-            }) {
+            }).withContent {
               Text(inspectedWidget.name).with(classes: ["widget-name"])
 
               Text("tree path").with(classes: ["section-heading"])
@@ -42,12 +42,12 @@ extension DeveloperTools {
 
     public func buildStylePropertyDefinition(_ definition: StylePropertySupportDefinition, _ inspectedWidget: Widget) -> [Widget] {
       [
-        Container(styleProperties: { _ in
+        Container().with(styleProperties: { _ in
           (SimpleLinearLayout.ParentKeys.direction, SimpleLinearLayout.Direction.column)
-        }) {
+        }).withContent {
           Text(definition.key.asString).with(classes: ["style-key"])
 
-          Container {
+          Container().withContent {
             Text("default:")
             
             Text(String(describing: definition.defaultValue))
@@ -66,7 +66,7 @@ extension DeveloperTools {
 
     public func buildResolvedStyleProperty(_ key: StyleKey, _ inspectedWidget: Widget) -> [Widget] {
       [
-        Container {
+        Container().withContent { _ in
           Text(key.asString + ":").with(classes: ["style-key"])
 
           Text(String(describing: inspectedWidget.stylePropertyValue(key)))

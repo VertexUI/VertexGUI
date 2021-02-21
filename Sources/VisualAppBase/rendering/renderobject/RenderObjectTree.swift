@@ -294,7 +294,7 @@ public class RenderObjectTree: SubTreeRenderObject {
 
     /*private final func processBusMessage(_ message: RootwardMessage) {
 
-        switch message.content {
+        switch message.withContent {
 
         case .TransitionStarted:
 

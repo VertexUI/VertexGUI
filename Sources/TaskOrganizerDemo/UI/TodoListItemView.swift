@@ -18,12 +18,10 @@ public class TodoListItemView: ComposedWidget {
   }
 
   override public func performBuild() {
-    rootChild = Container { [unowned self] in
-      buildStyle()
-
-      TaskCompletionButton(classes: ["completion-button"], styleProperties: { _ in
+    rootChild = Container().withContent { [unowned self] in
+      TaskCompletionButton(item.completed).with(classes: ["completion-button"], styleProperties: { _ in
         (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.center)
-      }, item.completed) {
+      }).onClick {
         if checkable {
           var updatedItem = item
           updatedItem.completed = !updatedItem.completed

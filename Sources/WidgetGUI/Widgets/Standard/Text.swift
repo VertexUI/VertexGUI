@@ -37,7 +37,7 @@ public class Text: Widget, LeafWidget, StylableWidget {
       if let classes = classes {
         self.classes = classes
       }
-      self.with(stylePropertiesBuilder(StyleKeys.self))
+      self.directStyleProperties.append(stylePropertiesBuilder(StyleKeys.self))
 
       self.$text.bind(textProperty)
       _ = onDestroy(self.$text.onChanged { [unowned self] _ in

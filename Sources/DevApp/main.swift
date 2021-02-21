@@ -9,8 +9,8 @@ public class DevApp: WidgetsApp {
   }
 
   override open func setup() {
-    let guiRoot = WidgetGUI.Root(rootWidget: Container {
-      MainView().content {
+    let guiRoot = WidgetGUI.Root(rootWidget: Container().withContent {
+      MainView().withContent {
         $0.TestSlot1 {
           Text("WOW THIS IS A SLOT TEXT")
         }

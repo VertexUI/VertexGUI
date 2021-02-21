@@ -13,7 +13,7 @@ public class Dynamic<C: ExpContentProtocol> {
   // because the specific initializers in the extensions
   // do not, this prevenets the specific initializer from
   // calling itself
-  init<P: ReactiveProperty>(dependency: P, build: @escaping () -> [C.Partial]) {
+  private init<P: ReactiveProperty>(dependency: P, build: @escaping () -> [C.Partial]) {
     let proxy = ObservableProperty<P.Value>()
     proxy.bind(dependency)
     self.dependencyProxies = [proxy]

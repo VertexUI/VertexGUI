@@ -8,19 +8,9 @@ public class TaskCompletionButton: Widget, LeafWidget {
     private let preferredSize = DSize2(16, 16)
     private var completed: Bool
 
-    public init(
-        classes: [String]? = nil,
-        @StylePropertiesBuilder styleProperties buildStyleProperties: (StyleKeys.Type) -> StyleProperties = { _ in [] },
-        _ completed: Bool, onClick onClickHandler: (() -> ())? = nil) {
-            self.completed = completed
-            super.init()
-            if let classes = classes {
-                self.classes.append(contentsOf: classes)
-            }
-            self.with(buildStyleProperties(StyleKeys.self))
-            if let handler = onClickHandler {
-                onClick(handler)
-            }
+    public init(_ completed: Bool) {
+        self.completed = completed
+        super.init()
     }
 
     override public func getContentBoxConfig() -> BoxConfig {

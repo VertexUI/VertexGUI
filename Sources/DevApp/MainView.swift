@@ -22,10 +22,10 @@ public class MainView: ComposedWidget, SlotAcceptingWidget {
   private var testSlot1 = SlotContentManager(MainView.TestSlot1)
 
   override public func performBuild() {
-    rootChild = Container(styleProperties: {
+    rootChild = Container().with(styleProperties: {
       (SimpleLinearLayout.ParentKeys.direction, SimpleLinearLayout.Direction.column)
       ($0.background, Color.grey)
-    }) { [unowned self] in
+    }).withContent { [unowned self] in
       TextInput(mutableText: $text1).with(styleProperties: {
         ($0.caretColor, Color.red)
       })
@@ -34,15 +34,13 @@ public class MainView: ComposedWidget, SlotAcceptingWidget {
         ($0.caretColor, Color.red)
       })
 
-      DefaultTheme()
-
-      List($items).content {
+      List($items).withContent {
         $0.itemSlot {
           Text($0)
         }
       }
 
-      NewContainer().content { _ in
+      NewContainer().withContent { _ in
         Dynamic($text1) {
           Text("NO DATA SLOT CONTNET \(text1)")
         }
@@ -211,7 +209,7 @@ public class MainView: ComposedWidget, SlotAcceptingWidget {
       } onClick: {
         items.append(items.last! + 1)
       }*/
-      Container {
+      Container().withContent {
       Container(styleProperties: {
         ($0.layout, SimpleLinearLayout.self)
         (SimpleLinearLayout.ParentKeys.direction, $layoutDirection)
@@ -293,16 +291,16 @@ public class MainView: ComposedWidget, SlotAcceptingWidget {
     }
 
     override func performBuild() {
-      rootChild = Container(styleProperties: {
+      rootChild = Container().with(styleProperties: {
         ($0.padding, Insets(left: 16))
-      }) { [unowned self] in
+      }).withContent { [unowned self] in
         Text(styleProperties: {
           ($0.foreground, Color.black)
         }, data.content)
 
-        Container(styleProperties: {
+        Container().with(styleProperties: {
           ($0.padding, Insets(all: 32))
-        }) {
+        }).withContent {
           Button() {
             Text("add child content")
           }.onClick {
@@ -310,7 +308,7 @@ public class MainView: ComposedWidget, SlotAcceptingWidget {
           }
         }
 
-        /*List($childData).content {
+        /*List($childData).withContent {
           $0.itemSlot {
             NestedWidget($0)
           }

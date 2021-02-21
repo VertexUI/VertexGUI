@@ -38,11 +38,11 @@ public class DeveloperToolsView: ComposedWidget {
   }
 
   override public func performBuild() {
-    rootChild = Container(styleProperties: {
+    rootChild = Container().with(styleProperties: {
       (SimpleLinearLayout.ParentKeys.direction, SimpleLinearLayout.Direction.column)
       (SimpleLinearLayout.ParentKeys.alignContent, SimpleLinearLayout.Align.stretch)
       ($0.overflowY, Overflow.scroll)
-    }) { [unowned self] in
+    }).withContent { [unowned self] in
       DeveloperTools.InspectorView()
     }.provide(dependencies: store, inspectedRoot)
   }

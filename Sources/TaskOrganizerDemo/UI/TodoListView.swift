@@ -36,13 +36,13 @@ public class TodoListView: ComposedWidget {
   }
 
   override public func performBuild() {
-    rootChild = Container(styleProperties: { _ in
+    rootChild = Container().with(styleProperties: { _ in
       (SimpleLinearLayout.ParentKeys.direction, SimpleLinearLayout.Direction.column)
-    }) { [unowned self] in
+    }).withContent { [unowned self] in
 
-      Container(styleProperties: { _ in
+      Container().with(styleProperties: { _ in
         (SimpleLinearLayout.ParentKeys.alignContent, SimpleLinearLayout.Align.center)
-      }) {
+      }).withContent {
 
         Text(styleProperties: {
           ($0.foreground, Color.white)
@@ -52,7 +52,7 @@ public class TodoListView: ComposedWidget {
 
         Space(DSize2(24, 0))
 
-        ReactiveContent($editable) {
+        Dynamic($editable) {
           if editable {
             Button {
               Text("add todo")
@@ -71,7 +71,7 @@ public class TodoListView: ComposedWidget {
         (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.stretch)
         (SimpleLinearLayout.ChildKeys.shrink, 1.0)
         ($0.overflowY, Overflow.scroll)
-      }).content {
+      }).withContent {
         $0.itemSlot {
           build(todo: $0)
         }

@@ -110,7 +110,7 @@ class StyleManagerTests: XCTestCase {
 
   func testSingleWidgetInContainerWithStylesProcessChild() {
     let widget = TestWidget()
-    let container = Container {
+    let container = Container().withContent {
       Style("", TestWidget.self) {
         ($0.specificProperty1, 1.0)
       }
@@ -127,7 +127,7 @@ class StyleManagerTests: XCTestCase {
 
   func testSingleWidgetInContainerWithStylesProcessRoot() {
     let widget = TestWidget()
-    let container = Container {
+    let container = Container().withContent {
       Style("&", Container.self) {
         ($0.foreground, 1.0)
       }
@@ -151,7 +151,7 @@ class StyleManagerTests: XCTestCase {
     let reference2 = Reference<Container>()
     let reference3 = Reference<Container>()
     let reference4 = Reference<TestWidget>()
-    let root = MockRoot(rootWidget: Container {
+    let root = MockRoot(rootWidget: Container().withContent {
       Style("&") {}
 
       Container(classes: ["class-1"]) {
@@ -179,7 +179,7 @@ class StyleManagerTests: XCTestCase {
     let reference2 = Reference<Container>()
     let reference3 = Reference<Container>()
     let reference4 = Reference<TestWidget>()
-    let root = MockRoot(rootWidget: Container {
+    let root = MockRoot(rootWidget: Container().withContent {
       Style("&") {}
 
       Container(classes: ["class-1"]) {
@@ -231,7 +231,7 @@ class StyleManagerTests: XCTestCase {
     let reference2 = Reference<Container>()
     let reference3 = Reference<Container>()
     let reference4 = Reference<TestWidget>()
-    let root = MockRoot(rootWidget: Container {
+    let root = MockRoot(rootWidget: Container().withContent {
       Style("&") {
         Style("&.class-1") {}
         Style(".class-1") {}

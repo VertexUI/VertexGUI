@@ -73,7 +73,7 @@ public final class TextInput: ComposedWidget, StylableWidget, GUIKeyEventConsume
       if let classes = classes {
         self.classes.append(contentsOf: classes)
       }
-      self.with(stylePropertiesBuilder(StyleKeys.self))
+      self.directStyleProperties.append(stylePropertiesBuilder(StyleKeys.self))
 
       updatePlaceholderVisibility()
 
@@ -116,7 +116,7 @@ public final class TextInput: ComposedWidget, StylableWidget, GUIKeyEventConsume
   }
 
   override public func performBuild() {
-    rootChild = Container { [unowned self] in
+    rootChild = Container().withContent { _ in
       Text(styleProperties: {
         ($0.foreground, Color.white)
         ($0.fontSize, 24.0)

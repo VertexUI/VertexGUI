@@ -41,8 +41,7 @@ public class LifecycleView: ComposedWidget {
   }
 
   override public func performBuild() {
-    rootChild = Container() { [unowned self] in
-      buildStyle()
+    rootChild = Container().withContent { [unowned self] _ in
 
       buildStatistics()
 
@@ -72,7 +71,7 @@ public class LifecycleView: ComposedWidget {
 
       Build($showSignals) {
         if showSignals {
-          List($invocationInfoItems).content {
+          List($invocationInfoItems).withContent {
             $0.itemSlot {
               buildSignal($0)
             }
@@ -86,7 +85,7 @@ public class LifecycleView: ComposedWidget {
         if showSignalGroups {
           List(ComputedProperty(compute: {
             Array(invocationSignalGroups.values)
-          }, dependencies: [$invocationSignalGroups])).content {
+          }, dependencies: [$invocationSignalGroups])).withContent {
             $0.itemSlot {
               buildSignalGroup($0)
             }
@@ -99,7 +98,7 @@ public class LifecycleView: ComposedWidget {
   }
 
   private func buildStatistics() -> Widget {
-    Container { [unowned self] in
+    Container().withContent { [unowned self] _ in
       buildStatistic(for: .mount)
       buildStatistic(for: .build)
       buildStatistic(for: .layout)
@@ -108,7 +107,7 @@ public class LifecycleView: ComposedWidget {
   }
 
   private func buildStatistic(for method: LifecycleMethod) -> Widget {
-    Container(classes: ["method-invocation-count-container"]) { [unowned self] in
+    Container().with(classes: ["method-invocation-count-container"]).withContent { [unowned self] _ in
       Text(String(describing: method))
       Text(ComputedProperty(compute: {
         return String(methodInvocationCounts[method]!)
@@ -117,7 +116,7 @@ public class LifecycleView: ComposedWidget {
   }
 
   private func buildSignal(_ signal: Widget.LifecycleMethodInvocationSignal) -> Widget {
-    Container(classes: ["signal"]) {
+    Container().with(classes: ["signal"]).withContent { _ in
       Text(classes: ["method-name"], "method \(signal.method)")
 
       switch signal {
@@ -130,7 +129,7 @@ public class LifecycleView: ComposedWidget {
   }
 
   private func buildSignalGroup(_ group: Widget.LifecycleMethodInvocationSignalGroup) -> Widget {
-    Container(classes: ["signal-group"]) { [unowned self] in
+    Container().with(classes: ["signal-group"]).withContent { [unowned self] _ in
       Text(classes: ["method-name"], "method \(group.method)")
 
       /*group.signals.map {
@@ -139,7 +138,7 @@ public class LifecycleView: ComposedWidget {
     }
   }
 
-  override public func buildStyle() -> Style {
+  /*override public func buildStyle() -> Style {
     Style("&", Container.self) {
       ($0.background, Color.white)
 
@@ -162,5 +161,5 @@ public class LifecycleView: ComposedWidget {
         ($0.padding, Insets(all: 16))
       }
     }
-  }
+  }*/
 }

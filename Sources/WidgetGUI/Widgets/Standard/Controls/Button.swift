@@ -14,7 +14,7 @@ public class Button: ComposedWidget, StylableWidget {
       if let classes = classes {
         self.classes = classes
       }
-      self.with(stylePropertiesBuilder(StyleKeys.self))
+      self.directStyleProperties.append(stylePropertiesBuilder(StyleKeys.self))
       if let handler = onClickHandler {
         _ = self.onClick(handler)
       }

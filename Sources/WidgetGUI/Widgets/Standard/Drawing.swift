@@ -17,7 +17,7 @@ public class Drawing: Widget, LeafWidget {
       if let classes = classes {
         self.classes.append(contentsOf: classes)
       }
-      self.with(buildStyleProperties(StyleKeys.self))
+      self.directStyleProperties.append(buildStyleProperties(StyleKeys.self))
   }
 
   override public func getContentBoxConfig() -> BoxConfig {

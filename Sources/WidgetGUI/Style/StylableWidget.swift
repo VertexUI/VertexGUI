@@ -4,12 +4,11 @@ public protocol StylableWidget: Widget {
 
 extension StylableWidget {
   @discardableResult
-  public func with(@StylePropertiesBuilder styleProperties build: (Self.StyleKeys.Type) -> StyleProperties) -> Widget {
+  public func with(classes: [String]? = nil, @StylePropertiesBuilder styleProperties build: (Self.StyleKeys.Type) -> StyleProperties) -> Self {
+    if let classes = classes {
+      self.classes.append(contentsOf: classes)
+    }
     self.directStyleProperties.append(build(StyleKeys.self))
     return self
-  }
-  
-  public func with(classes: [String], styleProperties: (Self.StyleKeys.Type) -> ()) {
-    
   }
 }

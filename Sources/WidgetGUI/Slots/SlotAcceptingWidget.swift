@@ -7,13 +7,16 @@ extension SlotAcceptingWidget {
     nil
   }
 
-  public func with(@StylePropertiesBuilder styleProperties: (StyleKeys.Type) -> StyleProperties) -> Self {
+  public func with(classes: [String]? = nil, @StylePropertiesBuilder styleProperties: (StyleKeys.Type) -> StyleProperties = { _ in [] }) -> Self {
+    if let classes = classes {
+      self.classes.append(contentsOf: classes)
+    }
     self.directStyleProperties.append(styleProperties(Self.StyleKeys.self))
     return self
   }
 
-  public func content(
-    @ExpSlottingContentBuilder content buildContent: (Self.Type) -> ExpSlottingContent 
+  func internalWithContent(
+    buildContent: (Self.Type) -> ExpSlottingContent 
   ) -> Self {
     let content = buildContent(Self.self)
 
@@ -44,6 +47,18 @@ extension SlotAcceptingWidget {
     return self
   }
 
+  public func withContent(
+    @ExpSlottingContentBuilder _ buildContent: (Self.Type) -> ExpSlottingContent
+  ) -> Self {
+    internalWithContent(buildContent: buildContent)
+  }
+
+  public func withContent(
+    @ExpSlottingContentBuilder _ buildContent: () -> ExpSlottingContent
+  ) -> Self {
+    internalWithContent(buildContent: { _ in buildContent() })
+  }
+
   fileprivate func resolveSlotContentWrappers(_ content: ExpSlottingContent) {
     let mirror = Mirror(reflecting: self)
     for child in mirror.children {
@@ -53,14 +68,4 @@ extension SlotAcceptingWidget {
       }
     }
   }
-}
-
-extension ChildAcceptorWidget where Self: StylableWidget {
-  /*public func with(
-    classes: [String],
-    @StylePropertiesBuilder styleProperties: (Self.StyleKeys.Type) -> Void,
-    @Widget.ExperimentalMultiChildContentBuilder content buildContent: () -> Widget.ExperimentalMultiChildContentBuilder.Content
-  ) {
-
-  }*/
 }

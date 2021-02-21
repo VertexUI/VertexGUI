@@ -1195,30 +1195,11 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
             }
             renderState.mainContent = newMainContent
             
-            var newDebuggingContent = [RenderObject]()
-
-            #if DEBUG
-            if debugLayout {
-                let layoutDebuggingRendering = renderLayoutDebuggingInformation()
-                subTree.appendChild(layoutDebuggingRendering)
-                newDebuggingContent.append(layoutDebuggingRendering)
-            }
-
-            if highlighted {
-                let highlight = RenderStyleRenderObject(fillColor: .red) {
-                    RectangleRenderObject(globalBounds)
-                }
-                subTree.appendChild(highlight)
-                newDebuggingContent.append(highlight)
-            }
-            #endif
-
             /*let duration = Date.timeIntervalSinceReferenceDate - startTime
             if duration > 0.01 {
                 print("updateRenderState took", duration, self)
             }*/
 
-            renderState.debuggingContent = newDebuggingContent
             subTree.replaceChildren(([renderState.mainContent] + renderState.debuggingContent).compactMap { $0 })
         } else if visibility == .hidden {
             subTree.removeChildren()
@@ -1246,20 +1227,6 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     open func renderContent() -> RenderObject? {
         .Container { [unowned self] in
             children.map { $0.render(reason: .renderContentOfParent(self)) }
-        }
-    }
-
-    private final func renderLayoutDebuggingInformation() -> RenderObject {
-        RenderObject.Container {
-            RenderObject.RenderStyle(strokeWidth: 1, strokeColor: FixedRenderValue(layoutDebuggingColor)) {
-                RenderObject.Rectangle(globalBounds)
-            }
-
-            RenderObject.Text(
-                "\(bounds.size.width) x \(bounds.size.height)",
-                fontConfig: layoutDebuggingTextFontConfig,
-                color: layoutDebuggingColor,
-                topLeft: globalBounds.min)
         }
     }
 

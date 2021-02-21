@@ -24,12 +24,12 @@ extension DeveloperTools {
     }
 
     override public func performBuild() {
-      rootChild = Container(styleProperties: { _ in
+      rootChild = Container().with(styleProperties: { _ in
         (SimpleLinearLayout.ParentKeys.direction, SimpleLinearLayout.Direction.column)
-      }) { [unowned self] in
-        Container(classes: ["infoContainer"], styleProperties: { _ in
+      }).withContent { [unowned self] _ in
+        Container().with(classes: ["infoContainer"], styleProperties: { _ in
           (SimpleLinearLayout.ParentKeys.alignContent, SimpleLinearLayout.Align.center)
-        }) {
+        }).withContent { _ in
           MaterialDesignIcon(.menuDown).with(styleProperties: {
             ($0.foreground, Color.white)
             ($0.fontSize, 24.0)
@@ -46,11 +46,11 @@ extension DeveloperTools {
           }
         }
 
-        Container(styleProperties: {
+        Container().with(styleProperties: {
           (SimpleLinearLayout.ParentKeys.direction, SimpleLinearLayout.Direction.column)
           ($0.padding, Insets(left: 16))
-        }) {
-          ReactiveContent($expanded) {
+        }).withContent {
+          Dynamic($expanded) {
             if expanded {
               inspectedWidget.children.map { 
                 WidgetNestingView($0, depth: depth + 1).onInspect.chain {

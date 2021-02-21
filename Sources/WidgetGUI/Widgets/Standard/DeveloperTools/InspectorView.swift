@@ -8,7 +8,7 @@ extension DeveloperTools {
     var store: DeveloperTools.Store
 
     override public func performBuild() {
-      rootChild = Container { [unowned self] in
+      rootChild = Container().withContent { [unowned self] in
         DeveloperTools.WidgetNestingView(inspectedRoot.rootWidget)
 
         DeveloperTools.WidgetPropertiesView().with(styleProperties: { _ in

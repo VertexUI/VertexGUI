@@ -30,7 +30,7 @@ open class ComposedWidget: Widget {
       if let classes = classes {
         self.classes = classes
       }
-      self.with(stylePropertiesBuilder(StyleKeys.self))
+      self.directStyleProperties.append(stylePropertiesBuilder(StyleKeys.self))
   }
 
   override open func getContentBoxConfig() -> BoxConfig {

@@ -1,7 +1,21 @@
 import GfxMath
 
-public class Container: Widget, StylableWidget {
-  private let content: ExperimentalMultiChildContentBuilder.Content
+public class Container: ContentfulWidget, SlotAcceptingWidget, StylableWidget {
+  public static let defaultSlot = Slot(key: "default", data: Void.self)
+  var defaultSlotManager = SlotContentManager(Container.defaultSlot)
+  public var defaultNoDataSlotContentManager: SlotContentManager<Void>? {
+    defaultSlotManager
+  }
+
+  override public var content: ExpDirectContent {
+    defaultSlotManager()
+  }
+
+  override public var contentChildren: [Widget] {
+    didSet {
+      updateLayoutInstance()
+    }
+  }
 
   @FromStyle(key: StyleKeys.layout)
   private var layoutType: Layout.Type = SimpleLinearLayout.self
@@ -13,24 +27,8 @@ public class Container: Widget, StylableWidget {
     layoutInstance?.parentPropertySupportDefinitions ?? []
   }
 
-  public init(
-    classes: [String]? = nil,
-    @StylePropertiesBuilder styleProperties stylePropertiesBuilder: (StyleKeys.Type) -> StyleProperties = { _ in [] },
-    @ExperimentalMultiChildContentBuilder content contentBuilder: @escaping () -> ExperimentalMultiChildContentBuilder.Content) {
-      content = contentBuilder()
+  override public init() {
       super.init()
-
-      self.contentChildren = content.widgets
-      _ = content.onChanged { [unowned self] in 
-        contentChildren = content.widgets
-        updateLayoutInstance()
-      }
-
-      self.providedStyles.append(contentsOf: content.styles)
-      if let classes = classes {
-        self.classes = classes
-      }
-      self.with(stylePropertiesBuilder(StyleKeys.self))
 
       _ = stylePropertiesResolver.onResolvedPropertyValuesChanged { [unowned self] in
         let oldLayoutType = $0.old[StyleKeys.layout.asString] as? Layout.Type

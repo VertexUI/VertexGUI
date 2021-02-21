@@ -158,7 +158,7 @@ class ContainerTests: XCTestCase, LayoutTest {
     let innerRef2 = Reference<Widget>() 
     let innerRef3 = Reference<Widget>() 
     let outerRef = Reference<Widget>()
-    let root = Root(rootWidget: Container {
+    let root = Root(rootWidget: Container().withContent {
       Container(styleProperties: {
         ($0.layout, SimpleLinearLayout.self)
         ($0.width, 560.0)
@@ -191,7 +191,7 @@ class ContainerTests: XCTestCase, LayoutTest {
     let innerRef2 = Reference<Widget>() 
     let innerRef3 = Reference<Widget>() 
     let outerRef = Reference<Widget>()
-    let root = Root(rootWidget: Container {
+    let root = Root(rootWidget: Container().withContent {
       Container(styleProperties: {
         ($0.layout, SimpleLinearLayout.self)
         ($0.width, 200.0)
@@ -224,7 +224,7 @@ class ContainerTests: XCTestCase, LayoutTest {
     let innerRef2 = Reference<Widget>() 
     let innerRef3 = Reference<Widget>() 
     let outerRef = Reference<Widget>()
-    let root = Root(rootWidget: Container {
+    let root = Root(rootWidget: Container().withContent {
       Container(styleProperties: {
         ($0.layout, SimpleLinearLayout.self)
         (SimpleLinearLayout.ParentKeys.direction, SimpleLinearLayout.Direction.row)
@@ -259,7 +259,7 @@ class ContainerTests: XCTestCase, LayoutTest {
     let innerRef2 = Reference<Widget>() 
     let outerRef = Reference<Widget>()
     let justifyProperty = MutableProperty<SimpleLinearLayout.Justify>()
-    let root = Root(rootWidget: Container {
+    let root = Root(rootWidget: Container().withContent {
       Container(styleProperties: {
         ($0.layout, SimpleLinearLayout.self)
         (SimpleLinearLayout.ParentKeys.direction, SimpleLinearLayout.Direction.row)
@@ -302,7 +302,7 @@ class ContainerTests: XCTestCase, LayoutTest {
     let innerRef2 = Reference<Widget>() 
     let innerRef3 = Reference<Widget>() 
     let outerRef = Reference<Widget>()
-    let root = Root(rootWidget: Container {
+    let root = Root(rootWidget: Container().withContent {
       Container(styleProperties: {
         ($0.layout, SimpleLinearLayout.self)
         (SimpleLinearLayout.ParentKeys.direction, SimpleLinearLayout.Direction.row)

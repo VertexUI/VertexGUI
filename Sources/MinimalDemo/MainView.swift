@@ -6,10 +6,10 @@ public class MainView: ComposedWidget {
   private var counter = 0
 
   override public func performBuild() {
-    rootChild = Container(styleProperties: { _ in
+    rootChild = Container().with(styleProperties: { _ in
       (SimpleLinearLayout.ParentKeys.alignContent, SimpleLinearLayout.Align.center)
       (SimpleLinearLayout.ParentKeys.justifyContent, SimpleLinearLayout.Justify.center)
-    }) { [unowned self] in
+    }).withContent { [unowned self] in
 
       Button {
         
@@ -19,8 +19,12 @@ public class MainView: ComposedWidget {
       } onClick: {
         counter += 1
       }
+    }
+  }
 
-      DefaultTheme()
+  override public func buildStyle() -> Style {
+    Style("&") {
+      FlatTheme(primaryColor: .blue, secondaryColor: .green, backgroundColor: Color(10, 20, 50, 255)).styles
     }
   }
 }

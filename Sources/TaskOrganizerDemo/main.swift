@@ -16,9 +16,9 @@ open class TodoApp: WidgetsApp {
     private var navigationStore = NavigationStore()
 
     public init() {
-        guiRoot = WidgetGUI.Root(rootWidget: Container(styleProperties: { _ in
+        guiRoot = WidgetGUI.Root(rootWidget: Container().with(styleProperties: { _ in
             (SimpleLinearLayout.ParentKeys.alignContent, SimpleLinearLayout.Align.stretch)
-        }) {
+        }).withContent {
             TodoAppView().with(styleProperties: { _ in
                 (SimpleLinearLayout.ChildKeys.grow, 1.0)
             })
