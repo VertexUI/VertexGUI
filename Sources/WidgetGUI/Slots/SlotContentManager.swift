@@ -1,23 +1,23 @@
 import Events
 
-public class SlotContentManager<D>: AnySlotContent, EventfulObject {
+public class SlotContentManager<D>: AnySlotContentManager, EventfulObject {
   public let slot: Slot<D>
   public var anySlot: AnySlot {
     slot
   }
 
-  var anyContainer: AnySlotContentContainer? = nil {
+  var anyDefinition: AnySlotContentManagerDefinition? = nil {
     didSet {
-      if oldValue !== anyContainer {
-        onContainerChanged.invokeHandlers()
+      if oldValue !== anyDefinition {
+        onDefinitionChanged.invokeHandlers()
       }
     }
   }
-  var container: SlotContentContainer<D>? {
-    anyContainer as? SlotContentContainer<D>
+  var definition: SlotContentDefinition<D>? {
+    anyDefinition as? SlotContentDefinition<D>
   }
 
-  let onContainerChanged = EventHandlerManager<Void>()
+  let onDefinitionChanged = EventHandlerManager<Void>()
 
   public init(_ slot: Slot<D>) {
     self.slot = slot
@@ -25,12 +25,12 @@ public class SlotContentManager<D>: AnySlotContent, EventfulObject {
 
   public func callAsFunction(_ data: D) -> ExpDirectContent {
     let content = ExpDirectContent(partials: [])
-    if let container = container {
-      content.partials = container.build(data)
+    if let definition = definition {
+      content.partials = definition.build(data)
     }
-    _ = content.onDestroy(onContainerChanged { [unowned self, unowned content] in
-      if let container = container {
-        content.partials = container.build(data)
+    _ = content.onDestroy(onDefinitionChanged { [unowned self, unowned content] in
+      if let definition = definition {
+        content.partials = definition.build(data)
       } else {
         content.partials = []
       }
@@ -43,7 +43,7 @@ public class SlotContentManager<D>: AnySlotContent, EventfulObject {
   }
 }
 
-internal protocol AnySlotContent: class {
+internal protocol AnySlotContentManager: class {
   var anySlot: AnySlot { get }
-  var anyContainer: AnySlotContentContainer? { get set }
+  var anyDefinition: AnySlotContentManagerDefinition? { get set }
 }

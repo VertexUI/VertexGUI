@@ -1,4 +1,4 @@
-public class SlotContentContainer<D>: AnySlotContentContainer {
+public class SlotContentDefinition<D>: AnySlotContentManagerDefinition {
   var slot: Slot<D> 
   public var anySlot: AnySlot {
     slot
@@ -14,6 +14,6 @@ public class SlotContentContainer<D>: AnySlotContentContainer {
   }
 }
 
-public protocol AnySlotContentContainer: class {
+public protocol AnySlotContentManagerDefinition: class {
   var anySlot: AnySlot { get }
 }

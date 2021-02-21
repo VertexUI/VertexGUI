@@ -20,8 +20,8 @@ extension SlotAcceptingWidget {
   fileprivate func resolveSlotContentWrappers(_ content: ExpSlottingContent) {
     let mirror = Mirror(reflecting: self)
     for child in mirror.children {
-      if let slotContent = child.value as? AnySlotContent {
-        slotContent.anyContainer = content.getSlotContentDefinition(for: slotContent.anySlot)
+      if let slotContentManager = child.value as? AnySlotContentManager {
+        slotContentManager.anyDefinition = content.getSlotContentDefinition(for: slotContentManager.anySlot)
       }
     }
   }

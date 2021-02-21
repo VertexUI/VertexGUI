@@ -100,7 +100,7 @@ public class ExpSlottingContent: ExpContent, ExpContentProtocol {
       resolve()
     }
   }
-  public var slotContentDefinitions = [AnySlotContentContainer]()
+  public var slotContentDefinitions = [AnySlotContentManagerDefinition]()
   var replacementRanges = [Int: Range<Int>]()
   var nestedHandlerRemovers = [() -> ()]()
 
@@ -148,7 +148,7 @@ public class ExpSlottingContent: ExpContent, ExpContentProtocol {
     onChanged.invokeHandlers()
   }
 
-  public func getSlotContentDefinition(for slot: AnySlot) -> AnySlotContentContainer? {
+  public func getSlotContentDefinition(for slot: AnySlot) -> AnySlotContentManagerDefinition? {
     for definition in slotContentDefinitions {
       if definition.anySlot === slot {
         return definition
@@ -161,7 +161,7 @@ public class ExpSlottingContent: ExpContent, ExpContentProtocol {
 extension ExpSlottingContent {
   public enum Partial {
     case widget(Widget)
-    case slotContentDefinition(AnySlotContentContainer)
+    case slotContentDefinition(AnySlotContentManagerDefinition)
     case slottingContent(ExpSlottingContent)
   }
 }
