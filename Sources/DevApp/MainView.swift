@@ -36,7 +36,13 @@ public class MainView: ComposedWidget, SlotAcceptingWidget {
 
       DefaultTheme()
 
-      NewContainer().content {
+      List($items).content {
+        $0.itemSlot {
+          Text($0)
+        }
+      }
+
+      NewContainer().content { _ in
         Dynamic($text1) {
           Text("NO DATA SLOT CONTNET \(text1)")
         }
@@ -304,9 +310,11 @@ public class MainView: ComposedWidget, SlotAcceptingWidget {
           }
         }
 
-        List($childData) {
-          NestedWidget($0)
-        }
+        /*List($childData).content {
+          $0.itemSlot {
+            NestedWidget($0)
+          }
+        }*/
       }
     }
 

@@ -1,6 +1,6 @@
 import SwiftGUI
 
-public class NewContainer: Widget, SlotAcceptingWidget {
+public class NewContainer: ContentfulWidget, SlotAcceptingWidget {
   public static var DefaultSlot = Slot(key: "default", data: Void.self)
   public static var DataSlot = Slot(key: "data", data: String.self)
 
@@ -12,18 +12,10 @@ public class NewContainer: Widget, SlotAcceptingWidget {
 
   var _content: ExpDirectContent?
 
-  @ExpDirectContentBuilder var content: ExpDirectContent {
+  @ExpDirectContentBuilder override public var content: ExpDirectContent {
     defaultSlot()
     dataSlot("THE FIRST DATA SLOT CONTENT")
     dataSlot("THE SECOND DATA SLOT CONTENT")
-  }
-
-  override public func performBuild() {
-    _content = content 
-    contentChildren = _content!.widgets
-    _ = _content!.onChanged { [unowned self] in
-      contentChildren = _content!.widgets
-    }
   }
 
   override public func getContentBoxConfig() -> BoxConfig {

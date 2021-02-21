@@ -72,8 +72,10 @@ public class LifecycleView: ComposedWidget {
 
       Build($showSignals) {
         if showSignals {
-          List($invocationInfoItems) {
-            buildSignal($0)
+          List($invocationInfoItems).content {
+            $0.itemSlot {
+              buildSignal($0)
+            }
           }
         } else {
           Space(.zero)
@@ -84,8 +86,10 @@ public class LifecycleView: ComposedWidget {
         if showSignalGroups {
           List(ComputedProperty(compute: {
             Array(invocationSignalGroups.values)
-          }, dependencies: [$invocationSignalGroups])) {
-            buildSignalGroup($0)
+          }, dependencies: [$invocationSignalGroups])).content {
+            $0.itemSlot {
+              buildSignalGroup($0)
+            }
           }
         } else {
           Space(.zero)

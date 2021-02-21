@@ -1,3 +1,4 @@
+import Foundation
 import Events
 
 public protocol ExpContentProtocol: class {
@@ -25,7 +26,9 @@ extension ExpContentProtocol {
   }
 }
 
-public class ExpContent: EventfulObject {
+// need to inherit from NSObject because otherwise crashes occur
+// when this object is being type casted e.g. in a mirror over a class
+public class ExpContent: NSObject, EventfulObject {
   public let onChanged = EventHandlerManager<Void>()
   public let onDestroy = EventHandlerManager<Void>()
 

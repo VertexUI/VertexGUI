@@ -76,15 +76,17 @@ public class TodoAppView: ComposedWidget {
         }
       }
 
-      List(styleProperties: {
+      List(ComputedProperty(compute: {
+        todoStore.state.lists
+      }, dependencies: [todoStore.$state])).with(styleProperties: {
         ($0.overflowY, Overflow.scroll)
         (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.stretch)
         (SimpleLinearLayout.ChildKeys.shrink, 1.0)
         ($0.foreground, Color.white)
-      }, ComputedProperty(compute: {
-        todoStore.state.lists
-      }, dependencies: [todoStore.$state])) {
-        buildMenuListItem(for: $0)
+      }).content {
+        $0.itemSlot {
+          buildMenuListItem(for: $0)
+        }
       }
     }
   }

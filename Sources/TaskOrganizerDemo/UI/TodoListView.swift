@@ -65,14 +65,16 @@ public class TodoListView: ComposedWidget {
 
       Space(DSize2(0, 48))
 
-      List(styleProperties: {
+      List(ComputedProperty<[TodoItem]>(compute: {
+        list.items
+      }, dependencies: [$list])).with(styleProperties: {
         (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.stretch)
         (SimpleLinearLayout.ChildKeys.shrink, 1.0)
         ($0.overflowY, Overflow.scroll)
-      }, ComputedProperty<[TodoItem]>(compute: {
-        list.items
-      }, dependencies: [$list])) {
-        build(todo: $0)
+      }).content {
+        $0.itemSlot {
+          build(todo: $0)
+        }
       }
     }
         /*ObservingBuilder($nameEditMode) {

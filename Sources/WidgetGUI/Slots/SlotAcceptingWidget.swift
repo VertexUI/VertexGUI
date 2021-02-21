@@ -7,10 +7,15 @@ extension SlotAcceptingWidget {
     nil
   }
 
+  public func with(@StylePropertiesBuilder styleProperties: (StyleKeys.Type) -> StyleProperties) -> Self {
+    self.directStyleProperties.append(styleProperties(Self.StyleKeys.self))
+    return self
+  }
+
   public func content(
-    @ExpSlottingContentBuilder content buildContent: () -> ExpSlottingContent 
+    @ExpSlottingContentBuilder content buildContent: (Self.Type) -> ExpSlottingContent 
   ) -> Self {
-    let content = buildContent()
+    let content = buildContent(Self.self)
 
     resolveSlotContentWrappers(content)
 
