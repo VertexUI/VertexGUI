@@ -50,7 +50,6 @@ fileprivate var itemSlots = [ObjectIdentifier: AnySlot]()
 public class List<Item: Equatable>: ContentfulWidget, SlotAcceptingWidget {
   @ObservableProperty
   private var items: [Item]
-  private var previousItems: [Item] = []
 
   /*@Reference
   private var itemLayoutContainer: InternalList*/
@@ -79,6 +78,9 @@ public class List<Item: Equatable>: ContentfulWidget, SlotAcceptingWidget {
     super.init()
     self.$items.bind(itemsProperty)
     processItemUpdate(old: [], new: items)
+    _ = $items.onChanged { [unowned self] in
+      processItemUpdate(old: $0.old, new: $0.new)
+    }
   }
 
   private func processItemUpdate(old: [Item], new: [Item]) {
