@@ -5,6 +5,9 @@ public class NewContainer: Widget, SlotAcceptingWidget {
   public static var DataSlot = Slot(key: "data", data: String.self)
 
   let defaultSlot = SlotContentManager(NewContainer.DefaultSlot)
+  public var defaultNoDataSlotContentManager: SlotContentManager<Void>? {
+    defaultSlot
+  }
   let dataSlot = SlotContentManager(NewContainer.DataSlot)
 
   var _content: ExpDirectContent?

@@ -6,7 +6,7 @@ public class SlotContentManager<D>: AnySlotContentManager, EventfulObject {
     slot
   }
 
-  var anyDefinition: AnySlotContentManagerDefinition? = nil {
+  var anyDefinition: AnySlotContentDefinition? = nil {
     didSet {
       if oldValue !== anyDefinition {
         onDefinitionChanged.invokeHandlers()
@@ -45,5 +45,5 @@ public class SlotContentManager<D>: AnySlotContentManager, EventfulObject {
 
 internal protocol AnySlotContentManager: class {
   var anySlot: AnySlot { get }
-  var anyDefinition: AnySlotContentManagerDefinition? { get set }
+  var anyDefinition: AnySlotContentDefinition? { get set }
 }

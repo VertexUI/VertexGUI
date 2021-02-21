@@ -15,8 +15,10 @@ extension ExpContentProtocol {
   func updateReplacementRanges(ranges: [Int: Range<Int>], from startIndex: Int, deltaLength: Int) -> [Int: Range<Int>] {
     var result = ranges
     for (rangeIndex, range) in result {
-      if rangeIndex >= startIndex {
+      if rangeIndex == startIndex {
         result[rangeIndex] = range.lowerBound..<range.upperBound + deltaLength
+      } else if rangeIndex > startIndex {
+        result[rangeIndex] = range.lowerBound + deltaLength..<range.upperBound + deltaLength
       }
     }
     return result
@@ -76,7 +78,7 @@ public class ExpDirectContent: ExpContent, ExpContentProtocol {
           replacementRanges = updateReplacementRanges(
             ranges: replacementRanges,
             from: index,
-            deltaLength: replacementRanges[index]!.count - nestedWidgets.count)
+            deltaLength: nestedWidgets.count - replacementRanges[index]!.count)
 
           onChanged.invokeHandlers()
         })
@@ -100,9 +102,11 @@ public class ExpSlottingContent: ExpContent, ExpContentProtocol {
       resolve()
     }
   }
-  public var slotContentDefinitions = [AnySlotContentManagerDefinition]()
+  public var slotContentDefinitions = [AnySlotContentDefinition]()
   var replacementRanges = [Int: Range<Int>]()
   var nestedHandlerRemovers = [() -> ()]()
+  var directContentPartials: [ExpDirectContent.Partial] = []
+  let directContent = ExpDirectContent(partials: [])
 
   public required init(partials: [Partial]) {
     self.partials = partials
@@ -117,14 +121,22 @@ public class ExpSlottingContent: ExpContent, ExpContentProtocol {
     slotContentDefinitions = []
     replacementRanges = [:]
     nestedHandlerRemovers = []
+    directContentPartials = []
 
     for (index, partial) in partials.enumerated() {
       switch partial {
       case let .widget(widget):
-        print("IMPLEMENT WIDGET RESOLVE")
+        directContentPartials.append(.widget(widget))
+
+      case let .directContent(nestedDirectContent):
+        directContentPartials.append(.content(nestedDirectContent))
+
       case let .slotContentDefinition(definition):
         slotContentDefinitions.append(definition)
+
       case let .slottingContent(nestedSlotContent):
+        directContentPartials.append(.content(nestedSlotContent.directContent))
+
         let nestedDefinitions = nestedSlotContent.slotContentDefinitions
 
         replacementRanges[index] = slotContentDefinitions.count..<(slotContentDefinitions.count + nestedDefinitions.count)
@@ -145,10 +157,11 @@ public class ExpSlottingContent: ExpContent, ExpContentProtocol {
       }
     }
 
+    directContent.partials = directContentPartials
     onChanged.invokeHandlers()
   }
 
-  public func getSlotContentDefinition(for slot: AnySlot) -> AnySlotContentManagerDefinition? {
+  public func getSlotContentDefinition(for slot: AnySlot) -> AnySlotContentDefinition? {
     for definition in slotContentDefinitions {
       if definition.anySlot === slot {
         return definition
@@ -161,7 +174,8 @@ public class ExpSlottingContent: ExpContent, ExpContentProtocol {
 extension ExpSlottingContent {
   public enum Partial {
     case widget(Widget)
-    case slotContentDefinition(AnySlotContentManagerDefinition)
+    case directContent(ExpDirectContent)
+    case slotContentDefinition(AnySlotContentDefinition)
     case slottingContent(ExpSlottingContent)
   }
 }

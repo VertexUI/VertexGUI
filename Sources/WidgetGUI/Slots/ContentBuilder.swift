@@ -27,11 +27,15 @@ public struct ExpDirectContentBuilder {
 
 @_functionBuilder
 public struct ExpSlottingContentBuilder {
-  public static func buildExpression(_ slotContentDefinition: AnySlotContentManagerDefinition) -> [ExpSlottingContent.Partial] {
-    [.slotContentDefinition(slotContentDefinition)]
+  public static func buildExpression(_ widget: Widget) -> [ExpSlottingContent.Partial] {
+    [.widget(widget)]
   }
 
-  public static func buildExpression<D>(_ slotContentDefinition: SlotContentDefinition<D>) -> [ExpSlottingContent.Partial] {
+  public static func buildExpression(_ directContent: ExpDirectContent) -> [ExpSlottingContent.Partial] {
+    [.directContent(directContent)]
+  }
+
+  public static func buildExpression(_ slotContentDefinition: AnySlotContentDefinition) -> [ExpSlottingContent.Partial] {
     [.slotContentDefinition(slotContentDefinition)]
   }
 

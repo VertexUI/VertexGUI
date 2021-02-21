@@ -37,27 +37,26 @@ public class MainView: ComposedWidget, SlotAcceptingWidget {
       DefaultTheme()
 
       NewContainer().content {
-        /*NewContainer.DefaultSlot {
-          Text("WOW IT'S THE TEXT FROM THE NEW CONTAINER \(text1)")
-        }*/
+        Dynamic($text1) {
+          Text("NO DATA SLOT CONTNET \(text1)")
+        }
+
         /*Dynamic($text1) {
           NewContainer.DefaultSlot {
             Text("WOW IT'S THE TEXT FROM THE NEW CONTAINER \(text1)")
 
-            Dynamic($text2) {
+            /*Dynamic($text2) {
               Text("ANd this is the second text nested 2! \(text2)")
-            }
+            }*/
           }
         }*/
-        NewContainer.DefaultSlot {
-          Text("NO DATA SLOT CONTNET")
-        }
 
-        NewContainer.DataSlot { data in
+
+       /* NewContainer.DataSlot { data in
           Dynamic($text1) {
             Text("This is the text with data: \(data) and property \(text1)")
           }
-        }
+        }*/
       }
 
       Text(someInjectedData)

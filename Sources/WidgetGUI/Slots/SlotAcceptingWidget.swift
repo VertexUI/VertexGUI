@@ -1,18 +1,40 @@
 public protocol SlotAcceptingWidget: Widget {
+  var defaultNoDataSlotContentManager: SlotContentManager<Void>? { get }
 }
 
 extension SlotAcceptingWidget {
+  public var defaultNoDataSlotContentManager: SlotContentManager<Void>? {
+    nil
+  }
+
   public func content(
     @ExpSlottingContentBuilder content buildContent: () -> ExpSlottingContent 
   ) -> Self {
     let content = buildContent()
-    // TODO: could set the default slot here
+
     resolveSlotContentWrappers(content)
+
+    var defaultDefinition: SlotContentDefinition<Void>? = nil
+    if let defaultManager = defaultNoDataSlotContentManager {
+      defaultDefinition = SlotContentDefinition(slot: defaultManager.slot as! Slot<Void>) { [unowned content] in
+        content.directContent
+      }
+
+      if defaultManager.anyDefinition == nil {
+        // apply default definition afterward to ensure that it is not overwritten with nil by the resolve logic
+        defaultManager.anyDefinition = defaultDefinition
+      }
+    }
+
     // accessing content in this closure should capture the content object
     // the handler is removed when the widget is destroyed -> content object
     // is released
     _ = onDestroy(content.onChanged { [unowned self] in
       resolveSlotContentWrappers(content)
+      
+      if let defaultManager = defaultNoDataSlotContentManager, defaultManager.anyDefinition == nil {
+        defaultManager.anyDefinition = defaultDefinition
+      }
     })
     return self
   }
@@ -21,7 +43,8 @@ extension SlotAcceptingWidget {
     let mirror = Mirror(reflecting: self)
     for child in mirror.children {
       if let slotContentManager = child.value as? AnySlotContentManager {
-        slotContentManager.anyDefinition = content.getSlotContentDefinition(for: slotContentManager.anySlot)
+        slotContentManager.anyDefinition = content.getSlotContentDefinition(
+          for: slotContentManager.anySlot)
       }
     }
   }
