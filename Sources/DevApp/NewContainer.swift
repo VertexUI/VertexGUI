@@ -2,14 +2,17 @@ import SwiftGUI
 
 public class NewContainer: Widget, SlotAcceptingWidget {
   public static var DefaultSlot = Slot(key: "default", data: Void.self)
+  public static var DataSlot = Slot(key: "data", data: String.self)
 
-  @SlotContent(NewContainer.DefaultSlot)
-  var defaultSlot: ExpDirectContent
+  let defaultSlot = SlotContentManager(NewContainer.DefaultSlot)
+  let dataSlot = SlotContentManager(NewContainer.DataSlot)
 
   var _content: ExpDirectContent?
 
   @ExpDirectContentBuilder var content: ExpDirectContent {
-    defaultSlot
+    defaultSlot()
+    dataSlot("THE FIRST DATA SLOT CONTENT")
+    dataSlot("THE SECOND DATA SLOT CONTENT")
   }
 
   override public func performBuild() {
