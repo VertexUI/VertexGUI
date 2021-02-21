@@ -22,7 +22,6 @@ extension SlotAcceptingWidget {
     for child in mirror.children {
       if let slotContent = child.value as? AnySlotContent {
         slotContent.anyContainer = content.getSlotContentDefinition(for: slotContent.anySlot)
-        print("RESOLVE SLOT CONTENT", slotContent, slotContent.anySlot.key)
       }
     }
   }

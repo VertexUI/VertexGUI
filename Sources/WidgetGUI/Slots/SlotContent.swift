@@ -8,7 +8,6 @@ public class SlotContent<D>: AnySlotContent {
   var anyContainer: AnySlotContentContainer? = nil {
     didSet {
       if oldValue !== anyContainer {
-        print("DID UPDATE A CONTAINER", oldValue, anyContainer)
         resolveContent()
       }
     }
@@ -29,7 +28,6 @@ public class SlotContent<D>: AnySlotContent {
   }
 
   func resolveContent() {
-    print("RESOLVE CONTNET")
     if ObjectIdentifier(D.self) == ObjectIdentifier(Void.self) {
       content.partials = container.build(Void() as! D)
     }

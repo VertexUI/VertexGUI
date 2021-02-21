@@ -11,6 +11,18 @@ public protocol ExpContentProtocol: class {
   init(partials: [Partial])
 }
 
+extension ExpContentProtocol {
+  func updateReplacementRanges(ranges: [Int: Range<Int>], from startIndex: Int, deltaLength: Int) -> [Int: Range<Int>] {
+    var result = ranges
+    for (rangeIndex, range) in result {
+      if rangeIndex >= startIndex {
+        result[rangeIndex] = range.lowerBound..<range.upperBound + deltaLength
+      }
+    }
+    return result
+  }
+}
+
 public class ExpContent: EventfulObject {
   public let onChanged = EventHandlerManager<Void>()
   public let onDestroy = EventHandlerManager<Void>()
@@ -28,6 +40,9 @@ public class ExpDirectContent: ExpContent, ExpContentProtocol {
     }
   }
   public var widgets: [Widget] = []
+  var replacementRanges = [Int: Range<Int>]()
+
+  var nestedHandlerRemovers = [() -> ()]()
 
   public required init(partials: [Partial]) {
     self.partials = partials
@@ -36,17 +51,35 @@ public class ExpDirectContent: ExpContent, ExpContentProtocol {
   }
 
   func resolve() {
+    for remove in nestedHandlerRemovers {
+      remove()
+    }
     widgets = []
-    for partial in partials {
+    replacementRanges = [:]
+    nestedHandlerRemovers = []
+
+    for (index, partial) in partials.enumerated() {
       switch partial {
       case let .widget(widget):
         widgets.append(widget)
       case let .content(nestedContent):
-        widgets.append(contentsOf: nestedContent.widgets)
-        _ = nestedContent.onChanged {
-          print("NESTED CHANGED")
-        }
-        print("IMPLEMENT RESOLVE UPDATE OF NESTED CONTENT")
+        let nestedWidgets = nestedContent.widgets
+
+        replacementRanges[index] = widgets.count..<(widgets.count + nestedWidgets.count)
+
+        widgets.append(contentsOf: nestedWidgets)
+
+        nestedHandlerRemovers.append(nestedContent.onChanged { [unowned self] in
+          let nestedWidgets = nestedContent.widgets
+          widgets.replaceSubrange(replacementRanges[index]!, with: nestedWidgets)
+
+          replacementRanges = updateReplacementRanges(
+            ranges: replacementRanges,
+            from: index,
+            deltaLength: replacementRanges[index]!.count - nestedWidgets.count)
+
+          onChanged.invokeHandlers()
+        })
       }
     }
 
@@ -101,21 +134,18 @@ public class ExpSlottingContent: ExpContent, ExpContentProtocol {
         nestedHandlerRemovers.append(nestedSlotContent.onChanged { [unowned self] in
           let nestedDefinitions = nestedSlotContent.slotContentDefinitions
           self.slotContentDefinitions.replaceSubrange(replacementRanges[index]!, with: nestedDefinitions)
-          updateReplacementRanges(from: index, deltaLength: nestedDefinitions.count - replacementRanges[index]!.count)
+
+          replacementRanges = updateReplacementRanges(
+            ranges: replacementRanges,
+            from: index,
+            deltaLength: nestedDefinitions.count - replacementRanges[index]!.count)
+
           onChanged.invokeHandlers()
         })
       }
     }
 
     onChanged.invokeHandlers()
-  }
-
-  func updateReplacementRanges(from index: Int, deltaLength: Int) {
-    for (rangeIndex, range) in replacementRanges {
-      if rangeIndex >= index {
-        replacementRanges[rangeIndex] = range.lowerBound..<(range.upperBound + deltaLength)
-      }
-    }
   }
 
   public func getSlotContentDefinition(for slot: AnySlot) -> AnySlotContentContainer? {
@@ -125,10 +155,6 @@ public class ExpSlottingContent: ExpContent, ExpContentProtocol {
       }
     }
     return nil
-  }
-
-  deinit {
-    print("DEINITILAIZED SLOTTING CONTENT")
   }
 }
 
