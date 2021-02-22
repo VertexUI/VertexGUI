@@ -10,12 +10,15 @@ import ColorizeSwift
 
 // TODO: create a subclass of App, DesktopApp which supports windows/screens which can support different resolutions --> renderContexts --> different text boundsSize
 open class TodoApp: WidgetsApp {    
-    open var guiRoot: WidgetGUI.Root
-    private var todoStore = TodoStore()
-    private var searchStore = SearchStore()
-    private var navigationStore = NavigationStore()
+    let guiRoot: WidgetGUI.Root
+    let todoStore: TodoStore
+    let searchStore: SearchStore
+    let navigationStore: NavigationStore
 
     public init() {
+        todoStore = TodoStore()
+        searchStore = SearchStore(todoStore: todoStore)
+        navigationStore = NavigationStore()
         guiRoot = WidgetGUI.Root(rootWidget: Container().with(styleProperties: { _ in
             (SimpleLinearLayout.ParentKeys.alignContent, SimpleLinearLayout.Align.stretch)
         }).withContent {

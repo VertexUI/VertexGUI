@@ -76,6 +76,7 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         }
         return result
     }
+    internal var previousChildren = [Widget]()
     public var contentChildren: [Widget] = [] {
         didSet {
             if mounted && built {
@@ -739,11 +740,9 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
 
     public final func layout(constraints: BoxConstraints) {
         let invocationId = getNextLifecycleMethodInvocationId(.layout)
-        lifecycleMethodInvocationSignalBus.publish(.started(method: .layout, reason: .undefined, invocationId: invocationId, timestamp: context.applicationTime ))
-
-        #if DEBUG
-        Logger.log("Attempting layout".with(fg: .yellow), "on Widget: \(self).", level: .Message, context: .WidgetLayouting)
-        #endif
+        if mounted {
+            lifecycleMethodInvocationSignalBus.publish(.started(method: .layout, reason: .undefined, invocationId: invocationId, timestamp: context.applicationTime ))
+        }
 
         if !layoutInvalid, let previousConstraints = previousConstraints, constraints == previousConstraints {
             #if DEBUG

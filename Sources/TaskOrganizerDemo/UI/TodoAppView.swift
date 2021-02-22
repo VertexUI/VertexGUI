@@ -1,5 +1,5 @@
-import SwiftGUI
 import ReactiveProperties
+import SwiftGUI
 
 public class TodoAppView: ComposedWidget {
   public enum Mode {
@@ -25,8 +25,49 @@ public class TodoAppView: ComposedWidget {
   /*@MutableProperty
   private var mode: Mode = .SelectedList*/
 
-  @MutableProperty
-  private var searchQuery: String = ""
+  @MutableComputedProperty
+  private var mainViewRoute: MainViewRoute
+
+  @MutableComputedProperty
+  private var searchQuery: String
+
+  override public init() {
+    super.init()
+    _ = onDependenciesInjected { [unowned self] _ in
+      _mainViewRoute.reinit(
+        compute: {
+          navigationStore.state.mainViewRoute
+        },
+        apply: {
+          navigationStore.commit(.updateMainViewRoute($0))
+        }, dependencies: [navigationStore.$state])
+
+      _searchQuery.reinit(
+        compute: {
+          searchStore.state.searchQuery
+        },
+        apply: {
+          searchStore.dispatch(.updateResults($0))
+        }, dependencies: [searchStore.$state])
+      _ = _searchQuery.onChanged { _ in
+        if searchQuery.isEmpty {
+          switch mainViewRoute {
+          case .searchResults:
+            mainViewRoute = .none
+          default:
+            break
+          }
+        } else {
+          switch mainViewRoute {
+          case .searchResults:
+            break
+          default:
+            mainViewRoute = .searchResults
+          }
+        }
+      }
+    }
+  }
 
   override public func performBuild() {
     rootChild = Container().with(styleProperties: {
@@ -50,19 +91,23 @@ public class TodoAppView: ComposedWidget {
         ($0.padding, 32)
       }).withContent {
         Button().with(classes: ["button"]).withContent {
-          Text(styleProperties: {
-            ($0.fontWeight, FontWeight.bold)
-            ($0.fontSize, 20)
-            ($0.foreground, Color.black)
-          }, "New List")
+          Text(
+            styleProperties: {
+              ($0.fontWeight, FontWeight.bold)
+              ($0.fontSize, 20)
+              ($0.foreground, Color.black)
+            }, "New List")
         }.onClick { [unowned self] in
           handleNewListClick()
         }
       }
 
-      List(ComputedProperty(compute: {
-        todoStore.state.lists
-      }, dependencies: [todoStore.$state])).with(styleProperties: {
+      List(
+        ComputedProperty(
+          compute: {
+            todoStore.state.lists
+          }, dependencies: [todoStore.$state])
+      ).with(styleProperties: {
         ($0.overflowY, Overflow.scroll)
         (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.stretch)
         (SimpleLinearLayout.ChildKeys.shrink, 1.0)
@@ -80,35 +125,23 @@ public class TodoAppView: ComposedWidget {
       ($0.padding, Insets(all: 32))
       (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.stretch)
     }).withContent { [unowned self] in
-      TextInput(styleProperties: { _ in
+
+      TextInput(mutableText: $searchQuery, placeholder: "search").with(styleProperties: { _ in
         (SimpleLinearLayout.ChildKeys.shrink, 1.0)
         (SimpleLinearLayout.ChildKeys.grow, 1.0)
-      }, mutableText: MutableComputedProperty(compute: {
-        searchStore.state.searchQuery
-      }, apply: {
-        searchStore.commit(.updateQuery($0))
-      }, dependencies: [searchStore.$state]), placeholder: "search")
-
-        /*Row.Item(crossAlignment: .Center) {
-          Spaceholder(display: ReactiveProperties.ComputedProperty<Bool>([$mode.any]) { [unowned self] in
-            return mode == .Search
-          }, dimension: .Vertical) {
-            Button().withContent {
-              Text("cancel")
-            } onClick: {
-              mode = .SelectedList
-            }
-          }
-        }*/
+      })
     }
   }
 
   private func buildMenuListItem(for list: TodoList) -> Widget {
-    Container().with(classes: ["menu-item"], styleProperties: {
-      ($0.padding, Insets(all: 16))
-      ($0.borderWidth, BorderWidth(bottom: 1.0))
-      ($0.borderColor, Color.white)
-    }).withContent {
+    Container().with(
+      classes: ["menu-item"],
+      styleProperties: {
+        ($0.padding, Insets(all: 16))
+        ($0.borderWidth, BorderWidth(bottom: 1.0))
+        ($0.borderColor, Color.white)
+      }
+    ).withContent {
       Container().with(styleProperties: {
         ($0.background, list.color)
         ($0.padding, Insets(all: 8))
@@ -118,10 +151,12 @@ public class TodoAppView: ComposedWidget {
         //MaterialIcon(.formatListBulletedSquare, color: .white)
       }
 
-      Text(styleProperties: { 
-        (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.center)
-        ($0.padding, Insets(left: 8))
-      }, list.name).with(classes: ["list-item-name"])
+      Text(
+        styleProperties: {
+          (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.center)
+          ($0.padding, Insets(left: 8))
+        }, list.name
+      ).with(classes: ["list-item-name"])
     }.onClick { [unowned self] in
       navigationStore.commit(.updateMainViewRoute(.selectedList(list.id)))
     }
@@ -136,24 +171,20 @@ public class TodoAppView: ComposedWidget {
     }).withContent { [unowned self] in
       Space(DSize2(0, 0)).connect(ref: $activeViewTopSpace)
 
-      Dynamic(navigationStore.$state) {
-        switch navigationStore.state.mainViewRoute {
+      Dynamic($mainViewRoute) {
+        switch mainViewRoute {
         case .none:
-          Text(styleProperties: {
-            ($0.foreground, Color.white)
-            ($0.fontSize, 24)
-            ($0.fontWeight, FontWeight.bold)
-            ($0.opacity, 0.5)
-            (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.center)
-          }, "no list selected")
+          Text(
+            styleProperties: {
+              ($0.foreground, Color.white)
+              ($0.fontSize, 24)
+              ($0.fontWeight, FontWeight.bold)
+              ($0.opacity, 0.5)
+              (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.center)
+            }, "no list selected")
 
         case let .selectedList(id):
-          TodoListView(listId: ComputedProperty(compute: {
-            if case let .selectedList(id) = navigationStore.state.mainViewRoute {
-              return id
-            }
-            return -1
-          }, dependencies: [navigationStore.$state])).with(styleProperties: {
+          TodoListView(listId: StaticProperty(id)).with(styleProperties: {
             ($0.padding, Insets(top: 48, left: 48))
             (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.stretch)
             (SimpleLinearLayout.ChildKeys.grow, 1.0)
@@ -161,7 +192,12 @@ public class TodoAppView: ComposedWidget {
           })
 
         case .searchResults:
-          SearchResultsView()
+          SearchResultsView().with(styleProperties: {
+            ($0.padding, Insets(top: 48, left: 48))
+            (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.stretch)
+            (SimpleLinearLayout.ChildKeys.grow, 1.0)
+            (SimpleLinearLayout.ChildKeys.shrink, 1.0)
+          })
         }
       }
     }
@@ -173,7 +209,10 @@ public class TodoAppView: ComposedWidget {
 
   override public var style: Style {
     Style("&") {
-      FlatTheme(primaryColor: AppTheme.primaryColor, secondaryColor: AppTheme.primaryColor, backgroundColor: AppTheme.backgroundColor).styles
+      FlatTheme(
+        primaryColor: AppTheme.primaryColor, secondaryColor: AppTheme.primaryColor,
+        backgroundColor: AppTheme.backgroundColor
+      ).styles
 
       Style(".button") {
         ($0.background, Color.yellow)

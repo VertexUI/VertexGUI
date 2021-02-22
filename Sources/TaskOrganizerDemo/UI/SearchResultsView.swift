@@ -1,8 +1,70 @@
 import SwiftGUI
 
-public class SearchResultsView: ComposedWidget {
+public class SearchResultsView: ContentfulWidget {
   @Inject
-  private var store: TodoStore
+  private var todoStore: TodoStore
+
+  @Inject
+  private var searchStore: SearchStore
+
+  @ComputedProperty
+  var searchResultsByListId: [Int: [SearchStore.SearchResult]]
+
+  override public init() {
+    super.init()
+    _ = onDependenciesInjected { [unowned self] in
+      _searchResultsByListId.reinit(compute: {
+        searchStore.state.searchResults.reduce(into: [Int: [SearchStore.SearchResult]]()) {
+          if $0[$1.listId] == nil {
+            $0[$1.listId] = []
+          }
+          $0[$1.listId]!.append($1)
+        }
+      }, dependencies: [searchStore.$state])
+    }
+  }
+
+  @ExpDirectContentBuilder override public var content: ExpDirectContent {
+    Container().with(styleProperties: { _ in
+      (SimpleLinearLayout.ParentKeys.direction, SimpleLinearLayout.Direction.column)
+      (SimpleLinearLayout.ParentKeys.alignContent, SimpleLinearLayout.Align.stretch)
+    }).withContent {
+      searchResultsByListId.map { (listId, searchResults) in
+        Container().with(classes: ["list"], styleProperties: { _ in
+          (SimpleLinearLayout.ParentKeys.direction, SimpleLinearLayout.Direction.column)
+          (SimpleLinearLayout.ParentKeys.alignContent, SimpleLinearLayout.Align.stretch)
+        }).withContent {
+          buildListHeader(listId)
+
+          searchResults.map {
+            buildSearchResult($0)
+          }
+        }
+      }
+    }
+  }
+
+  func buildListHeader(_ listId: Int) -> Widget {
+    Text(styleProperties: {
+      ($0.foreground, Color.white)
+      ($0.fontWeight, FontWeight.bold)
+      ($0.fontSize, 36.0)
+    }, todoStore.state.lists.first { $0.id == listId }!.name)
+  }
+
+  func buildSearchResult(_ result: SearchStore.SearchResult) -> Widget {
+    TodoListItemView(todoStore.state.lists.first { $0.id == result.listId }!.items.first { $0.id == result.itemId }!)
+  }
+
+  override public var style: Style {
+    Style("&") {
+      ($0.overflowY, Overflow.scroll)
+
+      Style(".list") {
+        (SimpleLinearLayout.ChildKeys.margin, Insets(bottom: 64))
+      }
+    }
+  }
 
   /*@ComputedProperty
   private var searchResult: TodoSearchResult?

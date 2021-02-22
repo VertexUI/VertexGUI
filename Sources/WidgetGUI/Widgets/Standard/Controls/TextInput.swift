@@ -204,20 +204,16 @@ public final class TextInput: ComposedWidget, StylableWidgetProtocol, GUIKeyEven
       switch event.key {
       case .Backspace:
         if caretIndex > 0 && textBuffer.count >= caretIndex {
-          invalidateRenderState {
-            textBuffer.remove(
-              at: textBuffer.index(textBuffer.startIndex, offsetBy: caretIndex - 1))
-            caretIndex -= 1
-            syncText()
-            updateCaretPositionTransforms()
-          }
+          textBuffer.remove(
+            at: textBuffer.index(textBuffer.startIndex, offsetBy: caretIndex - 1))
+          caretIndex -= 1
+          syncText()
+          updateCaretPositionTransforms()
         }
       case .Delete:
         if caretIndex < textBuffer.count {
-          invalidateRenderState {
-            textBuffer.remove(at: textBuffer.index(textBuffer.startIndex, offsetBy: caretIndex))
-            syncText()
-          }
+          textBuffer.remove(at: textBuffer.index(textBuffer.startIndex, offsetBy: caretIndex))
+          syncText()
         }
       case .ArrowLeft:
         if caretIndex > 0 {

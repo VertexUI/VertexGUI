@@ -25,8 +25,12 @@ public class WidgetTreeManager {
   }
 
   public func updateChildren(of widget: Widget) {
+    var removedChildren = widget.previousChildren
+
+    var anyChildChanged = false
     for (index, child) in widget.children.enumerated() {
-      var anyChildChanged = false
+      removedChildren.removeAll { $0 === child }
+
       if child.parent as? Widget !== widget {
         anyChildChanged = true
         mount(widget: child, parent: widget, treePath: widget.treePath/index)
@@ -37,18 +41,27 @@ public class WidgetTreeManager {
       } else {
         child.treePath = widget.treePath/index
       }
+
       if let specificStyle = widget.specificWidgetStyle {
         let newPath = widget.treePath/widget.children.count
         if newPath != specificStyle.treePath {
           specificStyle.treePath = newPath
-          widget.invalidateMatchedStyles()
+          // TODO: maybe instead have something like widget.notifySpecificStyleChanged() / widget.notifyProvidedStylesChanged() ...
+          child.invalidateMatchedStyles()
         }
       }
-      if anyChildChanged {
-        widget.invalidateBoxConfig()
-        widget.invalidateLayout()
-      }
     }
+
+    for child in removedChildren {
+      child.destroy()
+    }
+
+    if anyChildChanged {
+      widget.invalidateBoxConfig()
+      widget.invalidateLayout()
+    }
+
+    widget.previousChildren = widget.children
   }
 
   public func mount(widget: Widget, parent: Parent, treePath: TreePath) {
@@ -94,6 +107,8 @@ public class WidgetTreeManager {
     }
 
     mountChildren(of: widget)
+
+    widget.previousChildren = widget.children
 
     widget.buildInvalid = false
     widget.built = true
