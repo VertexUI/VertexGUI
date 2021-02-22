@@ -141,10 +141,10 @@ public final class TextInput: ComposedWidget, StylableWidget, GUIKeyEventConsume
   }
 
   override public var style: Style {
-    Style("&", Self.self) { _ in
-      /*($0.padding, Insets(all: 16))
+    Style("&", Self.self) {
+      ($0.padding, Insets(all: 16))
       ($0.foreground, Color.black)
-      ($0.background, Color.white)*/
+      ($0.background, Color.white)
 
       Style("& Container", Container.self) {
         ($0.layout, AbsoluteLayout.self)

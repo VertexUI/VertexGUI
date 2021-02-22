@@ -84,7 +84,8 @@ public class StylePropertiesResolver {
 
     var mergedProperties = [String: StyleProperty]()
 
-    for style in styles {
+    let sortedStyles = sortStyles(styles)
+    for style in sortedStyles {
       for property in style.properties {
         mergedProperties[property.key.asString] = property
       }
@@ -132,6 +133,18 @@ public class StylePropertiesResolver {
     }
 
     self.resolvedPropertyValues = resolvedValues
+  }
+
+  func sortStyles(_ styles: [Style]) -> [Style] {
+    styles.sorted {
+      if ($0.treePath == nil && $1.treePath != nil) || ($0.treePath == nil && $1.treePath == nil) {
+        return true
+      } else if $0.treePath != nil && $1.treePath == nil {
+        return false
+      } else {
+        return $0.treePath! < $1.treePath!
+      }
+    }
   }
 
   private func updateSingleResolvedValue(key: StyleKey, newValue: StyleValue?) {

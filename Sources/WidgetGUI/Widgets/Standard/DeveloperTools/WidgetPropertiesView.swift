@@ -25,6 +25,8 @@ extension DeveloperTools {
               buildResolvedStyleProperties(inspectedWidget)
 
               buildStylePropertyDefinitions(inspectedWidget)
+
+              buildMatchedStyles(inspectedWidget)
             }
           } else {
             Space(.zero)
@@ -45,7 +47,7 @@ extension DeveloperTools {
 
     public func buildStylePropertyDefinition(_ definition: StylePropertySupportDefinition, _ inspectedWidget: Widget) -> Widget {
       Container().with(classes: ["key-value-item"]).withContent {
-        Text(definition.key.asString).with(classes: ["style-key"])
+        Text(definition.key.asString).with(classes: ["key"])
 
         Container().withContent {
           Text("default:")
@@ -67,9 +69,37 @@ extension DeveloperTools {
 
     public func buildResolvedStyleProperty(_ key: StyleKey, _ inspectedWidget: Widget) -> Widget {
       Container().with(classes: ["key-value-item"]).withContent { _ in
-        Text(key.asString + ":").with(classes: ["style-key"])
+        Text(key.asString + ":").with(classes: ["key"])
 
         Text(String(describing: inspectedWidget.stylePropertyValue(key)))
+      }
+    }
+
+    public func buildMatchedStyles(_ inspectedWidget: Widget) -> Widget {
+      Container().with(classes: ["section"]).withContent {
+        Text("matched styles").with(classes: ["section-heading"])
+
+        inspectedWidget.matchedStyles.map {
+          buildStyleInfo($0)
+        }
+      }
+    }
+
+    public func buildStyleInfo(_ style: Style) -> Widget {
+      Container().with(classes: ["style-info"]).withContent {
+        Text("style: \(style.selector)").with(classes: ["style-identifier"])
+
+        Container().with(classes: ["key-value-item"]).withContent {
+          Text("tree path").with(classes: ["key"])
+          Text("\(style.treePath)")
+        }
+
+        style.properties.map { property in
+          Container().with(classes: ["key-value-item"]).withContent {
+            Text("\(property.key)").with(classes: ["key"])
+            Text("\(String(describing: property.value))")
+          }
+        }
       }
     }
 
@@ -101,8 +131,19 @@ extension DeveloperTools {
           (SimpleLinearLayout.ParentKeys.direction, SimpleLinearLayout.Direction.row)
         }
 
-        Style(".style-key") {
+        Style(".key") {
           ($0.fontWeight, FontWeight.bold)
+        }
+
+        Style(".style-info") {
+          (SimpleLinearLayout.ParentKeys.direction, SimpleLinearLayout.Direction.column)
+          (SimpleLinearLayout.ChildKeys.margin, Insets(bottom: 16))
+        }
+
+        Style(".style-identifier") {
+          ($0.fontWeight, FontWeight.bold)
+          ($0.fontSize, 16.0)
+          (SimpleLinearLayout.ChildKeys.margin, Insets(bottom: 8))
         }
       }
     }

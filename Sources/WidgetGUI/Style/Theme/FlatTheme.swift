@@ -32,6 +32,8 @@ public class FlatTheme {
       }
       
       Style(StyleSelector(StyleSelectorPart(type: TextInput.self)), TextInput.self) {
+        ($0.background, Color.transparent)
+        ($0.foreground, textColorOnBackground)
         ($0.padding, Insets(top: 16, right: 8, bottom: 16, left: 8))
         ($0.borderColor, primaryColor)
         ($0.borderWidth, BorderWidth(bottom: 1))
