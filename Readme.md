@@ -49,7 +49,7 @@ To get a sense for the syntax, here is a minimal example to create the following
 
       override public func buildChild() -> Widget {
         Center { [unowned self] in
-          Button {
+          Button().withContent {
             ObservingBuilder($counter) {
               Text("Hello world \(counter)")
             }

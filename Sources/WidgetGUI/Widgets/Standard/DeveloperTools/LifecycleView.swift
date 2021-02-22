@@ -45,7 +45,7 @@ public class LifecycleView: ComposedWidget {
 
       buildStatistics()
 
-      Button {
+      Button().withContent {
         Build($showSignals) {
           if showSignals {
             Text("hide signals")
@@ -57,7 +57,7 @@ public class LifecycleView: ComposedWidget {
         showSignals = !showSignals
       }
 
-      Button {
+      Button().withContent {
         Build($showSignalGroups) {
           if showSignals {
             Text("hide signal groups")

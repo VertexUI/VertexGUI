@@ -32,7 +32,7 @@ public class GameRulesetEditorView: SingleChildWidget {
                 }
             }
 
-            Button {
+            Button().withContent {
                 Text("Apply")
             } onClick: { _ in
                 gameRuleset.value = bufferedRuleset

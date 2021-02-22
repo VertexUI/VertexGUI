@@ -86,7 +86,7 @@ public class MainView: ComposedWidget, SlotAcceptingWidgetProtocol {
         Container().with(styleProperties: {
           ($0.padding, Insets(all: 32))
         }).withContent {
-          Button() {
+          Button().withContent {
             Text("add child content")
           }.onClick {
             data.children.append(NestedData(content: "child", children: []))

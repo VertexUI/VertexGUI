@@ -79,11 +79,11 @@ This document serves as a reference for implementing the styling API of the fram
         }
       } {
         Column {
-          Button {
+          Button().withContent {
             Text("button1").with(class: "button-text")
           }.with(class: "default-button")
 
-          Button {
+          Button().withContent {
             Text("button2").with(class: "button-text")
           }.with(class: "default button")
 

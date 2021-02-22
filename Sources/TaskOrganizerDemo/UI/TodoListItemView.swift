@@ -73,7 +73,7 @@ public class TodoListItemView: ComposedWidget {
                     }()
                   }
 
-                  Button {
+                  Button().withContent {
                     Text("done")
                   } onClick: {
                     var updatedItem = item

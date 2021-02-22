@@ -62,19 +62,19 @@ public class DeveloperToolsView: ComposedWidget {
 
       Column(spacing: 16) {
         Row {
-          Button {
+          Button().withContent {
             Text("Inspector")
           } onClick: {
             activeTab = .Inspector
           }
 
-          Button {
+          Button().withContent {
             Text("Event Cumulation")
           } onClick: {
             activeTab = .EventRoll
           }
 
-          Button {
+          Button().withContent {
             Text("Event Log")
           } onClick: {
             activeTab = .EventLog

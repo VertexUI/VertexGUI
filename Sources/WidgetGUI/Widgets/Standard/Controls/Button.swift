@@ -1,28 +1,14 @@
 import GfxMath
 import VisualAppBase
 
-public class Button: ComposedWidget, StylableWidgetProtocol {
-  public init(
-    classes: [String]? = nil,
-    @StylePropertiesBuilder styleProperties stylePropertiesBuilder: (StyleKeys.Type) -> StyleProperties = { _ in [] },
-    @SingleChildContentBuilder content contentBuilder: @escaping () -> SingleChildContentBuilder.Result,
-    onClick onClickHandler: (() -> ())? = nil) {
-      let result = contentBuilder()
-      super.init()
-      self.rootChild = result.child()
-      self.providedStyles.append(contentsOf: result.styles)
-      if let classes = classes {
-        self.classes = classes
-      }
-      self.directStyleProperties.append(stylePropertiesBuilder(StyleKeys.self))
-      if let handler = onClickHandler {
-        _ = self.onClick(handler)
-      }
+public class Button: ContentfulWidget, SlotAcceptingWidgetProtocol {
+  public static let defaultSlot = Slot(key: "default", data: Void.self)
+  var defaultSlotManager = SlotContentManager(Button.defaultSlot)
+  public var defaultNoDataSlotContentManager: SlotContentManager<Void>? {
+    defaultSlotManager
   }
 
-  override public func renderContent() -> RenderObject? {
-    return super.renderContent()
+  override public var content: ExpDirectContent {
+    defaultSlotManager()
   }
-
-  public typealias StyleKeys = AnyDefaultStyleKeys
 }

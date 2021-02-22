@@ -49,7 +49,7 @@ public class TodoAppView: ComposedWidget {
       Container().with(styleProperties: {
         ($0.padding, Insets(all: 32))
       }).withContent {
-        Button(classes: ["button"]) {
+        Button().with(classes: ["button"]).withContent {
           Text(styleProperties: {
             ($0.fontWeight, FontWeight.bold)
             ($0.fontSize, 20.0)
@@ -93,7 +93,7 @@ public class TodoAppView: ComposedWidget {
           Spaceholder(display: ReactiveProperties.ComputedProperty<Bool>([$mode.any]) { [unowned self] in
             return mode == .Search
           }, dimension: .Vertical) {
-            Button {
+            Button().withContent {
               Text("cancel")
             } onClick: {
               mode = .SelectedList
@@ -175,16 +175,14 @@ public class TodoAppView: ComposedWidget {
     Style("&") {
       FlatTheme(primaryColor: AppTheme.primaryColor, secondaryColor: AppTheme.primaryColor, backgroundColor: AppTheme.backgroundColor).styles
 
-      Style(".button", Button.self) {
+      Style(".button") {
         ($0.background, Color.yellow)
         ($0.padding, Insets(all: 16))
         ($0.foreground, Color.white)
       }
 
       Style(".button:hover") {
-        StyleProperties(Button.self) {
-          ($0.background, Color.red)
-        }
+        ($0.background, Color.red)
       }
 
       Style(".menu-item") {

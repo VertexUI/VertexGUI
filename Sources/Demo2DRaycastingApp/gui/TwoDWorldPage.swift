@@ -27,7 +27,7 @@ open class TwoDWorldPage: SingleChildWidget {
                         Text("2D Raycast Visualizer")
                     }
                     Padding(all: 20) {
-                        Button {
+                        Button().withContent {
                             Text("Button without function")
                         }
                     }
@@ -50,7 +50,7 @@ open class TwoDWorldPage: SingleChildWidget {
                             if let selectedRaycast = selectedRaycast.value {
                                 
                                 Column {
-                                    Button {
+                                    Button().withContent {
                                         Text("Close")
                                     } onClick: { _ in
                                         self.selectedRaycast.value = nil

@@ -54,9 +54,9 @@ public class TodoListView: ComposedWidget {
 
         Dynamic($editable) {
           if editable {
-            Button {
+            Button().withContent {
               Text("add todo")
-            } onClick: {
+            }.onClick {
               handleAddTodoClick()
             }
           }
@@ -99,7 +99,7 @@ public class TodoListView: ComposedWidget {
                 return textField
               }()
 
-              Button {
+              Button().withContent {
                 Text("done")
               } onClick: {
                 store.commit(.UpdateListName(updatedNameBuffer, listId: list.id))
@@ -117,7 +117,7 @@ public class TodoListView: ComposedWidget {
         }
 
         if editable {
-          Button {
+          Button().withContent {
             Text("Add Todo")
           } onClick: { [unowned self] in
             handleAddTodoClick()

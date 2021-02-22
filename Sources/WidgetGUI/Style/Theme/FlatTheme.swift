@@ -16,16 +16,17 @@ public class FlatTheme {
 
   public var styles: Style {
     Style("&") {
-      Style(StyleSelector(StyleSelectorPart(type: Button.self)), Button.self) {
+
+      Style(StyleSelector(StyleSelectorPart(type: Button.self))) {
         ($0.background, primaryColor)
         ($0.padding, Insets(all: 16))
         ($0.foreground, textColorOnPrimary)
 
-        Style(StyleSelector(StyleSelectorPart(extendsParent: true, pseudoClasses: ["hover"])), Button.self) {
+        Style(StyleSelector(StyleSelectorPart(extendsParent: true, pseudoClasses: ["hover"]))) {
           ($0.background, primaryColor.darkened(10))
         }
 
-        Style(StyleSelector(StyleSelectorPart(extendsParent: false, opensScope: false, type: Text.self)), Text.self) {
+        Style(StyleSelector(StyleSelectorPart(extendsParent: false, opensScope: false, type: Text.self))) {
           ($0.foreground, Color.white)
           ($0.fontSize, 24.0)
         }
