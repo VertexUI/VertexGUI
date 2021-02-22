@@ -1,7 +1,7 @@
 import GfxMath
 import VisualAppBase
 
-public class Button: ComposedWidget, StylableWidget {
+public class Button: ComposedWidget, StylableWidgetProtocol {
   public init(
     classes: [String]? = nil,
     @StylePropertiesBuilder styleProperties stylePropertiesBuilder: (StyleKeys.Type) -> StyleProperties = { _ in [] },

@@ -325,13 +325,13 @@ open class Root: Parent {
 
           childDrawingContext.lock()
 
-          if let leafWidget = widget as? LeafWidget {
+          if let leafWidget = widget as? LeafWidgetProtocol {
             leafWidget.draw(childDrawingContext)
           }
 
           childDrawingContext.endDrawing()
 
-          if !(widget is LeafWidget) {
+          if !(widget is LeafWidgetProtocol) {
             iterationStates.append((widget, childDrawingContext, widget.visitChildren()))
             continue outer
           }

@@ -3,7 +3,7 @@ import Foundation
 import VisualAppBase
 import ReactiveProperties
 
-public final class TextInput: ComposedWidget, StylableWidget, GUIKeyEventConsumer, GUITextEventConsumer
+public final class TextInput: ComposedWidget, StylableWidgetProtocol, GUIKeyEventConsumer, GUITextEventConsumer
 {
   @MutableProperty
   public var text: String

@@ -2,7 +2,7 @@ import WidgetGUI
 import GfxMath
 import VisualAppBase
 
-public class TaskCompletionButton: Widget, LeafWidget {
+public class TaskCompletionButton: Widget, LeafWidgetProtocol {
     @FromStyle(key: StyleKeys.foreground)
     private var color: Color = .white
     private let preferredSize = DSize2(16, 16)

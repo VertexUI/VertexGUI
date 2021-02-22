@@ -15,7 +15,7 @@ extension ChildAcceptorWidget {
   }
 }
 
-extension ChildAcceptorWidget where Self: StylableWidget {
+extension ChildAcceptorWidget where Self: StylableWidgetProtocol {
   public func with(
     classes: [String],
     @StylePropertiesBuilder styleProperties: (Self.StyleKeys.Type) -> Void,

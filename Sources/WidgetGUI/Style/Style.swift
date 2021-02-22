@@ -36,7 +36,7 @@ public class Style {
     self.init(selector, StyleProperties(content.properties), content.children)
   }
 
-  public convenience init<W: StylableWidget>(
+  public convenience init<W: StylableWidgetProtocol>(
     _ selector: StyleSelector,
     _ widget: W.Type,
     @StyleBuilder content contentBuilder: (W.StyleKeys.Type) -> StyleBuilder.IntermediateResult) {

@@ -5,7 +5,7 @@ import GfxMath
 
 fileprivate var itemSlots = [ObjectIdentifier: AnySlot]()
 
-public class List<Item: Equatable>: ContentfulWidget, SlotAcceptingWidget {
+public class List<Item: Equatable>: ContentfulWidget, SlotAcceptingWidgetProtocol {
   @ObservableProperty
   private var items: [Item]
 

@@ -1,7 +1,7 @@
 import ReactiveProperties
 import SwiftGUI 
 
-public class MainView: ComposedWidget, SlotAcceptingWidget {
+public class MainView: ComposedWidget, SlotAcceptingWidgetProtocol {
   @Inject
   var someInjectedData: String
 

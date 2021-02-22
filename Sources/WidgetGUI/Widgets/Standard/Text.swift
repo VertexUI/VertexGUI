@@ -2,7 +2,7 @@ import ReactiveProperties
 import VisualAppBase
 import GfxMath
 
-public class Text: Widget, LeafWidget, StylableWidget {
+public class Text: Widget, LeafWidgetProtocol, StylableWidgetProtocol {
   @ObservableProperty
   private var text: String
 

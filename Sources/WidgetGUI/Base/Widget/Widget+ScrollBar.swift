@@ -3,7 +3,7 @@ import VisualAppBase
 import ReactiveProperties
 
 extension Widget {
-  public class ScrollBar: Widget, LeafWidget {
+  public class ScrollBar: Widget, LeafWidgetProtocol {
     public var track: Color = Color.red
     private let orientation: Orientation
 

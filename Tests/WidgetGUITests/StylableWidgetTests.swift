@@ -1,7 +1,7 @@
 import XCTest
 @testable import WidgetGUI
 
-class StylableWidgetTests: XCTestCase {
+class StylableWidgetProtocolTests: XCTestCase {
 
   static var allTests: [(String, (XCTestCase) -> () -> ())] = [
   ]

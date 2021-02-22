@@ -1,6 +1,6 @@
 import GfxMath
 
-public class Container: ContentfulWidget, SlotAcceptingWidget, StylableWidget {
+public class Container: ContentfulWidget, SlotAcceptingWidgetProtocol, StylableWidgetProtocol {
   public static let defaultSlot = Slot(key: "default", data: Void.self)
   var defaultSlotManager = SlotContentManager(Container.defaultSlot)
   public var defaultNoDataSlotContentManager: SlotContentManager<Void>? {

@@ -2,7 +2,7 @@ import VisualAppBase
 import GfxMath
 import ReactiveProperties
 
-public class Drawing: Widget, LeafWidget {
+public class Drawing: Widget, LeafWidgetProtocol {
   @ObservableProperty
   private var paint: Paint
 

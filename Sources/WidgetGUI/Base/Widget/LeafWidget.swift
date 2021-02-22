@@ -1,5 +1,5 @@
 import VisualAppBase
 
-public protocol LeafWidget: Widget {
+public protocol LeafWidgetProtocol: Widget {
   func draw(_ drawingContext: DrawingContext)
 }

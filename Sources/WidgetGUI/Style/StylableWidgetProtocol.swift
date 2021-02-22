@@ -1,8 +1,8 @@
-public protocol StylableWidget: Widget {
+public protocol StylableWidgetProtocol: Widget {
   associatedtype StyleKeys: DefaultStyleKeys
 }
 
-extension StylableWidget {
+extension StylableWidgetProtocol {
   @discardableResult
   public func with(classes: [String]? = nil, @StylePropertiesBuilder styleProperties build: (Self.StyleKeys.Type) -> StyleProperties) -> Self {
     if let classes = classes {

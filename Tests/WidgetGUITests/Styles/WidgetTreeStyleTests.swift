@@ -4,7 +4,7 @@ import GfxMath
 @testable import WidgetGUI
 
 class WidgetTreeStyleTests: XCTestCase {
-  class TestWidget: Widget, StylableWidget {
+  class TestWidget: Widget, StylableWidgetProtocol {
     var buildInternal: ((MultiChildContentBuilder.ChildrenBuilder?) -> [Widget])?
     var childrenBuilder: MultiChildContentBuilder.ChildrenBuilder?
 

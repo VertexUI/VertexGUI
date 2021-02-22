@@ -20,7 +20,7 @@ class WidgetStyleApiTests: XCTestCase {
 
   }
 
-  class WidgetWithSpecialStyleProperties: Widget, StylableWidget {
+  class WidgetWithSpecialStyleProperties: Widget, StylableWidgetProtocol {
     enum StyleKeys: String, StyleKey, DefaultStyleKeys {
       case specialProperty1
     }

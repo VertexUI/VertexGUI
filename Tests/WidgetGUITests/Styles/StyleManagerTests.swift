@@ -4,13 +4,13 @@ import GfxMath
 @testable import WidgetGUI
 
 class StyleManagerTests: XCTestCase {
-  class TestWidget: Widget, StylableWidget {
+  class TestWidget: Widget, StylableWidgetProtocol {
     enum StyleKeys: String, StyleKey, DefaultStyleKeys {
       case specificProperty1
     }
   }
 
-  class ScopeTestWidget: Widget, StylableWidget {
+  class ScopeTestWidget: Widget, StylableWidgetProtocol {
     private let buildInternal: ((MultiChildContentBuilder.ChildrenBuilder?) -> [Widget])?
     private let childrenBuilder: MultiChildContentBuilder.ChildrenBuilder?
 

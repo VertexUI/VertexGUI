@@ -13,7 +13,7 @@ import XCTest
       testCase(WidgetStyleApiTests.allTests),
       testCase(WidgetTreeStyleTests.allTests),
       testCase(StyleParserTests.allTests),
-      testCase(StylableWidgetTests.allTests),
+      testCase(StylableWidgetProtocolTests.allTests),
       testCase(ReactivePropertyTests.allTests),
       testCase(BuildTests.allTests),
       testCase(ContainerTests.allTests)

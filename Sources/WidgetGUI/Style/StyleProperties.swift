@@ -5,7 +5,7 @@ public struct StyleProperties: Sequence, ExpressibleByArrayLiteral {
     self = build(keys)
   }
 
-  public init<W: StylableWidget>(_ widget: W.Type, @StylePropertiesBuilder _ build: (W.StyleKeys.Type) -> StyleProperties) {
+  public init<W: StylableWidgetProtocol>(_ widget: W.Type, @StylePropertiesBuilder _ build: (W.StyleKeys.Type) -> StyleProperties) {
     self = build(widget.StyleKeys)
   }
 

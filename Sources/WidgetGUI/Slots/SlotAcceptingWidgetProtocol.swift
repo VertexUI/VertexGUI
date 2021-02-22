@@ -1,8 +1,8 @@
-public protocol SlotAcceptingWidget: Widget {
+public protocol SlotAcceptingWidgetProtocol: Widget {
   var defaultNoDataSlotContentManager: SlotContentManager<Void>? { get }
 }
 
-extension SlotAcceptingWidget {
+extension SlotAcceptingWidgetProtocol {
   public var defaultNoDataSlotContentManager: SlotContentManager<Void>? {
     nil
   }
