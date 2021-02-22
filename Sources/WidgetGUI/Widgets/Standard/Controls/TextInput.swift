@@ -237,14 +237,12 @@ public final class TextInput: ComposedWidget, StylableWidgetProtocol, GUIKeyEven
 
   public func consume(_ event: GUITextEvent) {
     if let event = event as? GUITextInputEvent {
-      invalidateRenderState {
-        textBuffer.insert(
-          contentsOf: event.text,
-          at: textBuffer.index(textBuffer.startIndex, offsetBy: caretIndex))
-        caretIndex += event.text.count
-        syncText()
-        updateCaretPositionTransforms()
-      }
+      textBuffer.insert(
+        contentsOf: event.text,
+        at: textBuffer.index(textBuffer.startIndex, offsetBy: caretIndex))
+      caretIndex += event.text.count
+      syncText()
+      updateCaretPositionTransforms()
     }
   }
 
