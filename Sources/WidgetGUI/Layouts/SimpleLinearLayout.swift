@@ -14,6 +14,7 @@ public class SimpleLinearLayout: Layout {
       (ChildKeys.grow, type: .specific(Double.self), default: 0.0)
       (ChildKeys.shrink, type: .specific(Double.self), default: 0.0)
       (ChildKeys.alignSelf, type: .specific(Align.self))
+      (ChildKeys.margin, type: .specific(Insets.self))
     }
   }
 
@@ -38,12 +39,18 @@ public class SimpleLinearLayout: Layout {
 
     var accumulatedConfig = BoxConfig(preferredSize: .zero, minSize: .zero, maxSize: .infinity)
     for widget in widgets {
-      accumulatedConfig.preferredSize[primaryAxisIndex] += widget.boxConfig.preferredSize[primaryAxisIndex]
-      if widget.boxConfig.preferredSize[secondaryAxisIndex] > accumulatedConfig.preferredSize[secondaryAxisIndex] {
-        accumulatedConfig.preferredSize[secondaryAxisIndex] = widget.boxConfig.preferredSize[secondaryAxisIndex]
+      accumulatedConfig.preferredSize[primaryAxisIndex] +=
+        widget.boxConfig.preferredSize[primaryAxisIndex]
+      if widget.boxConfig.preferredSize[secondaryAxisIndex]
+        > accumulatedConfig.preferredSize[secondaryAxisIndex]
+      {
+        accumulatedConfig.preferredSize[secondaryAxisIndex] =
+          widget.boxConfig.preferredSize[secondaryAxisIndex]
       }
       accumulatedConfig.minSize[primaryAxisIndex] += widget.boxConfig.minSize[primaryAxisIndex]
-      if widget.boxConfig.minSize[secondaryAxisIndex] > accumulatedConfig.minSize[secondaryAxisIndex] {
+      if widget.boxConfig.minSize[secondaryAxisIndex]
+        > accumulatedConfig.minSize[secondaryAxisIndex]
+      {
         accumulatedConfig.minSize[secondaryAxisIndex] = widget.boxConfig.minSize[secondaryAxisIndex]
       }
       /*accumulatedConfig.maxSize[primaryAxisIndex] += widget.boxConfig.maxSize[primaryAxisIndex]
@@ -71,13 +78,19 @@ public class SimpleLinearLayout: Layout {
       widget.layout(constraints: widgetConstraints)
 
       var widgetPosition = DVec2.zero
+      accumulatedSize[primaryAxisIndex] += getWidgetStartMargin(widget, primaryAxisIndex)
       widgetPosition[primaryAxisIndex] = accumulatedSize[primaryAxisIndex]
-      widgetPosition[secondaryAxisIndex] = 0
+      widgetPosition[secondaryAxisIndex] = getWidgetStartMargin(widget, secondaryAxisIndex)
       widget.position = widgetPosition
 
       accumulatedSize[primaryAxisIndex] += widget.size[primaryAxisIndex]
-      if widget.size[secondaryAxisIndex] > accumulatedSize[secondaryAxisIndex] {
-        accumulatedSize[secondaryAxisIndex] = widget.size[secondaryAxisIndex]
+      accumulatedSize[primaryAxisIndex] += getWidgetEndMargin(widget, primaryAxisIndex)
+
+      let widgetSecondaryAxisSpan =
+        widget.position[secondaryAxisIndex] + widget.size[secondaryAxisIndex]
+        + getWidgetEndMargin(widget, secondaryAxisIndex)
+      if widgetSecondaryAxisSpan > accumulatedSize[secondaryAxisIndex] {
+        accumulatedSize[secondaryAxisIndex] = widgetSecondaryAxisSpan
       }
     }
 
@@ -86,6 +99,7 @@ public class SimpleLinearLayout: Layout {
     // resolve cross axis
     var currentPrimaryAxisPosition = 0.0
     for widget in widgets {
+      currentPrimaryAxisPosition += getWidgetStartMargin(widget, primaryAxisIndex)
       widget.position[primaryAxisIndex] = currentPrimaryAxisPosition
 
       var needRelayout = false
@@ -95,17 +109,26 @@ public class SimpleLinearLayout: Layout {
       // TODO: implement property definitions forwarding to children!
       switch widget.stylePropertyValue(ChildKeys.alignSelf, as: Align.self) ?? alignContent {
       case .start:
-        widget.position[secondaryAxisIndex] = 0
-     
+        widget.position[secondaryAxisIndex] = getWidgetStartMargin(widget, secondaryAxisIndex)
+
       case .center:
-        widget.position[secondaryAxisIndex] = constrainedAccumulatedSize[secondaryAxisIndex] / 2 - widget.size[secondaryAxisIndex] / 2
-      
+        let centerArea =
+          constrainedAccumulatedSize[secondaryAxisIndex]
+          - getWidgetStartMargin(widget, secondaryAxisIndex)
+          - getWidgetEndMargin(widget, secondaryAxisIndex)
+        widget.position[secondaryAxisIndex] =
+          centerArea / 2 - widget.size[secondaryAxisIndex] / 2
+          + getWidgetStartMargin(widget, secondaryAxisIndex)
+
       case .end:
-        widget.position[secondaryAxisIndex] = constrainedAccumulatedSize[secondaryAxisIndex] - widget.size[secondaryAxisIndex]
+        widget.position[secondaryAxisIndex] =
+          constrainedAccumulatedSize[secondaryAxisIndex] - widget.size[secondaryAxisIndex]
+          - getWidgetEndMargin(widget, secondaryAxisIndex)
 
       case .stretch:
         needRelayout = true
-        widgetConstraints.minSize[secondaryAxisIndex] = constrainedAccumulatedSize[secondaryAxisIndex]
+        widgetConstraints.minSize[secondaryAxisIndex] =
+          constrainedAccumulatedSize[secondaryAxisIndex]
         widgetConstraints.maxSize[primaryAxisIndex] = widget.size[primaryAxisIndex]
       }
 
@@ -114,6 +137,7 @@ public class SimpleLinearLayout: Layout {
       }
 
       currentPrimaryAxisPosition += widget.size[primaryAxisIndex]
+      currentPrimaryAxisPosition += getWidgetEndMargin(widget, primaryAxisIndex)
     }
 
     accumulatedSize[primaryAxisIndex] = currentPrimaryAxisPosition
@@ -123,11 +147,12 @@ public class SimpleLinearLayout: Layout {
     // resolve main axis
     currentPrimaryAxisPosition = 0
     for widget in widgets {
+      currentPrimaryAxisPosition += getWidgetStartMargin(widget, primaryAxisIndex)
       widget.position[primaryAxisIndex] = currentPrimaryAxisPosition
- 
+
       let growWeight = widget.stylePropertyValue(ChildKeys.grow, as: Double.self)!
       if deltaAccumulatedSize[primaryAxisIndex] > 0 && growWeight > 0 {
-        let relativeGrowWeight = growWeight / totalGrowWeight 
+        let relativeGrowWeight = growWeight / totalGrowWeight
         let primaryAxisGrowSpace = deltaAccumulatedSize[primaryAxisIndex] * relativeGrowWeight
         var targetSize = DSize2.zero
         targetSize[primaryAxisIndex] = widget.size[primaryAxisIndex] + primaryAxisGrowSpace
@@ -148,6 +173,7 @@ public class SimpleLinearLayout: Layout {
       }
 
       currentPrimaryAxisPosition += widget.size[primaryAxisIndex]
+      currentPrimaryAxisPosition += getWidgetEndMargin(widget, primaryAxisIndex)
     }
 
     accumulatedSize[primaryAxisIndex] = currentPrimaryAxisPosition
@@ -171,7 +197,23 @@ public class SimpleLinearLayout: Layout {
       }
     }
 
-    return accumulatedSize 
+    return accumulatedSize
+  }
+
+  func getWidgetStartMargin(_ widget: Widget, _ axis: Int) -> Double {
+    if axis == 0 {
+      return widget.stylePropertyValue(ChildKeys.margin, as: Insets.self)?.left ?? 0
+    } else {
+      return widget.stylePropertyValue(ChildKeys.margin, as: Insets.self)?.top ?? 0
+    }
+  }
+
+  func getWidgetEndMargin(_ widget: Widget, _ axis: Int) -> Double {
+    if axis == 0 {
+      return widget.stylePropertyValue(ChildKeys.margin, as: Insets.self)?.right ?? 0
+    } else {
+      return widget.stylePropertyValue(ChildKeys.margin, as: Insets.self)?.bottom ?? 0
+    }
   }
 
   public enum Direction {
@@ -195,6 +237,7 @@ public class SimpleLinearLayout: Layout {
   public enum ChildKeys: String, StyleKey {
     case grow
     case shrink
-    case alignSelf 
+    case alignSelf
+    case margin
   }
 }

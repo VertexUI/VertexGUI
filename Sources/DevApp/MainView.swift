@@ -26,7 +26,25 @@ public class MainView: ComposedWidget, SlotAcceptingWidget {
       (SimpleLinearLayout.ParentKeys.direction, SimpleLinearLayout.Direction.column)
       ($0.background, Color.grey)
     }).withContent { [unowned self] in
-      TextInput(mutableText: $text1).with(styleProperties: {
+      Container().with(styleProperties: {
+        ($0.width, 200.0)
+        ($0.height, 200.0)
+        ($0.background, Color.red)
+        (SimpleLinearLayout.ChildKeys.margin, Insets(top: 8, right: 16, bottom: 32, left: 64))
+      }).withContent {
+        Space(.zero)
+      }
+
+      Container().with(styleProperties: {
+        ($0.width, 180.0)
+        ($0.height, 180.0)
+        ($0.background, Color.yellow)
+        (SimpleLinearLayout.ChildKeys.margin, Insets(all: 16))
+      }).withContent {
+        Space(.zero)
+      }
+
+      /*TextInput(mutableText: $text1).with(styleProperties: {
         ($0.caretColor, Color.red)
       })
 
@@ -61,11 +79,11 @@ public class MainView: ComposedWidget, SlotAcceptingWidget {
             Text("This is the text with data: \(data) and property \(text1)")
           }
         }*/
-      }
+      }*/
 
-      Text(someInjectedData)
+      /*Text(someInjectedData)
 
-      NestedWidget(NestedData(content: "level1", children: []))
+      NestedWidget(NestedData(content: "level1", children: []))*/
 
       /*ReactiveContent($text1) {
         Text(text1)
