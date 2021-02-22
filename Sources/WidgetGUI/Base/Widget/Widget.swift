@@ -227,6 +227,13 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     }
     public internal(set) var pseudoClasses = Set<String>()
 
+    /** storage for the the value from style getter property */
+    internal var specificWidgetStyle: Style? = nil 
+    /** this style will be added to every widget instance as the last style */ 
+    open var style: Style? {
+      nil
+    }
+
     /** Style property support declared by the Widget instance's context. */
     public var supportedGlobalStyleProperties: StylePropertySupportDefinitions {
         if let context = _context {
@@ -289,6 +296,9 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     /** Styles which can be applied to this Widget instance or any of 
     it's children (deep) according to their selector. */
     public var providedStyles: [Style] = []
+    var mergedProvidedStyles: [Style] {
+        providedStyles + (specificWidgetStyle == nil ? [] : [specificWidgetStyle!])
+    }
 
     internal var matchedStylesInvalid = false
     /** Styles whose selectors match this Widget instance. */
@@ -705,11 +715,6 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
             }
         }
     }*/
-
-    /** called after mounted, before build phase, dependencies available, result inserted as the first provided style */
-    open func buildStyle() -> Style? {
-      nil
-    }
 
     // TODO: maybe rename to inMount or something like that
     /*public final func build() {

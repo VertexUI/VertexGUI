@@ -22,7 +22,7 @@ public class MainView: ComposedWidget {
     }
   }
 
-  override public func buildStyle() -> Style {
+  override public var style: Style {
     Style("&") {
       FlatTheme(primaryColor: .blue, secondaryColor: .green, backgroundColor: Color(10, 20, 50, 255)).styles
     }

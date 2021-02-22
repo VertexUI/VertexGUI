@@ -1,8 +1,11 @@
+import VisualAppBase
+
 public class Style {
   public var selector: StyleSelector
   public var properties: StyleProperties
   public var children: [Style]
   public var sourceScope: UInt
+  public var treePath: TreePath? = nil
   public private(set) var parent: Style?
   
   public init(_ selector: StyleSelector, _ properties: StyleProperties, _ children: [Style]) {

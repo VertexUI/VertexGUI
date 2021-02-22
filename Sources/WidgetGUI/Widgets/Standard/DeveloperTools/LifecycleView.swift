@@ -138,7 +138,7 @@ public class LifecycleView: ComposedWidget {
     }
   }
 
-  /*override public func buildStyle() -> Style {
+  /*override public var style: Style {
     Style("&", Container.self) {
       ($0.background, Color.white)
 

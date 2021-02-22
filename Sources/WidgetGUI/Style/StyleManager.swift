@@ -46,7 +46,7 @@ public class StyleManager {
     (partialMatches: [PartialMatch], fullMatches: [Style]) {
       var partialMatchesToCheck = previousPartialMatches
 
-      for style in widget.providedStyles {
+      for style in widget.mergedProvidedStyles {
         // use match index -2 to delay matching of non extending styles
         // to the children of the current widget
         partialMatchesToCheck.append(PartialMatch(

@@ -73,9 +73,10 @@ extension DeveloperTools {
       }
     }
 
-    override public func buildStyle() -> Style {
+    override public var style: Style {
       Style("&") {
         ($0.background, Color.white)
+        ($0.foreground, Color.black)
         ($0.padding, Insets(all: 16))
 
         Style(".widget-name") {

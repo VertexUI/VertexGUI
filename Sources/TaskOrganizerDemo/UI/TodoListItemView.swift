@@ -99,7 +99,7 @@ public class TodoListItemView: ComposedWidget {
     }*/
   }
 
-  override public func buildStyle() -> Style {
+  override public var style: Style {
     Style("&") {
       ($0.foreground, Color.white)
       ($0.padding, Insets(all: 32))

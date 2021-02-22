@@ -37,6 +37,13 @@ public class WidgetTreeManager {
       } else {
         child.treePath = widget.treePath/index
       }
+      if let specificStyle = widget.specificWidgetStyle {
+        let newPath = widget.treePath/widget.children.count
+        if newPath != specificStyle.treePath {
+          specificStyle.treePath = newPath
+          widget.invalidateMatchedStyles()
+        }
+      }
       if anyChildChanged {
         widget.invalidateBoxConfig()
         widget.invalidateLayout()
@@ -67,10 +74,6 @@ public class WidgetTreeManager {
 
     widget.onMounted.invokeHandlers(Void())
 
-    if let style = widget.buildStyle() {
-      widget.providedStyles.insert(style, at: 0)
-    }
-
     /*build()
 
     built = true
@@ -78,7 +81,6 @@ public class WidgetTreeManager {
     onBuilt.invokeHandlers(Void())*/
 
     widget.context.queueLifecycleMethodInvocation(.resolveCumulatedValues, target: widget, sender: widget, reason: .undefined)
-    widget.invalidateMatchedStyles()
   }
 
   public func buildChildren(of widget: Widget) {
@@ -98,6 +100,12 @@ public class WidgetTreeManager {
 
     widget.onBuilt.invokeHandlers(Void())
 
+    if let style = widget.style {
+      widget.specificWidgetStyle = style
+      widget.specificWidgetStyle!.treePath = widget.treePath/widget.children.count
+    }
+
+    widget.invalidateMatchedStyles()
     widget.invalidateBoxConfig()
     widget.invalidateLayout()
     widget.invalidateRenderState()

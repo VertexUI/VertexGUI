@@ -65,7 +65,7 @@ extension DeveloperTools {
       }
     }
 
-    override public func buildStyle() -> Style {
+    override public var style: Style {
       Style("&") {
         Style(".infoContainer") {
           ($0.background, Color.transparent)

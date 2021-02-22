@@ -47,7 +47,7 @@ public class DeveloperToolsView: ComposedWidget {
     }.provide(dependencies: store, inspectedRoot)
   }
 
-  override public func buildStyle() -> Style {
+  override public var style: Style {
     Style("&") {
       ($0.background, developerToolsTheme.backgroundColor)
       ($0.foreground, developerToolsTheme.textColorOnBackground)

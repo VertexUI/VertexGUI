@@ -171,7 +171,7 @@ public class TodoAppView: ComposedWidget {
     todoStore.commit(.AddList)
   }
 
-  override public func buildStyle() -> Style {
+  override public var style: Style {
     Style("&") {
       FlatTheme(primaryColor: AppTheme.primaryColor, secondaryColor: AppTheme.primaryColor, backgroundColor: AppTheme.backgroundColor).styles
 

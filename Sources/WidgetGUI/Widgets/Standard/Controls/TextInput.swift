@@ -140,7 +140,7 @@ public final class TextInput: ComposedWidget, StylableWidget, GUIKeyEventConsume
     }
   }
 
-  override public func buildStyle() -> Style {
+  override public var style: Style {
     Style("&", Self.self) { _ in
       /*($0.padding, Insets(all: 16))
       ($0.foreground, Color.black)
