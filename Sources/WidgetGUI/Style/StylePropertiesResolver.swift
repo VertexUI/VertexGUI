@@ -129,7 +129,7 @@ public class StylePropertiesResolver {
       resolvedValues[propertyDefinition.key.asString] = resolvedValues[propertyDefinition.key.asString] ?? propertyDefinition.defaultValue
     }
     for (key, value) in resolvedValues {
-      resolvedValues[key] = inheritOrKeepCurrent(value: value, for: key)
+      resolvedValues[key] = convertValueOrKeep(value: inheritOrKeepCurrent(value: value, for: key), for: key)
     }
 
     self.resolvedPropertyValues = resolvedValues
@@ -149,7 +149,7 @@ public class StylePropertiesResolver {
 
   private func updateSingleResolvedValue(key: StyleKey, newValue: StyleValue?) {
     var processed = newValue ?? propertySupportDefinitions[key.asString]?.defaultValue
-    processed = inheritOrKeepCurrent(value: processed, for: key)
+    processed = convertValueOrKeep(value: inheritOrKeepCurrent(value: processed, for: key), for: key)
     resolvedPropertyValues[key.asString] = processed
   }
 
@@ -158,6 +158,13 @@ public class StylePropertiesResolver {
       if special == .inherit {
         return inheritableValues[key.asString] ?? nil
       }
+    }
+    return value
+  }
+
+  private func convertValueOrKeep(value: StyleValue?, for key: StyleKey) -> StyleValue? {
+    if let value = value, let definition = propertySupportDefinitions[key], let convert = definition.convertValue {
+      return convert(value)
     }
     return value
   }

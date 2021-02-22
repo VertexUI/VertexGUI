@@ -40,19 +40,19 @@ public class TodoAppView: ComposedWidget {
   private func buildMenu() -> Widget {
     Container().with(styleProperties: {
       ($0.layout, SimpleLinearLayout.self)
-      ($0.width, 200.0)
+      ($0.width, 200)
       (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.stretch)
       (SimpleLinearLayout.ParentKeys.direction, SimpleLinearLayout.Direction.column)
     }).withContent { [unowned self] in
       buildSearch()
 
       Container().with(styleProperties: {
-        ($0.padding, Insets(all: 32))
+        ($0.padding, 32)
       }).withContent {
         Button().with(classes: ["button"]).withContent {
           Text(styleProperties: {
             ($0.fontWeight, FontWeight.bold)
-            ($0.fontSize, 20.0)
+            ($0.fontSize, 20)
             ($0.foreground, Color.black)
           }, "New List")
         }.onClick { [unowned self] in
@@ -141,7 +141,7 @@ public class TodoAppView: ComposedWidget {
         case .none:
           Text(styleProperties: {
             ($0.foreground, Color.white)
-            ($0.fontSize, 24.0)
+            ($0.fontSize, 24)
             ($0.fontWeight, FontWeight.bold)
             ($0.opacity, 0.5)
             (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.center)

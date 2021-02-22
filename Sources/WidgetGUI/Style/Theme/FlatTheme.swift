@@ -37,7 +37,7 @@ public class FlatTheme {
         ($0.foreground, textColorOnBackground)
         ($0.padding, Insets(top: 16, right: 8, bottom: 16, left: 8))
         ($0.borderColor, primaryColor)
-        ($0.borderWidth, BorderWidth(bottom: 1))
+        ($0.borderWidth, Insets(bottom: 1))
       }
     }
   }
