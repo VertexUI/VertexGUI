@@ -2,7 +2,7 @@ import VisualAppBase
 import GfxMath
 import ReactiveProperties
 
-public class Drawing: Widget, LeafWidgetProtocol {
+public class Drawing: LeafWidget {
   @ObservableProperty
   private var paint: Paint
 
@@ -29,7 +29,7 @@ public class Drawing: Widget, LeafWidgetProtocol {
     constraints.constrain(boxConfig.preferredSize)
   }
 
-  public func draw(_ drawingContext: DrawingContext) {
+  override public func draw(_ drawingContext: DrawingContext) {
     _draw(drawingContext)
   }
 }

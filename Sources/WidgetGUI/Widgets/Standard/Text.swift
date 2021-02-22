@@ -2,7 +2,7 @@ import ReactiveProperties
 import VisualAppBase
 import GfxMath
 
-public class Text: Widget, LeafWidgetProtocol, StylableWidgetProtocol {
+public class Text: LeafWidget, StylableWidgetProtocol {
   @ObservableProperty
   private var text: String
 
@@ -82,7 +82,7 @@ public class Text: Widget, LeafWidgetProtocol, StylableWidgetProtocol {
     return constraints.constrain(textBoundsSize)
   }
 
-  public func draw(_ drawingContext: DrawingContext) {
+  override public func draw(_ drawingContext: DrawingContext) {
     drawingContext.drawText(text: self.transformedText, position: .zero, paint: TextPaint(fontConfig: fontConfig, color: color))
   }
 

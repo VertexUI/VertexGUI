@@ -2,7 +2,7 @@ import WidgetGUI
 import GfxMath
 import VisualAppBase
 
-public class TaskCompletionButton: Widget, LeafWidgetProtocol {
+public class TaskCompletionButton: LeafWidget {
     @FromStyle(key: StyleKeys.foreground)
     private var color: Color = .white
     private let preferredSize = DSize2(16, 16)
@@ -21,7 +21,7 @@ public class TaskCompletionButton: Widget, LeafWidgetProtocol {
         constraints.constrain(preferredSize)
     }
 
-    public func draw(_ drawingContext: DrawingContext) {
+    override public func draw(_ drawingContext: DrawingContext) {
         drawingContext.drawCircle(center: DVec2(size / 2), radius: size.min()! * 0.9, paint: Paint(strokeWidth: 1.0, strokeColor: color))
         if completed {
             drawingContext.drawCircle(center: DVec2(size / 2), radius: size.min()! * 0.8, paint: Paint(color: color))
