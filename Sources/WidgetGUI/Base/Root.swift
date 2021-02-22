@@ -260,22 +260,13 @@ open class Root: Parent {
     }
   }
 
-  open func render() -> RenderObject? {
-    if renderObjectSystemEnabled {
-      return rootWidget.render(reason: .renderRoot)
-    }
-    return nil
-  }
-
   open func draw(_ drawingContext: DrawingContext) {
     let rootDrawingContext = drawingContext.clone()
     rootDrawingContext.transform(.scale(DVec2(scale, scale)))
     rootDrawingContext.lock()
 
-    var iterationStates = [(Parent, DrawingContext, Widget.ChildIterator)]()
-    iterationStates.append((self, rootDrawingContext, Widget.ChildIterator() { [unowned self] in
-      $0 == 0 ? rootWidget : nil
-    }))
+    var iterationStates = [(Parent, DrawingContext, Array<Widget>.Iterator)]()
+    iterationStates.append((self, rootDrawingContext, [rootWidget].makeIterator()))
 
     outer: while var (parent, parentDrawingContext, iterator) = iterationStates.last {
       while let widget = iterator.next() {
@@ -332,7 +323,7 @@ open class Root: Parent {
           childDrawingContext.endDrawing()
 
           if !(widget is LeafWidgetProtocol) {
-            iterationStates.append((widget, childDrawingContext, widget.visitChildren()))
+            iterationStates.append((widget, childDrawingContext, widget.children.makeIterator()))
             continue outer
           }
         }

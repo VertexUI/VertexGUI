@@ -19,8 +19,4 @@ public class MockContainerWidget: Widget {
   override public func performLayout(constraints: BoxConstraints) -> DSize2 {
     .zero
   }
-
-  override public func renderContent() -> RenderObject? {
-    nil
-  }
 }

@@ -23,7 +23,7 @@ public class StyleManager {
     }
 
     var queue = [QueueEntry]()
-    queue.append(QueueEntry(iterator: initialWidget.visitChildren(), partialMatches: partialMatches))
+    queue.append(QueueEntry(iterator: initialWidget.children.makeIterator(), partialMatches: partialMatches))
 
     while queue.count > 0 {
       var entry = queue.removeFirst()
@@ -31,7 +31,7 @@ public class StyleManager {
       while let widget = entry.iterator.next() {
         let (newPartialMatches, fullMatches) = continueMatching(previousPartialMatches: entry.partialMatches, widget: widget)
         widget.matchedStyles = fullMatches
-        queue.append(QueueEntry(iterator: widget.visitChildren(), partialMatches: newPartialMatches))
+        queue.append(QueueEntry(iterator: widget.children.makeIterator(), partialMatches: newPartialMatches))
       }
     }
   }
@@ -109,7 +109,7 @@ public class StyleManager {
   }
 
   private struct QueueEntry {
-    var iterator: Widget.ChildIterator
+    var iterator: Array<Widget>.Iterator
     let partialMatches: [PartialMatch]
   }
 

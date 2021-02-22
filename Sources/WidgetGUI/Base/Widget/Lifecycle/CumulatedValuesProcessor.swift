@@ -32,7 +32,7 @@ class CumulatedValuesProcessor {
 
     rootWidget.cumulatedTransforms = currentTransforms
 
-    var queuedIterations = [(rootWidget.visitChildren(), currentTransforms)]
+    var queuedIterations = [(rootWidget.children.makeIterator(), currentTransforms)]
 
     while queuedIterations.count > 0 {
       var (iterator, previousTransforms) = queuedIterations.removeFirst()
@@ -43,7 +43,7 @@ class CumulatedValuesProcessor {
 
         if widget.children.count > 0 {
           // TODO: maybe scroll translation should be added here instead of by accessing parent in getTransforms
-          queuedIterations.append((widget.visitChildren(), currentTransforms))
+          queuedIterations.append((widget.children.makeIterator(), currentTransforms))
         }
       }
     }

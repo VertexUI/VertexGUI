@@ -26,7 +26,7 @@ public class BarChart: Widget {
     constraints.constrain(boxConfig.preferredSize)
   }
 
-  override public func renderContent() -> RenderObject? {
+  /*override public func renderContent() -> RenderObject? {
     var image = Image(width: max(1, Int(width)), height: max(1, Int(height)), value: 255)
 
     let datumWidth = Double(image.width) / Double(data.count)
@@ -43,5 +43,5 @@ public class BarChart: Widget {
     } 
 
     return ImageRenderObject(image: image, bounds: globalBounds)
-  }
+  }*/
 }

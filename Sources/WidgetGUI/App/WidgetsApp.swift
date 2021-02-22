@@ -100,10 +100,6 @@ open class WidgetsApp: EventfulObject {
             drawingContext.endDrawing()
         }
 
-        if let rendering = guiRoot.render() {
-            context.tree.appendChild(rendering)
-        }
-
         return window
     }
 

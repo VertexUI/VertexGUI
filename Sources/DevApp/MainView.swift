@@ -100,10 +100,5 @@ public class MainView: ComposedWidget, SlotAcceptingWidgetProtocol {
         }*/
       }
     }
-
-    override func renderContent() -> RenderObject? {
-      print("Render Nested Widget", id)
-      return super.renderContent()
-    }
   }
 }

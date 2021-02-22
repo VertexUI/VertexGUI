@@ -46,7 +46,7 @@ public class ImageView: Widget {
         return constraints.constrain(DSize2(width, height))
     }
 
-    override public func renderContent() -> RenderObject? {
+    /*override public func renderContent() -> RenderObject? {
         if bounds.size.width <= 0 || bounds.size.height <= 0 {
             return nil
         }
@@ -61,7 +61,7 @@ public class ImageView: Widget {
         } else {
             return nil
         }
-    }
+    }*/
 
     private func resizeImage() {
         resizingImage = true

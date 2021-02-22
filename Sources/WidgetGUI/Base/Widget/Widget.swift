@@ -395,32 +395,8 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         }
     }
 
-    @usableFromInline internal var renderState = RenderState()
-
-    /// Flag whether to show bounds and sizes for debugging purposes.
-    //@MutableProperty
-    ////internal var _debugLayout: Bool?
     @MutableProperty
-    public var debugLayout: Bool = false/* {
-        get {
-            _debugLayout ?? context.debugLayout
-        }
-
-        set {
-            _debugLayout = newValue
-        }
-    }*/
-    @MutableProperty
-    public var layoutDebuggingColor = Color.red
-    private let layoutDebuggingTextFontConfig = FontConfig(family: defaultFontFamily, size: 16, weight: .regular, style: .normal)
-    // if true, highlight the Widget when bursts of calls to functions such as layout or render occur
-    public var burstHighlightEnabled = true
-    @usableFromInline
-    internal var highlighted = false
-
-    public var countCalls: Bool = true
-    public var countCallsFlash: Bool = false
-    @usableFromInline lazy internal var callCounter = CallCounter(widget: self)
+    public var debugLayout: Bool = false
 
     public internal(set) var onParentChanged = EventHandlerManager<Parent?>()
     public let onDependenciesInjected = WidgetEventHandlerManager<Void>()
@@ -459,13 +435,6 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         setupFromStyleWrappers()
         setupBoxConfigUpdateTriggers()
         setupScrolling()
-
-        _ = onDestroy(_debugLayout.onChanged { [unowned self] _ in
-            invalidateRenderState()
-        })
-        _ = onDestroy(_layoutDebuggingColor.onChanged { [unowned self] _ in
-            invalidateRenderState()
-        })
     }
     
     /* internal widget setup / management
@@ -603,83 +572,6 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
       }
     }
 
-    // TODO: this is work in progress, possibly one step towards a new approach to child handling
-    public func visitChildren() -> ChildIterator {
-        /*var internalChildren = [Widget]()
-        if scrollingEnabled.x {
-            internalChildren.append(pseudoScrollBarX)
-        }
-        if scrollingEnabled.y {
-            internalChildren.append(pseudoScrollBarY)
-        }
-        
-        var contentIterator = visitContentChildren()
-        var contentIteratorActive = true
-        var internalStartIndex = 0*/
-        
-        return ChildIterator() { [unowned self] in
-            /*if contentIteratorActive {
-                if let next = contentIterator.next() {
-                    return next
-                } else {
-                    contentIteratorActive = false 
-                    internalStartIndex = $0
-                }
-            }
-
-            return ($0 - internalStartIndex) < internalChildren.count ? internalChildren[$0 - internalStartIndex] : nil*/
-            return $0 < self.children.count ? self.children[$0] : nil
-        }
-    }
-
-    /** Implemented by subclasses. Should iterate over only those children that are defined by the subclass. */
-    open func visitContentChildren() -> ChildIterator {
-        // default implementation, fallback to old children array
-        ChildIterator() { [unowned self] in
-            $0 < contentChildren.count ? contentChildren[$0] : nil
-        }
-    }
-
-    /*public final func mount(
-        parent: Parent,
-        treePath: TreePath,
-        context: WidgetContext,
-        lifecycleBus: WidgetBus<WidgetLifecycleMessage>,
-        with replacementContext: ReplacementContext? = nil) {
-            self.context = context
-            self.setupContext()
-
-            self.stylePropertiesResolver.propertySupportDefinitions = mergedSupportedStyleProperties
-
-            self.lifecycleBus = lifecycleBus
-            
-            self.parent = parent
-
-            setupInhertiableStylePropertiesValues()
-
-            self.treePath = treePath
-
-            resolveDependencies()
-
-            onDependenciesInjected.invokeHandlers(())
-
-            mounted = true
-
-            onMounted.invokeHandlers(Void())
-
-            if let style = buildStyle() {
-                providedStyles.insert(style, at: 0)
-            }
-
-            build()
-
-            built = true
-
-            onBuilt.invokeHandlers(Void())
-
-            invalidateMatchedStyles()
-    }*/
-
     func setupInhertiableStylePropertiesValues() {
         if let parent = parent as? Widget {
             stylePropertiesResolver.inheritableValues = parent.stylePropertiesResolver.resolvedPropertyValues
@@ -689,70 +581,6 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
             }
         }
     }
-
-    /*private final func resolveDependencies() {
-        var injectables = [AnyInject]()
-        
-        let mirror = Mirror(reflecting: self)
-        for child in mirror.children {
-            if child.value is _AnyInject {
-                injectables.append(child.value as! AnyInject)
-            }
-        }
-
-        if injectables.count > 0 {
-            let providers = getParents(ofType: DependencyProvider.self)
-            for provider in providers {
-                for var injectable in injectables {
-                    if injectable.anyValue == nil {
-                        if let dependency = provider.getDependency(ofType: injectable.anyType) {
-                            injectable.anyValue = dependency.value
-                        } else if let key = injectable.key, let dependency = provider.getDependency(with: key) {
-                            injectable.anyValue = dependency.value
-                        }
-                    }
-                }
-            }
-        }
-    }*/
-
-    // TODO: maybe rename to inMount or something like that
-    /*public final func build() {
-        // TODO: check for invalid build
-        // TODO: preserve state when it is the second build / n > 0 th build
-
-        #if DEBUG
-        if countCalls {
-            callCounter.count(.Build)
-        }
-        
-        inspectionBus.publish(WidgetInspectionMessage(sender: self, content: .BuildStarted))
-        #endif
-
-        let oldChildren = children
-        
-        // TODO: should probably not call destroy here as these children might be mounted somewhere else, maybe have something like unmount()
-        /*for oldChild in oldChildren {
-            oldChild.destroy()
-        }*/
-
-        Widget.inStyleScope(self.createsStyleScope ? self.id : self.styleScope) {
-            performBuild()
-        }
-
-        // TODO: should mountChildren be called by build?
-        mountChildren(oldChildren: oldChildren)
-
-        buildInvalid = false
-
-        #if DEBUG
-        inspectionBus.publish(WidgetInspectionMessage(sender: self, content: .BuildFinished))
-        #endif
-
-        invalidateBoxConfig()
-        invalidateLayout()
-        invalidateRenderState()
-    }*/
 
     open func performBuild() {
         
@@ -764,45 +592,6 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     public final func requestUpdateChildren() {
         context.queueLifecycleMethodInvocation(.updateChildren, target: self, sender: self, reason: .undefined)
     }
-
-    /**
-    Checks whether the state of the old children can be transferred to the new children and if yes, applies it.
-    */
-    /*private final func mountChildren(oldChildren: [Widget]) {
-        var iterator = visitChildren()
-        var i = 0
-        while let child = iterator.next() {
-            mountChild(child, treePath: self.treePath/i, with: ReplacementContext(previousWidget: nil, keyedWidgets: [:]))
-            i += 1
-        }
-    }
-
-    public func mountChild(_ child: Widget, treePath: TreePath, with replacementContext: ReplacementContext? = nil) {
-        if child.parent === self {
-            child.treePath = treePath
-        } else {
-            child.mount(parent: self, treePath: treePath, context: context, lifecycleBus: lifecycleBus, with: replacementContext)
-
-            _ = child.onBoxConfigChanged { [unowned self, unowned child] _ in
-                handleChildBoxConfigChanged(child: child)
-            }
-
-            _ = child.onSizeChanged { [unowned self, unowned child] _ in
-                // TODO: maybe need special relayout flag / function
-                Logger.log("Size of child \(child) of parent \(self) changed.".with(fg: .blue, style: .bold), level: .Message, context: .WidgetLayouting)
-                if layouted && !layouting {
-                    Logger.log("Performing layout on parent parent.", level: .Message, context: .WidgetLayouting)
-                    invalidateLayout()
-                }
-            }
-            
-            _ = child.onFocusChanged { [weak self] in
-                if let self = self {
-                    self.focused = $0
-                }
-            }
-        }
-    }*/
 
     @inlinable
     public final func invalidateBuild() {
@@ -1121,173 +910,17 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         layoutInvalid = true
         context.queueLifecycleMethodInvocation(.layout, target: self, sender: self, reason: .undefined)
         onLayoutInvalidated.invokeHandlers(Void())
-        //lifecycleBus.publish(WidgetLifecycleMessage(sender: self, content: .LayoutInvalidated))
     }
 
-    /**
-    Returns the rendered representation of the Widget. Updates the Widgets render state if it is invalid.
-    */
     @inlinable
-    public final func render(reason: RenderInvocationReason) -> RenderObject.IdentifiedSubTree {
-        //print("invoked render on ", self)
-
-        if renderState.invalid && mounted && !destroyed {
-            #if DEBUG
-            if countCalls {
-                if callCounter.count(.Render) {
-                    context.inspectionBus.publish(WidgetInspectionMessage(
-                        sender: self, content: .RenderBurstThresholdExceeded))
-                }
-            }
-
-            Logger.log("Render state of Widget: \(self) invalid. Rerendering.".with(fg: .yellow), level: .Message, context: .WidgetRendering)
-            #endif
-
-            updateRenderState(reason: .renderCalled(reason))
-        } else if !mounted || destroyed {
-            #if DEBUG
-            Logger.log("Widget: \(self) is not mounted or already destroyed. Skip rendering.".with(fg: .yellow), level: .Message, context: .WidgetRendering)
-            #endif
-        } else {
-            #if DEBUG
-            Logger.log("Render state of Widget: \(self) valid. Using cached state.".with(fg: .yellow), level: .Message, context: .WidgetRendering)
-            #endif
-        }
-
-        return renderState.content!
-    }
-
-    /**
-    For internal use only. Use render() on the outside.
-    Takes the output of renderContent() and wraps it in an identifiable container.
-    Adds rendered output for debugging as well.
-    */
-    @usableFromInline
-    internal final func updateRenderState(reason: UpdateRenderStateInvocationReason) {
-        //print("::::::Update Render State", self, reason)
-
-        if !renderState.invalid {
-            #if DEBUG
-            Logger.warn("Called updateRenderState on Widget where renderState is not invalid.".with(fg: .white, bg: .red), context: .WidgetRendering)
-            #endif
-            return
-        } else if !mounted || destroyed {
-            #if DEBUG
-            Logger.warn("Called updateRenderState on Widget that is not yet mounted or was destroyed.".with(fg: .white, bg: .red), context: .WidgetRendering)
-            #endif
-            return
-        }
-
-        #if DEBUG
-        let startTime = Date.timeIntervalSinceReferenceDate
-        context.inspectionBus.publish(WidgetInspectionMessage(
-            sender: self, content: .RenderingStarted))
-        #endif
-
-        let subTree = renderState.content ?? IdentifiedSubTreeRenderObject(id, [])
-        let oldMainContent = renderState.mainContent
-        renderState.content = subTree
-
-        if visibility == .visible, mounted && layouted && !layouting {
-            let newMainContent = renderContent()
-            // if the content that was rendered by the inheriting Widget
-            // is still the same object as the old one, invalidate is cache
-            // to force a rerender
-            // TODO: there might be a better approach to this
-            if let newMainContent = newMainContent,
-               let oldMainContent = oldMainContent, oldMainContent === newMainContent {
-                    newMainContent.invalidateCache()
-            }
-            renderState.mainContent = newMainContent
-            
-            /*let duration = Date.timeIntervalSinceReferenceDate - startTime
-            if duration > 0.01 {
-                print("updateRenderState took", duration, self)
-            }*/
-
-            subTree.replaceChildren(([renderState.mainContent] + renderState.debuggingContent).compactMap { $0 })
-        } else if visibility == .hidden {
-            subTree.removeChildren()
-            #if DEBUG
-            Logger.warn("Called updateRenderState on Widget that cannot be rendered in it's current state.".with(fg: .white, bg: .red), context: .WidgetRendering)
-            #endif
-        }
-
-        renderState.invalid = false
-
-        #if DEBUG
-        //print("::::RENDER STATE UPDATE TOOK", self, reason, Date.timeIntervalSinceReferenceDate - startTime)
-        context.inspectionBus.publish(WidgetInspectionMessage(
-            sender: self, content: .RenderingFinished))
-        #endif
-    }
-
-    /**
-    Should be used by inheriting Widgets to create their rendered representation.
-    This function is called internally by the render() (which then calls updateRenderState()) function. So don't call this directly.
-    It is allowed to access the current render state, modify the current RenderObject
-    and return it again (this approach might increase performance for Widgets that often need
-    to rerender as it avoids some class instatiations and mounting in the RenderObjectTree).
-    */
-    open func renderContent() -> RenderObject? {
-        .Container { [unowned self] in
-            children.map { $0.render(reason: .renderContentOfParent(self)) }
-        }
-    }
-
-    /**
-    Pass a message up to the manging root node and request a render state update in the next cycle.
-    */
-    @inlinable
+    @available(*, deprecated, message: "do not use render object api")
     public final func invalidateRenderState(deep: Bool = false) {
-        if renderState.invalid {
-            #if DEBUG
-            Logger.warn("Called invalidateRenderState() when render state is already invalid on Widget: \(self)", context: .WidgetRendering)
-            #endif
-            return
-        }
 
-        if destroyed {
-            #if DEBUG
-            Logger.warn("Tried to call invalidateRenderState() on destroyed widget: \(self)", context: .WidgetRendering)
-            #endif
-            return
-        }
-
-        if !mounted {
-            #if DEBUG
-            Logger.warn("Called invalidateRenderState() on an unmounted Widget: \(self)", context: .WidgetRendering)
-            #endif
-            return
-        }
-
-        _invalidateRenderState(deep: deep)
     }
 
     @inlinable
+    @available(*, deprecated, message: "do not use render object api")
     public final func invalidateRenderState(deep: Bool = false, after block: () -> ()) {
-        block()
-        invalidateRenderState(deep: deep)
-    }
-
-    @usableFromInline
-    internal final func _invalidateRenderState(deep: Bool) {
-        #if (DEBUG)
-        if countCalls {
-            callCounter.count(.InvalidateRenderState)
-        }
-        #endif
-        if deep {
-            for child in children {
-                child.invalidateRenderState(deep: true)
-            }
-        }
-        renderState.invalid = true
-        onRenderStateInvalidated.invokeHandlers(self)
-        lifecycleBus.publish(WidgetLifecycleMessage(sender: self, content: .RenderStateInvalidated))
-        #if DEBUG
-        context.inspectionBus.publish(WidgetInspectionMessage(sender: self, content: .RenderStateInvalidated))
-        #endif
     }
 
     @discardableResult
@@ -1323,28 +956,6 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         nextTickHandlerRemovers.append(remove)
     }
     
-    /**
-    Can be used for debugging purposes to highlight a specific Widget, helping to identify it on the screen.
-    Only available in debug builds.
-    */
-    @usableFromInline
-    internal func flashHighlight() {
-        #if DEBUG
-        highlighted = true
-        invalidateRenderState()
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
-            if let self = self {
-                self.nextTick() { _ in
-                    self.highlighted = false
-                    self.invalidateRenderState()
-                }
-            }
-        }
-        #else
-        fatalError("flashHighlight() is only available in debug builds")
-        #endif
-    }
-
     // TODO: how to name this?
     public final func destroy() {
         for child in children {
