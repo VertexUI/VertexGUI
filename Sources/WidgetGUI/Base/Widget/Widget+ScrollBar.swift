@@ -33,7 +33,7 @@ extension Widget {
       _ = onMouseUp(handleMouseUp)
 
       _ = onMounted { [unowned self] in
-        _ = onDestroy(rootParent.onMouseMove.addHandler(handleMouseMove))
+        _ = onDestroy(rootParent.onMouseMoveHandlerManager.addHandler(handleMouseMove))
       }
     }
 

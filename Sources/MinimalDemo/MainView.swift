@@ -11,13 +11,12 @@ public class MainView: ComposedWidget {
       (SimpleLinearLayout.ParentKeys.justifyContent, SimpleLinearLayout.Justify.center)
     }).withContent { [unowned self] in
 
-      Button().withContent {
-        
+      Button().onClick {
+        counter += 1
+      }.withContent {
         Text(ComputedProperty(compute: {
           "counter: \(counter)"
         }, dependencies: [$counter]))
-      }.onClick {
-        counter += 1
       }
     }
   }

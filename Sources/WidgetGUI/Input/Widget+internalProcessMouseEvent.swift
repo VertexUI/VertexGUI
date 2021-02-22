@@ -3,18 +3,24 @@ extension Widget {
     switch event {
     case let event as GUIMouseEnterEvent:
       self.enablePseudoClass(Widget.PseudoClasses.hover)
+
     case let event as GUIMouseMoveEvent:
-      self.onMouseMove.invokeHandlers(event)
+      self.onMouseMoveHandlerManager.invokeHandlers(event)
+
     case let event as GUIMouseLeaveEvent:
       self.disablePseudoClass(Widget.PseudoClasses.hover)
+
     case let event as GUIMouseButtonDownEvent:
-      self.onMouseDown.invokeHandlers(event)
+      self.onMouseDownHandlerManager.invokeHandlers(event)
+
     case let event as GUIMouseButtonUpEvent:
-      self.onMouseUp.invokeHandlers(event)
+      self.onMouseUpHandlerManager.invokeHandlers(event)
+
     case let event as GUIMouseButtonClickEvent:
-      self.onClick.invokeHandlers(event)
+      self.onClickHandlerManager.invokeHandlers(event)
+
     case let event as GUIMouseWheelEvent:
-      self.onMouseWheel.invokeHandlers(event)
+      self.onMouseWheelHandlerManager.invokeHandlers(event)
     default:
       break
     }

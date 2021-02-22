@@ -55,13 +55,7 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     }
     public internal(set) var lifecycleBus = WidgetBus<WidgetLifecycleMessage>()
 
-    weak open var parent: Parent? = nil {
-        willSet {
-            if unregisterAnyParentChangedHandler != nil {
-                unregisterAnyParentChangedHandler!()
-            }
-        }
-    }
+    weak open var parent: Parent? = nil
     public internal(set) var treePath: TreePath = []
     /** The topmost parent or the widget instance itself if not mounted into a parent. */
     public var rootParent: Widget {
@@ -375,10 +369,6 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     private var scrollingSpeed = 20.0
     @MutableProperty
     internal var currentScrollOffset: DVec2 = .zero
-   /* /** should be set in layout, if scrolling is enabled */
-    internal var maxScrollOffset: DVec2 = .zero
-    /** should be set in layout, if scrolling is enabled */
-    internal var minScrollOffset: DVec2 = .zero*/
     internal var scrollableLength: DVec2 = .zero
     /** Mainly used to avoid scroll bars being translated with the rest of the content. */
     internal var unaffectedByParentScroll = false
@@ -417,15 +407,13 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     /* mouse events
     --------------------------
     */
-    public let onClick = WidgetEventHandlerManager<GUIMouseButtonClickEvent>()
-    public let onMouseDown = WidgetEventHandlerManager<GUIMouseButtonDownEvent>()
-    public let onMouseUp = WidgetEventHandlerManager<GUIMouseButtonUpEvent>()
-    public let onMouseMove = WidgetEventHandlerManager<GUIMouseMoveEvent>()
-    public let onMouseWheel = WidgetEventHandlerManager<GUIMouseWheelEvent>()
+    public let onClickHandlerManager = EventHandlerManager<GUIMouseButtonClickEvent>()
+    public let onMouseDownHandlerManager = EventHandlerManager<GUIMouseButtonDownEvent>()
+    public let onMouseUpHandlerManager = EventHandlerManager<GUIMouseButtonUpEvent>()
+    public let onMouseMoveHandlerManager = EventHandlerManager<GUIMouseMoveEvent>()
+    public let onMouseWheelHandlerManager = EventHandlerManager<GUIMouseWheelEvent>()
     /* end mouse events */
     
-    private var unregisterAnyParentChangedHandler: EventHandlerManager<Parent?>.UnregisterCallback?
-	
     public init() {
         self.id = Self.nextId
         Self.nextId += 1
@@ -513,7 +501,7 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
                 }
             })
 
-            scrollEventHandlerRemovers.append(onMouseWheel.addHandler { [unowned self] event in
+            scrollEventHandlerRemovers.append(onMouseWheelHandlerManager.addHandler { [unowned self] event in
                 processMouseWheelEventUpdateScroll(event)
             })
         }
@@ -986,7 +974,6 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         onDestroy.invokeHandlers(Void())
 
         onParentChanged.removeAllHandlers()
-        //onAnyParentChanged.removeAllHandlers()
         onMounted.removeAllHandlers()
         onBoxConfigChanged.removeAllHandlers()
         onSizeChanged.removeAllHandlers()
@@ -1029,10 +1016,5 @@ extension Widget {
             self.old = old
             self.new = new
         }
-    }
-
-    public struct ReplacementContext {
-        public var previousWidget: Widget?
-        public var keyedWidgets: [String: Widget]
     }
 }
