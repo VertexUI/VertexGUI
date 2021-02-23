@@ -131,15 +131,23 @@ open class Root: Parent {
     if let event = rawMouseEvent as? RawMouseMoveEvent {
       mouseMoveEventBurstLimiter.limit { [weak self] in
         if let self = self {
+          var operation = ProcessMouseEventOperationDebugData()
+          operation.recordStart()
           if !self.renderObjectSystemEnabled {
             self.mouseEventManager.propagate(rawMouseEvent)
           }
+          operation.recordEnd()
+          self.debugManager.data.storeOperation(operation)
         }
       }
     } else {
+      var operation = ProcessMouseEventOperationDebugData()
+      operation.recordStart()
       if !self.renderObjectSystemEnabled {
         mouseEventManager.propagate(rawMouseEvent)
       }
+      operation.recordEnd()
+      self.debugManager.data.storeOperation(operation)
     }
 
     return false
@@ -147,18 +155,27 @@ open class Root: Parent {
 
   @discardableResult
   open func consume(_ rawKeyEvent: KeyEvent) -> Bool {
+    var operation = ProcessKeyEventOperationDebugData()
+    operation.recordStart()
     propagate(rawKeyEvent)
+    operation.recordEnd()
+    debugManager.data.storeOperation(operation)
     return false
   }
 
   @discardableResult
   open func consume(_ rawTextEvent: TextEvent) -> Bool {
+    var operation = ProcessTextEventOperationDebugData()
+    operation.recordStart()
     propagate(rawTextEvent)
+    operation.recordEnd()
+    debugManager.data.storeOperation(operation)
     return false
   }
 
   open func tick(_ tick: Tick) {
-    debugManager.beginTick()
+    var operation = TickOperationDebugData()
+    operation.recordStart()
 
     widgetContext!.onTick.invokeHandlers(tick)
 
@@ -171,68 +188,82 @@ open class Root: Parent {
       processLifecycleMessage($0)
     }
 
-    debugManager.beginTickOperation(.build)
-    for widget in rebuildWidgets {
-      if !widget.destroyed {
-        //widget.build()
-        treeManager.buildChildren(of: widget)
+    var stepData = runTickStep {
+      for widget in rebuildWidgets {
+        if !widget.destroyed {
+          treeManager.buildChildren(of: widget)
+        }
       }
+      rebuildWidgets.clear()
     }
-    rebuildWidgets.clear()
-    debugManager.endTickOperation(.build)
+    operation.storeStep(.build, data: stepData)
 
-    debugManager.beginTickOperation(.updateChildren)
-    var iterator = widgetLifecycleManager.queues[.updateChildren]!.iterate()
-    while let queueEntry = iterator.next() {
-      treeManager.updateChildren(of: queueEntry.target)
+    stepData = runTickStep {
+      var iterator = widgetLifecycleManager.queues[.updateChildren]!.iterate()
+      while let queueEntry = iterator.next() {
+        treeManager.updateChildren(of: queueEntry.target)
+      }
+      widgetLifecycleManager.queues[.updateChildren]!.clear()
     }
-    widgetLifecycleManager.queues[.updateChildren]!.clear()
-    debugManager.endTickOperation(.updateChildren)
+    operation.storeStep(.updateChildren, data: stepData)
 
     // TODO: check whether any parent of the widget was already processed (which automatically leads to a reprocessing of the styles)
     // TODO: or rather follow the pattern of invalidate...()? --> invalidateStyle()
-    debugManager.beginTickOperation(.resolveStyles)
-    for widget in matchedStylesInvalidatedWidgets {
-      if !widget.destroyed && widget.mounted {
-        styleManager.processTree(widget)
+    stepData = runTickStep {
+      for widget in matchedStylesInvalidatedWidgets {
+        if !widget.destroyed && widget.mounted {
+          styleManager.processTree(widget)
+        }
       }
+      matchedStylesInvalidatedWidgets.clear()
     }
-    matchedStylesInvalidatedWidgets.clear()
-    debugManager.endTickOperation(.resolveStyles)
+    operation.storeStep(.resolveStyles, data: stepData)
 
-    debugManager.beginTickOperation(.updateBoxConfig)
-    let boxConfigQueue = widgetLifecycleManager.queues[.updateBoxConfig]!
-    var boxConfigIterator = boxConfigQueue.iterate()
-    while let entry = boxConfigIterator.next() {
-      if entry.target.mounted {
-        entry.target.updateBoxConfig()
+    stepData = runTickStep {
+      let boxConfigQueue = widgetLifecycleManager.queues[.updateBoxConfig]!
+      var boxConfigIterator = boxConfigQueue.iterate()
+      while let entry = boxConfigIterator.next() {
+        if entry.target.mounted {
+          entry.target.updateBoxConfig()
+        }
       }
+      boxConfigQueue.clear()
     }
-    boxConfigQueue.clear()
-    debugManager.endTickOperation(.updateBoxConfig)
+    operation.storeStep(.updateBoxConfig, data: stepData)
     
-    debugManager.beginTickOperation(.layout)
-    let layoutQueue = widgetLifecycleManager.queues[.layout]!
-    var layoutIterator = layoutQueue.iterate()
-    while let entry = layoutIterator.next() {
-      // the widget should only be relayouted if it hasn't been layouted before
-      // if it hasn't been layouted before it will be layouted during
-      // the first layout pass started by rootWidget.layout()
-      if entry.target.layouted && !entry.target.destroyed {
-        entry.target.layout(constraints: entry.target.previousConstraints!)
+    stepData = runTickStep {
+      let layoutQueue = widgetLifecycleManager.queues[.layout]!
+      var layoutIterator = layoutQueue.iterate()
+      while let entry = layoutIterator.next() {
+        // the widget should only be relayouted if it hasn't been layouted before
+        // if it hasn't been layouted before it will be layouted during
+        // the first layout pass started by rootWidget.layout()
+        if entry.target.layouted && !entry.target.destroyed {
+          entry.target.layout(constraints: entry.target.previousConstraints!)
+        }
       }
+      layoutQueue.clear()
     }
-    layoutQueue.clear()
-    debugManager.endTickOperation(.layout)
+    operation.storeStep(.layout, data: stepData)
 
-    debugManager.beginTickOperation(.updateCumulatedValues)
-    cumulatedValuesProcessor.processQueue()
-    debugManager.endTickOperation(.updateCumulatedValues)
+    stepData = runTickStep {
+      cumulatedValuesProcessor.processQueue()
+    }
+    operation.storeStep(.updateCumulatedValues, data: stepData)
 
     removeOnAdd()
     widgetLifecycleMessages.clear()
 
-    debugManager.endTick()
+    operation.recordEnd()
+    debugManager.data.storeOperation(operation)
+  }
+
+  func runTickStep(block: () -> ()) -> TickOperationStepDebugData {
+    var stepData = TickOperationStepDebugData()
+    stepData.recordStart()
+    block()
+    stepData.recordEnd()
+    return stepData
   }
 
   @inline(__always)
@@ -252,7 +283,8 @@ open class Root: Parent {
   }
 
   open func draw(_ drawingContext: DrawingContext) {
-    debugManager.beginDraw()
+    var operation = DrawOperationDebugData()
+    operation.recordStart()
 
     let rootDrawingContext = drawingContext.clone()
     rootDrawingContext.transform(.scale(DVec2(scale, scale)))
@@ -335,7 +367,8 @@ open class Root: Parent {
       iterationStates.removeLast()
     }
 
-    debugManager.endDraw()
+    operation.recordEnd()
+    debugManager.data.storeOperation(operation)
   }
 
   // TODO: maybe this function should be added to Widget
@@ -484,14 +517,14 @@ extension Root {
   /**
   // TODO: maybe rename to DebugDataCollector */
   public class DebugManager {
-    public private(set) var data = DebugData()
-    private var currentTickData: DebugData.SingleTickData? = nil
-    private var currentDrawData: DebugData.SingleDrawData? = nil
+    public var data = DebugData()
+    //private var currentTickData: DebugData.SingleTickData? = nil
+    //private var currentDrawData: DebugData.SingleDrawData? = nil
 
     public init() {}
 
     // TODO: maybe should do a generic beginOperation(operation) ...
-    public func beginTick() {
+    /*public func beginTick() {
       currentTickData = DebugData.SingleTickData(startTimestamp: Date.timeIntervalSinceReferenceDate)
     }
 
@@ -534,27 +567,17 @@ extension Root {
 
       drawData.endTimestamp = Date.timeIntervalSinceReferenceDate
       data.operations.append(.draw(drawData))
-    }
+    }*/
   }
 
   public struct DebugData {
-    public var operations: [Operation] = []
+    public var operations: [RootOperationDebugData] = []
 
-    public enum Operation {
-      case tick(SingleTickData)
-      case draw(SingleDrawData)
+    mutating public func storeOperation(_ operation: RootOperationDebugData) {
+      operations.append(operation)
     }
 
-    public enum TickOperation {
-      case build
-      case updateChildren
-      case resolveStyles
-      case updateBoxConfig 
-      case layout
-      case updateCumulatedValues 
-    }
-
-    public struct SingleTickData {
+    /*public struct SingleTickData {
       public var startTimestamp: Double
       public var endTimestamp: Double = -1
       public var operations: [TickOperation: SingleTickOperationData] = [:]
@@ -577,6 +600,87 @@ extension Root {
       public var duration: Double {
         endTimestamp - startTimestamp
       }
+    }*/
+  }
+}
+
+public protocol RootOperationDebugData {
+  var startTime: Double { get set }
+  var endTime: Double { get set }
+  var duration: Double { get }
+
+  mutating func recordStart()
+  mutating func recordEnd()
+}
+
+extension RootOperationDebugData {
+  public var duration: Double {
+    endTime - startTime
+  }
+
+  mutating public func recordStart() {
+    startTime = Date.timeIntervalSinceReferenceDate
+  }
+
+  mutating public func recordEnd() {
+    endTime = Date.timeIntervalSinceReferenceDate
+  }
+}
+
+extension Root {
+  public struct ProcessMouseEventOperationDebugData: RootOperationDebugData {
+    public var startTime: Double = 0
+    public var endTime: Double = 0
+
+    public init() {}
+  }
+  
+  public struct ProcessKeyEventOperationDebugData: RootOperationDebugData {
+    public var startTime: Double = 0
+    public var endTime: Double = 0
+
+    public init() {}
+  }
+
+ public struct ProcessTextEventOperationDebugData: RootOperationDebugData {
+    public var startTime: Double = 0
+    public var endTime: Double = 0
+
+    public init() {}
+  }
+
+  public struct TickOperationDebugData: RootOperationDebugData {
+    public var startTime: Double = 0
+    public var endTime: Double = 0
+    public var steps: [TickOperationStep: TickOperationStepDebugData] = [:]
+
+    public init() {}
+
+    mutating public func storeStep(_ step: TickOperationStep, data: TickOperationStepDebugData) {
+      steps[step] = data
     }
+  }
+
+  public enum TickOperationStep {
+    case build
+    case updateChildren
+    case resolveStyles
+    case updateBoxConfig 
+    case layout
+    case updateCumulatedValues 
+  }
+
+  public struct TickOperationStepDebugData: RootOperationDebugData {
+    public var startTime: Double = 0
+    public var endTime: Double = 0
+
+    public init() {}
+  }
+
+  public struct DrawOperationDebugData: RootOperationDebugData {
+    public var startTime: Double = 0
+    public var endTime: Double = 0
+
+    public init() {}
   }
 }

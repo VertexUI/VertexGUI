@@ -24,6 +24,14 @@ extension DeveloperTools {
         Container().with(classes: ["chart-group"]).with(styleProperties: { _ in
           (SimpleLinearLayout.ParentKeys.direction, SimpleLinearLayout.Direction.column)
         }).withContent {
+          buildChart(title: ChartContent.processMouseEvent.rawValue, dataProperty:barChartDataProperties[.processMouseEvent]!)
+          buildChart(title: ChartContent.processKeyEvent.rawValue, dataProperty:barChartDataProperties[.processKeyEvent]!)
+          buildChart(title: ChartContent.processTextEvent.rawValue, dataProperty:barChartDataProperties[.processTextEvent]!)
+        }
+
+        Container().with(classes: ["chart-group"]).with(styleProperties: { _ in
+          (SimpleLinearLayout.ParentKeys.direction, SimpleLinearLayout.Direction.column)
+        }).withContent {
           buildChart(title: ChartContent.tick.rawValue, dataProperty: barChartDataProperties[.tick]!)
           buildChart(title: ChartContent.build.rawValue, dataProperty: barChartDataProperties[.build]!)
           buildChart(title: ChartContent.updateChildren.rawValue, dataProperty: barChartDataProperties[.updateChildren]!)
@@ -56,18 +64,30 @@ extension DeveloperTools {
 
       for operation in inspectedRoot.debugManager.data.operations {
         switch operation {
-        case let .tick(tickData):
-          updatedBarChartData[.tick]!.append((label: "wow", tickData.duration))
+        case let operation as Root.ProcessMouseEventOperationDebugData:
+          updatedBarChartData[.processMouseEvent]!.append((label: "wow", operation.duration))
 
-          updatedBarChartData[.build]!.append((label: "wow", tickData.operations[.build]!.duration))
-          updatedBarChartData[.updateChildren]!.append((label: "wow", tickData.operations[.updateChildren]!.duration))
-          updatedBarChartData[.resolveStyles]!.append((label: "wow", tickData.operations[.resolveStyles]!.duration))
-          updatedBarChartData[.updateBoxConfig]!.append((label: "wow", tickData.operations[.updateBoxConfig]!.duration))
-          updatedBarChartData[.layout]!.append((label: "wow", tickData.operations[.layout]!.duration))
-          updatedBarChartData[.updateCumulatedValues]!.append((label: "wow", tickData.operations[.updateCumulatedValues]!.duration))
+        case let operation as Root.ProcessKeyEventOperationDebugData:
+          updatedBarChartData[.processKeyEvent]!.append((label: "wow", operation.duration))
 
-        case let .draw(drawData):
-          updatedBarChartData[.draw]!.append((label: "draw", value: drawData.duration))
+        case let operation as Root.ProcessTextEventOperationDebugData:
+          updatedBarChartData[.processTextEvent]!.append((label: "wow", operation.duration))
+
+        case let operation as Root.TickOperationDebugData: 
+          updatedBarChartData[.tick]!.append((label: "wow", operation.duration))
+
+          updatedBarChartData[.build]!.append((label: "wow", operation.steps[.build]!.duration))
+          updatedBarChartData[.updateChildren]!.append((label: "wow", operation.steps[.updateChildren]!.duration))
+          updatedBarChartData[.resolveStyles]!.append((label: "wow", operation.steps[.resolveStyles]!.duration))
+          updatedBarChartData[.updateBoxConfig]!.append((label: "wow", operation.steps[.updateBoxConfig]!.duration))
+          updatedBarChartData[.layout]!.append((label: "wow", operation.steps[.layout]!.duration))
+          updatedBarChartData[.updateCumulatedValues]!.append((label: "wow", operation.steps[.updateCumulatedValues]!.duration))
+
+        case let operation as Root.DrawOperationDebugData:
+          updatedBarChartData[.draw]!.append((label: "draw", value: operation.duration))
+
+        default:
+          break
         }
       }
 
@@ -95,7 +115,7 @@ extension DeveloperTools {
     }
 
     enum ChartContent: String, CaseIterable {
-      case tick, build, updateChildren, resolveStyles, updateBoxConfig, layout, updateCumulatedValues, draw
+      case processMouseEvent, processKeyEvent, processTextEvent, tick, build, updateChildren, resolveStyles, updateBoxConfig, layout, updateCumulatedValues, draw
     }
   }
 }
