@@ -32,9 +32,13 @@ public class ExpContent: NSObject, EventfulObject {
   public let onChanged = EventHandlerManager<Void>()
   public let onDestroy = EventHandlerManager<Void>()
 
-  deinit {
+  public func destroy() {
     onDestroy.invokeHandlers()
     removeAllEventHandlers()
+  }
+
+  deinit {
+    destroy()
   }
 }
 
@@ -89,6 +93,15 @@ public class ExpDirectContent: ExpContent, ExpContentProtocol {
     }
 
     onChanged.invokeHandlers()
+  }
+
+  override public func destroy() {
+    super.destroy()
+    widgets = []
+    partials = []
+    for remove in nestedHandlerRemovers {
+      remove()
+    }
   }
 }
 
@@ -171,6 +184,17 @@ public class ExpSlottingContent: ExpContent, ExpContentProtocol {
       }
     }
     return nil
+  }
+
+  override public func destroy() {
+    super.destroy()
+    slotContentDefinitions = []
+    partials = []
+    for remove in nestedHandlerRemovers {
+      remove()
+    }
+    directContentPartials = []
+    directContent.destroy()
   }
 }
 

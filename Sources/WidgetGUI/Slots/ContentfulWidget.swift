@@ -52,4 +52,10 @@ open class ContentfulWidget: Widget {
     }
     return maxSize
   }
+
+  override public func destroySelf() {
+    if let content = _content {
+      content.destroy()
+    }
+  }
 }
