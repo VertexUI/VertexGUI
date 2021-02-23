@@ -48,11 +48,7 @@ public class SearchResultsView: ContentfulWidget {
   }
 
   func buildListHeader(_ listId: Int) -> Widget {
-    Text(styleProperties: {
-      ($0.foreground, Color.white)
-      ($0.fontWeight, FontWeight.bold)
-      ($0.fontSize, 36.0)
-    }, todoStore.state.lists.first { $0.id == listId }!.name)
+    Text(classes: ["list-header"], todoStore.state.lists.first { $0.id == listId }!.name)
   }
 
   func buildSearchResult(_ result: SearchStore.SearchResult) -> Widget {
@@ -61,6 +57,12 @@ public class SearchResultsView: ContentfulWidget {
 
   override public var style: Style {
     Style("&") {
+      Style(".list-header") {
+        (SimpleLinearLayout.ChildKeys.margin, Insets(bottom: 32))
+        ($0.fontWeight, FontWeight.bold)
+        ($0.fontSize, 36.0)
+      }
+
       Style(".list") {
         (SimpleLinearLayout.ChildKeys.margin, Insets(bottom: 64))
       }

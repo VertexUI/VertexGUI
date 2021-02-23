@@ -93,12 +93,7 @@ public class TodoAppView: ComposedWidget {
         ($0.padding, 32)
       }).withContent {
         Button().with(classes: ["button"]).withContent {
-          Text(
-            styleProperties: {
-              ($0.fontWeight, FontWeight.bold)
-              ($0.fontSize, 20)
-              ($0.foreground, Color.black)
-            }, "New List")
+          Text("New List")
         }.onClick { [unowned self] in
           handleNewListClick()
         }
@@ -146,9 +141,9 @@ public class TodoAppView: ComposedWidget {
     Container().with(
       classes: ["menu-item"],
       styleProperties: {
-        ($0.padding, Insets(all: 16))
+        ($0.padding, Insets(top: 16, right: 24, bottom: 16, left: 24))
         ($0.borderWidth, BorderWidth(bottom: 1.0))
-        ($0.borderColor, Color.white)
+        ($0.borderColor, AppTheme.listItemDividerColor)
       }
     ).withContent {
       Container().with(styleProperties: {
@@ -222,16 +217,6 @@ public class TodoAppView: ComposedWidget {
         primaryColor: AppTheme.primaryColor, secondaryColor: AppTheme.primaryColor,
         backgroundColor: AppTheme.backgroundColor
       ).styles
-
-      Style(".button") {
-        ($0.background, Color.yellow)
-        ($0.padding, Insets(all: 16))
-        ($0.foreground, Color.white)
-      }
-
-      Style(".button:hover") {
-        ($0.background, Color.red)
-      }
 
       Style(".menu-item") {
         ($0.foreground, Color.white)

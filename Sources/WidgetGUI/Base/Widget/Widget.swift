@@ -352,6 +352,9 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
 
     @FromStyle(key: AnyDefaultStyleKeys.background)
     public var background: Color = .transparent
+
+    @FromStyle(key: AnyDefaultStyleKeys.foreground)
+    public var foreground: Color = .black
     /* end style */
 
     /* scrolling

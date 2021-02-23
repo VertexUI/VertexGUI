@@ -102,8 +102,8 @@ public class TodoListItemView: ComposedWidget {
   override public var style: Style {
     Style("&") {
       ($0.foreground, Color.white)
-      ($0.padding, Insets(all: 32))
-      ($0.borderColor, Color.white)
+      ($0.padding, Insets(top: 16, right: 24, bottom: 16, left: 24))
+      ($0.borderColor, AppTheme.listItemDividerColor)
       ($0.borderWidth, BorderWidth(bottom: 1.0))
 
       Style(".completion-button") {

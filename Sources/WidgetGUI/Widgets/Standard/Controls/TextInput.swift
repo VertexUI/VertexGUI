@@ -27,6 +27,9 @@ public final class TextInput: ComposedWidget, StylableWidgetProtocol, GUIKeyEven
   @Reference
   private var caretWidget: Drawing
 
+  @FromStyle(key: StyleKeys.caretColor)
+  private var caretColor: Color = .yellow
+
   private var caretIndex: Int = 2
   private var lastDrawTimestamp: Double = 0.0
   private var caretWidth: Double = 2
@@ -117,18 +120,11 @@ public final class TextInput: ComposedWidget, StylableWidgetProtocol, GUIKeyEven
 
   override public func performBuild() {
     rootChild = Container().withContent { _ in
-      Text(styleProperties: {
-        ($0.foreground, Color.white)
-        ($0.fontSize, 24.0)
-        ($0.transform, $caretPositionTransforms)
-      }, $text).connect(ref: $textWidget)
+      Text($text).with(classes: ["text"]).connect(ref: $textWidget)
 
-      Text(styleProperties: {
-        ($0.opacity, 0.5)
-        ($0.foreground, Color.white)
-        ($0.fontSize, 24.0)
+      Text($placeholderText).with(classes: ["placeholder"], styleProperties: {
         ($0.visibility, $placeholderVisibility)
-      }, $placeholderText)
+      })
       
       Drawing(draw: drawCaret).connect(ref: $caretWidget).with(styleProperties: {
         ($0.width, 0.0)
@@ -145,10 +141,21 @@ public final class TextInput: ComposedWidget, StylableWidgetProtocol, GUIKeyEven
       ($0.padding, Insets(all: 16))
       ($0.foreground, Color.black)
       ($0.background, Color.white)
+      ($0.fontSize, 16)
 
       Style("& Container", Container.self) {
         ($0.layout, AbsoluteLayout.self)
         ($0.overflowX, Overflow.cut)
+      }
+
+      Style(".text") {
+        ($0.foreground, Color.white)
+        ($0.transform, $caretPositionTransforms)
+      }
+
+      Style(".placeholder") {
+        ($0.opacity, 0.5)
+        ($0.foreground, Color.white)
       }
     }
   }
@@ -264,7 +271,7 @@ public final class TextInput: ComposedWidget, StylableWidgetProtocol, GUIKeyEven
     drawingContext.drawLine(
       from: DVec2(caretTranslationX, 0),
       to: DVec2(caretTranslationX, textWidget.height),
-      paint: Paint(strokeWidth: caretWidth, strokeColor: Color.yellow.adjusted(alpha: UInt8(caretBlinkProgress * 255))))
+      paint: Paint(strokeWidth: caretWidth, strokeColor: caretColor.adjusted(alpha: UInt8(caretBlinkProgress * 255))))
   }
 
   override public func destroySelf() {

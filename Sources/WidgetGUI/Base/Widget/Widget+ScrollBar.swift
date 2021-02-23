@@ -4,7 +4,6 @@ import ReactiveProperties
 
 extension Widget {
   public class ScrollBar: LeafWidget {
-    public var track: Color = Color.red
     private let orientation: Orientation
 
     @MutableProperty
@@ -76,12 +75,7 @@ extension Widget {
     }
 
     override public func draw(_ drawingContext: DrawingContext) {
-      let color: Color
-      switch orientation {
-      case .horizontal: color = .blue
-      case .vertical: color = .grey
-      }
-      drawingContext.drawRect(rect: DRect(min: .zero, size: size), paint: Paint(color: color))
+      //drawingContext.drawRect(rect: DRect(min: .zero, size: size), paint: Paint(color: background))
 
       let trackOffset = trackLength * scrollProgress
 
@@ -92,7 +86,7 @@ extension Widget {
       case .vertical:
         trackRect = DRect(min: DVec2(0, trackOffset), size: DSize2(width, trackLength))
       }
-      drawingContext.drawRect(rect: trackRect, paint: Paint(color: track))
+      drawingContext.drawRect(rect: trackRect, paint: Paint(color: foreground))
     }
 
     public enum Orientation {
