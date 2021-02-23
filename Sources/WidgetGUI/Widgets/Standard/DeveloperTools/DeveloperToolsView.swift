@@ -1,15 +1,15 @@
 import Foundation
 import VisualAppBase
 import ReactiveProperties
-import ReactiveProperties
+import GfxMath
 
-public class DeveloperToolsView: ComposedWidget {
+public class DeveloperToolsView: ContentfulWidget {
   private let inspectedRoot: Root
 
   private let store = DeveloperTools.Store()
 
   @MutableProperty
-  private var activeTab: Tab = .Lifecycle
+  private var activeTab: Tab = .performance
   
   private var messages = WidgetBus<WidgetInspectionMessage>.MessageBuffer()
   private var widgetLifecycleMethodInvocationSignalBuffer = Bus<Widget.LifecycleMethodInvocationSignal>.MessageBuffer()
@@ -37,20 +37,60 @@ public class DeveloperToolsView: ComposedWidget {
     })
   }
 
-  override public func performBuild() {
-    rootChild = Container().with(styleProperties: {
+  @ExpDirectContentBuilder override public var content: ExpDirectContent {
+    Container().with(styleProperties: {
       (SimpleLinearLayout.ParentKeys.direction, SimpleLinearLayout.Direction.column)
       (SimpleLinearLayout.ParentKeys.alignContent, SimpleLinearLayout.Align.stretch)
       ($0.overflowY, Overflow.scroll)
     }).withContent { [unowned self] in
-      DeveloperTools.InspectorView()
+      buildMenu()
+      buildActiveView()
     }.provide(dependencies: store, inspectedRoot)
+  }
+
+  func buildMenu() -> Widget {
+    Container().with(styleProperties: { _ in
+
+    }).withContent {
+      Tab.allCases.map {
+        buildMenuItem($0)
+      }
+    }
+  }
+
+  func buildMenuItem(_ tab: Tab) -> Widget {
+    Container().with(classes: ["menu-item"]).onClick { [unowned self] in
+      activeTab = tab
+    }.withContent {
+      Text(tab.rawValue)
+    }
+  }
+
+  @ExpDirectContentBuilder func buildActiveView() -> ExpDirectContent {
+    Dynamic($activeTab) { [unowned self] in
+      switch activeTab {
+      case .performance:
+        DeveloperTools.PerformanceView()
+      case .inspector:
+        DeveloperTools.InspectorView()
+      }
+    }
   }
 
   override public var style: Style {
     Style("&") {
       ($0.background, developerToolsTheme.backgroundColor)
       ($0.foreground, developerToolsTheme.textColorOnBackground)
+
+      Style(".menu-item") {
+        ($0.background, developerToolsTheme.primaryColor)
+        ($0.fontWeight, FontWeight.bold)
+        ($0.padding, 16)
+
+        Style("&:hover") {
+          ($0.background, developerToolsTheme.primaryColor.darkened(30))
+        }
+      }
 
       developerToolsTheme.styles
     }
@@ -128,7 +168,7 @@ public class DeveloperToolsView: ComposedWidget {
 }
 
 extension DeveloperToolsView {
-  enum Tab {
-    case Inspector, EventRoll, EventLog, Lifecycle
+  enum Tab: String, CaseIterable {
+    case inspector, performance
   }
 }
