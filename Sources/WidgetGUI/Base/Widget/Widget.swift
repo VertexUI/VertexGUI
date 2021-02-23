@@ -123,7 +123,6 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
             if oldValue != size {
                 if mounted && layouted && !layouting && !destroyed {
                     onSizeChanged.invokeHandlers(size)
-                    invalidateRenderState()
                 }
             }
         }
@@ -136,13 +135,7 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         size.height
     }
     
-    open var position = DPoint2(0, 0) {
-        didSet {
-            if oldValue != position {
-                invalidateRenderState(deep: true)
-            }
-        }
-    }
+    open var position = DPoint2(0, 0)
 
     @inlinable open var x: Double {
         get {

@@ -123,7 +123,6 @@ public class WidgetTreeManager {
     widget.invalidateMatchedStyles()
     widget.invalidateBoxConfig()
     widget.invalidateLayout()
-    widget.invalidateRenderState()
   }
 
   public func mountChildren(of widget: Widget) {
@@ -134,21 +133,25 @@ public class WidgetTreeManager {
   }
 
   func setupChildParentInfluence(parent: Widget, child: Widget) {
-    _ = parent.onDestroy(child.onBoxConfigChanged { [unowned parent, unowned child] _ in
-      parent.handleChildBoxConfigChanged(child: child)
-    })
+    if child.mounted && !child.destroyed {
+      _ = parent.onDestroy(child.onBoxConfigChanged { [unowned parent, unowned child] _ in
+        parent.handleChildBoxConfigChanged(child: child)
+      })
 
-    _ = parent.onDestroy(child.onSizeChanged { [unowned parent] _ in
-      // TODO: maybe need special relayout flag / function
-      if parent.layouted && !parent.layouting {
-          parent.invalidateLayout()
+      _ = parent.onDestroy(child.onSizeChanged { [unowned parent] _ in
+        // TODO: maybe need special relayout flag / function
+        if parent.layouted && !parent.layouting {
+            parent.invalidateLayout()
+        }
+      })
+      
+      _ = child.onFocusChanged { [weak parent] in
+        if let parent = parent {
+            parent.focused = $0
+        }
       }
-    })
-    
-    _ = child.onFocusChanged { [weak parent] in
-      if let parent = parent {
-          parent.focused = $0
-      }
+    } else {
+      print("warning: tried to setup child to parent effects, but child was not yet mounted or already destroyed, parent: \(parent), child: \(child)")
     }
   }
 }

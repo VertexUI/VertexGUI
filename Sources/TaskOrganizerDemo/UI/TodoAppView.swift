@@ -47,7 +47,6 @@ public class TodoAppView: ComposedWidget {
           searchStore.state.searchQuery
         },
         apply: {
-          print("APPLY SEARCH QUERY", $0)
           searchStore.dispatch(.updateResults($0))
         }, dependencies: [searchStore.$state])
 
