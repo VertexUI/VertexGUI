@@ -47,13 +47,15 @@ public class TodoAppView: ComposedWidget {
           searchStore.state.searchQuery
         },
         apply: {
+          print("APPLY SEARCH QUERY", $0)
           searchStore.dispatch(.updateResults($0))
         }, dependencies: [searchStore.$state])
+
       _ = _searchQuery.onChanged { _ in
         if searchQuery.isEmpty {
           switch mainViewRoute {
           case .searchResults:
-            mainViewRoute = .none
+            mainViewRoute = navigationStore.state.previousMainViewRoute ?? .none 
           default:
             break
           }
@@ -81,7 +83,7 @@ public class TodoAppView: ComposedWidget {
   private func buildMenu() -> Widget {
     Container().with(styleProperties: {
       ($0.layout, SimpleLinearLayout.self)
-      ($0.width, 200)
+      ($0.width, 250)
       (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.stretch)
       (SimpleLinearLayout.ParentKeys.direction, SimpleLinearLayout.Direction.column)
     }).withContent { [unowned self] in
@@ -129,7 +131,14 @@ public class TodoAppView: ComposedWidget {
       TextInput(mutableText: $searchQuery, placeholder: "search").with(styleProperties: { _ in
         (SimpleLinearLayout.ChildKeys.shrink, 1.0)
         (SimpleLinearLayout.ChildKeys.grow, 1.0)
+        (SimpleLinearLayout.ChildKeys.margin, Insets(right: 16))
       })
+
+      Button().onClick {
+        searchStore.dispatch(.updateResults(""))
+      }.withContent {
+        MaterialDesignIcon(.close)
+      }
     }
   }
 

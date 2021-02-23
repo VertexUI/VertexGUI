@@ -21,7 +21,7 @@ public class SearchStore: ReduxStore<SearchStore.State, SearchStore.Getters, Sea
     switch action {
     case let .updateResults(query):
       commit(.setQuery(query))
-      commit(.setResults(findSearchResults()))
+      commit(.setResults(findSearchResults(query)))
     }
   }
 }
@@ -50,12 +50,16 @@ extension SearchStore {
     public var itemId: Int
   }
 
-  private func findSearchResults() -> [SearchResult] {
+  private func findSearchResults(_ query: String) -> [SearchResult] {
     var results = [SearchResult]()
     
+    let preparedQuery = query.lowercased()
+
     for list in todoStore.state.lists {
       for item in list.items {
-        results.append(SearchResult(listId: list.id, itemId: item.id))
+        if item.description.lowercased().contains(preparedQuery) {
+          results.append(SearchResult(listId: list.id, itemId: item.id))
+        }
       }
     }
 

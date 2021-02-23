@@ -26,7 +26,7 @@ extension ExpContentProtocol {
   }
 }
 
-// need to inherit from NSObject because otherwise crashes occur
+// need to subclass NSObject because otherwise crashes occur
 // when this object is being type casted e.g. in a mirror over a class
 public class ExpContent: NSObject, EventfulObject {
   public let onChanged = EventHandlerManager<Void>()

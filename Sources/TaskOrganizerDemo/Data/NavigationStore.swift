@@ -8,6 +8,7 @@ public class NavigationStore: ReduxStore<NavigationState, NavigationGetters, Nav
   override public func performMutation(state: inout State, mutation: Mutation) {
     switch mutation {
     case let .updateMainViewRoute(route):
+      state.previousMainViewRoute = state.mainViewRoute
       state.mainViewRoute = route
     }
   }
@@ -15,6 +16,7 @@ public class NavigationStore: ReduxStore<NavigationState, NavigationGetters, Nav
 
 public struct NavigationState {
   public var mainViewRoute: MainViewRoute = .none
+  public var previousMainViewRoute: MainViewRoute? = nil
 }
 
 public enum MainViewRoute {

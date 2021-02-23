@@ -25,19 +25,22 @@ public class SearchResultsView: ContentfulWidget {
   }
 
   @ExpDirectContentBuilder override public var content: ExpDirectContent {
-    Container().with(styleProperties: { _ in
+    Container().with(styleProperties: {
+      ($0.overflowY, Overflow.scroll)
       (SimpleLinearLayout.ParentKeys.direction, SimpleLinearLayout.Direction.column)
       (SimpleLinearLayout.ParentKeys.alignContent, SimpleLinearLayout.Align.stretch)
-    }).withContent {
-      searchResultsByListId.map { (listId, searchResults) in
-        Container().with(classes: ["list"], styleProperties: { _ in
-          (SimpleLinearLayout.ParentKeys.direction, SimpleLinearLayout.Direction.column)
-          (SimpleLinearLayout.ParentKeys.alignContent, SimpleLinearLayout.Align.stretch)
-        }).withContent {
-          buildListHeader(listId)
+    }).withContent { [unowned self] in
+      Dynamic($searchResultsByListId) {
+        searchResultsByListId.map { (listId, searchResults) in
+          Container().with(classes: ["list"], styleProperties: { _ in
+            (SimpleLinearLayout.ParentKeys.direction, SimpleLinearLayout.Direction.column)
+            (SimpleLinearLayout.ParentKeys.alignContent, SimpleLinearLayout.Align.stretch)
+          }).withContent {
+            buildListHeader(listId)
 
-          searchResults.map {
-            buildSearchResult($0)
+            searchResults.map {
+              buildSearchResult($0)
+            }
           }
         }
       }
@@ -58,8 +61,6 @@ public class SearchResultsView: ContentfulWidget {
 
   override public var style: Style {
     Style("&") {
-      ($0.overflowY, Overflow.scroll)
-
       Style(".list") {
         (SimpleLinearLayout.ChildKeys.margin, Insets(bottom: 64))
       }
