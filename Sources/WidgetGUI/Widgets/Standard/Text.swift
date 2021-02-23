@@ -6,9 +6,6 @@ public class Text: LeafWidget, StylableWidgetProtocol {
   @ObservableProperty
   private var text: String
 
-  private var color: Color {
-    stylePropertyValue(StyleKeys.foreground, as: Color.self) ?? Color.black
-  }
   private var transform: TextTransform {
     stylePropertyValue(StyleKeys.textTransform, as: TextTransform.self) ?? TextTransform.none
   }
@@ -83,10 +80,10 @@ public class Text: LeafWidget, StylableWidgetProtocol {
   }
 
   override public func draw(_ drawingContext: DrawingContext) {
-    drawingContext.drawText(text: self.transformedText, position: .zero, paint: TextPaint(fontConfig: fontConfig, color: color))
+    drawingContext.drawText(text: self.transformedText, position: .zero, paint: TextPaint(fontConfig: fontConfig, color: foreground))
   }
 
   public func measureText(_ text: String) -> DSize2 {
-    context.measureText(text: text, paint: TextPaint(fontConfig: fontConfig, color: color))
+    context.measureText(text: text, paint: TextPaint(fontConfig: fontConfig, color: foreground))
   }
 }
