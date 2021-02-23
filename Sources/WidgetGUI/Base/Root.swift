@@ -160,8 +160,6 @@ open class Root: Parent {
   open func tick(_ tick: Tick) {
     debugManager.beginTick()
 
-    let startTime = Date.timeIntervalSinceReferenceDate
-
     widgetContext!.onTick.invokeHandlers(tick)
 
     for message in widgetLifecycleMessages {
@@ -173,35 +171,36 @@ open class Root: Parent {
       processLifecycleMessage($0)
     }
 
-    debugManager.beginLifecycleMethod(.build)
+    debugManager.beginTickOperation(.build)
     for widget in rebuildWidgets {
       if !widget.destroyed {
         //widget.build()
         treeManager.buildChildren(of: widget)
       }
     }
-    debugManager.endLifecycleMethod(.build)
     rebuildWidgets.clear()
+    debugManager.endTickOperation(.build)
 
+    debugManager.beginTickOperation(.updateChildren)
     var iterator = widgetLifecycleManager.queues[.updateChildren]!.iterate()
     while let queueEntry = iterator.next() {
       treeManager.updateChildren(of: queueEntry.target)
     }
     widgetLifecycleManager.queues[.updateChildren]!.clear()
+    debugManager.endTickOperation(.updateChildren)
 
     // TODO: check whether any parent of the widget was already processed (which automatically leads to a reprocessing of the styles)
     // TODO: or rather follow the pattern of invalidate...()? --> invalidateStyle()
-    var partialStartTime = Date.timeIntervalSinceReferenceDate
+    debugManager.beginTickOperation(.resolveStyles)
     for widget in matchedStylesInvalidatedWidgets {
       if !widget.destroyed && widget.mounted {
         styleManager.processTree(widget)
       }
     }
-    //print("RESTYLE COUNT", matchedStylesInvalidatedWidgets.count)
-    //print("RESTLYE TOOK", Date.timeIntervalSinceReferenceDate - partialStartTime)
     matchedStylesInvalidatedWidgets.clear()
+    debugManager.endTickOperation(.resolveStyles)
 
-    partialStartTime = Date.timeIntervalSinceReferenceDate
+    debugManager.beginTickOperation(.updateBoxConfig)
     let boxConfigQueue = widgetLifecycleManager.queues[.updateBoxConfig]!
     var boxConfigIterator = boxConfigQueue.iterate()
     while let entry = boxConfigIterator.next() {
@@ -209,14 +208,10 @@ open class Root: Parent {
         entry.target.updateBoxConfig()
       }
     }
-    //print("REBOX COUNT", boxConfigQueue.entries.count)
-    //print("REBOX TOOK", Date.timeIntervalSinceReferenceDate - partialStartTime)
     boxConfigQueue.clear()
-    //reboxConfigWidgets.clear()
+    debugManager.endTickOperation(.updateBoxConfig)
     
-    //print("relayout widgets count", relayoutWidgets.count)
-    let startTimeTwo = Date.timeIntervalSinceReferenceDate
-    debugManager.beginLifecycleMethod(.layout)
+    debugManager.beginTickOperation(.layout)
     let layoutQueue = widgetLifecycleManager.queues[.layout]!
     var layoutIterator = layoutQueue.iterate()
     while let entry = layoutIterator.next() {
@@ -227,19 +222,15 @@ open class Root: Parent {
         entry.target.layout(constraints: entry.target.previousConstraints!)
       }
     }
-    //print("LAYOUT COUNT", layoutQueue.entries.count)
-    //print("LAYOUT TOOK", Date.timeIntervalSinceReferenceDate - startTimeTwo)
     layoutQueue.clear()
-    debugManager.endLifecycleMethod(.layout)
-    //relayoutWidgets.clear()
+    debugManager.endTickOperation(.layout)
 
-    partialStartTime = Date.timeIntervalSinceReferenceDate
+    debugManager.beginTickOperation(.updateCumulatedValues)
     cumulatedValuesProcessor.processQueue()
-    //print("CUMULATED VALUES TOOK", Date.timeIntervalSinceReferenceDate - partialStartTime)
+    debugManager.endTickOperation(.updateCumulatedValues)
 
     removeOnAdd()
     widgetLifecycleMessages.clear()
-    //print("ONTICK TOOK", Date.timeIntervalSinceReferenceDate - startTime, "seconds")
 
     debugManager.endTick()
   }
@@ -261,6 +252,8 @@ open class Root: Parent {
   }
 
   open func draw(_ drawingContext: DrawingContext) {
+    debugManager.beginDraw()
+
     let rootDrawingContext = drawingContext.clone()
     rootDrawingContext.transform(.scale(DVec2(scale, scale)))
     rootDrawingContext.lock()
@@ -341,6 +334,8 @@ open class Root: Parent {
 
       iterationStates.removeLast()
     }
+
+    debugManager.endDraw()
   }
 
   // TODO: maybe this function should be added to Widget
@@ -486,27 +481,31 @@ extension Root {
     }
   }
 
+  /**
+  // TODO: maybe rename to DebugDataCollector */
   public class DebugManager {
-    private var data = DebugData()
+    public private(set) var data = DebugData()
     private var currentTickData: DebugData.SingleTickData? = nil
+    private var currentDrawData: DebugData.SingleDrawData? = nil
 
     public init() {}
 
+    // TODO: maybe should do a generic beginOperation(operation) ...
     public func beginTick() {
       currentTickData = DebugData.SingleTickData(startTimestamp: Date.timeIntervalSinceReferenceDate)
     }
 
-    public func beginLifecycleMethod(_ method: Widget.LifecycleMethod) {
+    public func beginTickOperation(_ operation: DebugData.TickOperation) {
       if var currentTickData = currentTickData {
-        currentTickData.lifecycleMethodInvocations[method] = DebugData.SingleTickData.LifecycleMethodInvocation(startTimestamp: Date.timeIntervalSinceReferenceDate)
+        currentTickData.operations[operation] = DebugData.SingleTickData.SingleTickOperationData(startTimestamp: Date.timeIntervalSinceReferenceDate)
         self.currentTickData = currentTickData
       }
     }
 
-    public func endLifecycleMethod(_ method: Widget.LifecycleMethod) {
+    public func endTickOperation(_ operation: DebugData.TickOperation) {
       if var currentTickData = currentTickData {
-        if currentTickData.lifecycleMethodInvocations[method] != nil {
-          currentTickData.lifecycleMethodInvocations[method]!.endTimestamp = Date.timeIntervalSinceReferenceDate
+        if currentTickData.operations[operation] != nil {
+          currentTickData.operations[operation]!.endTimestamp = Date.timeIntervalSinceReferenceDate
         }
         self.currentTickData = currentTickData
       }
@@ -523,6 +522,19 @@ extension Root {
 
       return tick
     }
+
+    public func beginDraw() {
+      currentDrawData = DebugData.SingleDrawData(startTimestamp: Date.timeIntervalSinceReferenceDate)
+    }
+
+    public func endDraw() {
+      guard var drawData = currentDrawData else {
+        fatalError()
+      }
+
+      drawData.endTimestamp = Date.timeIntervalSinceReferenceDate
+      data.operations.append(.draw(drawData))
+    }
   }
 
   public struct DebugData {
@@ -530,38 +542,40 @@ extension Root {
 
     public enum Operation {
       case tick(SingleTickData)
+      case draw(SingleDrawData)
     }
 
-    public struct SingleTickData: CustomDebugStringConvertible {
+    public enum TickOperation {
+      case build
+      case updateChildren
+      case resolveStyles
+      case updateBoxConfig 
+      case layout
+      case updateCumulatedValues 
+    }
+
+    public struct SingleTickData {
       public var startTimestamp: Double
       public var endTimestamp: Double = -1
-      public var lifecycleMethodInvocations: [Widget.LifecycleMethod: LifecycleMethodInvocation] = [:]
+      public var operations: [TickOperation: SingleTickOperationData] = [:]
       public var duration: Double {
         endTimestamp - startTimestamp
       }
 
-      public struct LifecycleMethodInvocation: CustomDebugStringConvertible {
+      public struct SingleTickOperationData {
         public var startTimestamp: Double
         public var endTimestamp: Double = -1
         public var duration: Double {
           endTimestamp - startTimestamp
         }
-        public var debugDescription: String {
-          """
-          Lifecycle Method Invocation { duration: \(duration)s }
-          """
-        }
       }
+    }
 
-      public var debugDescription: String {
-        """
-        Tick Report {
-          duration: \(duration)s
-          invocations {
-            \(lifecycleMethodInvocations.map { "\($0): \($1)" }.joined(separator: "\n\t"))
-          }
-        }
-        """
+    public struct SingleDrawData {
+      public var startTimestamp: Double
+      public var endTimestamp: Double = -1
+      public var duration: Double {
+        endTimestamp - startTimestamp
       }
     }
   }
