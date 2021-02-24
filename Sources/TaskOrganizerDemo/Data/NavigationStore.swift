@@ -7,6 +7,8 @@ public class NavigationStore: ReduxStore<NavigationState, NavigationGetters, Nav
 
   override public func performMutation(state: inout State, mutation: Mutation) {
     switch mutation {
+    case let .setSelectedListId(id):
+      state.selectedListId = id
     case let .updateMainViewRoute(route):
       state.previousMainViewRoute = state.mainViewRoute
       state.mainViewRoute = route
@@ -15,13 +17,14 @@ public class NavigationStore: ReduxStore<NavigationState, NavigationGetters, Nav
 }
 
 public struct NavigationState {
+  public var selectedListId: Int = -1
   public var mainViewRoute: MainViewRoute = .none
   public var previousMainViewRoute: MainViewRoute? = nil
 }
 
 public enum MainViewRoute {
   case none
-  case selectedList(Int)
+  case selectedList
   case searchResults
 }
 
@@ -30,6 +33,7 @@ public class NavigationGetters: ReduxGetters<NavigationState> {
 }
 
 public enum NavigationMutation {
+  case setSelectedListId(Int)
   case updateMainViewRoute(MainViewRoute)
 }
 

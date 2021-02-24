@@ -83,7 +83,7 @@ public class TodoAppView: ComposedWidget {
     Container().with(styleProperties: {
       ($0.layout, SimpleLinearLayout.self)
       ($0.width, 250)
-      //(SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.stretch)
+      (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.stretch)
       (SimpleLinearLayout.ParentKeys.direction, SimpleLinearLayout.Direction.column)
     }).withContent { [unowned self] in
       buildSearch()
@@ -105,7 +105,7 @@ public class TodoAppView: ComposedWidget {
           }, dependencies: [todoStore.$state])
       ).with(styleProperties: {
         ($0.overflowY, Overflow.scroll)
-        //(SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.stretch)
+        (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.stretch)
         (SimpleLinearLayout.ChildKeys.shrink, 1.0)
         ($0.foreground, Color.white)
       }).withContent {
@@ -161,7 +161,10 @@ public class TodoAppView: ComposedWidget {
         }, list.name
       ).with(classes: ["list-item-name"])
     }.onClick { [unowned self] in
-      navigationStore.commit(.updateMainViewRoute(.selectedList(list.id)))
+      navigationStore.commit(.setSelectedListId(list.id))
+      if navigationStore.state.mainViewRoute != .selectedList {
+        navigationStore.commit(.updateMainViewRoute(.selectedList))
+      }
     }
   }
 
@@ -186,8 +189,8 @@ public class TodoAppView: ComposedWidget {
               (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.center)
             }, "no list selected")
 
-        case let .selectedList(id):
-          TodoListView(listId: StaticProperty(id)).with(styleProperties: {
+        case let .selectedList:
+          TodoListView(listId: ComputedProperty(compute: { navigationStore.state.selectedListId }, dependencies: [navigationStore.$state])).with(styleProperties: {
             ($0.padding, Insets(top: 48, left: 48))
             (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.stretch)
             (SimpleLinearLayout.ChildKeys.grow, 1.0)
