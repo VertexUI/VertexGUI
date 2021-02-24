@@ -134,8 +134,14 @@ public class WidgetTreeManager {
 
   func setupChildParentInfluence(parent: Widget, child: Widget) {
     if child.mounted && !child.destroyed {
-      _ = parent.onDestroy(child.onBoxConfigChanged { [unowned parent, unowned child] _ in
-        parent.handleChildBoxConfigChanged(child: child)
+      _ = parent.onDestroy(child.onBoxConfigChanged { [unowned parent] _ in
+        parent.invalidateBoxConfig()
+        // note that the layout pass should start from the topmost parent, for which the
+        // box config did not change (or the root widget if all box configs changed)
+        // this is achieved by first resolving all box config invalidations in on tick
+        // and only after that resolving all the layout requests generated
+        // starting from the topmost widget
+        parent.invalidateLayout()
       })
 
       _ = parent.onDestroy(child.onSizeChanged { [unowned parent] _ in

@@ -114,7 +114,11 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         }
 
         set {
+            //let oldValue = boxConfig
             boxConfig = newValue
+            /*if oldValue != newValue {
+                onBoxConfigChanged.invokeHandlers(BoxConfigChangedEvent(old: oldValue, new: newValue))
+            }*/
         }
     }
     
@@ -615,30 +619,6 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         onBuildInvalidated.invokeHandlers()
     }
 
-    final func handleChildBoxConfigChanged(child: Widget) {
-        Logger.log("Box config of child: \(child) of parent \(self) changed.".with(fg: .blue, style: .bold), level: .Message, context: .WidgetLayouting)
-
-        if layouted && !layouting {
-            Logger.log("Invalidating own box config.", level: .Message, context: .WidgetLayouting)
-            let oldBoxConfig = boxConfig
-            invalidateBoxConfig()
-            let newBoxConfig = boxConfig
-            // This prevents unnecessary calls to layout.
-            // Only if this Widgets box config isn't changed, trigger a relayout.
-            // For all children with changed box configs (also deeply nested ones)
-            // layout will not have been called because of this comparison.
-            // The first parent without a changed box config will trigger
-            // a relayout for the whole subtree.
-            // In case no Widget has no changed box config, the
-            // relayout will be triggered in Root for the whole UI.
-            // TODO: maybe there is a better solution
-            if oldBoxConfig == newBoxConfig {
-                Logger.log("Own box config is changed. Perform layout with previous constraints: \(String(describing: previousConstraints))".with(fg: .yellow), level: .Message, context: .WidgetLayouting)
-                invalidateLayout()
-            }
-        }
-    }
-
     public final func updateBoxConfig() {
         // TODO: implement inspection messages
         let currentBoxConfig = boxConfig
@@ -646,7 +626,7 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         if currentBoxConfig != newBoxConfig {
             _boxConfig = newBoxConfig
             onBoxConfigChanged.invokeHandlers(BoxConfigChangedEvent(old: currentBoxConfig, new: newBoxConfig))
-            invalidateLayout()
+            //invalidateLayout()
         }
         boxConfigInvalid = false
     }
@@ -769,6 +749,8 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         if constraints.minWidth.isInfinite || constraints.minHeight.isInfinite {
             fatalError("Widget received constraints that contain infinite value in min size: \(self)")
         }
+
+        print("LAYOUT", self, "WITH CONSTRAINTS", constraints)
 
         layouting = true
 
