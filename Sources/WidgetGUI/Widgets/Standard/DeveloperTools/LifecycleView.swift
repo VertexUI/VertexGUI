@@ -102,7 +102,6 @@ public class LifecycleView: ComposedWidget {
       buildStatistic(for: .mount)
       buildStatistic(for: .build)
       buildStatistic(for: .layout)
-      buildStatistic(for: .render)
     }
   }
 

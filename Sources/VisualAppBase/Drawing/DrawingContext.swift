@@ -99,10 +99,12 @@ open class DrawingContext {
     return processed
   }
 
+  /** appends transform to the list of transforms, it will be the first transform to be applied */
   public func transform(_ transform: DTransform2) {
     self.transforms.append(transform)
   }
 
+  /** appends transforms to the list of transforms, the last transform in the list will be the first one to be applied */
   public func transform(_ transforms: [DTransform2]) {
     self.transforms.append(contentsOf: transforms)
   }
