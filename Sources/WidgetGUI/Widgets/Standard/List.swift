@@ -65,7 +65,7 @@ public class List<Item: Equatable>: ContentfulWidget, SlotAcceptingWidgetProtoco
   }
 
   override public func getContentBoxConfig() -> BoxConfig {
-    var result = BoxConfig(preferredSize: .zero)
+    var result = BoxConfig(preferredSize: .zero, maxSize: DSize2(0, .infinity))
     for child in children {
       if child.boxConfig.preferredSize.width > result.preferredSize.width {
         result.preferredSize.width = child.boxConfig.preferredSize.width
@@ -80,7 +80,6 @@ public class List<Item: Equatable>: ContentfulWidget, SlotAcceptingWidgetProtoco
       if child.boxConfig.maxSize.width > result.maxSize.width {
         result.maxSize.width = child.boxConfig.maxSize.width
       }
-      result.maxSize.height += child.boxConfig.maxSize.height
     }
     return result
   }
@@ -90,8 +89,12 @@ public class List<Item: Equatable>: ContentfulWidget, SlotAcceptingWidgetProtoco
     var maxWidth = 0.0
 
     for child in children {
-      let childConstraints = BoxConstraints(minSize: DSize2(constraints.minWidth, 0), maxSize: constraints.maxSize)
-      child.layout(constraints: childConstraints)
+      let childConstraints = BoxConstraints(minSize: DSize2(constraints.minWidth, 0), maxSize: DSize2(constraints.maxWidth, .infinity))
+      // do this comparison to reduce exponential growth of duration
+      if childConstraints != child.previousConstraints {
+        //print("LIST CURR AND PREV", childConstraints, child.previousConstraints)
+        child.layout(constraints: childConstraints)
+      }
 
       child.position = currentPosition
 

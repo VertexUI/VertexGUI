@@ -258,17 +258,23 @@ open class SDL2OpenGL3NanoVGSystem: System {
 
           self.calcRealFps()
 
+          var startTime = Date.timeIntervalSinceReferenceDate
           let eventProcessingDuration = max(10, (1000 / self.targetFps))
           try self.processEvents(timeout: eventProcessingDuration)
+          //print("EVENT PROCESSSING TOOK", Date.timeIntervalSinceReferenceDate - startTime)
 
+          startTime = Date.timeIntervalSinceReferenceDate
           self.onTick.invokeHandlers(
             Tick(deltaTime: Double(deltaTime) / 1000, totalTime: currentTime))
+          //print("ON TICK TOOK", Date.timeIntervalSinceReferenceDate - startTime)
 
-          self.onFrame.invokeHandlers(Double(deltaTime / 1000))
+          //self.onFrame.invokeHandlers(Double(deltaTime / 1000))
           // TODO: maybe call onFrame on windows through system's onFrame handler?
+          startTime = Date.timeIntervalSinceReferenceDate
           for window in SDL2OpenGL3NanoVGSystem.windows.values {
             window.performFrame(Double(deltaTime / 1000))
           }
+          //print("ON FRAME TOOK", Date.timeIntervalSinceReferenceDate - startTime)
 
           let frameDuration = Int(SDL_GetTicks() - frameStartTime)
           try! mainLoop()

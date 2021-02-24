@@ -222,7 +222,7 @@ open class Root: Parent {
 
     stepData = runTickStep {
       let boxConfigQueue = widgetLifecycleManager.queues[.updateBoxConfig]!
-      var boxConfigIterator = boxConfigQueue.iterate()
+      let boxConfigIterator = boxConfigQueue.iterate()
       while let entry = boxConfigIterator.next() {
         if entry.target.mounted {
           entry.target.updateBoxConfig()
@@ -234,15 +234,17 @@ open class Root: Parent {
     
     stepData = runTickStep {
       let layoutQueue = widgetLifecycleManager.queues[.layout]!
-      var layoutIterator = layoutQueue.iterate()
+      //print("LAYOUT COUNT", layoutQueue.entries.count)
+      let layoutIterator = layoutQueue.iterate()
       while let entry = layoutIterator.next() {
         // the widget should only be relayouted if it hasn't been layouted before
         // if it hasn't been layouted before it will be layouted during
         // the first layout pass started by rootWidget.layout()
         if entry.target.layouted && !entry.target.destroyed {
-          entry.target.layout(constraints: entry.target.previousConstraints!)
+          entry.target.layout(constraints: entry.target.referenceConstraints ?? entry.target.previousConstraints!)
         }
       }
+      //print("LAYOUT COUNT AFTER", layoutQueue.entries.count)
       layoutQueue.clear()
     }
     operation.storeStep(.layout, data: stepData)

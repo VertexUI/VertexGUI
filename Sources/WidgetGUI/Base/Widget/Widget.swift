@@ -174,7 +174,8 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     }
     
     public internal(set) var cumulatedTransforms: [DTransform2] = []
-
+    
+    public var referenceConstraints: BoxConstraints?
     public internal(set) var previousConstraints: BoxConstraints?
     /* end layout, position */
  
@@ -750,7 +751,7 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
             fatalError("Widget received constraints that contain infinite value in min size: \(self)")
         }
 
-        print("LAYOUT", self, "WITH CONSTRAINTS", constraints)
+        //print("LAYOUT", self, "WITH CONSTRAINTS", constraints)
 
         layouting = true
 
@@ -840,7 +841,6 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
 
         if previousSize != size && !isFirstRound {
             onSizeChanged.invokeHandlers(size)
-            invalidateRenderState()
         }
 
         for child in children {

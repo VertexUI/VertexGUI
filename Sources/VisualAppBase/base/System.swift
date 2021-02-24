@@ -6,7 +6,7 @@ open class System {
     public var cursorRequests: [UInt64: Cursor] = [:] // TODO: maybe handle first come first or z index
     public var nextCursorRequestId: UInt64 = 0
     public var onTick = EventHandlerManager<Tick>()
-    public var onFrame = EventHandlerManager<Double>()
+    //public var onFrame = EventHandlerManager<Double>()
 
     open var realFps: Double {
         fatalError("realFps not implemented")

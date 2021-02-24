@@ -83,7 +83,7 @@ public class TodoAppView: ComposedWidget {
     Container().with(styleProperties: {
       ($0.layout, SimpleLinearLayout.self)
       ($0.width, 250)
-      (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.stretch)
+      //(SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.stretch)
       (SimpleLinearLayout.ParentKeys.direction, SimpleLinearLayout.Direction.column)
     }).withContent { [unowned self] in
       buildSearch()
@@ -105,7 +105,7 @@ public class TodoAppView: ComposedWidget {
           }, dependencies: [todoStore.$state])
       ).with(styleProperties: {
         ($0.overflowY, Overflow.scroll)
-        (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.stretch)
+        //(SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.stretch)
         (SimpleLinearLayout.ChildKeys.shrink, 1.0)
         ($0.foreground, Color.white)
       }).withContent {

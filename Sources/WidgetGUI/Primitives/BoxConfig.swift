@@ -34,6 +34,10 @@ public struct BoxConfig: Equatable {
     result += rhs
     return result
   }
+
+  public static func == (lhs: BoxConfig, rhs: BoxConfig) -> Bool {
+    lhs.minSize == rhs.minSize && lhs.maxSize == rhs.maxSize
+  }
 }
 
 /*

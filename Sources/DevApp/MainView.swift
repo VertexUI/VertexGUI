@@ -13,7 +13,7 @@ public class MainView: ComposedWidget, SlotAcceptingWidgetProtocol {
   private var text2: String = "initial reactive Text 2"
 
   @MutableProperty
-  var items: [String] = (0..<40).map { _ in "WOWO" }
+  var items: [String] = []
 
   @MutableProperty
   var layoutDirection: SimpleLinearLayout.Direction = .row
@@ -26,25 +26,30 @@ public class MainView: ComposedWidget, SlotAcceptingWidgetProtocol {
       (SimpleLinearLayout.ParentKeys.direction, SimpleLinearLayout.Direction.column)
       ($0.background, Color.grey)
     }).withContent { [unowned self] in
-      Container().with(styleProperties: {
-        ($0.width, 200.0)
-        ($0.height, 200.0)
-        ($0.background, Color.red)
-        (SimpleLinearLayout.ChildKeys.margin, Insets(top: 8, right: 16, bottom: 32, left: 64))
+      Button().with(styleProperties: {
+        ($0.padding, 32)
       }).withContent {
-        Space(.zero)
+        Text("ADD")
+      }.onClick {
+        items.append("NEW ITEM")
       }
 
       Container().with(styleProperties: {
-        ($0.width, 180.0)
-        ($0.height, 180.0)
-        ($0.background, Color.yellow)
-        (SimpleLinearLayout.ChildKeys.margin, Insets(all: 16))
+        ($0.overflowY, Overflow.scroll)
+        (SimpleLinearLayout.ChildKeys.shrink, 1.0)
       }).withContent {
-        Space(.zero)
+        List($items).with(styleProperties: {
+          ($0.background, Color.lightBlue)
+        }).withContent {
+          $0.itemSlot { item in
+            Container().with(styleProperties: {
+              ($0.padding, 32.0)
+            }).withContent {
+              Text(item).with()
+            }
+          }
+        }
       }
-
-      TestWidget()
     }
   }
 
@@ -93,11 +98,11 @@ public class MainView: ComposedWidget, SlotAcceptingWidgetProtocol {
           }
         }
 
-        /*List($childData).withContent {
+        List($childData).withContent {
           $0.itemSlot {
             NestedWidget($0)
           }
-        }*/
+        }
       }
     }
   }

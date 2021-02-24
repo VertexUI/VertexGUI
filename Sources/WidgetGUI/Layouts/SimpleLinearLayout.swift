@@ -75,6 +75,7 @@ public class SimpleLinearLayout: Layout {
 
       var widgetConstraints = BoxConstraints(minSize: .zero, maxSize: .infinity)
       widgetConstraints.maxSize[secondaryAxisIndex] = constraints.maxSize[secondaryAxisIndex]
+      widget.referenceConstraints = widgetConstraints
       widget.layout(constraints: widgetConstraints)
 
       var widgetPosition = DVec2.zero
@@ -130,6 +131,8 @@ public class SimpleLinearLayout: Layout {
         widgetConstraints.minSize[secondaryAxisIndex] =
           constrainedAccumulatedSize[secondaryAxisIndex]
         widgetConstraints.maxSize[primaryAxisIndex] = widget.size[primaryAxisIndex]
+
+        widget.referenceConstraints!.minSize[secondaryAxisIndex] = constrainedAccumulatedSize[secondaryAxisIndex]
       }
 
       if needRelayout {
@@ -170,6 +173,8 @@ public class SimpleLinearLayout: Layout {
         targetSize[secondaryAxisIndex] = widget.size[secondaryAxisIndex]
         let widgetConstraints = BoxConstraints(size: targetSize)
         widget.layout(constraints: widgetConstraints)
+
+        widget.referenceConstraints!.maxSize[primaryAxisIndex] = targetSize[primaryAxisIndex]
       }
 
       currentPrimaryAxisPosition += widget.size[primaryAxisIndex]
