@@ -17,10 +17,6 @@ public class FlexLayout: Layout {
   @LayoutProperty(key: ParentKeys.direction)
   var direction: Direction
 
-  override public func getBoxConfig() -> BoxConfig {
-    widgets[0].boxConfig
-  }
-
   override public func layout(constraints: BoxConstraints) -> DSize2 {
     let primaryAxisIndex: Int
     let secondaryAxisIndex: Int

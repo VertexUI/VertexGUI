@@ -29,10 +29,6 @@ open class Layout {
     }
   }
 
-  open func getBoxConfig() -> BoxConfig {
-    fatalError("getBoxConfig() not implemented")
-  }
-
   open func layout(constraints: BoxConstraints) -> DSize2 {
     fatalError("layout() not implemented")
   }

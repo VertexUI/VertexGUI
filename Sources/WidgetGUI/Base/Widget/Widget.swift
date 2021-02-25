@@ -106,15 +106,15 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     @available(*, deprecated, message: "Constraints is now passed as a parameter to layout(constraints:)")
     open var constraints: BoxConstraints? = nil
 
-    lazy public internal(set) var boxConfig = getBoxConfig()
-    /// bridge boxConfig for use in @inlinable functions
-    @usableFromInline internal var _boxConfig: BoxConfig {
+    lazy public internal(set) var explicitConstraints = calculateExplicitConstraints()
+    /// bridge explicitConstraints for use in @inlinable functions
+    @usableFromInline internal var _explicitConstraints: BoxConstraints {
         get {
-            boxConfig
+            explicitConstraints
         }
 
         set {
-            boxConfig = newValue
+            explicitConstraints = newValue
         }
     }
     
@@ -416,7 +416,7 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         
         setupWidgetEventHandlerManagers()
         setupFromStyleWrappers()
-        setupBoxConfigUpdateTriggers()
+        setupExplicitConstraintsUpdateTriggers()
         setupScrolling()
     }
     
@@ -441,7 +441,7 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         }
     }
 
-    private func setupBoxConfigUpdateTriggers() {
+    private func setupExplicitConstraintsUpdateTriggers() {
         _ = stylePropertiesResolver.onResolvedPropertyValuesChanged { [unowned self] data in
             let compareKeys = [
                 StyleKeys.width, StyleKeys.height, StyleKeys.minWidth, StyleKeys.minHeight,
@@ -452,7 +452,7 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
                 let new = data.new[$0] as? Double
                 return old != new
             }) {
-                updateBoxConfig()
+                updateExplicitConstraints()
             }
         }
     }
@@ -598,75 +598,69 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     @usableFromInline
     @inlinable
     internal final func _invalidateBuild() {
-        #if DEBUG
-        inspectionBus.publish(WidgetInspectionMessage(sender: self, content: .BuildInvalidated))
-        #endif
-
         buildInvalid = true
 
         lifecycleBus.publish(WidgetLifecycleMessage(sender: self, content: .BuildInvalidated))
         
-        #if DEBUG
-        context.inspectionBus.publish(WidgetInspectionMessage(sender: self, content: .BuildInvalidated))
-        #endif
-
         onBuildInvalidated.invokeHandlers()
     }
 
-    public final func updateBoxConfig() {
+    internal func updateExplicitConstraints() {
         // TODO: implement inspection messages
-        let currentBoxConfig = boxConfig
-        let newBoxConfig = getBoxConfig()
-        if currentBoxConfig != newBoxConfig {
-            _boxConfig = newBoxConfig
+        let currentExplicitConstraints = explicitConstraints
+        let newExplicitConstraints = calculateExplicitConstraints()
+        if currentExplicitConstraints != newExplicitConstraints {
+            _explicitConstraints = newExplicitConstraints
             // TODO: test whether to really invalidate layout?
             invalidateLayout()
         }
     }
 
-    final public func getBoxConfig() -> BoxConfig {
-        var boxConfig = BoxConfig()
+    internal func calculateExplicitConstraints() -> BoxConstraints {
+        var explicitConstraints = BoxConstraints(minSize: .zero, maxSize: .infinity)
 
         let paddingSize = padding.aggregateSize
-        boxConfig += paddingSize
+        explicitConstraints.minSize += paddingSize
+        explicitConstraints.maxSize += paddingSize
         let borderSize = borderWidth.aggregateSize
-        boxConfig += borderSize
+        explicitConstraints.minSize += borderSize
+        explicitConstraints.maxSize += borderSize
 
         if overflowX == .scroll {
-            boxConfig.minSize.width = 0
+            explicitConstraints.minSize.width = 0
         }
         if overflowY == .scroll {
-            boxConfig.minSize.height = 0
+            explicitConstraints.minSize.height = 0
         }
 
         if let explicitMinWidth = stylePropertyValue(StyleKeys.minWidth, as: Double.self) {
-            boxConfig.minSize.width = explicitMinWidth
-            boxConfig.maxSize.width = max(boxConfig.minSize.width, boxConfig.maxSize.width)
+            explicitConstraints.minSize.width = explicitMinWidth
+            explicitConstraints.maxSize.width = max(explicitConstraints.minSize.width, explicitConstraints.maxSize.width)
         }
         if let explicitMinHeight = stylePropertyValue(StyleKeys.minHeight, as: Double.self) {
-            boxConfig.minSize.height = explicitMinHeight
-            boxConfig.maxSize.height = max(boxConfig.minSize.height, boxConfig.maxSize.height)
+            explicitConstraints.minSize.height = explicitMinHeight
+            explicitConstraints.maxSize.height = max(explicitConstraints.minSize.height, explicitConstraints.maxSize.height)
         }
 
         if let explicitMaxWidth = stylePropertyValue(StyleKeys.maxWidth, as: Double.self) {
-            boxConfig.maxSize.width = explicitMaxWidth 
-            boxConfig.minSize.width = min(boxConfig.minSize.width, boxConfig.maxSize.width)
+            explicitConstraints.maxSize.width = explicitMaxWidth 
+            explicitConstraints.minSize.width = min(explicitConstraints.minSize.width, explicitConstraints.maxSize.width)
         }
         if let explicitMaxHeight = stylePropertyValue(StyleKeys.maxHeight, as: Double.self) {
-            boxConfig.maxSize.height = explicitMaxHeight 
-            boxConfig.minSize.height = min(boxConfig.minSize.height, boxConfig.maxSize.height)
+            explicitConstraints.maxSize.height = explicitMaxHeight 
+            explicitConstraints.minSize.height = min(explicitConstraints.minSize.height, explicitConstraints.maxSize.height)
         }
 
         if let explicitWidth = stylePropertyValue(StyleKeys.width, as: Double.self) {
-            boxConfig.minSize.width = explicitWidth
-            boxConfig.maxSize.width = explicitWidth
+            explicitConstraints.minSize.width = explicitWidth
+            explicitConstraints.maxSize.width = explicitWidth
         }
         if let explicitHeight = stylePropertyValue(StyleKeys.height, as: Double.self) {
-            boxConfig.minSize.height = explicitHeight
-            boxConfig.maxSize.height = explicitHeight
+            explicitConstraints.minSize.height = explicitHeight
+            explicitConstraints.maxSize.height = explicitHeight
         }
 
-        return boxConfig
+        return explicitConstraints
     }
 
     public final func layout(constraints: BoxConstraints) {
@@ -718,10 +712,10 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         let previousSize = size
         let isFirstRound = !layouted
         
-        let boxConfigConstraints = BoxConstraints(minSize: boxConfig.minSize, maxSize: boxConfig.maxSize)
+        let explicitConstraintsConstraints = BoxConstraints(minSize: explicitConstraints.minSize, maxSize: explicitConstraints.maxSize)
         let constrainedParentConstraints = BoxConstraints(
-            minSize: boxConfigConstraints.constrain(constraints.minSize),
-            maxSize: boxConfigConstraints.constrain(constraints.maxSize)
+            minSize: explicitConstraintsConstraints.constrain(constraints.minSize),
+            maxSize: explicitConstraintsConstraints.constrain(constraints.maxSize)
         )
         var contentConstraints: BoxConstraints = constrainedParentConstraints - padding.aggregateSize - borderWidth.aggregateSize
         if overflowX == .scroll {
@@ -741,16 +735,16 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         // -> the content can have any size, because it can be scrolled,
         // therefore it is ok to just apply the max constraints passed in by the parent
         // to the whole widget -> content whill be scrollable if it overflows
-        /*var finalSizeConstraints = boxConfigConstraints
+        /*var finalSizeConstraints = explicitConstraintsConstraints
         if overflowX == .scroll {
-            finalSizeConstraints.maxSize.width = boxConfigConstraints.constrain(constraints.maxSize).width
+            finalSizeConstraints.maxSize.width = explicitConstraintsConstraints.constrain(constraints.maxSize).width
         }
         if overflowY == .scroll {
-            finalSizeConstraints.maxSize.height = boxConfigConstraints.constrain(constraints.maxSize).height
+            finalSizeConstraints.maxSize.height = explicitConstraintsConstraints.constrain(constraints.maxSize).height
         }*/
         let finalSizeConstraints = BoxConstraints(
-            minSize: boxConfigConstraints.constrain(constraints.minSize),
-            maxSize: boxConfigConstraints.constrain(constraints.maxSize)
+            minSize: explicitConstraintsConstraints.constrain(constraints.minSize),
+            maxSize: explicitConstraintsConstraints.constrain(constraints.maxSize)
         )
         size = finalSizeConstraints.constrain(targetSize)
         /*print("LAYOUT", self)
@@ -758,7 +752,7 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         print("target size", targetSize)
         print("constraints", constraints)
         print("content constraints", contentConstraints)
-        print("box config constraints", boxConfigConstraints)
+        print("box config constraints", explicitConstraintsConstraints)
         print("final size constraints", finalSizeConstraints)
         print("------------")*/
         
