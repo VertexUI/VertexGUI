@@ -916,7 +916,9 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
                 manager.widget = nil
             } else if var manager = child.value as? AnyEventHandlerManager {
                 manager.removeAllHandlers()
-            }
+            }/* else if var property = child.value as? AnyReactiveProperty {
+                property.destroy()
+            }*/
         } 
 
         destroyed = true

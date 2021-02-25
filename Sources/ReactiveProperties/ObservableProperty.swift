@@ -44,7 +44,7 @@ public class ObservableProperty<Value>: ReactiveProperty, InternalValueSettableR
   
   public var registeredBindings = [PropertyBindingProtocol]()
 
-  private var destroyed: Bool = false
+  public var destroyed: Bool = false
   public let onDestroyed = EventHandlerManager<Void>()
 
   public init() {}
@@ -52,5 +52,9 @@ public class ObservableProperty<Value>: ReactiveProperty, InternalValueSettableR
   @discardableResult
   public func bind<Other: ReactiveProperty>(_ other: Other) -> UniDirectionalPropertyBinding where Other.Value == Value {
     UniDirectionalPropertyBinding(source: other, sink: self)
+  }
+
+  deinit {
+    destroy()
   }
 }

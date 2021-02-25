@@ -34,7 +34,11 @@ public class MainView: ComposedWidget, SlotAcceptingWidgetProtocol {
         items.append("NEW ITEM")
       }
 
-      Container().with(styleProperties: {
+      Dynamic($items) {
+        Space(.zero)
+      }
+
+      /*Container().with(styleProperties: {
         ($0.overflowY, Overflow.scroll)
         (SimpleLinearLayout.ChildKeys.shrink, 1.0)
       }).withContent {
@@ -49,7 +53,7 @@ public class MainView: ComposedWidget, SlotAcceptingWidgetProtocol {
             }
           }
         }
-      }
+      }*/
     }
   }
 

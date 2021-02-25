@@ -78,7 +78,7 @@ public class MutableComputedProperty<Value>: InternalMutablePropertyProtocol, Co
 
   public var registeredBindings = [PropertyBindingProtocol]()
 
-  public internal(set) var destroyed: Bool = false
+  public var destroyed: Bool = false
   public let onDestroyed = EventHandlerManager<Void>()
 
   public init() {
@@ -118,5 +118,9 @@ public class MutableComputedProperty<Value>: InternalMutablePropertyProtocol, Co
     if hasValue {
       _value = compute()
     }
+  }
+
+  deinit {
+    destroy()
   }
 }

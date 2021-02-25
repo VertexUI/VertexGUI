@@ -18,7 +18,6 @@ internal protocol ComputedPropertyProtocol: PublicComputedPropertyProtocol, Inte
   func removeDependencyHandlers()
   func checkUpdateHasValue()
   func updateValue()
-  func destroy()
 }
 
 extension ComputedPropertyProtocol {
@@ -65,11 +64,14 @@ extension ComputedPropertyProtocol {
     hasValue = dependencies.allSatisfy { $0.hasValue }
   }
 
-  func destroy() {
+  public func destroy() {
     if destroyed {
       return
     }
     removeDependencyHandlers()
+    for binding in registeredBindings {
+      binding.destroy()
+    }
     registeredBindings = []
     destroyed = true
     onDestroyed.invokeHandlers(())

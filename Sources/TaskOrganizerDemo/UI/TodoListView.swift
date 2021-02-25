@@ -27,11 +27,14 @@ public class TodoListView: ComposedWidget {
     self.editable = editable
     self.checkable = checkable
     super.init()
-    self.$listId.bind(listIdProperty)
+    let binding = self.$listId.bind(listIdProperty)
     _ = onDependenciesInjected { [unowned self] in
       self.$list.reinit(compute: { [unowned self] in
         store.state.lists.first { $0.id == listId }!
       }, dependencies: [$listId, store.$state])
+    }
+    _ = onDestroy { [unowned binding] in
+      binding.destroy()
     }
   }
 

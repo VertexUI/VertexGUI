@@ -18,10 +18,14 @@ public class StaticProperty<Value>: InternalReactivePropertyProtocol {
   
   public var registeredBindings = [PropertyBindingProtocol]()
 
-  private var destroyed: Bool = false
+  public var destroyed: Bool = false
   public let onDestroyed = EventHandlerManager<Void>()
 
   public init(_ value: Value) {
     self._value = value
+  }
+
+  deinit {
+    destroy()
   }
 }

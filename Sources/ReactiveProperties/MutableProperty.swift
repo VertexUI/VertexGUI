@@ -55,7 +55,7 @@ public class MutableProperty<Value>: InternalMutablePropertyProtocol, EventfulOb
  
   public var registeredBindings = [PropertyBindingProtocol]()
 
-  private var destroyed: Bool = false
+  public var destroyed: Bool = false
   public let onDestroyed = EventHandlerManager<Void>()
 
   public init() {
@@ -69,16 +69,6 @@ public class MutableProperty<Value>: InternalMutablePropertyProtocol, EventfulOb
 
   public convenience init(wrappedValue: Value) {
     self.init(wrappedValue)
-  }
-
-  public func destroy() {
-    if destroyed {
-      return
-    }
-    registeredBindings = []
-    destroyed = true
-    onDestroyed.invokeHandlers(())
-    removeAllEventHandlers()
   }
 
   deinit {

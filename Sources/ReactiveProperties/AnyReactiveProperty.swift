@@ -3,7 +3,7 @@ import Events
 private var reactivePropertyIds = [ObjectIdentifier: UInt]()
 private var nextReactivePropertyId: UInt = 0
 
-public protocol AnyReactiveProperty: class {
+public protocol AnyReactiveProperty: class, EventfulObject {
   /** used for debugging */
   var id: UInt { get }
 
@@ -14,11 +14,14 @@ public protocol AnyReactiveProperty: class {
   
   var onHasValueChanged: EventHandlerManager<Void> { get }
 
+  var destroyed: Bool { get set }
   var onDestroyed: EventHandlerManager<Void> { get }
 
   /** used to keep bindings in memory, prevent early deinitialization */
   var registeredBindings: [PropertyBindingProtocol] { get set }
   func registerBinding(_ binding: PropertyBindingProtocol) -> () -> ()
+
+  func destroy()
 }
 
 extension AnyReactiveProperty {
@@ -37,5 +40,17 @@ extension AnyReactiveProperty {
         self.registeredBindings.removeAll { $0 === binding }
       }
     }
+  }
+
+  public func destroy() {
+    for binding in registeredBindings {
+      binding.destroy()
+    }
+    registeredBindings = []
+
+    destroyed = true
+    onDestroyed.invokeHandlers()
+    
+    removeAllEventHandlers()
   }
 }

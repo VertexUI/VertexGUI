@@ -22,7 +22,7 @@ public class Dynamic<C: ExpContentProtocol> {
 
     let partials = build()
     self.content = C(partials: partials)
-
+    
     _ = proxy.onChanged { [unowned self] _ in
       onDependenciesChanged.invokeHandlers()
     }

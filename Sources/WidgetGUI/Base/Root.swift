@@ -141,7 +141,9 @@ open class Root: Parent {
       var operation = ProcessMouseEventOperationDebugData()
       operation.recordStart()
       if !self.renderObjectSystemEnabled {
+        var startTime = Date.timeIntervalSinceReferenceDate
         mouseEventManager.propagate(rawMouseEvent)
+        print("PROCESS MOUSE ENVETS TOOK", Date.timeIntervalSinceReferenceDate - startTime)
       }
       operation.recordEnd()
       self.debugManager.data.storeOperation(operation)

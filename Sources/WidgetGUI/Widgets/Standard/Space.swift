@@ -10,9 +10,14 @@ public class Space: Widget {
 
     public init(_ preferredSize: DSize2) {
         self.preferredSize = preferredSize
+        super.init()
     }
 
     override public func performLayout(constraints: BoxConstraints) -> DSize2 {
         constraints.constrain(preferredSize)
+    }
+
+    deinit {
+        print("DEINIT SPACE")
     }
 }
