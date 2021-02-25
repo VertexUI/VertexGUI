@@ -106,7 +106,7 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     @available(*, deprecated, message: "Constraints is now passed as a parameter to layout(constraints:)")
     open var constraints: BoxConstraints? = nil
 
-    lazy open internal(set) var boxConfig = getBoxConfig()
+    lazy public internal(set) var boxConfig = getBoxConfig()
     /// bridge boxConfig for use in @inlinable functions
     @usableFromInline internal var _boxConfig: BoxConfig {
         get {
@@ -114,11 +114,7 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         }
 
         set {
-            //let oldValue = boxConfig
             boxConfig = newValue
-            /*if oldValue != newValue {
-                onBoxConfigChanged.invokeHandlers(BoxConfigChangedEvent(old: oldValue, new: newValue))
-            }*/
         }
     }
     
@@ -203,7 +199,6 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         mounted/* && constraints != nil*/ && context != nil
     }
     public var buildInvalid = false
-    public var boxConfigInvalid = false
     public private(set) var layouting = false
     public private(set) var layouted = false
     // TODO: maybe rename to boundsInvalid???
@@ -396,8 +391,6 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     public let onBuilt = WidgetEventHandlerManager<Void>()
     public let onBuildInvalidated = WidgetEventHandlerManager<Void>()
     public internal(set) var onTick = WidgetEventHandlerManager<Tick>()
-    public internal(set) var onBoxConfigInvalidated = WidgetEventHandlerManager<Void>()
-    public internal(set) var onBoxConfigChanged = EventHandlerManager<BoxConfigChangedEvent>()
     public internal(set) var onSizeChanged = EventHandlerManager<DSize2>()
     public internal(set) var onLayoutInvalidated = EventHandlerManager<Void>()
     public internal(set) var onLayoutingStarted = EventHandlerManager<BoxConstraints>()
@@ -459,7 +452,7 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
                 let new = data.new[$0] as? Double
                 return old != new
             }) {
-                invalidateBoxConfig()
+                updateBoxConfig()
             }
         }
     }
@@ -626,18 +619,14 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         let newBoxConfig = getBoxConfig()
         if currentBoxConfig != newBoxConfig {
             _boxConfig = newBoxConfig
-            onBoxConfigChanged.invokeHandlers(BoxConfigChangedEvent(old: currentBoxConfig, new: newBoxConfig))
-            //invalidateLayout()
+            // TODO: test whether to really invalidate layout?
+            invalidateLayout()
         }
-        boxConfigInvalid = false
     }
 
     final public func getBoxConfig() -> BoxConfig {
-        if !built {
-            return BoxConfig(preferredSize: .zero)
-        }
+        var boxConfig = BoxConfig()
 
-        var boxConfig = getContentBoxConfig()
         let paddingSize = padding.aggregateSize
         boxConfig += paddingSize
         let borderSize = borderWidth.aggregateSize
@@ -652,67 +641,32 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
 
         if let explicitMinWidth = stylePropertyValue(StyleKeys.minWidth, as: Double.self) {
             boxConfig.minSize.width = explicitMinWidth
-            boxConfig.preferredSize.width = max(boxConfig.minSize.width, boxConfig.preferredSize.width)
             boxConfig.maxSize.width = max(boxConfig.minSize.width, boxConfig.maxSize.width)
         }
         if let explicitMinHeight = stylePropertyValue(StyleKeys.minHeight, as: Double.self) {
             boxConfig.minSize.height = explicitMinHeight
-            boxConfig.preferredSize.height = max(boxConfig.minSize.height, boxConfig.preferredSize.height)
             boxConfig.maxSize.height = max(boxConfig.minSize.height, boxConfig.maxSize.height)
         }
 
         if let explicitMaxWidth = stylePropertyValue(StyleKeys.maxWidth, as: Double.self) {
             boxConfig.maxSize.width = explicitMaxWidth 
-            boxConfig.preferredSize.width = min(boxConfig.maxSize.width, boxConfig.preferredSize.width)
             boxConfig.minSize.width = min(boxConfig.minSize.width, boxConfig.maxSize.width)
         }
         if let explicitMaxHeight = stylePropertyValue(StyleKeys.maxHeight, as: Double.self) {
             boxConfig.maxSize.height = explicitMaxHeight 
-            boxConfig.preferredSize.height = min(boxConfig.maxSize.height, boxConfig.preferredSize.height)
             boxConfig.minSize.height = min(boxConfig.minSize.height, boxConfig.maxSize.height)
         }
 
         if let explicitWidth = stylePropertyValue(StyleKeys.width, as: Double.self) {
             boxConfig.minSize.width = explicitWidth
             boxConfig.maxSize.width = explicitWidth
-            boxConfig.preferredSize.width = explicitWidth
         }
         if let explicitHeight = stylePropertyValue(StyleKeys.height, as: Double.self) {
             boxConfig.minSize.height = explicitHeight
             boxConfig.maxSize.height = explicitHeight
-            boxConfig.preferredSize.height = explicitHeight
         }
 
         return boxConfig
-    }
-
-    /**
-    * Needs to be implemented by subclasses.
-    * - Returns: the box config of the content of the Widget, which might be a drawing or other Widgets.
-    */
-    open func getContentBoxConfig() -> BoxConfig {
-        fatalError("getContentBoxConfig() not implemented")
-    }
-
-    // TODO: maybe call this updateBoxConfig / or queueBoxConfigUpdate??? --> on next tick?
-    @inlinable
-    public final func invalidateBoxConfig() {
-        if !mounted {
-            #if DEBUG
-            Logger.warn("Called invalidateBoxConfig() before Widget was mounted.")
-            #endif
-            return
-        }
-        if boxConfigInvalid {
-            #if DEBUG
-            Logger.warn("Called invalidateBoxConfig() on a Widget where box config is already invalid", context: .WidgetLayouting)
-            #endif
-            return
-        }
-        boxConfigInvalid = true
-        context.queueLifecycleMethodInvocation(.updateBoxConfig, target: self, sender: self, reason: .undefined)
-        //lifecycleBus.publish(WidgetLifecycleMessage(sender: self, content: .BoxConfigInvalidated))
-        onBoxConfigInvalidated.invokeHandlers(Void())
     }
 
     public final func layout(constraints: BoxConstraints) {
@@ -812,22 +766,24 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
 
         // TODO: implement logic for overflow == .auto
 
-        var scrollBarsLength = DSize2(width, height)
+        /*var scrollBarsLength = DSize2(width, height)
         if scrollingEnabled.x && scrollingEnabled.y {
-            scrollBarsLength -= DSize2(pseudoScrollBarY.boxConfig.preferredSize.x, pseudoScrollBarX.boxConfig.preferredSize.y)
-        }
+            scrollBarsLength -= DSize2(pseudoScrollBarY.size.x, pseudoScrollBarX.size.y)
+        }*/
 
         if scrollingEnabled.x {
             pseudoScrollBarX.maxScrollProgress = scrollableLength.x / width
             pseudoScrollBarX.layout(constraints: BoxConstraints(
-                size: DSize2(scrollBarsLength.x, pseudoScrollBarX.boxConfig.preferredSize.y)))
+                minSize: DSize2(width, 0),
+                maxSize: DSize2(width, .infinity)))
 
             pseudoScrollBarX.position = DVec2(0, height - pseudoScrollBarX.height)
         }
         if scrollingEnabled.y {
             pseudoScrollBarY.maxScrollProgress = scrollableLength.y / height
             pseudoScrollBarY.layout(constraints: BoxConstraints(
-                size: DSize2(pseudoScrollBarY.boxConfig.preferredSize.x, scrollBarsLength.y)))
+                minSize: DSize2(0, height),
+                maxSize: DSize2(.infinity, height)))
 
             pseudoScrollBarY.position = DVec2(width - pseudoScrollBarY.width, 0)
         }
@@ -952,7 +908,6 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
 
         onParentChanged.removeAllHandlers()
         onMounted.removeAllHandlers()
-        onBoxConfigChanged.removeAllHandlers()
         onSizeChanged.removeAllHandlers()
         onLayoutInvalidated.removeAllHandlers()
         onLayoutingStarted.removeAllHandlers()
@@ -982,16 +937,5 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         fatalError("Deinitialized Widget without calling destroy() first")
       }
       Logger.log("Deinitialized Widget: \(id) \(self)", level: .Message, context: .Default)
-    }
-}
-
-extension Widget {
-    public struct BoxConfigChangedEvent {
-        public var old: BoxConfig
-        public var new: BoxConfig
-        public init(old: BoxConfig, new: BoxConfig) {
-            self.old = old
-            self.new = new
-        }
     }
 }

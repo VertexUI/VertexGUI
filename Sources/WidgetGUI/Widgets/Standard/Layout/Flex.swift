@@ -66,38 +66,6 @@ public class Flex: Widget {
     return UniversalStrategy(self)
   }
 
-  // TODO: maybe have box config inside the Widget and then let the parent give the child constraints
-  // or maybe one dimension and then the child should decide how to set up the other direction
-  override public func getContentBoxConfig() -> BoxConfig {
-    var config = BoxConfig(preferredSize: .zero, minSize: .zero, maxSize: .zero)
-
-    for (index, item) in items.enumerated() {
-      let content = item.content
-      let contentConfig = content.boxConfig
-      let spaceAfter = index < items.count - 1 ? spacing : 0.0
-
-      config.preferredSize[mainAxisVectorIndex] += contentConfig.preferredSize[mainAxisVectorIndex] + spaceAfter
-      if config.preferredSize[crossAxisVectorIndex]
-        < contentConfig.preferredSize[crossAxisVectorIndex]
-      {
-        config.preferredSize[crossAxisVectorIndex] =
-          contentConfig.preferredSize[crossAxisVectorIndex]
-      }
-
-      config.minSize[mainAxisVectorIndex] += contentConfig.minSize[mainAxisVectorIndex] + spaceAfter
-      if config.minSize[crossAxisVectorIndex] < contentConfig.minSize[crossAxisVectorIndex] {
-        config.minSize[crossAxisVectorIndex] = contentConfig.minSize[crossAxisVectorIndex]
-      }
-
-      config.maxSize[mainAxisVectorIndex] += contentConfig.maxSize[mainAxisVectorIndex] + spaceAfter
-      if config.maxSize[crossAxisVectorIndex] < contentConfig.maxSize[crossAxisVectorIndex] {
-        config.maxSize[crossAxisVectorIndex] = contentConfig.maxSize[crossAxisVectorIndex]
-      }
-    }
-
-    return config
-  }
-
   // TODO: might create an extra, simpler function that is faster for non-wrapping Flex layouts
   override public func performLayout(constraints: BoxConstraints) -> DSize2 {
     return layoutStrategy.layout(constraints: constraints)

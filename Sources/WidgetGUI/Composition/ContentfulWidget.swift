@@ -14,31 +14,6 @@ open class ContentfulWidget: Widget {
     }
   }
 
-  override open func getContentBoxConfig() -> BoxConfig {
-    var maxBoxConfig = BoxConfig(preferredSize: .zero, minSize: .zero, maxSize: .zero)
-    for child in contentChildren {
-      if child.boxConfig.preferredSize.width > maxBoxConfig.preferredSize.width {
-        maxBoxConfig.preferredSize.width = child.boxConfig.preferredSize.width
-      }
-      if child.boxConfig.preferredSize.height > maxBoxConfig.preferredSize.height {
-        maxBoxConfig.preferredSize.height = child.boxConfig.preferredSize.height
-      }
-      if child.boxConfig.minSize.width > maxBoxConfig.minSize.width {
-        maxBoxConfig.minSize.width = child.boxConfig.minSize.width
-      }
-      if child.boxConfig.minSize.height > maxBoxConfig.minSize.height {
-        maxBoxConfig.minSize.height = child.boxConfig.minSize.height
-      }
-      if child.boxConfig.maxSize.width > maxBoxConfig.maxSize.width {
-        maxBoxConfig.maxSize.width = child.boxConfig.maxSize.width
-      }
-      if child.boxConfig.maxSize.height > maxBoxConfig.maxSize.height {
-        maxBoxConfig.maxSize.height = child.boxConfig.maxSize.height
-      }
-    }
-    return maxBoxConfig
-  }
-
   override open func performLayout(constraints: BoxConstraints) -> DSize2 {
     var maxSize = DSize2.zero
     for child in contentChildren {

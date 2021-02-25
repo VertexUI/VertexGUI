@@ -11,13 +11,8 @@ public class PixelCanvas: Widget {
     content = Image(width: Int(contentSize.width), height: Int(contentSize.height), value: 0)
   }
 
-  override public func getContentBoxConfig() -> BoxConfig {
-    // this is an arbitrary size...
-    BoxConfig(preferredSize: DSize2(10, 10))
-  }
-
   override public func performLayout(constraints: BoxConstraints) -> DSize2 {
-    constraints.constrain(boxConfig.preferredSize)
+    constraints.constrain(DSize2(Double(contentSize[0]), Double(contentSize[1])))
   }
 
   public func resize(_ contentSize: DSize2) {

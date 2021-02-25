@@ -36,7 +36,6 @@ extension DeveloperTools {
           buildChart(title: ChartContent.build.rawValue, dataProperty: barChartDataProperties[.build]!)
           buildChart(title: ChartContent.updateChildren.rawValue, dataProperty: barChartDataProperties[.updateChildren]!)
           buildChart(title: ChartContent.resolveStyles.rawValue, dataProperty: barChartDataProperties[.resolveStyles]!)
-          buildChart(title: ChartContent.updateBoxConfig.rawValue, dataProperty: barChartDataProperties[.updateBoxConfig]!)
           buildChart(title: ChartContent.layout.rawValue, dataProperty: barChartDataProperties[.layout]!)
           buildChart(title: ChartContent.updateCumulatedValues.rawValue, dataProperty: barChartDataProperties[.updateCumulatedValues]!)
         }
@@ -79,7 +78,6 @@ extension DeveloperTools {
           updatedBarChartData[.build]!.append((label: "wow", operation.steps[.build]!.duration))
           updatedBarChartData[.updateChildren]!.append((label: "wow", operation.steps[.updateChildren]!.duration))
           updatedBarChartData[.resolveStyles]!.append((label: "wow", operation.steps[.resolveStyles]!.duration))
-          updatedBarChartData[.updateBoxConfig]!.append((label: "wow", operation.steps[.updateBoxConfig]!.duration))
           updatedBarChartData[.layout]!.append((label: "wow", operation.steps[.layout]!.duration))
           updatedBarChartData[.updateCumulatedValues]!.append((label: "wow", operation.steps[.updateCumulatedValues]!.duration))
 
@@ -109,13 +107,14 @@ extension DeveloperTools {
         Style(".chart") {
           (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.stretch)
           ($0.height, 200)
+          ($0.width, 400)
           (SimpleLinearLayout.ChildKeys.margin, Insets(bottom: 16))
         }
       }
     }
 
     enum ChartContent: String, CaseIterable {
-      case processMouseEvent, processKeyEvent, processTextEvent, tick, build, updateChildren, resolveStyles, updateBoxConfig, layout, updateCumulatedValues, draw
+      case processMouseEvent, processKeyEvent, processTextEvent, tick, build, updateChildren, resolveStyles, layout, updateCumulatedValues, draw
     }
   }
 }

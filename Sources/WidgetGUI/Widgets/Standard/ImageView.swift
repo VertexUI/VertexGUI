@@ -19,28 +19,22 @@ public class ImageView: Widget {
             if resizingImage {
                 _ = onImageResized.once {
                     resizedImage = nil
-                    invalidateRenderState()
                 }
             } else {
                 resizedImage = nil
-                invalidateRenderState()
             }
        })
     }
 
-    override public func getContentBoxConfig() -> BoxConfig {
-        BoxConfig(preferredSize: DSize2(Double(image.width), Double(image.height)))
-    }
-
     override public func performLayout(constraints: BoxConstraints) -> DSize2 {
-        var width = max(constraints.minWidth, min(constraints.maxWidth, boxConfig.preferredSize.width))
-        var scale = width / boxConfig.preferredSize.width
-        var height = boxConfig.preferredSize.height * scale
+        var width = max(constraints.minWidth, min(constraints.maxWidth, Double(image.width)))
+        var scale = width / Double(image.width)
+        var height = Double(image.height) * scale
 
         if height < constraints.minHeight || height > constraints.maxHeight {
-            height = max(constraints.minHeight, min(constraints.maxWidth, boxConfig.preferredSize.height))
-            scale = height / boxConfig.preferredSize.height
-            width = boxConfig.preferredSize.width * scale
+            height = max(constraints.minHeight, min(constraints.maxWidth, Double(image.width)))
+            scale = height / Double(image.height)
+            width = Double(image.width) * scale
         }
 
         return constraints.constrain(DSize2(width, height))

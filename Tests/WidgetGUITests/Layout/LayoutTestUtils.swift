@@ -16,10 +16,6 @@ class LayoutTestUtils {
       super.init()
     }
 
-    override func getContentBoxConfig() -> BoxConfig {
-      BoxConfig(preferredSize: explicitPreferredSize ?? .zero, minSize: explicitMinSize ?? .zero, maxSize: explicitMaxSize ?? .infinity)
-    }
-
     override func performLayout(constraints: BoxConstraints) -> DSize2 {
       BoxConstraints(minSize: boxConfig.minSize, maxSize: boxConfig.maxSize).constrain(constraints.constrain(boxConfig.preferredSize))
     }

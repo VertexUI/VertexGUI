@@ -34,33 +34,6 @@ public class SimpleLinearLayout: Layout {
     }
   }
 
-  override public func getBoxConfig() -> BoxConfig {
-    let (primaryAxisIndex, secondaryAxisIndex) = axisIndices
-
-    var accumulatedConfig = BoxConfig(preferredSize: .zero, minSize: .zero, maxSize: .infinity)
-    for widget in widgets {
-      accumulatedConfig.preferredSize[primaryAxisIndex] +=
-        widget.boxConfig.preferredSize[primaryAxisIndex]
-      if widget.boxConfig.preferredSize[secondaryAxisIndex]
-        > accumulatedConfig.preferredSize[secondaryAxisIndex]
-      {
-        accumulatedConfig.preferredSize[secondaryAxisIndex] =
-          widget.boxConfig.preferredSize[secondaryAxisIndex]
-      }
-      accumulatedConfig.minSize[primaryAxisIndex] += widget.boxConfig.minSize[primaryAxisIndex]
-      if widget.boxConfig.minSize[secondaryAxisIndex]
-        > accumulatedConfig.minSize[secondaryAxisIndex]
-      {
-        accumulatedConfig.minSize[secondaryAxisIndex] = widget.boxConfig.minSize[secondaryAxisIndex]
-      }
-      /*accumulatedConfig.maxSize[primaryAxisIndex] += widget.boxConfig.maxSize[primaryAxisIndex]
-      if widget.boxConfig.maxSize[secondaryAxisIndex] > accumulatedConfig.maxSize[secondaryAxisIndex] {
-        accumulatedConfig.maxSize[secondaryAxisIndex] = widget.boxConfig.maxSize[secondaryAxisIndex]
-      }*/
-    }
-    return accumulatedConfig
-  }
-
   override public func layout(constraints: BoxConstraints) -> DSize2 {
     let (primaryAxisIndex, secondaryAxisIndex) = axisIndices
 

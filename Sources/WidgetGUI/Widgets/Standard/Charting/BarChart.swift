@@ -24,12 +24,9 @@ public class BarChart: LeafWidget {
     self.$data.bind(dataProperty)
   }
 
-  override public func getContentBoxConfig() -> BoxConfig {
-    BoxConfig(preferredSize: DSize2(400, 400))
-  }
-
   override public func performLayout(constraints: BoxConstraints) -> DSize2 {
-    constraints.constrain(boxConfig.preferredSize)
+    // TODO: maybe do calculate some preferred size, or even some min size
+    constraints.constrain(.zero)
   }
 
   override public func draw(_ drawingContext: DrawingContext) {

@@ -58,9 +58,11 @@ public class FlatTheme {
         ($0.caretColor, primaryColor)
       }
 
-      Style(StyleSelector(StyleSelectorPart(type: Widget.ScrollBar.self))) {
+      Style(StyleSelector(StyleSelectorPart(type: Widget.ScrollBar.self)), Widget.ScrollBar.self) {
         ($0.background, Color.transparent)
         ($0.foreground, primaryColor)
+        ($0.xBarHeight, 20.0)
+        ($0.yBarWidth, 20.0)
 
         Style("&:hover") {
           ($0.foreground, primaryColor.darkened(30))

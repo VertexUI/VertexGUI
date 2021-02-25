@@ -38,8 +38,7 @@ public class Text: LeafWidget, StylableWidgetProtocol {
 
       self.$text.bind(textProperty)
       _ = onDestroy(self.$text.onChanged { [unowned self] _ in
-        invalidateBoxConfig()
-        invalidateRenderState()
+        invalidateLayout()
       })
   }
 
@@ -49,34 +48,21 @@ public class Text: LeafWidget, StylableWidgetProtocol {
     _ text: String) {
       self.init(classes: classes, styleProperties: stylePropertiesBuilder, StaticProperty(text))
   }
-
-  override public func getContentBoxConfig() -> BoxConfig {
-    var boxConfig = BoxConfig(
-      preferredSize: context.getTextBoundsSize(transformedText, fontConfig: fontConfig))
-
-    if wrap {
-      boxConfig.minSize = boxConfig.preferredSize
-    }
-
-    return boxConfig
-  }
-
+  
   override public func performLayout(constraints: BoxConstraints) -> DSize2 {
     let boundedText = transformedText.isEmpty ? " " : transformedText
 
-    var textBoundsSize = context.getTextBoundsSize(
-      boundedText, fontConfig: fontConfig, maxWidth: wrap ? constraints.maxWidth : nil
-    )
+    var textSizeMeasurement = context.measureText(text: boundedText, paint: TextPaint(fontConfig: fontConfig, color: foreground))
     
     if transformedText.isEmpty {
-      textBoundsSize.width = 0
+      textSizeMeasurement.width = 0
     }
 
     // fix glitches that create unnecessary line breaks, probably because floating point inprecisions
     // might need to be larger
-    textBoundsSize.width += 4
+    textSizeMeasurement.width += 4
 
-    return constraints.constrain(textBoundsSize)
+    return max(constraints.minSize, textSizeMeasurement)
   }
 
   override public func draw(_ drawingContext: DrawingContext) {

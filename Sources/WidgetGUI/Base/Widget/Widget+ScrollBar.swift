@@ -3,8 +3,13 @@ import VisualAppBase
 import ReactiveProperties
 
 extension Widget {
-  public class ScrollBar: LeafWidget {
+  public class ScrollBar: LeafWidget, StylableWidgetProtocol {
     private let orientation: Orientation
+
+    @FromStyle(key: StyleKeys.xBarHeight)
+    var xBarHeigt: Double = 40
+    @FromStyle(key: StyleKeys.yBarWidth)
+    var yBarWidth: Double = 40
 
     @MutableProperty
     public var scrollProgress = 0.0
@@ -36,17 +41,8 @@ extension Widget {
       }
     }
 
-    override public func getContentBoxConfig() -> BoxConfig {
-      switch orientation {
-        case .horizontal:
-          return BoxConfig(preferredSize: DSize2(0, 20))
-        case .vertical:
-          return BoxConfig(preferredSize: DSize2(20, 0))
-      }
-    }
-
     override public func performLayout(constraints: BoxConstraints) -> DSize2 {
-      constraints.constrain(boxConfig.preferredSize)
+      constraints.constrain(DSize2(yBarWidth, xBarHeigt))
     }
 
     func handleMouseDown(_ event: GUIMouseButtonDownEvent) {
@@ -75,8 +71,6 @@ extension Widget {
     }
 
     override public func draw(_ drawingContext: DrawingContext) {
-      //drawingContext.drawRect(rect: DRect(min: .zero, size: size), paint: Paint(color: background))
-
       let trackOffset = trackLength * scrollProgress
 
       let trackRect: DRect
@@ -91,6 +85,11 @@ extension Widget {
 
     public enum Orientation {
       case horizontal, vertical
+    }
+
+    public enum StyleKeys: String, StyleKey, DefaultStyleKeys {
+      case xBarHeight
+      case yBarWidth
     }
   }
 }

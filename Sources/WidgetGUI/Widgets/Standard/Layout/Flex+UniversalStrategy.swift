@@ -9,7 +9,7 @@ extension Flex {
     }
 
     override func layout(constraints: BoxConstraints) -> DSize2 {
-      lines = [
+     /* lines = [
         Line(crossAxisStart: 0)
       ]
 
@@ -367,6 +367,8 @@ extension Flex {
         return constraints.constrain(
           DSize2(lines.last!.crossAxisStart + lines.last!.size[crossAxisVectorIndex], mainAxisSize))
       }
+      */
+      return .zero
     }
   }
 }

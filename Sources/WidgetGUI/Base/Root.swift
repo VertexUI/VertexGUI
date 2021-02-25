@@ -116,10 +116,6 @@ open class Root: Parent {
     treeManager.buildSubTree(rootWidget: rootWidget)
     rootWidget.provideStyles(globalStyles)
 
-    _ = rootWidget.onBoxConfigChanged { [unowned self] _ in
-      layout()
-    }
-
     styleManager.processTree(rootWidget)
   }
   
@@ -220,18 +216,6 @@ open class Root: Parent {
     }
     operation.storeStep(.resolveStyles, data: stepData)
 
-    stepData = runTickStep {
-      let boxConfigQueue = widgetLifecycleManager.queues[.updateBoxConfig]!
-      let boxConfigIterator = boxConfigQueue.iterate()
-      while let entry = boxConfigIterator.next() {
-        if entry.target.mounted {
-          entry.target.updateBoxConfig()
-        }
-      }
-      boxConfigQueue.clear()
-    }
-    operation.storeStep(.updateBoxConfig, data: stepData)
-    
     stepData = runTickStep {
       let layoutQueue = widgetLifecycleManager.queues[.layout]!
       //print("LAYOUT COUNT", layoutQueue.entries.count)
@@ -418,56 +402,8 @@ extension Root {
   // TODO: maybe rename to DebugDataCollector */
   public class DebugManager {
     public var data = DebugData()
-    //private var currentTickData: DebugData.SingleTickData? = nil
-    //private var currentDrawData: DebugData.SingleDrawData? = nil
 
     public init() {}
-
-    // TODO: maybe should do a generic beginOperation(operation) ...
-    /*public func beginTick() {
-      currentTickData = DebugData.SingleTickData(startTimestamp: Date.timeIntervalSinceReferenceDate)
-    }
-
-    public func beginTickOperation(_ operation: DebugData.TickOperation) {
-      if var currentTickData = currentTickData {
-        currentTickData.operations[operation] = DebugData.SingleTickData.SingleTickOperationData(startTimestamp: Date.timeIntervalSinceReferenceDate)
-        self.currentTickData = currentTickData
-      }
-    }
-
-    public func endTickOperation(_ operation: DebugData.TickOperation) {
-      if var currentTickData = currentTickData {
-        if currentTickData.operations[operation] != nil {
-          currentTickData.operations[operation]!.endTimestamp = Date.timeIntervalSinceReferenceDate
-        }
-        self.currentTickData = currentTickData
-      }
-    }
-
-    @discardableResult
-    public func endTick() -> DebugData.SingleTickData {
-      guard var tick = currentTickData else {
-        fatalError()
-      }
-
-      tick.endTimestamp = Date.timeIntervalSinceReferenceDate
-      data.operations.append(.tick(tick))
-
-      return tick
-    }
-
-    public func beginDraw() {
-      currentDrawData = DebugData.SingleDrawData(startTimestamp: Date.timeIntervalSinceReferenceDate)
-    }
-
-    public func endDraw() {
-      guard var drawData = currentDrawData else {
-        fatalError()
-      }
-
-      drawData.endTimestamp = Date.timeIntervalSinceReferenceDate
-      data.operations.append(.draw(drawData))
-    }*/
   }
 
   public struct DebugData {
@@ -476,31 +412,6 @@ extension Root {
     mutating public func storeOperation(_ operation: RootOperationDebugData) {
       operations.append(operation)
     }
-
-    /*public struct SingleTickData {
-      public var startTimestamp: Double
-      public var endTimestamp: Double = -1
-      public var operations: [TickOperation: SingleTickOperationData] = [:]
-      public var duration: Double {
-        endTimestamp - startTimestamp
-      }
-
-      public struct SingleTickOperationData {
-        public var startTimestamp: Double
-        public var endTimestamp: Double = -1
-        public var duration: Double {
-          endTimestamp - startTimestamp
-        }
-      }
-    }
-
-    public struct SingleDrawData {
-      public var startTimestamp: Double
-      public var endTimestamp: Double = -1
-      public var duration: Double {
-        endTimestamp - startTimestamp
-      }
-    }*/
   }
 }
 
@@ -565,7 +476,6 @@ extension Root {
     case build
     case updateChildren
     case resolveStyles
-    case updateBoxConfig 
     case layout
     case updateCumulatedValues 
   }

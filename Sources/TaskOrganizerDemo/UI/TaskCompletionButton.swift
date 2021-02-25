@@ -13,10 +13,6 @@ public class TaskCompletionButton: LeafWidget {
         super.init()
     }
 
-    override public func getContentBoxConfig() -> BoxConfig {
-        BoxConfig(preferredSize: preferredSize)
-    }
-
     override public func performLayout(constraints: BoxConstraints) -> DSize2 {
         constraints.constrain(preferredSize)
     }

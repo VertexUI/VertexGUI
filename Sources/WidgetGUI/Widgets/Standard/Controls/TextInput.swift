@@ -160,13 +160,9 @@ public final class TextInput: ComposedWidget, StylableWidgetProtocol, GUIKeyEven
     }
   }
 
-  override public func getContentBoxConfig() -> BoxConfig {
-    BoxConfig(preferredSize: stackContainer.boxConfig.preferredSize)
-  }
-
   override public func performLayout(constraints: BoxConstraints) -> DSize2 {
     stackContainer.layout(constraints: constraints)
-    return constraints.constrain(stackContainer.size)
+    return stackContainer.size
   }
 
   private func syncText() {

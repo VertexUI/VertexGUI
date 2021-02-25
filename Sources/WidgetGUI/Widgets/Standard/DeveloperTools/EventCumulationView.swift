@@ -181,10 +181,6 @@ extension EventCumulationView {
       self.children = childrenBuilder()
     }
 
-    override public func getContentBoxConfig() {
-      BoxConfig(preferredSize: .zero)
-    }
-
     override public func performLayout(constraints: BoxConstraints) -> DSize2 {
       var size = DSize2.zero
 

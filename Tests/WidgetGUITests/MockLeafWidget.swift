@@ -23,10 +23,6 @@ public class MockLeafWidget: Widget {
     self.mode = mode
   }
 
-  override public func getContentBoxConfig() -> BoxConfig {
-    BoxConfig(preferredSize: .zero)
-  }
-
   override public func performLayout(constraints: BoxConstraints) -> DSize2 {
     .zero
   }

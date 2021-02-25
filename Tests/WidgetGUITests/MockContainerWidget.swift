@@ -12,10 +12,6 @@ public class MockContainerWidget: Widget {
     children = result.children
   }
 
-  override public func getContentBoxConfig() -> BoxConfig {
-    BoxConfig(preferredSize: .zero)
-  }
-
   override public func performLayout(constraints: BoxConstraints) -> DSize2 {
     .zero
   }

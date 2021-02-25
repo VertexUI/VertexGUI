@@ -33,10 +33,6 @@ open class ComposedWidget: Widget {
       self.directStyleProperties.append(stylePropertiesBuilder(StyleKeys.self))
   }
 
-  override open func getContentBoxConfig() -> BoxConfig {
-    rootChild!.getBoxConfig()
-  }
-
   override open func performLayout(constraints: BoxConstraints) -> DSize2 {
     rootChild?.layout(constraints: constraints)
     return rootChild?.size ?? .zero

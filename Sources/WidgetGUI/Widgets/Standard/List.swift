@@ -64,26 +64,6 @@ public class List<Item: Equatable>: ContentfulWidget, SlotAcceptingWidgetProtoco
     itemContents = updatedItemContents 
   }
 
-  override public func getContentBoxConfig() -> BoxConfig {
-    var result = BoxConfig(preferredSize: .zero, maxSize: DSize2(0, .infinity))
-    for child in children {
-      if child.boxConfig.preferredSize.width > result.preferredSize.width {
-        result.preferredSize.width = child.boxConfig.preferredSize.width
-      }
-      result.preferredSize.height += child.boxConfig.preferredSize.height
-
-      if child.boxConfig.minSize.width > result.minSize.width {
-        result.minSize.width = child.boxConfig.minSize.width
-      }
-      result.minSize.height += child.boxConfig.minSize.height
-
-      if child.boxConfig.maxSize.width > result.maxSize.width {
-        result.maxSize.width = child.boxConfig.maxSize.width
-      }
-    }
-    return result
-  }
-
   override public func performLayout(constraints: BoxConstraints) -> DSize2 {
     var currentPosition = DPoint2.zero
     var maxWidth = 0.0

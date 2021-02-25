@@ -20,13 +20,8 @@ public class Drawing: LeafWidget {
       self.directStyleProperties.append(buildStyleProperties(StyleKeys.self))
   }
 
-  override public func getContentBoxConfig() -> BoxConfig {
-    // size is arbitrary, should be chosen by parent
-    BoxConfig(preferredSize: DSize2(100, 100))
-  }
-
   override public func performLayout(constraints: BoxConstraints) -> DSize2 {
-    constraints.constrain(boxConfig.preferredSize)
+    constraints.constrain(DSize2(40, 40)) // arbitrary size to see something when min size constraints is 0
   }
 
   override public func draw(_ drawingContext: DrawingContext) {
