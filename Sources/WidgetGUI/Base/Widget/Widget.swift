@@ -55,7 +55,11 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     }
     public internal(set) var lifecycleBus = WidgetBus<WidgetLifecycleMessage>()
 
-    weak open var parent: Parent? = nil
+    weak open var parent: Parent? = nil {
+        didSet {
+            onParentChanged.invokeHandlers(parent)
+        }
+    }
     public internal(set) var treePath: TreePath = []
     /** The topmost parent or the widget instance itself if not mounted into a parent. */
     public var rootParent: Widget {
@@ -553,16 +557,6 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
       if let remove = contextOnTickHandlerRemover {
         remove()
       }
-    }
-
-    func setupInhertiableStylePropertiesValues() {
-        if let parent = parent as? Widget {
-            stylePropertiesResolver.inheritableValues = parent.stylePropertiesResolver.resolvedPropertyValues
-            _ = parent.stylePropertiesResolver.onResolvedPropertyValuesChanged { [unowned self] _ in
-                stylePropertiesResolver.inheritableValues = parent.stylePropertiesResolver.resolvedPropertyValues
-                stylePropertiesResolver.resolve()
-            }
-        }
     }
 
     open func performBuild() {

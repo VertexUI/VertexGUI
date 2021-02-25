@@ -73,7 +73,17 @@ public class WidgetTreeManager {
     
     widget.parent = parent
 
-    widget.setupInhertiableStylePropertiesValues()
+    if let parent = parent as? Widget {
+      widget.stylePropertiesResolver.inheritableValues = parent.stylePropertiesResolver.resolvedPropertyValues
+      // the binding to the parents resolved style properties gets released when the parent changes
+      // DANGLING HANDLER
+      let removeParentHandler = parent.stylePropertiesResolver.onResolvedPropertyValuesChanged { [unowned widget, unowned parent] _ in
+          widget.stylePropertiesResolver.inheritableValues = parent.stylePropertiesResolver.resolvedPropertyValues
+          widget.stylePropertiesResolver.resolve()
+      }
+      _ = widget.onParentChanged.once({ _ in removeParentHandler() })
+      _ = widget.onDestroy(removeParentHandler)
+    }
 
     widget.treePath = treePath
 

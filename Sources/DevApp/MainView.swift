@@ -1,7 +1,7 @@
 import ReactiveProperties
 import SwiftGUI 
 
-public class MainView: ComposedWidget, SlotAcceptingWidgetProtocol {
+public class MainView: ContentfulWidget, SlotAcceptingWidgetProtocol {
   @Inject
   var someInjectedData: String
 
@@ -21,8 +21,12 @@ public class MainView: ComposedWidget, SlotAcceptingWidgetProtocol {
   static let TestSlot1 = Slot(key: "testSlot1", data: Void.self)
   private var testSlot1 = SlotContentManager(MainView.TestSlot1)
 
-  override public func performBuild() {
-    rootChild = Container().with(styleProperties: {
+  override public init() {
+    super.init()
+  }
+
+  @ExpDirectContentBuilder override public var content: ExpDirectContent {
+    Container().with(styleProperties: {
       (SimpleLinearLayout.ParentKeys.direction, SimpleLinearLayout.Direction.column)
       ($0.background, Color.grey)
     }).withContent { [unowned self] in
@@ -32,10 +36,6 @@ public class MainView: ComposedWidget, SlotAcceptingWidgetProtocol {
         Text("ADD")
       }.onClick {
         items.append("NEW ITEM")
-      }
-
-      Dynamic($items) {
-        Space(.zero)
       }
 
       /*Container().with(styleProperties: {

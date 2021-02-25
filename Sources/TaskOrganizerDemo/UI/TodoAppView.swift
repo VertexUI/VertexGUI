@@ -205,7 +205,6 @@ public class TodoAppView: ComposedWidget {
             (SimpleLinearLayout.ChildKeys.shrink, 1.0)
           })
         }
-        //Space(.zero)
       }
     }
   }
