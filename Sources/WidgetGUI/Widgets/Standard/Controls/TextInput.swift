@@ -3,7 +3,7 @@ import Foundation
 import VisualAppBase
 import ReactiveProperties
 
-public final class TextInput: ComposedWidget, StylableWidgetProtocol, GUIKeyEventConsumer, GUITextEventConsumer
+public final class TextInput: ComposedWidget, StylableWidgetProtocol, ExperimentalStyleableWidget, GUIKeyEventConsumer, GUITextEventConsumer
 {
   @MutableProperty
   public var text: String
@@ -278,5 +278,11 @@ public final class TextInput: ComposedWidget, StylableWidgetProtocol, GUIKeyEven
 
   public enum StyleKeys: String, StyleKey, DefaultStyleKeys {
     case caretColor
+  }
+
+  public struct SpecialStylePropertiesStorage: ExperimentalPartialStylePropertiesStorage {
+    public var caretColor: Color = .yellow
+
+    public init() {}
   }
 }

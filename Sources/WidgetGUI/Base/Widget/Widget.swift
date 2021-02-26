@@ -310,9 +310,16 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
             stylePropertiesResolver.resolve()
         }
     }
+    public internal(set) var experimentalDirectStylePropertyValueDefinitions: [Experimental.StylePropertyValueDefinition] = [] {
+        didSet {
+            stylePropertiesResolver.experimentalDirectStylePropertyValueDefinitions = experimentalDirectStylePropertyValueDefinitions
+            stylePropertiesResolver.resolve()
+        }
+    }
 
     lazy internal var stylePropertiesResolver = StylePropertiesResolver(
         propertySupportDefinitions: mergedSupportedStyleProperties,
+        experimentalPropertyValuesType: getStylePropertyValuesType(),
         widget: self)
 
     // TODO: maybe this belongs into the layout section instead of in the style section?

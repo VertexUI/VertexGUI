@@ -36,7 +36,15 @@ public class MainView: ContentfulWidget, SlotAcceptingWidgetProtocol {
         Text("ADD")
       }.onClick {
         items.append("NEW ITEM")
-      }
+      }.experimentalWith(styleProperties: {
+        (\.background, .yellow)
+      })
+
+      TextInput(mutableText: $text1).experimentalWith(styleProperties: {
+        (\.caretColor, .red)
+        (\.caretColor, .blue)
+        (\.background, .orange)
+      })
 
       /*Container().with(styleProperties: {
         ($0.overflowY, Overflow.scroll)
