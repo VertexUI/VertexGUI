@@ -37,13 +37,13 @@ public class MainView: ContentfulWidget, SlotAcceptingWidgetProtocol {
       }.onClick {
         items.append("NEW ITEM")
       }.experimentalWith(styleProperties: {
-        (\.background, .yellow)
+        (\.$expBackground, .yellow)
       })
 
       TextInput(mutableText: $text1).experimentalWith(styleProperties: {
-        (\.caretColor, .red)
-        (\.caretColor, .blue)
-        (\.background, .orange)
+        (\.$expCaretColor, .red)
+        (\.$expCaretColor, .lightBlue)
+        (\.$expBackground, .orange)
       })
 
       /*Container().with(styleProperties: {

@@ -19,26 +19,17 @@ public class StylePropertiesResolver {
       onResolvedPropertyValuesChanged.invokeHandlers((old: oldValue, new: resolvedPropertyValues))
     }
   }
-  internal var experimentalPropertyValuesType: ExperimentalAnyStylePropertyValues.Type
-  internal var experimentalPropertyValues: ExperimentalAnyStylePropertyValues {
-    didSet {
-      onExperimentalResolvedPropertyValuesChanged.invokeHandlers((oldValue, experimentalPropertyValues))
-    }
-  }
   /** used as backing for ObservableProperties for resolved values */
   private var observableBases: [String: MutableProperty<StyleValue?>] = [:]
   private var observableHandlerRemovers: [String: [() -> ()]] = [:]
   private var ownedObjects: [AnyObject] = []
 
   public let onResolvedPropertyValuesChanged = EventHandlerManager<(old: [String: StyleValue?], new: [String: StyleValue?])>()
-  public let onExperimentalResolvedPropertyValuesChanged = EventHandlerManager<(old: ExperimentalAnyStylePropertyValues, new: ExperimentalAnyStylePropertyValues)>()
 
   private var widget: Widget?
 
-  init(propertySupportDefinitions: StylePropertySupportDefinitions, experimentalPropertyValuesType: ExperimentalAnyStylePropertyValues.Type, widget: Widget? = nil) {
+  init(propertySupportDefinitions: StylePropertySupportDefinitions,  widget: Widget? = nil) {
     self.propertySupportDefinitions = propertySupportDefinitions
-    self.experimentalPropertyValuesType = experimentalPropertyValuesType
-    self.experimentalPropertyValues = experimentalPropertyValuesType.init()
     self.widget = widget
   }
 
@@ -89,7 +80,7 @@ public class StylePropertiesResolver {
 
   public func resolve() {
     // experimental
-    var updatedExperimentalPropertyValues = experimentalPropertyValuesType.init()
+    /*var updatedExperimentalPropertyValues = experimentalPropertyValuesType.init()
     for definition in experimentalDirectStylePropertyValueDefinitions {
       let storageIdentifier = ObjectIdentifier(type(of: definition.keyPath).rootType)
       if let storage =  updatedExperimentalPropertyValues.storages[storageIdentifier] {
@@ -101,7 +92,7 @@ public class StylePropertiesResolver {
         }
       }
     }
-    experimentalPropertyValues = updatedExperimentalPropertyValues
+    experimentalPropertyValues = updatedExperimentalPropertyValues*/
     // end experimental
 
     for remove in observableHandlerRemovers.values.flatMap { $0 } {

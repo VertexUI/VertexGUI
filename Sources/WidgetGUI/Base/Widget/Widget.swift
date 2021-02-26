@@ -312,14 +312,12 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     }
     public internal(set) var experimentalDirectStylePropertyValueDefinitions: [Experimental.StylePropertyValueDefinition] = [] {
         didSet {
-            stylePropertiesResolver.experimentalDirectStylePropertyValueDefinitions = experimentalDirectStylePropertyValueDefinitions
-            stylePropertiesResolver.resolve()
+            resolveStyleProperties()
         }
     }
 
     lazy internal var stylePropertiesResolver = StylePropertiesResolver(
         propertySupportDefinitions: mergedSupportedStyleProperties,
-        experimentalPropertyValuesType: getStylePropertyValuesType(),
         widget: self)
 
     // TODO: maybe this belongs into the layout section instead of in the style section?
@@ -356,6 +354,9 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
 
     @FromStyle(key: AnyDefaultStyleKeys.background)
     public var background: Color = .transparent
+
+    @Experimental.DefaultStyleProperty
+    public var expBackground: Color = .transparent
 
     @FromStyle(key: AnyDefaultStyleKeys.foreground)
     public var foreground: Color = .black

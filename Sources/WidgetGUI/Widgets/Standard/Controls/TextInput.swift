@@ -3,7 +3,7 @@ import Foundation
 import VisualAppBase
 import ReactiveProperties
 
-public final class TextInput: ComposedWidget, StylableWidgetProtocol, ExperimentalStyleableWidget, GUIKeyEventConsumer, GUITextEventConsumer
+public final class TextInput: ComposedWidget, StylableWidgetProtocol, GUIKeyEventConsumer, GUITextEventConsumer
 {
   @MutableProperty
   public var text: String
@@ -29,6 +29,9 @@ public final class TextInput: ComposedWidget, StylableWidgetProtocol, Experiment
 
   @FromStyle(key: StyleKeys.caretColor)
   private var caretColor: Color = .yellow
+
+  @ExperimentalStyleProperty
+  public var expCaretColor: Color = .black
 
   private var caretIndex: Int = 2
   private var lastDrawTimestamp: Double = 0.0
@@ -267,7 +270,7 @@ public final class TextInput: ComposedWidget, StylableWidgetProtocol, Experiment
     drawingContext.drawLine(
       from: DVec2(caretTranslationX, 0),
       to: DVec2(caretTranslationX, textWidget.height),
-      paint: Paint(strokeWidth: caretWidth, strokeColor: caretColor.adjusted(alpha: UInt8(caretBlinkProgress * 255))))
+      paint: Paint(strokeWidth: caretWidth, strokeColor: expCaretColor.adjusted(alpha: UInt8(caretBlinkProgress * 255))))
   }
 
   override public func destroySelf() {
@@ -278,11 +281,5 @@ public final class TextInput: ComposedWidget, StylableWidgetProtocol, Experiment
 
   public enum StyleKeys: String, StyleKey, DefaultStyleKeys {
     case caretColor
-  }
-
-  public struct SpecialStylePropertiesStorage: ExperimentalPartialStylePropertiesStorage {
-    public var caretColor: Color = .yellow
-
-    public init() {}
   }
 }
