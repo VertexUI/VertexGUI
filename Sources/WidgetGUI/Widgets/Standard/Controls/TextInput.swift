@@ -27,11 +27,8 @@ public final class TextInput: ComposedWidget, StylableWidgetProtocol, GUIKeyEven
   @Reference
   private var caretWidget: Drawing
 
-  @FromStyle(key: StyleKeys.caretColor)
-  private var caretColor: Color = .yellow
-
   @ExperimentalStyleProperty
-  public var expCaretColor: Color = .black
+  public var caretColor: Color = .yellow
 
   private var caretIndex: Int = 2
   private var lastDrawTimestamp: Double = 0.0
@@ -270,7 +267,7 @@ public final class TextInput: ComposedWidget, StylableWidgetProtocol, GUIKeyEven
     drawingContext.drawLine(
       from: DVec2(caretTranslationX, 0),
       to: DVec2(caretTranslationX, textWidget.height),
-      paint: Paint(strokeWidth: caretWidth, strokeColor: expCaretColor.adjusted(alpha: UInt8(caretBlinkProgress * 255))))
+      paint: Paint(strokeWidth: caretWidth, strokeColor: caretColor.adjusted(alpha: UInt8(caretBlinkProgress * 255))))
   }
 
   override public func destroySelf() {

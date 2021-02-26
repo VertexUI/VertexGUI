@@ -1,3 +1,5 @@
+import ReactiveProperties
+
 public protocol ExperimentalAnyStylePropertyProtocol: class {
   var anyValue: Any? { get set }
 }
@@ -5,7 +7,7 @@ public protocol ExperimentalAnyStylePropertyProtocol: class {
 public protocol ExperimentalStylePropertyProtocol: ExperimentalAnyStylePropertyProtocol {
   associatedtype Value
 
-  var value: Value? { get set }
+  var value: Value { get set }
 }
 
 extension ExperimentalStylePropertyProtocol {
@@ -26,7 +28,10 @@ extension Experimental {
     public typealias SelfKeyPath = ReferenceWritableKeyPath<Widget, DefaultStyleProperty<Value>>
     public typealias Value = V
 
-    public var value: Value?
+    @MutableProperty
+    public var value: Value
+
+    public let observable = ObservableProperty<Value>()
 
     public static subscript(
       _enclosingInstance instance: Widget,
@@ -34,7 +39,7 @@ extension Experimental {
       storage storageKeyPath: SelfKeyPath
     ) -> Value {
       get {
-        instance[keyPath: storageKeyPath].value!
+        instance[keyPath: storageKeyPath].value
       }
       set {
         instance[keyPath: storageKeyPath].value = newValue
@@ -52,6 +57,8 @@ extension Experimental {
 
     public init(wrappedValue: Value) {
       self.value = wrappedValue
+      // DANGLING HANDLER
+      _ = observable.bind($value)
     }
   }
 
@@ -60,11 +67,14 @@ extension Experimental {
     public typealias ValueKeyPath = ReferenceWritableKeyPath<Container, Value>
     public typealias SelfKeyPath = ReferenceWritableKeyPath<Container, SpecialStyleProperty<Container, Value>>
 
-    public var value: Value?
+    @MutableProperty
+    public var value: Value
 
     public var projectedValue: SpecialStyleProperty<Container, Value> {
       self
     }
+
+    public let observable = ObservableProperty<Value>()
 
     public static subscript(
       _enclosingInstance instance: Container,
@@ -72,7 +82,7 @@ extension Experimental {
       storage storageKeyPath: SelfKeyPath
     ) -> Value {
       get {
-        instance[keyPath: storageKeyPath].value!
+        instance[keyPath: storageKeyPath].value
       }
       set {
         instance[keyPath: storageKeyPath].value = newValue
@@ -86,6 +96,8 @@ extension Experimental {
 
     public init(wrappedValue: Value) {
       self.value = wrappedValue
+      // DANGLING HANDLER
+      _ = observable.bind($value)
     }
   }
 }

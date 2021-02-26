@@ -23,6 +23,9 @@ public class MainView: ContentfulWidget, SlotAcceptingWidgetProtocol {
 
   override public init() {
     super.init()
+    let test =  Experimental.Style([StyleSelectorPart(type: TextInput.self)], TextInput.self) {
+        (\.$caretColor, .white)
+      }
   }
 
   @ExpDirectContentBuilder override public var content: ExpDirectContent {
@@ -30,21 +33,13 @@ public class MainView: ContentfulWidget, SlotAcceptingWidgetProtocol {
       (SimpleLinearLayout.ParentKeys.direction, SimpleLinearLayout.Direction.column)
       ($0.background, Color.grey)
     }).withContent { [unowned self] in
-      Button().with(styleProperties: {
-        ($0.padding, 32)
-      }).withContent {
+      Button().withContent {
         Text("ADD")
       }.onClick {
         items.append("NEW ITEM")
-      }.experimentalWith(styleProperties: {
-        (\.$expBackground, .yellow)
-      })
+      }
 
-      TextInput(mutableText: $text1).experimentalWith(styleProperties: {
-        (\.$expCaretColor, .red)
-        (\.$expCaretColor, .lightBlue)
-        (\.$expBackground, .orange)
-      })
+      TextInput(mutableText: $text1)
 
       /*Container().with(styleProperties: {
         ($0.overflowY, Overflow.scroll)
@@ -70,6 +65,14 @@ public class MainView: ContentfulWidget, SlotAcceptingWidgetProtocol {
       Style("&< .container") {
         ($0.background, Color.blue)
       }
+    }
+  }
+
+  override public var experimentalStyle: Experimental.Style? {
+    Experimental.Style("&") {
+      (\.$background, Color.yellow)
+    } nested: {
+      FlatTheme(primaryColor: .orange, secondaryColor: .blue, backgroundColor: Color(10, 30, 50, 255)).experimentalStyles
     }
   }
 

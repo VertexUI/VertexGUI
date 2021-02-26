@@ -1,4 +1,4 @@
-public struct StyleSelector: Equatable, Sequence, ExpressibleByStringLiteral {
+public struct StyleSelector: Equatable, Sequence, ExpressibleByStringLiteral, ExpressibleByArrayLiteral {
   public var source: String?
   public var parts: [StyleSelectorPart]
 
@@ -18,6 +18,10 @@ public struct StyleSelector: Equatable, Sequence, ExpressibleByStringLiteral {
 
   public init(stringLiteral: String) {
     try! self.init(parse: stringLiteral)
+  }
+
+  public init(arrayLiteral parts: StyleSelectorPart...) {
+    self.init(parts)
   }
 
   public var extendsParent: Bool {

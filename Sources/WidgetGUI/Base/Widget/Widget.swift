@@ -221,10 +221,16 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
 
     /** storage for the the value from style getter property */
     internal var specificWidgetStyle: Style? = nil 
+    /** storage for the the value from style getter property */
+    internal var experimentalSpecificWidgetStyle: Experimental.Style? = nil
     /** this style will be added to every widget instance as the last style */ 
     open var style: Style? {
-      nil
+        nil
     }
+    /** this style will be added to every widget instance as the last style */ 
+    open var experimentalStyle: Experimental.Style? {
+        nil
+    } 
 
     /** Style property support declared by the Widget instance's context. */
     public var supportedGlobalStyleProperties: StylePropertySupportDefinitions {
@@ -260,10 +266,6 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
             }
         }
 
-    /** All properties from matched styles and direct properties merged,
-    validated and filtered according to the support definitions.  */
-    public internal(set) var appliedStyleProperties: [StyleProperty] = []
-
     /** whether this Widget creates a new scope for the children which it itself instantiates */
     public var createsStyleScope: Bool = false {
         didSet {
@@ -291,6 +293,13 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     var mergedProvidedStyles: [Style] {
         providedStyles + (specificWidgetStyle == nil ? [] : [specificWidgetStyle!])
     }
+    public var experimentalProvidedStyles: [Experimental.Style] = []
+    var experimentalMergedProvidedStyles: [Experimental.Style] {
+        if experimentalSpecificWidgetStyle == nil {
+            experimentalSpecificWidgetStyle = experimentalStyle
+        }
+        return experimentalProvidedStyles + (experimentalSpecificWidgetStyle == nil ? [] : [experimentalSpecificWidgetStyle!])
+    }
 
     internal var matchedStylesInvalid = false
     /** Styles whose selectors match this Widget instance. */
@@ -300,6 +309,11 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
                 stylePropertiesResolver.styles = matchedStyles
                 stylePropertiesResolver.resolve()
             }
+        }
+    }
+    internal var experimentalMatchedStyles: [Experimental.Style] = [] {
+        didSet {
+            resolveStyleProperties()
         }
     }
     /** Style properties that are applied to this Widget instance directly
@@ -328,37 +342,34 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     @FromStyle(key: AnyDefaultStyleKeys.height)
     public var explicitHeight: Double = 0*/
 
-    @FromStyle(key: AnyDefaultStyleKeys.padding)
+    @Experimental.DefaultStyleProperty
     public var padding: Insets = .zero
     
-    @FromStyle(key: AnyDefaultStyleKeys.transform)
+    @Experimental.DefaultStyleProperty
     public var styleTransforms: [DTransform2] = []
 
-    @FromStyle(key: AnyDefaultStyleKeys.overflowX)
+    @Experimental.DefaultStyleProperty
     public var overflowX: Overflow = .show
 
-    @FromStyle(key: AnyDefaultStyleKeys.overflowY)
+    @Experimental.DefaultStyleProperty
     public var overflowY: Overflow = .show
 
-    @FromStyle(key: AnyDefaultStyleKeys.opacity)
+    @Experimental.DefaultStyleProperty
     public var opacity: Double = 1
 
-    @FromStyle(key: AnyDefaultStyleKeys.visibility)
+    @Experimental.DefaultStyleProperty
     public var visibility: Visibility = .visible
 
-    @FromStyle(key: AnyDefaultStyleKeys.borderWidth)
+    @Experimental.DefaultStyleProperty
     public var borderWidth: BorderWidth = .zero
 
-    @FromStyle(key: AnyDefaultStyleKeys.borderColor)
+    @Experimental.DefaultStyleProperty
     public var borderColor: Color = .transparent
 
-    @FromStyle(key: AnyDefaultStyleKeys.background)
+    @Experimental.DefaultStyleProperty
     public var background: Color = .transparent
 
     @Experimental.DefaultStyleProperty
-    public var expBackground: Color = .transparent
-
-    @FromStyle(key: AnyDefaultStyleKeys.foreground)
     public var foreground: Color = .black
     /* end style */
 
@@ -475,7 +486,7 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
                 x: overflowX == .scroll || autoScrollingEnabled.x,
                 y: overflowY == .scroll || autoScrollingEnabled.y
             )
-        }, dependencies: [$autoScrollingEnabled, $overflowX, $overflowY])
+        }, dependencies: [$autoScrollingEnabled, $overflowX.observable, $overflowY.observable])
         
         _ = onDestroy(self.$scrollingEnabled.onChanged { [unowned self] _ in
             updateScrollEventHandlers()
