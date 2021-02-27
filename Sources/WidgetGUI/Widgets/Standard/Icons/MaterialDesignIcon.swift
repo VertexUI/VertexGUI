@@ -22,8 +22,8 @@ public class MaterialDesignIcon: ComposedWidget {
   }
 
   override public func performBuild() {
-    rootChild = Text(styleProperties: {
-      ($0.fontFamily, MaterialDesignIcon.materialFontFamily)
-    }, String(Unicode.Scalar(identifier.code)!))
+    rootChild = Text(String(Unicode.Scalar(identifier.code)!)).experimentalWith(styleProperties: {
+      (\.$fontFamily, MaterialDesignIcon.materialFontFamily)
+    })
   }
 }

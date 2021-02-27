@@ -18,11 +18,13 @@ public class SimpleLinearLayout: Layout {
     }
   }
 
-  @LayoutProperty(key: ParentKeys.direction)
+  @LayoutProperty(\.$direction)
   var direction: Direction
-  @LayoutProperty(key: ParentKeys.alignContent)
+
+  @LayoutProperty(\.$alignContent)
   var alignContent: Align
-  @LayoutProperty(key: ParentKeys.justifyContent)
+
+  @LayoutProperty(\.$justifyContent)
   var justifyContent: Justify
 
   var axisIndices: (primaryAxisIndex: Int, secondaryAxisIndex: Int) {
@@ -31,6 +33,27 @@ public class SimpleLinearLayout: Layout {
       return (0, 1)
     case .column:
       return (1, 0)
+    }
+  }
+
+  var removeWidgetPropertyChangeHandlers: [() -> ()] = []
+
+  func invalidateLayout() {
+    container.invalidateLayout()
+  }
+
+  override public func setupChildrenPropertyChangeHandlers() {
+    for remove in removeWidgetPropertyChangeHandlers {
+      remove()
+    }
+
+    // DANGLING HANDLER
+    removeWidgetPropertyChangeHandlers = widgets.flatMap {
+      [
+        $0.$shrink.observable.onChanged { [unowned self] _ in invalidateLayout() },
+        $0.$grow.observable.onChanged { [unowned self] _ in invalidateLayout() },
+        $0.$alignSelf.observable.onChanged { [unowned self] _ in invalidateLayout() }
+      ]
     }
   }
 
@@ -43,8 +66,8 @@ public class SimpleLinearLayout: Layout {
     // first pass to get preferred sizes, total grow and shrink weights, determine max cross axis size
     var accumulatedSize = DSize2.zero
     for widget in widgets {
-      totalGrowWeight += widget.stylePropertyValue(ChildKeys.grow, as: Double.self)!
-      totalShrinkWeight += widget.stylePropertyValue(ChildKeys.shrink, as: Double.self)!
+      totalGrowWeight += widget.grow
+      totalShrinkWeight += widget.shrink
 
       var widgetConstraints = BoxConstraints(minSize: .zero, maxSize: .infinity)
       widgetConstraints.maxSize[secondaryAxisIndex] = constraints.maxSize[secondaryAxisIndex]
@@ -81,7 +104,7 @@ public class SimpleLinearLayout: Layout {
       widgetConstraints.maxSize[secondaryAxisIndex] = constraints.maxSize[secondaryAxisIndex]
 
       // TODO: implement property definitions forwarding to children!
-      switch widget.stylePropertyValue(ChildKeys.alignSelf, as: Align.self) ?? alignContent {
+      switch widget.alignSelf ?? alignContent {
       case .start:
         widget.position[secondaryAxisIndex] = getWidgetStartMargin(widget, secondaryAxisIndex)
 
@@ -126,7 +149,7 @@ public class SimpleLinearLayout: Layout {
       currentPrimaryAxisPosition += getWidgetStartMargin(widget, primaryAxisIndex)
       widget.position[primaryAxisIndex] = currentPrimaryAxisPosition
 
-      let growWeight = widget.stylePropertyValue(ChildKeys.grow, as: Double.self)!
+      let growWeight = widget.grow
       if deltaAccumulatedSize[primaryAxisIndex] > 0 && growWeight > 0 {
         let relativeGrowWeight = growWeight / totalGrowWeight
         let primaryAxisGrowSpace = deltaAccumulatedSize[primaryAxisIndex] * relativeGrowWeight
@@ -137,7 +160,7 @@ public class SimpleLinearLayout: Layout {
         widget.layout(constraints: widgetConstraints)
       }
 
-      let shrinkWeight = widget.stylePropertyValue(ChildKeys.shrink, as: Double.self)!
+      let shrinkWeight = widget.shrink
       if deltaAccumulatedSize[primaryAxisIndex] < 0 && shrinkWeight > 0 {
         let relativeShrinkWeight = shrinkWeight / totalShrinkWeight
         let primaryAxisShrinkSpace = deltaAccumulatedSize[primaryAxisIndex] * relativeShrinkWeight
@@ -180,17 +203,23 @@ public class SimpleLinearLayout: Layout {
 
   func getWidgetStartMargin(_ widget: Widget, _ axis: Int) -> Double {
     if axis == 0 {
-      return widget.stylePropertyValue(ChildKeys.margin, as: Insets.self)?.left ?? 0
+      return widget.margin.left
     } else {
-      return widget.stylePropertyValue(ChildKeys.margin, as: Insets.self)?.top ?? 0
+      return widget.margin.top
     }
   }
 
   func getWidgetEndMargin(_ widget: Widget, _ axis: Int) -> Double {
     if axis == 0 {
-      return widget.stylePropertyValue(ChildKeys.margin, as: Insets.self)?.right ?? 0
+      return widget.margin.right
     } else {
-      return widget.stylePropertyValue(ChildKeys.margin, as: Insets.self)?.bottom ?? 0
+      return widget.margin.bottom
+    }
+  }
+
+  deinit {
+    for remove in removeWidgetPropertyChangeHandlers {
+      remove()
     }
   }
 

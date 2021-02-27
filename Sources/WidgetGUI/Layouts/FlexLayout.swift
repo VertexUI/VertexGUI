@@ -14,8 +14,8 @@ public class FlexLayout: Layout {
     }
   }
 
-  @LayoutProperty(key: ParentKeys.direction)
-  var direction: Direction
+  //@LayoutProperty(\.$direction)
+  var direction: Direction = .row
 
   override public func layout(constraints: BoxConstraints) -> DSize2 {
     let primaryAxisIndex: Int

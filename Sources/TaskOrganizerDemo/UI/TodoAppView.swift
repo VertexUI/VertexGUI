@@ -78,17 +78,13 @@ public class TodoAppView: ComposedWidget {
   }
 
   private func buildMenu() -> Widget {
-    Container().with(styleProperties: {
+    Container().with(classes: ["menu"], styleProperties: {
       ($0.layout, SimpleLinearLayout.self)
       ($0.width, 250)
-      (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.stretch)
-      (SimpleLinearLayout.ParentKeys.direction, SimpleLinearLayout.Direction.column)
     }).withContent { [unowned self] in
       buildSearch()
 
-      Container().with(styleProperties: {
-        ($0.padding, 32)
-      }).withContent {
+      Container().with(classes: ["padded-container"]).withContent {
         Button().with(classes: ["button"]).withContent {
           Text("New List")
         }.onClick { [unowned self] in
@@ -101,12 +97,7 @@ public class TodoAppView: ComposedWidget {
           compute: {
             todoStore.state.lists
           }, dependencies: [todoStore.$state])
-      ).with(styleProperties: {
-        ($0.overflowY, Overflow.scroll)
-        (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.stretch)
-        (SimpleLinearLayout.ChildKeys.shrink, 1.0)
-        ($0.foreground, Color.white)
-      }).withContent {
+      ).with(classes: ["menu-item-list"]).withContent {
         $0.itemSlot {
           buildMenuListItem(for: $0)
         }
@@ -115,11 +106,7 @@ public class TodoAppView: ComposedWidget {
   }
 
   private func buildSearch() -> Widget {
-    Container().with(styleProperties: {
-      ($0.padding, Insets(all: 32))
-      (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.stretch)
-    }).withContent { [unowned self] in
-
+    Container().with(classes: ["padded-container"]).withContent { [unowned self] in
       TextInput(mutableText: $searchQuery, placeholder: "search").with(styleProperties: { _ in
         (SimpleLinearLayout.ChildKeys.shrink, 1.0)
         (SimpleLinearLayout.ChildKeys.grow, 1.0)
@@ -135,29 +122,16 @@ public class TodoAppView: ComposedWidget {
   }
 
   private func buildMenuListItem(for list: TodoList) -> Widget {
-    Container().with(
-      classes: ["menu-item"],
-      styleProperties: {
-        ($0.padding, Insets(top: 16, right: 24, bottom: 16, left: 24))
-        ($0.borderWidth, BorderWidth(bottom: 1.0))
-        ($0.borderColor, AppTheme.listItemDividerColor)
-      }
-    ).withContent {
-      Container().with(styleProperties: {
-        ($0.background, list.color)
-        ($0.padding, Insets(all: 8))
-        (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.center)
+    Container().with(classes: ["menu-item"]).withContent {
+      Container().experimentalWith(styleProperties: {
+        (\.$background, list.color)
+        (\.$padding, Insets(all: 8))
+        (\.$alignSelf, .center)
       }).withContent {
         Space(.zero)
-        //MaterialIcon(.formatListBulletedSquare, color: .white)
       }
 
-      Text(
-        styleProperties: {
-          (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.center)
-          ($0.padding, Insets(left: 8))
-        }, list.name
-      ).with(classes: ["list-item-name"])
+      Text(list.name).with(classes: ["list-item-name"])
     }.onClick { [unowned self] in
       navigationStore.commit(.setSelectedListId(list.id))
       if navigationStore.state.mainViewRoute != .selectedList {
@@ -167,12 +141,7 @@ public class TodoAppView: ComposedWidget {
   }
 
   private func buildActiveView() -> Widget {
-    return Container().with(styleProperties: { _ in
-      (SimpleLinearLayout.ChildKeys.grow, 1.0)
-      (SimpleLinearLayout.ParentKeys.direction, SimpleLinearLayout.Direction.column)
-      (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.stretch)
-      (SimpleLinearLayout.ParentKeys.justifyContent, SimpleLinearLayout.Justify.center)
-    }).withContent { [unowned self] in
+    return Container().with(classes: ["active-view-container"]).withContent { [unowned self] in
       Space(DSize2(0, 0)).connect(ref: $activeViewTopSpace)
 
       Dynamic($mainViewRoute) {
@@ -188,12 +157,7 @@ public class TodoAppView: ComposedWidget {
             }, "no list selected")
 
         case let .selectedList:
-          TodoListView(listId: ComputedProperty(compute: { navigationStore.state.selectedListId }, dependencies: [navigationStore.$state])).with(styleProperties: {
-            ($0.padding, Insets(top: 48, left: 48))
-            (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.stretch)
-            (SimpleLinearLayout.ChildKeys.grow, 1.0)
-            (SimpleLinearLayout.ChildKeys.shrink, 1.0)
-          })
+          TodoListView(listId: ComputedProperty(compute: { navigationStore.state.selectedListId }, dependencies: [navigationStore.$state]))
 
         case .searchResults:
           SearchResultsView().with(styleProperties: {
@@ -239,14 +203,52 @@ public class TodoAppView: ComposedWidget {
         backgroundColor: AppTheme.backgroundColor
       ).experimentalStyles
 
+      Experimental.Style(".menu", Container.self) {
+        (\.$alignSelf, .stretch)
+        (\.$direction, .column)
+      }
+
+      Experimental.Style(".padded-container") {
+        (\.$padding, Insets(all: 32))
+      }
+
+      Experimental.Style(".menu-item-list") {
+        (\.$overflowY, .scroll)
+        (\.$alignSelf, .stretch)
+        (\.$shrink, 1)
+      }
+
       Experimental.Style(".menu-item") {
         (\.$foreground, .white)
         (\.$background, .transparent)
+        (\.$padding, Insets(top: 16, right: 24, bottom: 16, left: 24))
+        (\.$borderWidth, BorderWidth(bottom: 1.0))
+        (\.$borderColor, AppTheme.listItemDividerColor)
       }
 
       Experimental.Style(".menu-item:hover") {
         (\.$background, AppTheme.primaryColor)
         (\.$foreground, .black)
+      }
+
+      Experimental.Style(".list-item-name") {
+        (\.$alignSelf, .center)
+        (\.$padding, Insets(left: 8))
+      }
+
+      Experimental.Style(".active-view-container", Container.self) {
+        (\.$grow, 1)
+        (\.$direction, .column)
+        (\.$alignSelf, .stretch)
+        (\.$justifyContent, .center)
+      } nested: {
+
+        Experimental.Style([StyleSelectorPart(type: TodoListView.self)]) {
+          (\.$padding, Insets(top: 48, left: 48))
+          (\.$alignSelf, .stretch)
+          (\.$grow, 1)
+          (\.$shrink, 1)
+        }
       }
     }
   }

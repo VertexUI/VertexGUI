@@ -125,8 +125,10 @@ open class Widget: Bounded, Parent, Child {
     open private(set) var size = DSize2(0, 0) {
         didSet {
             if oldValue != size {
-                if mounted && layouted && !layouting && !destroyed {
-                    onSizeChanged.invokeHandlers(size)
+                if mounted {
+                    if layouted && !layouting && !destroyed {
+                        onSizeChanged.invokeHandlers(size)
+                    }
                 }
             }
         }
@@ -139,7 +141,13 @@ open class Widget: Bounded, Parent, Child {
         size.height
     }
     
-    open var position = DPoint2(0, 0)
+    open var position = DPoint2(0, 0) {
+        didSet {
+            if mounted {
+                context.queueLifecycleMethodInvocation(.resolveCumulatedValues, target: self, sender: self, reason: .undefined)
+            }
+        }
+    }
 
     @inlinable open var x: Double {
         get {
@@ -371,6 +379,34 @@ open class Widget: Bounded, Parent, Child {
 
     @Experimental.DefaultStyleProperty(default: .inherit)
     public var foreground: Color = .black
+
+    // text, font
+    @Experimental.DefaultStyleProperty
+    public var fontSize: Double = 16
+
+    @Experimental.DefaultStyleProperty
+    public var fontFamily: FontFamily = defaultFontFamily
+
+    @Experimental.DefaultStyleProperty
+    public var fontWeight: FontWeight = .regular
+
+    @Experimental.DefaultStyleProperty
+    public var fontStyle: FontStyle = .normal
+    // end text, font
+
+    // flex
+    @Experimental.DefaultStyleProperty
+    public var grow: Double = 0
+
+    @Experimental.DefaultStyleProperty
+    public var shrink: Double = 0
+
+    @Experimental.DefaultStyleProperty
+    public var alignSelf: SimpleLinearLayout.Align? = nil
+
+    @Experimental.DefaultStyleProperty
+    public var margin: Insets = Insets(all: 0)
+    // end flex
     /* end style */
 
     /* scrolling
@@ -806,9 +842,10 @@ open class Widget: Bounded, Parent, Child {
             onSizeChanged.invokeHandlers(size)
         }
 
-        for child in children {
+        /*for child in children {
             context.queueLifecycleMethodInvocation(.resolveCumulatedValues, target: child, sender: self, reason: .undefined)
-        }
+        }*/
+        //context.queueLifecycleMethodInvocation(.resolveCumulatedValues, target: self, sender: self, reason: .undefined)
 
         self.previousConstraints = constraints
     }
@@ -823,6 +860,11 @@ open class Widget: Bounded, Parent, Child {
 
     @inlinable
     public final func invalidateLayout() {
+        if !mounted {
+            print("warning: called invalidateLayout() on a widget that is not yet mounted")
+            return
+        }
+
         if layoutInvalid {
             #if DEBUG
             Logger.warn("Called invalidateLayout() on a Widget where layout is already invalid: \(self)", context: .WidgetLayouting)

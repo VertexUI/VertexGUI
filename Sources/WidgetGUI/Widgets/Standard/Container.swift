@@ -21,6 +21,18 @@ public class Container: ContentfulWidget, SlotAcceptingWidgetProtocol, StylableW
   private var layoutType: Layout.Type = SimpleLinearLayout.self
   private var layoutInstance: Layout?
 
+  @ExperimentalStyleProperty
+  public var layout: Layout.Type = SimpleLinearLayout.self
+
+  @ExperimentalStyleProperty
+  public var direction: SimpleLinearLayout.Direction = .row
+
+  @ExperimentalStyleProperty
+  public var alignContent: SimpleLinearLayout.Align = .start
+
+  @ExperimentalStyleProperty
+  public var justifyContent: SimpleLinearLayout.Justify = .start
+
   private var childrenLayoutPropertiesHandlerRemovers: [() -> ()] = []
 
   override public var supportedStyleProperties: StylePropertySupportDefinitions {
@@ -50,7 +62,7 @@ public class Container: ContentfulWidget, SlotAcceptingWidgetProtocol, StylableW
   private func updateLayoutInstance() {
     removeChildrenLayoutPropertiesHandlers()
 
-    layoutInstance = layoutType.init(widgets: contentChildren, layoutPropertyValues: [:])
+    layoutInstance = layoutType.init(container: self, widgets: contentChildren, layoutPropertyValues: [:])
     stylePropertiesResolver.propertySupportDefinitions = mergedSupportedStyleProperties
     stylePropertiesResolver.resolve()
 

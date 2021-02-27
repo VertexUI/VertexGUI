@@ -136,26 +136,27 @@ public final class TextInput: ComposedWidget, StylableWidgetProtocol, GUIKeyEven
     }
   }
 
-  override public var style: Style {
-    Style("&", Self.self) {
-      ($0.padding, Insets(all: 16))
-      ($0.foreground, Color.black)
-      ($0.background, Color.white)
-      ($0.fontSize, 16)
+  override public var experimentalStyle: Experimental.Style {
+    Experimental.Style("&") {
+      (\.$padding, Insets(all: 16))
+      (\.$foreground, .black)
+      (\.$background, .white)
+      (\.$fontSize, 16)
+    } nested: {
 
-      Style("& Container", Container.self) {
-        ($0.layout, AbsoluteLayout.self)
-        ($0.overflowX, Overflow.cut)
+      Experimental.Style("& Container", Container.self) {
+        //(\.$layout, AbsoluteLayout.self)
+        (\.$overflowX, .cut)
       }
 
-      Style(".text") {
-        ($0.foreground, Color.white)
-        ($0.transform, $caretPositionTransforms)
+      Experimental.Style(".text") {
+        (\.$foreground, .white)
+        //(\.$transform, $caretPositionTransforms)
       }
 
-      Style(".placeholder") {
-        ($0.opacity, 0.5)
-        ($0.foreground, Color.white)
+      Experimental.Style(".placeholder") {
+        (\.$opacity, 0.5)
+        (\.$foreground, .white)
       }
     }
   }

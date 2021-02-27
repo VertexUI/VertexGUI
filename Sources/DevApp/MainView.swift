@@ -45,13 +45,11 @@ public class MainView: ContentfulWidget, SlotAcceptingWidgetProtocol {
 
       TextInput(mutableText: $text1)
 
-      /*Container().with(styleProperties: {
+      Container().with(styleProperties: {
         ($0.overflowY, Overflow.scroll)
         (SimpleLinearLayout.ChildKeys.shrink, 1.0)
       }).withContent {
-        List($items).with(styleProperties: {
-          ($0.background, Color.lightBlue)
-        }).withContent {
+        List($items).withContent {
           $0.itemSlot { item in
             Container().with(styleProperties: {
               ($0.padding, 32.0)
@@ -59,8 +57,11 @@ public class MainView: ContentfulWidget, SlotAcceptingWidgetProtocol {
               Text(item).with()
             }
           }
-        }
-      }*/
+        }.experimentalWith(styleProperties: {
+          (\.$background, Color.lightBlue)
+          (\.$shrink, 1)
+        })
+      }
     }
   }
 

@@ -9,12 +9,18 @@ open class Layout {
   open var childPropertySupportDefinitions: StylePropertySupportDefinitions {
     fatalError("childPropertySupportDefinitions not implemented")
   }
-  public internal(set) var widgets: [Widget]
+  unowned public internal(set) var container: Container
+  public internal(set) var widgets: [Widget] {
+    didSet {
+      setupChildrenPropertyChangeHandlers()
+    }
+  }
   /** layout properties that apply to the layout as a whole (are set on the parent),
   supported properties defined in parentPropertySupportDefinitions */
   public var layoutPropertyValues: [String: Any]
 
-  required public init(widgets: [Widget], layoutPropertyValues: [String: Any]) {
+  required public init(container: Container, widgets: [Widget], layoutPropertyValues: [String: Any]) {
+    self.container = container
     self.widgets = widgets
     self.layoutPropertyValues = layoutPropertyValues
 
@@ -27,6 +33,12 @@ open class Layout {
         layoutProperty.layoutInstance = self
       }
     }
+
+    setupChildrenPropertyChangeHandlers()
+  }
+
+  open func setupChildrenPropertyChangeHandlers() {
+
   }
 
   open func layout(constraints: BoxConstraints) -> DSize2 {

@@ -6,10 +6,10 @@ extension Widget {
   public class ScrollBar: LeafWidget, StylableWidgetProtocol {
     private let orientation: Orientation
 
-    @FromStyle(key: StyleKeys.xBarHeight)
-    var xBarHeigt: Double = 40
-    @FromStyle(key: StyleKeys.yBarWidth)
-    var yBarWidth: Double = 40
+    @ExperimentalStyleProperty
+    public var xBarHeight: Double = 40
+    @ExperimentalStyleProperty
+    public var yBarWidth: Double = 40
 
     @MutableProperty
     public var scrollProgress = 0.0
@@ -42,7 +42,7 @@ extension Widget {
     }
 
     override public func performLayout(constraints: BoxConstraints) -> DSize2 {
-      constraints.constrain(DSize2(yBarWidth, xBarHeigt))
+      constraints.constrain(DSize2(yBarWidth, xBarHeight))
     }
 
     func handleMouseDown(_ event: GUIMouseButtonDownEvent) {

@@ -29,10 +29,7 @@ public class TodoListItemView: ComposedWidget {
         }
       }
 
-      Text(styleProperties: {
-        (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.center)
-        ($0.padding, Insets(left: 32))
-      }, item.description)
+      Text(item.description).with(classes: ["description"])
     }
     /*MouseArea { [unowned self] in
       Padding(all: 16) {
@@ -99,18 +96,25 @@ public class TodoListItemView: ComposedWidget {
     }*/
   }
 
-  override public var style: Style {
-    Style("&") {
-      ($0.foreground, Color.white)
-      ($0.padding, Insets(top: 16, right: 24, bottom: 16, left: 24))
-      ($0.borderColor, AppTheme.listItemDividerColor)
-      ($0.borderWidth, BorderWidth(bottom: 1.0))
+  override public var experimentalStyle: Experimental.Style {
+    Experimental.Style("&") {
+      (\.$foreground, .white)
+      (\.$padding, Insets(top: 16, right: 24, bottom: 16, left: 24))
+      (\.$borderColor, AppTheme.listItemDividerColor)
+      (\.$borderWidth, BorderWidth(bottom: 1.0))
+    } nested: {
 
-      Style(".completion-button") {
-        ($0.foreground, AppTheme.primaryColor)
-        
-        Style("&:hover") {
-          ($0.foreground, AppTheme.primaryColor.darkened(40))
+      Experimental.Style(".description") {
+        (\.$alignSelf, .center)
+        (\.$padding, Insets(left: 32))
+      }
+
+      Experimental.Style(".completion-button") {
+        (\.$foreground, AppTheme.primaryColor)
+      } nested: {
+
+        Experimental.Style("&:hover") {
+          (\.$foreground, AppTheme.primaryColor.darkened(40))
         }
       }
     }

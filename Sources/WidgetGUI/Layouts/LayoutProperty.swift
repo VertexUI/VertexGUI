@@ -1,14 +1,31 @@
 @propertyWrapper
 public class LayoutProperty<T>: AnyLayoutProperty {
-  private var key: StyleKey
-  unowned var layoutInstance: Layout?
+  private var keyPath: KeyPath<Container, Experimental.SpecialStyleProperty<Container, T>>
+  unowned var layoutInstance: Layout? {
+    didSet {
+      setupBinding()
+    }
+  }
+  var removeBinding: (() -> ())? = nil
 
   public var wrappedValue: T {
-    layoutInstance!.layoutPropertyValues[key.asString] as! T
+    layoutInstance!.container[keyPath: keyPath].resolvedValue
   }
 
-  public init(key: StyleKey) {
-    self.key = key
+  public init(_ keyPath: KeyPath<Container, Experimental.SpecialStyleProperty<Container, T>>) {
+    self.keyPath = keyPath
+  }
+
+  func setupBinding() {
+    removeBinding?()
+    // DANGLING HANDLER
+    removeBinding = layoutInstance!.container[keyPath: keyPath].observable.onChanged { [unowned self] _ in
+      layoutInstance!.container.invalidateLayout()
+    }
+  }
+
+  deinit {
+    removeBinding?()
   }
 }
 

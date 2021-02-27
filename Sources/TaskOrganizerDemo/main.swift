@@ -19,8 +19,8 @@ open class TodoApp: WidgetsApp {
         todoStore = TodoStore()
         searchStore = SearchStore(todoStore: todoStore)
         navigationStore = NavigationStore()
-        guiRoot = WidgetGUI.Root(rootWidget: Container().with(styleProperties: { _ in
-            (SimpleLinearLayout.ParentKeys.alignContent, SimpleLinearLayout.Align.stretch)
+        guiRoot = WidgetGUI.Root(rootWidget: Container().experimentalWith(styleProperties: {
+            (\.$alignContent, .stretch)
         }).withContent {
             TodoAppView().with(styleProperties: { _ in
                 (SimpleLinearLayout.ChildKeys.grow, 1.0)

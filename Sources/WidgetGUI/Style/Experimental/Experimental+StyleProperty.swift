@@ -133,7 +133,16 @@ extension Experimental {
       self.defaultValue = defaultValue ?? .some(wrappedValue)
       self.styleValue = self.defaultValue
       self.$resolvedValue.reinit(compute: { [unowned self] in
-        concreteDefaultValue
+        if let styleValue = styleValue {
+          switch styleValue {
+          case .inherit:
+            return concreteDefaultValue
+          case let .some(value):
+            return value
+          }
+        } else {
+          return concreteDefaultValue
+        }
       }, dependencies: [$styleValue])
       // DANGLING HANDLER
       _ = observable.bind($resolvedValue)

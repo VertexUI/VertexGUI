@@ -1,7 +1,7 @@
 import SwiftGUI
 import ReactiveProperties
 
-public class TodoListView: ComposedWidget {
+public class TodoListView: ContentfulWidget {
   @Inject
   private var store: TodoStore
 
@@ -38,20 +38,14 @@ public class TodoListView: ComposedWidget {
     }
   }
 
-  override public func performBuild() {
-    rootChild = Container().with(styleProperties: { _ in
-      (SimpleLinearLayout.ParentKeys.direction, SimpleLinearLayout.Direction.column)
+  @ExpDirectContentBuilder override public var content: ExpDirectContent {
+    Container().experimentalWith(styleProperties: {
+      (\.$direction, .column)
     }).withContent { [unowned self] in
 
-      Container().with(styleProperties: { _ in
-        (SimpleLinearLayout.ParentKeys.alignContent, SimpleLinearLayout.Align.center)
-      }).withContent {
+      Container().with(classes: ["header"]).withContent {
 
-        Text(styleProperties: {
-          ($0.foreground, Color.white)
-          ($0.fontWeight, FontWeight.bold)
-          ($0.fontSize, 36.0)
-        }, list.name)
+        Text(list.name).with(classes: ["list-name"])
 
         Space(DSize2(24, 0))
 
@@ -70,74 +64,36 @@ public class TodoListView: ComposedWidget {
 
       List(ComputedProperty<[TodoItem]>(compute: {
         list.items
-      }, dependencies: [$list])).with(styleProperties: {
-        (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.stretch)
-        (SimpleLinearLayout.ChildKeys.shrink, 1.0)
-        ($0.overflowY, Overflow.scroll)
-      }).withContent {
+      }, dependencies: [$list])).with(classes: ["todo-item-list"]).withContent {
         $0.itemSlot {
           build(todo: $0)
         }
       }
     }
-        /*ObservingBuilder($nameEditMode) {
-          if nameEditMode {
-            Row(spacing: 16) {
-              {
-                let textField = TextField(list.name)
-                _ = onDestroy(textField.$text.onChanged {
-                  updatedNameBuffer = $0.new
-                })
-
-                _ = onDestroy(onFocusChanged.addHandler { [unowned self] in
-                  if !$0 {
-                    nameEditMode = false
-                  }
-                })
-                
-                _ = textField.onMounted.once {
-                  textField.requestFocus()
-                }
-
-                return textField
-              }()
-
-              Button().withContent {
-                Text("done")
-              } onClick: {
-                store.commit(.UpdateListName(updatedNameBuffer, listId: list.id))
-                nameEditMode = false
-                updatedNameBuffer = list.name
-              }
-            }
-          } else {
-            MouseArea {
-              Text(list.name, fontSize: 32, fontWeight: .bold, color: list.color)
-            } onClick: { _ in
-              nameEditMode = editable && true
-            }
-          }
-        }
-
-        if editable {
-          Button().withContent {
-            Text("Add Todo")
-          } onClick: { [unowned self] in
-            handleAddTodoClick()
-          }
-        }
-
-        ObservingBuilder($list) {
-          Column {
-            list.items.enumerated().map { (index, todo) in
-              build(todo: todo, index: index)
-            }
-          }
-        }*/
   }
 
   func build(todo: TodoItem) -> Widget {
     TodoListItemView(todo, editable: editable, checkable: checkable)
+  }
+
+  override public var experimentalStyle: Experimental.Style {
+    Experimental.Style("&") {} nested: {
+      Experimental.Style(".header", Container.self) {
+        (\.$alignContent, .center)
+      }
+
+      Experimental.Style(".list-name") {
+        (\.$foreground, .white)
+        (\.$fontWeight, .bold)
+        (\.$fontSize, 36)
+      }
+
+      Experimental.Style(".todo-item-list") {
+        (\.$alignSelf, .stretch)
+        (\.$shrink, 1)
+        (\.$overflowY, .scroll)
+      }
+    }
   }
 
   private func handleAddTodoClick() {
