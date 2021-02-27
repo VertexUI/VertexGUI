@@ -5,7 +5,7 @@ import ColorizeSwift
 import ReactiveProperties
 import Events
 
-open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
+open class Widget: Bounded, Parent, Child {
     /* identification
     ------------------------------
     */
@@ -369,7 +369,7 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     @Experimental.DefaultStyleProperty
     public var background: Color = .transparent
 
-    @Experimental.DefaultStyleProperty
+    @Experimental.DefaultStyleProperty(default: .inherit)
     public var foreground: Color = .black
     /* end style */
 
@@ -436,7 +436,7 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         self.id = Self.nextId
         Self.nextId += 1
         self.styleScope = Widget.activeStyleScope
-        
+
         setupWidgetEventHandlerManagers()
         setupFromStyleWrappers()
         setupExplicitConstraintsUpdateTriggers()

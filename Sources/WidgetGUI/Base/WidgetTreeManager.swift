@@ -96,6 +96,8 @@ public class WidgetTreeManager {
 
     widget.onMounted.invokeHandlers(Void())
 
+    widget.resolveStyleProperties()
+
     /*build()
 
     built = true

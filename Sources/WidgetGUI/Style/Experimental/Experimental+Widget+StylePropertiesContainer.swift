@@ -3,7 +3,7 @@ public protocol ExperimentalStylePropertiesContainer: Widget {}
 extension ExperimentalStylePropertiesContainer {
   public typealias ExperimentalStyleProperty<Value> = Experimental.SpecialStyleProperty<Self, Value>
 
-  public func experimentalWith(@Experimental.StylePropertyValueDefinitionsBuilder<Self> styleProperties build: () -> [Experimental.StylePropertyValueDefinition]) -> Widget {
+  public func experimentalWith(@Experimental.StylePropertyValueDefinitionsBuilder<Self> styleProperties build: () -> [Experimental.StylePropertyValueDefinition]) -> Self {
     self.experimentalDirectStylePropertyValueDefinitions.append(contentsOf: build())
     return self
   }

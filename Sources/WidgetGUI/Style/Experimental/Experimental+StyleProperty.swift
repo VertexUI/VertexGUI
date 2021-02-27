@@ -1,22 +1,31 @@
 import ReactiveProperties
 
 public protocol ExperimentalAnyStylePropertyProtocol: class {
-  var anyValue: Any? { get set }
+  var anyStyleValue: Experimental.AnyStylePropertyValue? { get set }
 }
 
-public protocol ExperimentalStylePropertyProtocol: ExperimentalAnyStylePropertyProtocol {
+protocol ExperimentalStylePropertyProtocol: ExperimentalAnyStylePropertyProtocol {
   associatedtype Value
 
-  var value: Value { get set }
+  var styleValue: Experimental.StylePropertyValue<Value>? { get set }
 }
 
 extension ExperimentalStylePropertyProtocol {
-  public var anyValue: Any? {
+  public var anyStyleValue: Experimental.AnyStylePropertyValue? {
     get {
-      value
+      Experimental.AnyStylePropertyValue(styleValue)
     }
     set {
-      value = newValue as! Value
+      if let newValue = newValue {
+        switch newValue {
+        case .inherit:
+          styleValue = .inherit
+        case let .some(value):
+          styleValue = .some(value as! Value)
+        }
+      } else {
+        styleValue = nil
+      }
     }
   }
 }
@@ -28,10 +37,16 @@ extension Experimental {
     public typealias SelfKeyPath = ReferenceWritableKeyPath<Widget, DefaultStyleProperty<Value>>
     public typealias Value = V
 
-    @MutableProperty
-    public var value: Value
+    var concreteDefaultValue: Value
+    var defaultValue: Experimental.StylePropertyValue<Value>
 
     public let observable = ObservableProperty<Value>()
+
+    @MutableProperty
+    var styleValue: Experimental.StylePropertyValue<Value>? = nil
+
+    @ComputedProperty
+    var resolvedValue: Value
 
     public static subscript(
       _enclosingInstance instance: Widget,
@@ -39,10 +54,18 @@ extension Experimental {
       storage storageKeyPath: SelfKeyPath
     ) -> Value {
       get {
-        instance[keyPath: storageKeyPath].value
+        switch instance[keyPath: storageKeyPath].styleValue ?? instance[keyPath: storageKeyPath].defaultValue {
+        case .inherit:
+          if let parent = instance.parent as? Widget {
+            return parent[keyPath: wrappedKeyPath]
+          }
+          return instance[keyPath: storageKeyPath].concreteDefaultValue
+        case let .some(value):
+          return value
+        }
       }
       set {
-        instance[keyPath: storageKeyPath].value = newValue
+        instance[keyPath: storageKeyPath].concreteDefaultValue = newValue
       }
     }
 
@@ -55,10 +78,15 @@ extension Experimental {
       self
     }
 
-    public init(wrappedValue: Value) {
-      self.value = wrappedValue
+    public init(wrappedValue: Value, default defaultValue: Experimental.StylePropertyValue<Value>? = nil) {
+      self.concreteDefaultValue = wrappedValue
+      self.defaultValue = defaultValue ?? .some(wrappedValue)
+      self.styleValue = self.defaultValue
+      self.$resolvedValue.reinit(compute: { [unowned self] in
+        concreteDefaultValue
+      }, dependencies: [$styleValue])
       // DANGLING HANDLER
-      _ = observable.bind($value)
+      _ = observable.bind($resolvedValue)
     }
   }
 
@@ -67,8 +95,8 @@ extension Experimental {
     public typealias ValueKeyPath = ReferenceWritableKeyPath<Container, Value>
     public typealias SelfKeyPath = ReferenceWritableKeyPath<Container, SpecialStyleProperty<Container, Value>>
 
-    @MutableProperty
-    public var value: Value
+    var concreteDefaultValue: Value
+    var defaultValue: Experimental.StylePropertyValue<Value>
 
     public var projectedValue: SpecialStyleProperty<Container, Value> {
       self
@@ -76,16 +104,22 @@ extension Experimental {
 
     public let observable = ObservableProperty<Value>()
 
+    @MutableProperty
+    var styleValue: Experimental.StylePropertyValue<Value>? = nil
+
+    @ComputedProperty
+    var resolvedValue: Value
+
     public static subscript(
       _enclosingInstance instance: Container,
       wrapped wrappedKeyPath: ValueKeyPath,
       storage storageKeyPath: SelfKeyPath
     ) -> Value {
       get {
-        instance[keyPath: storageKeyPath].value
+        return instance[keyPath: storageKeyPath].resolvedValue
       }
       set {
-        instance[keyPath: storageKeyPath].value = newValue
+        instance[keyPath: storageKeyPath].concreteDefaultValue = newValue
       }
     }
 
@@ -94,10 +128,15 @@ extension Experimental {
       set { fatalError() }
     }
 
-    public init(wrappedValue: Value) {
-      self.value = wrappedValue
+    public init(wrappedValue: Value, default defaultValue: Experimental.StylePropertyValue<Value>? = nil) {
+      self.concreteDefaultValue = wrappedValue
+      self.defaultValue = defaultValue ?? .some(wrappedValue)
+      self.styleValue = self.defaultValue
+      self.$resolvedValue.reinit(compute: { [unowned self] in
+        concreteDefaultValue
+      }, dependencies: [$styleValue])
       // DANGLING HANDLER
-      _ = observable.bind($value)
+      _ = observable.bind($resolvedValue)
     }
   }
 }

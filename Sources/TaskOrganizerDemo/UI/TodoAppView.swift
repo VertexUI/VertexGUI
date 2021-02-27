@@ -71,9 +71,7 @@ public class TodoAppView: ComposedWidget {
   }
 
   override public func performBuild() {
-    rootChild = Container().with(styleProperties: {
-      ($0.background, AppTheme.backgroundColor)
-    }).withContent { [unowned self] in
+    rootChild = Container().withContent { [unowned self] in
       buildMenu()
       buildActiveView()
     }
@@ -228,6 +226,27 @@ public class TodoAppView: ComposedWidget {
       Style(".menu-item:hover") {
         ($0.background, AppTheme.primaryColor)
         ($0.foreground, Color.black)
+      }
+    }
+  }
+
+  override public var experimentalStyle: Experimental.Style {
+    Experimental.Style("&") {
+      (\.$background, AppTheme.backgroundColor)
+    } nested: {
+      FlatTheme(
+        primaryColor: AppTheme.primaryColor, secondaryColor: AppTheme.primaryColor,
+        backgroundColor: AppTheme.backgroundColor
+      ).experimentalStyles
+
+      Experimental.Style(".menu-item") {
+        (\.$foreground, .white)
+        (\.$background, .transparent)
+      }
+
+      Experimental.Style(".menu-item:hover") {
+        (\.$background, AppTheme.primaryColor)
+        (\.$foreground, .black)
       }
     }
   }

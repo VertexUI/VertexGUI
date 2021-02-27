@@ -8,6 +8,13 @@ extension Experimental {
     case inherit
     case some(Any)
 
+    public init?<T>(_ concreteValue: StylePropertyValue<T>?) {
+      if let concreteValue = concreteValue {
+        self.init(concreteValue)
+      }
+      return nil
+    }
+
     public init<T>(_ concreteValue: StylePropertyValue<T>) {
       switch concreteValue {
       case .inherit:

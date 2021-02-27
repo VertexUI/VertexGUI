@@ -74,17 +74,19 @@ public class FlatTheme {
   public var experimentalStyles: Experimental.Style {
     Experimental.Style("&") {
       (\.$foreground, textColorOnBackground)
+      (\.$foreground, .white)
     } nested: {
 
       Experimental.Style([StyleSelectorPart(type: Button.self)]) {
         (\.$background, primaryColor)
         (\.$padding, Insets(all: 16))
         (\.$foreground, textColorOnPrimary)
+        (\.$foreground, .white)
       }
 
-      /*Experimental.Style([StyleSelectorPart(type: TextInput.self)], TextInput.self) {
+      Experimental.Style([StyleSelectorPart(type: TextInput.self)], TextInput.self) {
         (\.$caretColor, .white)
-      }*/
+      }
     }
   }
 }

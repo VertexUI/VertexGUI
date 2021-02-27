@@ -39,6 +39,10 @@ public class MainView: ContentfulWidget, SlotAcceptingWidgetProtocol {
         items.append("NEW ITEM")
       }
 
+      Text("SOME TEXT I HOPE I GET A DEFAULT").experimentalWith(styleProperties: {
+        (\.$background, .black)
+      })
+
       TextInput(mutableText: $text1)
 
       /*Container().with(styleProperties: {
@@ -71,6 +75,7 @@ public class MainView: ContentfulWidget, SlotAcceptingWidgetProtocol {
   override public var experimentalStyle: Experimental.Style? {
     Experimental.Style("&") {
       (\.$background, Color.yellow)
+      (\.$foreground, .white)
     } nested: {
       FlatTheme(primaryColor: .orange, secondaryColor: .blue, backgroundColor: Color(10, 30, 50, 255)).experimentalStyles
     }
