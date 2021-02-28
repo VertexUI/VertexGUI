@@ -34,7 +34,8 @@ let package = Package(
         .package(url: "https://github.com/mtynior/ColorizeSwift", .branch("master")),
         .package(url: "https://github.com/manuelCarlos/Easing.git", from: "2.0.0"),
         .package(name: "GfxMath", url: "https://github.com/UnGast/swift-gfx-math.git", .branch("master")),
-        .package(name: "GLUtils", url: "https://github.com/UnGast/swift-gl-utils.git", .branch("master"))
+        .package(name: "GLUtils", url: "https://github.com/UnGast/swift-gl-utils.git", .branch("master")),
+        .package(url: "https://github.com/cx-org/CombineX.git", .branch("master"))
     ],
 
     targets: [
@@ -63,7 +64,7 @@ let package = Package(
         .target(
                 // TODO: maybe rename to SwiftApplicationFramework or so...? or split to SwiftApplicationFramework and SwiftUIFramework
             name: "WidgetGUI",
-            dependencies: ["VisualAppBase", "Events", "ReactiveProperties", "GfxMath", "Runtime", "ColorizeSwift", "Easing"],
+            dependencies: ["VisualAppBase", "Events", "CombineX", "ReactiveProperties", "GfxMath", "Runtime", "ColorizeSwift", "Easing"],
             resources: [.process("Resources")]
         ),
 
