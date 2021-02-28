@@ -18,6 +18,9 @@ public class MainView: ContentfulWidget, SlotAcceptingWidgetProtocol {
   @MutableProperty
   var layoutDirection: SimpleLinearLayout.Direction = .row
 
+  @State
+  var myState: String = "This is a value from an @State property."
+
   static let TestSlot1 = Slot(key: "testSlot1", data: Void.self)
   private var testSlot1 = SlotContentManager(MainView.TestSlot1)
 
@@ -37,11 +40,14 @@ public class MainView: ContentfulWidget, SlotAcceptingWidgetProtocol {
         Text("ADD")
       }.onClick {
         items.append("NEW ITEM")
+        myState = "The @State property changed!"
       }
 
-      Text("SOME TEXT I HOPE I GET A DEFAULT").experimentalWith(styleProperties: {
+      Text(myState).experimentalWith(styleProperties: {
         (\.$background, .black)
       })
+
+      TestWidget(boundText: $myState.immutable)
 
       TextInput(mutableText: $text1)
 
