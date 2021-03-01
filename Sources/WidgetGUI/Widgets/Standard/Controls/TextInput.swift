@@ -12,7 +12,7 @@ public final class TextInput: ComposedWidget, StylableWidgetProtocol, GUIKeyEven
   @ObservableProperty
   private var placeholderText: String
 
-  @MutableProperty
+  @State
   private var placeholderVisibility: Visibility = .visible
 
   @MutableProperty
@@ -122,8 +122,8 @@ public final class TextInput: ComposedWidget, StylableWidgetProtocol, GUIKeyEven
     rootChild = Container().withContent { _ in
       Text($text).with(classes: ["text"]).connect(ref: $textWidget)
 
-      Text($placeholderText).with(classes: ["placeholder"], styleProperties: {
-        ($0.visibility, $placeholderVisibility)
+      Text($placeholderText).with(classes: ["placeholder"]).experimentalWith(styleProperties: {
+        (\.$visibility, $placeholderVisibility.immutable)
       })
       
       Drawing(draw: drawCaret).connect(ref: $caretWidget).with(styleProperties: {
@@ -139,13 +139,11 @@ public final class TextInput: ComposedWidget, StylableWidgetProtocol, GUIKeyEven
   override public var experimentalStyle: Experimental.Style {
     Experimental.Style("&") {
       (\.$padding, Insets(all: 16))
-      (\.$foreground, .black)
-      (\.$background, .white)
       (\.$fontSize, 16)
     } nested: {
 
       Experimental.Style("& Container", Container.self) {
-        //(\.$layout, AbsoluteLayout.self)
+        (\.$layout, AbsoluteLayout.self)
         (\.$overflowX, .cut)
       }
 

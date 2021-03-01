@@ -2,6 +2,19 @@ extension Experimental {
   public enum StylePropertyValue<T> {
     case inherit
     case some(T)
+
+    public init?(_ any: AnyStylePropertyValue) {
+      switch any {
+      case .inherit:
+        self = .inherit
+      case let .some(value):
+        if let value = value as? T {
+          self = .some(value)
+        } else {
+          return nil
+        }
+      }
+    }
   }
 
   public enum AnyStylePropertyValue {

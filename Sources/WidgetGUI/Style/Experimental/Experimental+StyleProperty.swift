@@ -1,17 +1,37 @@
 import ReactiveProperties
+import CombineX
 
-public protocol ExperimentalAnyStylePropertyProtocol: class {
-  var anyStyleValue: Experimental.AnyStylePropertyValue? { get set }
+protocol ExperimentalInternalStylePropertyProtocol: class {
+  //var anyStyleValue: Experimental.AnyStylePropertyValue? { get set }
+  var definitionValue: Experimental.StylePropertyValueDefinition.Value? { get set }
 }
 
-protocol ExperimentalStylePropertyProtocol: ExperimentalAnyStylePropertyProtocol {
+protocol ExperimentalStylePropertyProtocol: ExperimentalInternalStylePropertyProtocol {
   associatedtype Value
 
   var styleValue: Experimental.StylePropertyValue<Value>? { get set }
+  var reactiveSourceSubscription: AnyCancellable? { get set }
 }
 
 extension ExperimentalStylePropertyProtocol {
-  public var anyStyleValue: Experimental.AnyStylePropertyValue? {
+  func updateStyleValue() {
+    reactiveSourceSubscription?.cancel()
+
+    if let definitionValue = definitionValue {
+      switch definitionValue {
+      case let .constant(value):
+        styleValue = Experimental.StylePropertyValue(value)!
+      case let .reactive(publisher):
+        reactiveSourceSubscription = publisher.sink { [unowned self] in
+          styleValue = Experimental.StylePropertyValue($0)!
+        }
+      }
+    } else {
+      styleValue = nil
+    }
+  }
+
+  /*public var anyStyleValue: Experimental.AnyStylePropertyValue? {
     get {
       Experimental.AnyStylePropertyValue(styleValue)
     }
@@ -27,7 +47,7 @@ extension ExperimentalStylePropertyProtocol {
         styleValue = nil
       }
     }
-  }
+  }*/
 }
 
 extension Experimental {
@@ -39,6 +59,14 @@ extension Experimental {
 
     var concreteDefaultValue: Value
     var defaultValue: Experimental.StylePropertyValue<Value>
+
+    var definitionValue: Experimental.StylePropertyValueDefinition.Value? = nil {
+      didSet {
+        updateStyleValue()
+      }
+    }
+
+    var reactiveSourceSubscription: AnyCancellable?
 
     public let observable = ObservableProperty<Value>()
 
@@ -97,6 +125,14 @@ extension Experimental {
 
     var concreteDefaultValue: Value
     var defaultValue: Experimental.StylePropertyValue<Value>
+
+    var definitionValue: Experimental.StylePropertyValueDefinition.Value? = nil {
+      didSet {
+        updateStyleValue()
+      }
+    }
+
+    var reactiveSourceSubscription: AnyCancellable?
 
     public var projectedValue: SpecialStyleProperty<Container, Value> {
       self

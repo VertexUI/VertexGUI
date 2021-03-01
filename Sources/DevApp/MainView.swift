@@ -20,6 +20,8 @@ public class MainView: ContentfulWidget, SlotAcceptingWidgetProtocol {
 
   @State
   var myState: String = "This is a value from an @State property."
+  @State
+  var testBackgroundColor: Color = .orange
 
   static let TestSlot1 = Slot(key: "testSlot1", data: Void.self)
   private var testSlot1 = SlotContentManager(MainView.TestSlot1)
@@ -41,13 +43,16 @@ public class MainView: ContentfulWidget, SlotAcceptingWidgetProtocol {
       }.onClick {
         items.append("NEW ITEM")
         myState = "The @State property changed!"
+        testBackgroundColor = .white
       }
 
       /*Text(myState).experimentalWith(styleProperties: {
         (\.$background, .black)
       })*/
 
-      TestWidget(boundText: $myState.immutable)
+      TestWidget(boundText: $myState.immutable).experimentalWith(styleProperties: {
+        (\.$background, $testBackgroundColor.immutable)
+      })
 
       TextInput(mutableText: $text1)
 

@@ -17,7 +17,7 @@ extension Experimental {
       self
     }
 
-    var subscribers: ImmutableBinding<V>.Subscribers = []
+    var subscriptions: ImmutableBinding<V>.Subscriptions = []
 
     private var dependencySubscription: AnyCancellable?
 

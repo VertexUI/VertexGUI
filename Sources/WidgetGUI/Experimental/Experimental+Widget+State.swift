@@ -19,7 +19,7 @@ extension Widget {
       })
     })
 
-    var subscribers: Subscribers = []
+    var subscriptions: State<V>.Subscriptions = []
 
     public init(wrappedValue: Value) {
       self.wrappedValue = wrappedValue

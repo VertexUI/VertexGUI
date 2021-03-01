@@ -87,7 +87,7 @@ public class FlatTheme {
       }
 
       Experimental.Style([StyleSelectorPart(type: TextInput.self)], TextInput.self) {
-        (\.$caretColor, .white)
+        (\.$caretColor, primaryColor)
       }
 
       Experimental.Style([StyleSelectorPart(type: Widget.ScrollBar.self)], Widget.ScrollBar.self) {

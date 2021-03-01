@@ -1,7 +1,13 @@
+import CombineX
+
 extension Experimental {
   public struct StylePropertyValueDefinition {
     public var keyPath: AnyKeyPath
-    public var value: AnyStylePropertyValue
-    //public var write: (ExperimentalPartialStylePropertiesStorage, Any) -> ExperimentalPartialStylePropertiesStorage 
+    public var value: Value
+
+    public enum Value {
+    case constant(AnyStylePropertyValue)
+    case reactive(AnyPublisher<AnyStylePropertyValue, Never>)
+    }
   }
 }
