@@ -1,4 +1,5 @@
 import GfxMath
+import CombineX
 
 public class Container: ContentfulWidget, SlotAcceptingWidgetProtocol, StylableWidgetProtocol {
   public static let defaultSlot = Slot(key: "default", data: Void.self)
@@ -17,12 +18,11 @@ public class Container: ContentfulWidget, SlotAcceptingWidgetProtocol, StylableW
     }
   }
 
-  @FromStyle(key: StyleKeys.layout)
-  private var layoutType: Layout.Type = SimpleLinearLayout.self
   private var layoutInstance: Layout?
 
   @ExperimentalStyleProperty
   public var layout: Layout.Type = SimpleLinearLayout.self
+  var layoutChangeSubscription: AnyCancellable?
 
   @ExperimentalStyleProperty
   public var direction: SimpleLinearLayout.Direction = .row
@@ -33,16 +33,10 @@ public class Container: ContentfulWidget, SlotAcceptingWidgetProtocol, StylableW
   @ExperimentalStyleProperty
   public var justifyContent: SimpleLinearLayout.Justify = .start
 
-  private var childrenLayoutPropertiesHandlerRemovers: [() -> ()] = []
-
-  override public var supportedStyleProperties: StylePropertySupportDefinitions {
-    layoutInstance?.parentPropertySupportDefinitions ?? []
-  }
-
   override public init() {
       super.init()
 
-      _ = stylePropertiesResolver.onResolvedPropertyValuesChanged { [unowned self] in
+      /*_ = stylePropertiesResolver.onResolvedPropertyValuesChanged { [unowned self] in
         let oldLayoutType = $0.old[StyleKeys.layout.asString] as? Layout.Type
         let newLayoutType = $0.new[StyleKeys.layout.asString] as? Layout.Type
 
@@ -52,21 +46,24 @@ public class Container: ContentfulWidget, SlotAcceptingWidgetProtocol, StylableW
         } else {
           updateLayoutInstanceProperties()
         }
-      }
+      }*/
+      /*layoutChangeSubscription = $layout.sink {
+        print("LAYOUT CHANGED", $0)
+      }*/
 
-      _ = onDestroy(removeChildrenLayoutPropertiesHandlers)
+      //_ = onDestroy(removeChildrenLayoutPropertiesHandlers)
 
       updateLayoutInstance()
   }
 
   private func updateLayoutInstance() {
-    removeChildrenLayoutPropertiesHandlers()
+    //removeChildrenLayoutPropertiesHandlers()
 
-    layoutInstance = layoutType.init(container: self, widgets: contentChildren, layoutPropertyValues: [:])
-    stylePropertiesResolver.propertySupportDefinitions = mergedSupportedStyleProperties
-    stylePropertiesResolver.resolve()
+    layoutInstance = layout.init(container: self, widgets: contentChildren)
+    //stylePropertiesResolver.propertySupportDefinitions = mergedSupportedStyleProperties
+    //stylePropertiesResolver.resolve()
 
-    if layoutInstance!.childPropertySupportDefinitions.count > 0 {
+    /*if layoutInstance!.childPropertySupportDefinitions.count > 0 {
       for child in contentChildren {
         child.supportedParentStyleProperties["layout"] = layoutInstance!.childPropertySupportDefinitions
         child.stylePropertiesResolver.propertySupportDefinitions = child.mergedSupportedStyleProperties
@@ -76,24 +73,24 @@ public class Container: ContentfulWidget, SlotAcceptingWidgetProtocol, StylableW
           invalidateLayout()
         })
       }
-    }
+    }*/
   }
 
-  private func updateLayoutInstanceProperties() {
+  /*private func updateLayoutInstanceProperties() {
     for property in layoutInstance!.parentPropertySupportDefinitions {
       layoutInstance!.layoutPropertyValues[property.key.asString] = stylePropertyValue(property.key)
     }
     if mounted && layouted {
       invalidateLayout()
     }
-  }
+  }*/
 
-  private func removeChildrenLayoutPropertiesHandlers() {
+  /*private func removeChildrenLayoutPropertiesHandlers() {
     for remove in childrenLayoutPropertiesHandlerRemovers {
       remove()
     }
     childrenLayoutPropertiesHandlerRemovers = []
-  }
+  }*/
 
   override public func performLayout(constraints: BoxConstraints) -> DSize2 {
     let accumulatedSize = layoutInstance!.layout(constraints: constraints)

@@ -1,12 +1,14 @@
+import CombineX
+
 @propertyWrapper
 public class LayoutProperty<T>: AnyLayoutProperty {
   private var keyPath: KeyPath<Container, Experimental.SpecialStyleProperty<Container, T>>
   unowned var layoutInstance: Layout? {
     didSet {
-      setupBinding()
+      setupInstancePropertySubscription()
     }
   }
-  var removeBinding: (() -> ())? = nil
+  var instancePropertySubscription: AnyCancellable?
 
   public var wrappedValue: T {
     layoutInstance!.container[keyPath: keyPath].resolvedValue
@@ -16,16 +18,10 @@ public class LayoutProperty<T>: AnyLayoutProperty {
     self.keyPath = keyPath
   }
 
-  func setupBinding() {
-    removeBinding?()
-    // DANGLING HANDLER
-    removeBinding = layoutInstance!.container[keyPath: keyPath].observable.onChanged { [unowned self] _ in
+  func setupInstancePropertySubscription() {
+    instancePropertySubscription = layoutInstance!.container[keyPath: keyPath].sink { [unowned self] _ in
       layoutInstance!.container.invalidateLayout()
     }
-  }
-
-  deinit {
-    removeBinding?()
   }
 }
 

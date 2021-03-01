@@ -4,6 +4,7 @@ import VisualAppBase
 import ColorizeSwift
 import ReactiveProperties
 import Events
+import CombineX
 
 open class Widget: Bounded, Parent, Child {
     /* identification
@@ -475,6 +476,7 @@ open class Widget: Bounded, Parent, Child {
 
         setupWidgetEventHandlerManagers()
         setupFromStyleWrappers()
+        setupExperimentalStyleProperties()
         setupExplicitConstraintsUpdateTriggers()
         setupScrolling()
     }
@@ -522,7 +524,7 @@ open class Widget: Bounded, Parent, Child {
                 x: overflowX == .scroll || autoScrollingEnabled.x,
                 y: overflowY == .scroll || autoScrollingEnabled.y
             )
-        }, dependencies: [$autoScrollingEnabled, $overflowX.observable, $overflowY.observable])
+        }, dependencies: [/*$autoScrollingEnabled, $overflowX.observable, $overflowY.observable*/])
         
         _ = onDestroy(self.$scrollingEnabled.onChanged { [unowned self] _ in
             updateScrollEventHandlers()

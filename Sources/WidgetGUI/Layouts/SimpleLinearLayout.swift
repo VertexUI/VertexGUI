@@ -1,7 +1,7 @@
 import GfxMath
 
 public class SimpleLinearLayout: Layout {
-  override public var parentPropertySupportDefinitions: StylePropertySupportDefinitions {
+  /*override public var parentPropertySupportDefinitions: StylePropertySupportDefinitions {
     StylePropertySupportDefinitions {
       (ParentKeys.direction, type: .specific(Direction.self), default: Direction.row)
       (ParentKeys.alignContent, type: .specific(Align.self), default: Align.start)
@@ -16,7 +16,7 @@ public class SimpleLinearLayout: Layout {
       (ChildKeys.alignSelf, type: .specific(Align.self))
       (ChildKeys.margin, type: .specific(Insets.self))
     }
-  }
+  }*/
 
   @LayoutProperty(\.$direction)
   var direction: Direction
@@ -48,13 +48,13 @@ public class SimpleLinearLayout: Layout {
     }
 
     // DANGLING HANDLER
-    removeWidgetPropertyChangeHandlers = widgets.flatMap {
+    /*removeWidgetPropertyChangeHandlers = widgets.flatMap {
       [
         $0.$shrink.observable.onChanged { [unowned self] _ in invalidateLayout() },
         $0.$grow.observable.onChanged { [unowned self] _ in invalidateLayout() },
         $0.$alignSelf.observable.onChanged { [unowned self] _ in invalidateLayout() }
       ]
-    }
+    }*/
   }
 
   override public func layout(constraints: BoxConstraints) -> DSize2 {

@@ -5,12 +5,12 @@ extension Widget {
     let matchedStylesDefinitions = experimentalMatchedStyles.flatMap { $0.propertyValueDefinitions }
     let mergedDefinitions = mergeDefinitions(matchedStylesDefinitions + experimentalDirectStylePropertyValueDefinitions)
 
-    var resolvedProperties = [ExperimentalInternalStylePropertyProtocol]()
+    var resolvedProperties = [ExperimentalAnyStylePropertyProtocol]()
 
     for definition in mergedDefinitions {
       let definitionWidgetIdentifier = ObjectIdentifier(type(of: definition.keyPath).rootType)
 
-      if let property = self[keyPath: definition.keyPath] as? ExperimentalInternalStylePropertyProtocol {
+      if let property = self[keyPath: definition.keyPath] as? ExperimentalAnyStylePropertyProtocol {
         resolvedProperties.append(property)
 
         property.definitionValue = definition.value
@@ -19,8 +19,8 @@ extension Widget {
 
     let mirror = Mirror(reflecting: self)
     for child in mirror.allChildren {
-      if type(of: child.value) is ExperimentalInternalStylePropertyProtocol.Type {
-        let property = child.value as! ExperimentalInternalStylePropertyProtocol
+      if type(of: child.value) is ExperimentalAnyStylePropertyProtocol.Type {
+        let property = child.value as! ExperimentalAnyStylePropertyProtocol
 
         if resolvedProperties.allSatisfy({ $0 !== property }) {
           property.definitionValue = nil

@@ -7,6 +7,16 @@ extension ExperimentalStylePropertiesContainer {
     self.experimentalDirectStylePropertyValueDefinitions.append(contentsOf: build())
     return self
   }
+
+  public func setupExperimentalStyleProperties() {
+    let mirror = Mirror(reflecting: self)
+    for child in mirror.allChildren {
+      if var property = child.value as? ExperimentalAnyStylePropertyProtocol {
+        property.container = self
+        property.name = child.label
+      }
+    }
+  }
 }
 
 extension Widget: ExperimentalStylePropertiesContainer {}
