@@ -7,7 +7,11 @@ extension Widget {
       get { wrappedValue }
       set { wrappedValue = newValue }
     }
-    public var wrappedValue: Value
+    public var wrappedValue: Value {
+      didSet {
+        notifyChange()
+      }
+    }
 
     lazy public var projectedValue = Projector<Value>(getImmutable: { [unowned self] in
       return Experimental.ImmutableBinding<Value>(self, get: {

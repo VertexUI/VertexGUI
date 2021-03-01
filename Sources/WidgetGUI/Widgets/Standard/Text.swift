@@ -1,6 +1,7 @@
 import ReactiveProperties
 import VisualAppBase
 import GfxMath
+import CombineX
 
 public class Text: LeafWidget {
   @ObservableProperty
@@ -25,10 +26,15 @@ public class Text: LeafWidget {
     transform.apply(to: text)
   }
 
+  @Experimental.ImmutableBinding
+  private var expText: String
+  private var expTextSubscription: AnyCancellable?
+
   public init<P: ReactiveProperty>(
     classes: [String]? = nil,
     @StylePropertiesBuilder styleProperties stylePropertiesBuilder: (StyleKeys.Type) -> StyleProperties = { _ in [] },
     _ textProperty: P) where P.Value == String {
+      self._expText = Experimental.ImmutableBinding<String>(State(wrappedValue: "wow"), get: { $0.value })
       super.init()
 
       if let classes = classes {
@@ -40,6 +46,17 @@ public class Text: LeafWidget {
       _ = onDestroy(self.$text.onChanged { [unowned self] _ in
         invalidateLayout()
       })
+  }
+
+  public init(_ text: Experimental.ImmutableBinding<String>) {
+    self._expText = text
+    super.init()
+    let tmpBackingProperty = MutableProperty<String>()
+    tmpBackingProperty.value = text.value
+    self.$text.bind(tmpBackingProperty)
+    expTextSubscription = self.$expText.sink(receiveValue: { [unowned self] in
+      tmpBackingProperty.value = $0
+    })
   }
 
   public convenience init(

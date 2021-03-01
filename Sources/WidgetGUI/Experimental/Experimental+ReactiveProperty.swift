@@ -33,7 +33,11 @@ extension Experimental {
   public class AnyReactiveProperty<V>: ExperimentalInternalReactiveProperty {
     public typealias Value = V
 
-    public var value: Value
+    public var value: Value {
+      didSet {
+        notifyChange()
+      }
+    }
 
     var subscribers: AnyReactiveProperty<V>.Subscribers = []
 

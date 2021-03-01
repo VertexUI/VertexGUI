@@ -43,9 +43,9 @@ public class MainView: ContentfulWidget, SlotAcceptingWidgetProtocol {
         myState = "The @State property changed!"
       }
 
-      Text(myState).experimentalWith(styleProperties: {
+      /*Text(myState).experimentalWith(styleProperties: {
         (\.$background, .black)
-      })
+      })*/
 
       TestWidget(boundText: $myState.immutable)
 

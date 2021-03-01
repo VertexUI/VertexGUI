@@ -1,26 +1,37 @@
+import CombineX
+
 extension Experimental {
   @propertyWrapper
   public class ImmutableBinding<V>: ExperimentalInternalReactiveProperty/*, Binding<V>*/ {
     public typealias Value = V
 
-    private var dependency: AnyReactiveProperty<Value>
-    private let _get: (AnyReactiveProperty<V>) -> Value
-
     public var value: Value {
       wrappedValue
     }
     public var wrappedValue: Value {
-      /*guard let dependency = dependency else {
-        fatalError("@ImmutableBinding read after it's dependency was deallocated.")
-      }*/
-      return dependency.value
+      _get()
+    }
+    private let _get: () -> Value
+
+    public var projectedValue: ImmutableBinding<V> {
+      self
     }
 
-    var subscribers: Subscribers = []
+    var subscribers: ImmutableBinding<V>.Subscribers = []
 
-    public init<P: ExperimentalReactiveProperty>(_ dependency: P, get _get: @escaping (AnyReactiveProperty<Value>) -> Value) where P.Value == Value {
-      self._get = _get
-      self.dependency = AnyReactiveProperty(dependency)
+    private var dependencySubscription: AnyCancellable?
+
+    public init<P: ExperimentalReactiveProperty>(_ dependency: P, get _get: @escaping (P) -> Value) where P.Value == Value {
+      self._get = { [weak dependency] in
+        guard let dependency = dependency else {
+          fatalError("@ImmutableBinding tried to read dependency after dependency was deallocated.")
+        }
+        return _get(dependency)
+      }
+
+      dependencySubscription = dependency.sink(receiveValue: { [unowned self] _ in
+        notifyChange()
+      })
     }
   }
 }
