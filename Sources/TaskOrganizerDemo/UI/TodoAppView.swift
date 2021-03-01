@@ -147,14 +147,7 @@ public class TodoAppView: ComposedWidget {
       Dynamic($mainViewRoute) {
         switch mainViewRoute {
         case .none:
-          Text(
-            styleProperties: {
-              ($0.foreground, Color.white)
-              ($0.fontSize, 24)
-              ($0.fontWeight, FontWeight.bold)
-              ($0.opacity, 0.5)
-              (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.center)
-            }, "no list selected")
+          Text("no list selected").with(classes: ["no-active-view-label"])
 
         case let .selectedList:
           TodoListView(listId: ComputedProperty(compute: { navigationStore.state.selectedListId }, dependencies: [navigationStore.$state]))
@@ -249,6 +242,14 @@ public class TodoAppView: ComposedWidget {
           (\.$grow, 1)
           (\.$shrink, 1)
         }
+      }
+
+      Experimental.Style(".no-active-view-label") {
+        (\.$foreground, .white)
+        (\.$fontSize, 24)
+        (\.$fontWeight, .bold)
+        (\.$opacity, 0.5)
+        (\.$alignSelf, .center)
       }
     }
   }

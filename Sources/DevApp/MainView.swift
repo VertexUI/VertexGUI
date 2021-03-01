@@ -22,6 +22,7 @@ public class MainView: ContentfulWidget, SlotAcceptingWidgetProtocol {
   var myState: String = "This is a value from an @State property."
   @State
   var testBackgroundColor: Color = .orange
+  @State var testGrow: Double = 1
 
   static let TestSlot1 = Slot(key: "testSlot1", data: Void.self)
   private var testSlot1 = SlotContentManager(MainView.TestSlot1)
@@ -34,11 +35,30 @@ public class MainView: ContentfulWidget, SlotAcceptingWidgetProtocol {
   }
 
   @ExpDirectContentBuilder override public var content: ExpDirectContent {
-    Container().with(styleProperties: {
-      (SimpleLinearLayout.ParentKeys.direction, SimpleLinearLayout.Direction.column)
-      ($0.background, Color.grey)
+    Container().experimentalWith(styleProperties: {
+      (\.$background, .red)
     }).withContent { [unowned self] in
       Button().withContent {
+        Text("Set Test Grow")
+      }.onClick {
+        testGrow = 2
+      }
+
+      Container().experimentalWith(styleProperties: {
+        (\.$background, .blue)
+        (\.$padding, Insets(all: 32))
+        (\.$grow, 1)
+      })
+
+      Container().experimentalWith(styleProperties: {
+        (\.$background, .yellow)
+        (\.$padding, Insets(all: 32))
+        (\.$grow, $testGrow.immutable)
+      })
+
+      Container().with(classes: ["container-3"])
+
+      /*Button().withContent {
         Text("ADD")
       }.onClick {
         items.append("NEW ITEM")
@@ -72,7 +92,7 @@ public class MainView: ContentfulWidget, SlotAcceptingWidgetProtocol {
           (\.$background, Color.lightBlue)
           (\.$shrink, 1)
         })
-      }
+      }*/
     }
   }
 
@@ -85,10 +105,13 @@ public class MainView: ContentfulWidget, SlotAcceptingWidgetProtocol {
   }
 
   override public var experimentalStyle: Experimental.Style? {
-    Experimental.Style("&") {
-      (\.$background, Color.yellow)
-      (\.$foreground, .white)
-    } nested: {
+    Experimental.Style("&") {} nested: {
+      Experimental.Style(".container-3") {
+        (\.$padding, Insets(all: 32))
+        (\.$background, .white)
+        (\.$grow, 1)
+      }
+
       FlatTheme(primaryColor: .orange, secondaryColor: .blue, backgroundColor: Color(10, 30, 50, 255)).experimentalStyles
     }
   }

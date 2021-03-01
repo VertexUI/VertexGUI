@@ -10,7 +10,10 @@ public class DevApp: WidgetsApp {
 
   override open func setup() {
     let guiRoot = WidgetGUI.Root(rootWidget: Container().withContent {
-      MainView().withContent {
+      MainView().experimentalWith(styleProperties: {
+        (\.$alignSelf, .stretch)
+        (\.$grow, 1)
+      }).withContent {
         $0.TestSlot1 {
           Text("WOW THIS IS A SLOT TEXT")
         }

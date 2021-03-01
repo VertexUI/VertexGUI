@@ -22,8 +22,8 @@ open class TodoApp: WidgetsApp {
         guiRoot = WidgetGUI.Root(rootWidget: Container().experimentalWith(styleProperties: {
             (\.$alignContent, .stretch)
         }).withContent {
-            TodoAppView().with(styleProperties: { _ in
-                (SimpleLinearLayout.ChildKeys.grow, 1.0)
+            TodoAppView().experimentalWith(styleProperties: {
+                (\.$grow, 1)
             })
         }.provide(dependencies: todoStore, searchStore, navigationStore))
         guiRoot.renderObjectSystemEnabled = false

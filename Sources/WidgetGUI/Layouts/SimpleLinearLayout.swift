@@ -1,4 +1,5 @@
 import GfxMath
+import CombineX
 
 public class SimpleLinearLayout: Layout {
   /*override public var parentPropertySupportDefinitions: StylePropertySupportDefinitions {
@@ -36,25 +37,22 @@ public class SimpleLinearLayout: Layout {
     }
   }
 
-  var removeWidgetPropertyChangeHandlers: [() -> ()] = []
+  var childrenPropertySubscription: AnyCancellable?
 
   func invalidateLayout() {
     container.invalidateLayout()
   }
 
-  override public func setupChildrenPropertyChangeHandlers() {
-    for remove in removeWidgetPropertyChangeHandlers {
-      remove()
-    }
-
-    // DANGLING HANDLER
-    /*removeWidgetPropertyChangeHandlers = widgets.flatMap {
+  override public func setupChildrenPropertySubscription() {
+    childrenPropertySubscription = Publishers.MergeMany(widgets.flatMap {
       [
-        $0.$shrink.observable.onChanged { [unowned self] _ in invalidateLayout() },
-        $0.$grow.observable.onChanged { [unowned self] _ in invalidateLayout() },
-        $0.$alignSelf.observable.onChanged { [unowned self] _ in invalidateLayout() }
+        $0.$shrink.map { $0 as Any }.eraseToAnyPublisher(),
+        $0.$grow.map { $0 as Any }.eraseToAnyPublisher(),
+        $0.$alignSelf.map { $0 as Any }.eraseToAnyPublisher()
       ]
-    }*/
+    }).sink { [unowned self] _ in
+      invalidateLayout()
+    }
   }
 
   override public func layout(constraints: BoxConstraints) -> DSize2 {
@@ -214,12 +212,6 @@ public class SimpleLinearLayout: Layout {
       return widget.margin.right
     } else {
       return widget.margin.bottom
-    }
-  }
-
-  deinit {
-    for remove in removeWidgetPropertyChangeHandlers {
-      remove()
     }
   }
 

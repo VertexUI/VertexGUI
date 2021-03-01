@@ -47,9 +47,9 @@ public class Container: ContentfulWidget, SlotAcceptingWidgetProtocol, StylableW
           updateLayoutInstanceProperties()
         }
       }*/
-      /*layoutChangeSubscription = $layout.sink {
-        print("LAYOUT CHANGED", $0)
-      }*/
+      layoutChangeSubscription = $layout.map(ObjectIdentifier.init).removeDuplicates().sink { [unowned self] _ in
+        updateLayoutInstance()
+      }
 
       //_ = onDestroy(removeChildrenLayoutPropertiesHandlers)
 

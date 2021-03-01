@@ -4,7 +4,7 @@ open class Layout {
   unowned public internal(set) var container: Container
   public internal(set) var widgets: [Widget] {
     didSet {
-      setupChildrenPropertyChangeHandlers()
+      setupChildrenPropertySubscription()
     }
   }
 
@@ -22,10 +22,10 @@ open class Layout {
       }
     }
 
-    setupChildrenPropertyChangeHandlers()
+    setupChildrenPropertySubscription()
   }
 
-  open func setupChildrenPropertyChangeHandlers() {
+  open func setupChildrenPropertySubscription() {
 
   }
 

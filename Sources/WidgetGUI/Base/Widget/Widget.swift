@@ -413,14 +413,16 @@ open class Widget: Bounded, Parent, Child {
     /* scrolling
     ------------------------------------
     */
-    @MutableProperty
-    internal var autoScrollingEnabled = (x: false, y: false)
-    @ComputedProperty
-    internal var scrollingEnabled: (x: Bool, y: Bool)/* {
+    /*@MutableProperty
+    internal var autoScrollingEnabled = (x: false, y: false)*/
+    var scrollingEnabled: (x: Bool, y: Bool) = (false, false) {
         didSet {
-            updateScrollEventHandlers()
+            if oldValue != scrollingEnabled {
+                updateScrollEventHandlers()
+            }
         }
-    }*/
+    }
+    var scrollingEnabledUpdateSubscription: AnyCancellable?
     /** removers for event handlers that are registered to manage scrolling */
     private var scrollEventHandlerRemovers: [() -> ()] = []
     private var scrollingSpeed = 20.0
@@ -478,7 +480,8 @@ open class Widget: Bounded, Parent, Child {
         setupFromStyleWrappers()
         setupExperimentalStyleProperties()
         setupExplicitConstraintsUpdateTriggers()
-        setupScrolling()
+        setupScrollingEnabled()
+        updateScrollEventHandlers() 
     }
     
     /* internal widget setup / management
@@ -518,17 +521,12 @@ open class Widget: Bounded, Parent, Child {
         }
     }
 
-    private func setupScrolling() {
-        self._scrollingEnabled.reinit(compute: { [unowned self] in
-            (
-                x: overflowX == .scroll || autoScrollingEnabled.x,
-                y: overflowY == .scroll || autoScrollingEnabled.y
-            )
-        }, dependencies: [/*$autoScrollingEnabled, $overflowX.observable, $overflowY.observable*/])
-        
-        _ = onDestroy(self.$scrollingEnabled.onChanged { [unowned self] _ in
-            updateScrollEventHandlers()
-        })
+    private func setupScrollingEnabled() {
+        scrollingEnabledUpdateSubscription = Publishers.MergeMany([
+            $overflowX, $overflowY
+        ]).sink { [unowned self] _ in
+            scrollingEnabled = (overflowX == .scroll, overflowY == .scroll)
+        }
     }
 
     private func updateScrollEventHandlers() {
