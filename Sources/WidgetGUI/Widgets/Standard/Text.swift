@@ -48,7 +48,7 @@ public class Text: LeafWidget {
     let tmpBackingProperty = MutableProperty<String>()
     tmpBackingProperty.value = text.value
     self.$text.bind(tmpBackingProperty)
-    expTextSubscription = self.$expText.sink(receiveValue: { [unowned self] in
+    expTextSubscription = self._expText.sink(receiveValue: { [unowned self] in
       tmpBackingProperty.value = $0
     })
   }

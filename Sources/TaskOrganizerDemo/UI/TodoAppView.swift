@@ -28,8 +28,8 @@ public class TodoAppView: ComposedWidget {
   @MutableComputedProperty
   private var mainViewRoute: MainViewRoute
 
-  @MutableComputedProperty
-  private var searchQuery: String
+  @State
+  private var searchQuery: String = ""
 
   override public init() {
     super.init()
@@ -42,7 +42,7 @@ public class TodoAppView: ComposedWidget {
           navigationStore.commit(.updateMainViewRoute($0))
         }, dependencies: [navigationStore.$state])
 
-      _searchQuery.reinit(
+      /*_searchQuery.reinit(
         compute: {
           searchStore.state.searchQuery
         },
@@ -66,7 +66,7 @@ public class TodoAppView: ComposedWidget {
             mainViewRoute = .searchResults
           }
         }
-      }
+      }*/
     }
   }
 
@@ -104,7 +104,7 @@ public class TodoAppView: ComposedWidget {
 
   private func buildSearch() -> Widget {
     Container().with(classes: ["padded-container", "search-container"]).withContent { [unowned self] in
-      TextInput(mutableText: $searchQuery, placeholder: "search").with(classes: ["search-input"])
+      TextInput(mutableText: $searchQuery.mutable, placeholder: "search").with(classes: ["search-input"])
 
       Button().onClick {
         searchStore.dispatch(.updateResults(""))

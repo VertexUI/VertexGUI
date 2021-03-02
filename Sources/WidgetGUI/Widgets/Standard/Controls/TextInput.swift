@@ -2,10 +2,11 @@ import GfxMath
 import Foundation
 import VisualAppBase
 import ReactiveProperties
+import CombineX
 
 public final class TextInput: ComposedWidget, StylableWidgetProtocol, GUIKeyEventConsumer, GUITextEventConsumer
 {
-  @MutableProperty
+  @MutableBinding
   public var text: String
   private var textBuffer: String
 
@@ -52,62 +53,26 @@ public final class TextInput: ComposedWidget, StylableWidgetProtocol, GUIKeyEven
 
   private var dropCursorRequest: (() -> ())? = nil
 
-  public init<T: MutablePropertyProtocol, P: ReactiveProperty>(
-    classes: [String]? = nil,
-    @StylePropertiesBuilder styleProperties stylePropertiesBuilder: (TextInput.StyleKeys.Type) -> StyleProperties = { _ in [] },
-    mutableText mutableTextProperty: T,
-    placeholder placeholderProperty: P? = nil) where T.Value == String, P.Value == String {
+  private var textSubscription: AnyCancellable?
 
-      if mutableTextProperty.hasValue {
-        self.textBuffer = mutableTextProperty.value
-      } else {
-        self.textBuffer = ""
-      }
-      self.text = self.textBuffer
+  public init(
+    mutableText textBinding: MutableBinding<String>,
+    placeholder: String) {
+        
+      self._text = textBinding
+      self.textBuffer = textBinding.value
 
       super.init()
 
-      if let property = placeholderProperty {
-        self.$placeholderText.bind(property)
-      } else {
-        self.$placeholderText.bind(StaticProperty(""))
-      }
-
-      if let classes = classes {
-        self.classes.append(contentsOf: classes)
-      }
-      self.directStyleProperties.append(stylePropertiesBuilder(StyleKeys.self))
-
+      self.$placeholderText.bind(StaticProperty(placeholder))
       updatePlaceholderVisibility()
 
-      self.$text.bindBidirectional(mutableTextProperty)
-      _ = self.$text.onChanged { [unowned self] in
-        textBuffer = $0.new
+      textSubscription = self._text.sink { [unowned self] in
+        textBuffer = $0
         updatePlaceholderVisibility()
       }
 
-      /*self.$caretPositionTransforms.reinit(compute: { [unowned self] in
-        [.translate(textTranslation)]
-      }, dependencies: [$textTranslation])*/
-
       self.focusable = true
-  }
-
-  public convenience init<T: MutablePropertyProtocol>(
-    classes: [String]? = nil,
-    @StylePropertiesBuilder styleProperties stylePropertiesBuilder: (TextInput.StyleKeys.Type) -> StyleProperties = { _ in [] },
-    mutableText mutableTextProperty: T) where T.Value == String {
-
-      self.init(classes: classes, styleProperties: stylePropertiesBuilder, mutableText: mutableTextProperty, placeholder: Optional<ObservableProperty<String>>.none)
-  }
-
-  public convenience init<T: MutablePropertyProtocol>(
-    classes: [String]? = nil,
-    @StylePropertiesBuilder styleProperties stylePropertiesBuilder: (TextInput.StyleKeys.Type) -> StyleProperties = { _ in [] },
-    mutableText mutableTextProperty: T,
-    placeholder: String) where T.Value == String {
-
-      self.init(classes: classes, styleProperties: stylePropertiesBuilder, mutableText: mutableTextProperty, placeholder: StaticProperty(placeholder))
   }
 
   private func updatePlaceholderVisibility() {
@@ -120,7 +85,7 @@ public final class TextInput: ComposedWidget, StylableWidgetProtocol, GUIKeyEven
 
   override public func performBuild() {
     rootChild = Container().withContent { [unowned self] _ in
-      Text($text).with(classes: ["text"]).experimentalWith(styleProperties: {
+      Text($text.immutable).with(classes: ["text"]).experimentalWith(styleProperties: {
         (\.$transform, Experimental.ImmutableBinding($textTranslation.immutable, get: {
           [DTransform2.translate($0)]
         }))
