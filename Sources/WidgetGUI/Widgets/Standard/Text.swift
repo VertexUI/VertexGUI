@@ -7,12 +7,6 @@ public class Text: LeafWidget {
   @ObservableProperty
   private var text: String
 
-  private var transform: TextTransform {
-    stylePropertyValue(StyleKeys.textTransform, as: TextTransform.self) ?? TextTransform.none
-  }
-  private var wrap: Bool {
-    stylePropertyValue(StyleKeys.wrapText, as: Bool.self) ?? false
-  }
   private var fontConfig: FontConfig {
     FontConfig(
       family: fontFamily,
@@ -23,7 +17,7 @@ public class Text: LeafWidget {
   }
 
   private var transformedText: String {
-    transform.apply(to: text)
+    textTransform.apply(to: text)
   }
 
   @Experimental.ImmutableBinding
@@ -34,7 +28,7 @@ public class Text: LeafWidget {
     classes: [String]? = nil,
     @StylePropertiesBuilder styleProperties stylePropertiesBuilder: (StyleKeys.Type) -> StyleProperties = { _ in [] },
     _ textProperty: P) where P.Value == String {
-      self._expText = Experimental.ImmutableBinding<String>(State(wrappedValue: "wow"), get: { $0.value })
+      self._expText = Experimental.ImmutableBinding<String>(State(wrappedValue: "wow"), get: { $0 })
       super.init()
 
       if let classes = classes {

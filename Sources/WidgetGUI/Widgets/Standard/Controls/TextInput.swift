@@ -15,10 +15,10 @@ public final class TextInput: ComposedWidget, StylableWidgetProtocol, GUIKeyEven
   @State
   private var placeholderVisibility: Visibility = .visible
 
-  @MutableProperty
-  private var caretPositionTranslation: DVec2 = .zero
-  @ComputedProperty
-  private var caretPositionTransforms: [DTransform2]
+  @State
+  private var textTranslation: DVec2 = .zero
+  /*@State
+  private var caretPositionTransforms: [DTransform2]*/
 
   @Reference
   private var stackContainer: Container
@@ -86,9 +86,9 @@ public final class TextInput: ComposedWidget, StylableWidgetProtocol, GUIKeyEven
         updatePlaceholderVisibility()
       }
 
-      self.$caretPositionTransforms.reinit(compute: { [unowned self] in
-        [.translate(caretPositionTranslation)]
-      }, dependencies: [$caretPositionTranslation])
+      /*self.$caretPositionTransforms.reinit(compute: { [unowned self] in
+        [.translate(textTranslation)]
+      }, dependencies: [$textTranslation])*/
 
       self.focusable = true
   }
@@ -119,8 +119,12 @@ public final class TextInput: ComposedWidget, StylableWidgetProtocol, GUIKeyEven
   }
 
   override public func performBuild() {
-    rootChild = Container().withContent { _ in
-      Text($text).with(classes: ["text"]).connect(ref: $textWidget)
+    rootChild = Container().withContent { [unowned self] _ in
+      Text($text).with(classes: ["text"]).experimentalWith(styleProperties: {
+        (\.$transform, Experimental.ImmutableBinding($textTranslation.immutable, get: {
+          [DTransform2.translate($0)]
+        }))
+      }).connect(ref: $textWidget)
 
       Text($placeholderText).with(classes: ["placeholder"]).experimentalWith(styleProperties: {
         (\.$visibility, $placeholderVisibility.immutable)
@@ -129,7 +133,9 @@ public final class TextInput: ComposedWidget, StylableWidgetProtocol, GUIKeyEven
       Drawing(draw: drawCaret).experimentalWith(styleProperties: {
         (\.$width, 0)
         (\.$height, 0)
-        //(\.$transform, $caretPositionTransforms)
+        (\.$transform, Experimental.ImmutableBinding($textTranslation.immutable, get: {
+          [DTransform2.translate($0)]
+        }))
       }).connect(ref: $caretWidget)
     }.connect(ref: $stackContainer).onClick { [unowned self] in
       handleClick($0)
@@ -171,7 +177,7 @@ public final class TextInput: ComposedWidget, StylableWidgetProtocol, GUIKeyEven
   private func handleClick(_ event: GUIMouseButtonClickEvent) {
     requestFocus()
 
-    let localX = event.position.x - stackContainer.globalPosition.x - caretPositionTranslation.x
+    let localX = event.position.x - stackContainer.globalPosition.x - textTranslation.x
     var maxIndexBelowX = 0
     var previousSubstringSize = DSize2.zero
 
@@ -210,7 +216,7 @@ public final class TextInput: ComposedWidget, StylableWidgetProtocol, GUIKeyEven
             at: textBuffer.index(textBuffer.startIndex, offsetBy: caretIndex - 1))
           caretIndex -= 1
           syncText()
-          updateCaretPositionTransforms()
+          updateTextTranslation()
         }
       case .Delete:
         if caretIndex < textBuffer.count {
@@ -220,12 +226,12 @@ public final class TextInput: ComposedWidget, StylableWidgetProtocol, GUIKeyEven
       case .ArrowLeft:
         if caretIndex > 0 {
           caretIndex -= 1
-          updateCaretPositionTransforms()
+          updateTextTranslation()
         }
       case .ArrowRight:
         if caretIndex < textBuffer.count {
           caretIndex += 1
-          updateCaretPositionTransforms()
+          updateTextTranslation()
         }
       default:
         break
@@ -240,19 +246,19 @@ public final class TextInput: ComposedWidget, StylableWidgetProtocol, GUIKeyEven
         at: textBuffer.index(textBuffer.startIndex, offsetBy: caretIndex))
       caretIndex += event.text.count
       syncText()
-      updateCaretPositionTransforms()
+      updateTextTranslation()
     }
   }
 
-  private func updateCaretPositionTransforms() {
+  private func updateTextTranslation() {
     let caretPositionX = textWidget.measureText(String(text.prefix(caretIndex))).width
     if caretPositionX > stackContainer.layoutedSize.width {
       let nextCharX = textWidget.measureText(String(text.prefix(caretIndex + 1))).width
       let currentCharWidth = nextCharX - caretPositionX
       let extraGap = stackContainer.layoutedSize.width * 0.1
-      caretPositionTranslation = DVec2(-caretPositionX + stackContainer.layoutedSize.width - currentCharWidth - extraGap, 0)
-    } else if caretPositionX + caretPositionTranslation.x < 0 {
-      caretPositionTranslation = DVec2(-caretPositionX, 0)
+      textTranslation = DVec2(-caretPositionX + stackContainer.layoutedSize.width - currentCharWidth - extraGap, 0)
+    } else if caretPositionX + textTranslation.x < 0 {
+      textTranslation = DVec2(-caretPositionX, 0)
     }
   }
 

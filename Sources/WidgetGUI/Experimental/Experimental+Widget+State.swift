@@ -14,8 +14,8 @@ extension Widget {
     }
 
     lazy public var projectedValue = Projector<Value>(getImmutable: { [unowned self] in
-      return Experimental.ImmutableBinding<Value>(self, get: {
-        $0.value
+      return Experimental.ImmutableBinding(self, get: {
+        $0
       })
     })
 

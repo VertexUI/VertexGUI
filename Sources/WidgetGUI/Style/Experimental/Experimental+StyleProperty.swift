@@ -51,7 +51,7 @@ extension ExperimentalStylePropertyProtocol {
     case .inherit:
       guard let container = container, let name = name else {
         resolvedValue = concreteDefaultValue
-        print("warning: tried to resolve .inherit style property before setup by widget")
+        //print("warning: tried to resolve .inherit style property before setup by widget")
         return
       }
 

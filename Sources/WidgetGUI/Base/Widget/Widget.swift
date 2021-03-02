@@ -364,7 +364,7 @@ open class Widget: Bounded, Parent, Child {
     public var padding: Insets = .zero
     
     @Experimental.DefaultStyleProperty
-    public var styleTransforms: [DTransform2] = []
+    public var transform: [DTransform2] = []
 
     @Experimental.DefaultStyleProperty
     public var overflowX: Overflow = .show
@@ -391,17 +391,20 @@ open class Widget: Bounded, Parent, Child {
     public var foreground: Color = .black
 
     // text, font
-    @Experimental.DefaultStyleProperty
+    @Experimental.DefaultStyleProperty(default: .inherit)
     public var fontSize: Double = 16
 
-    @Experimental.DefaultStyleProperty
+    @Experimental.DefaultStyleProperty(default: .inherit)
     public var fontFamily: FontFamily = defaultFontFamily
 
-    @Experimental.DefaultStyleProperty
+    @Experimental.DefaultStyleProperty(default: .inherit)
     public var fontWeight: FontWeight = .regular
 
-    @Experimental.DefaultStyleProperty
+    @Experimental.DefaultStyleProperty(default: .inherit)
     public var fontStyle: FontStyle = .normal
+
+    @Experimental.DefaultStyleProperty(default: .inherit)
+    public var textTransform: TextTransform = .none
     // end text, font
 
     // flex
@@ -862,7 +865,7 @@ open class Widget: Bounded, Parent, Child {
     @inlinable
     public final func invalidateLayout() {
         if !mounted {
-            print("warning: called invalidateLayout() on a widget that is not yet mounted")
+            //print("warning: called invalidateLayout() on a widget that is not yet mounted")
             return
         }
 

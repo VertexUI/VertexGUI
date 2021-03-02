@@ -52,7 +52,7 @@ class CumulatedValuesProcessor {
   func getTransforms(_ widget: Widget) -> [DTransform2] {
     var transforms = [DTransform2]()
     transforms.append(.translate(widget.layoutedPosition))
-    transforms.append(contentsOf: widget.styleTransforms)
+    transforms.append(contentsOf: widget.transform)
     if let parent = widget.parent as? Widget {
       if parent.padding.left != 0 || parent.padding.top != 0 {
         transforms.append(.translate(DVec2(parent.padding.left, parent.padding.top)))

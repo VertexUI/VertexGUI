@@ -21,7 +21,7 @@ public class DrawingManager {
           
           childDrawingContext.opacity = widget.opacity
           childDrawingContext.transform(.translate(widget.layoutedPosition))
-          childDrawingContext.transform(widget.styleTransforms)
+          childDrawingContext.transform(widget.transform)
           // TODO: maybe the scrolling translation should be added to the parent widget context before adding the iterator to the list?
           if !widget.unaffectedByParentScroll, let parent = widget.parent as? Widget, parent.overflowX == .scroll || parent.overflowY == .scroll {
             childDrawingContext.transform(.translate(-parent.currentScrollOffset))
