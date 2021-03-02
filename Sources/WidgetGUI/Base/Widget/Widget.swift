@@ -108,10 +108,11 @@ open class Widget: Bounded, Parent, Child {
     /* layout, position
     -----------------------------------------------------
     */
-    @available(*, deprecated, message: "Constraints is now passed as a parameter to layout(constraints:)")
-    open var constraints: BoxConstraints? = nil
+    public var referenceConstraints: BoxConstraints?
+    public internal(set) var previousConstraints: BoxConstraints?
 
     lazy public internal(set) var explicitConstraints = calculateExplicitConstraints()
+    var explicitConstraintsUpdateTriggersSubscription: AnyCancellable?
     /// bridge explicitConstraints for use in @inlinable functions
     @usableFromInline internal var _explicitConstraints: BoxConstraints {
         get {
@@ -184,9 +185,6 @@ open class Widget: Bounded, Parent, Child {
     }
     
     public internal(set) var cumulatedTransforms: [DTransform2] = []
-    
-    public var referenceConstraints: BoxConstraints?
-    public internal(set) var previousConstraints: BoxConstraints?
     /* end layout, position */
  
     public internal(set) var focusable = false
@@ -344,13 +342,23 @@ open class Widget: Bounded, Parent, Child {
         propertySupportDefinitions: mergedSupportedStyleProperties,
         widget: self)
 
-    // TODO: maybe this belongs into the layout section instead of in the style section?
-    // TODO: maybe even create a separate section for universal properties?
-    /*@FromStyle(key: AnyDefaultStyleKeys.width)
-    public var explicitWidth: Double = 0
+    @Experimental.DefaultStyleProperty
+    public var width: Double? = nil
 
-    @FromStyle(key: AnyDefaultStyleKeys.height)
-    public var explicitHeight: Double = 0*/
+    @Experimental.DefaultStyleProperty
+    public var height: Double? = nil
+
+    @Experimental.DefaultStyleProperty
+    public var minWidth: Double? = nil
+
+    @Experimental.DefaultStyleProperty
+    public var minHeight: Double? = nil
+
+    @Experimental.DefaultStyleProperty
+    public var maxWidth: Double? = nil
+
+    @Experimental.DefaultStyleProperty
+    public var maxHeight: Double? = nil
 
     @Experimental.DefaultStyleProperty
     public var padding: Insets = .zero
@@ -507,18 +515,10 @@ open class Widget: Bounded, Parent, Child {
     }
 
     private func setupExplicitConstraintsUpdateTriggers() {
-        _ = stylePropertiesResolver.onResolvedPropertyValuesChanged { [unowned self] data in
-            let compareKeys = [
-                StyleKeys.width, StyleKeys.height, StyleKeys.minWidth, StyleKeys.minHeight,
-                StyleKeys.maxWidth, StyleKeys.maxHeight
-            ]
-            if compareKeys.contains(where: {
-                let old = data.old[$0] as? Double
-                let new = data.new[$0] as? Double
-                return old != new
-            }) {
-                updateExplicitConstraints()
-            }
+        explicitConstraintsUpdateTriggersSubscription = Publishers.MergeMany([
+            $width, $height, $minWidth, $minHeight, $maxWidth, $maxHeight
+        ]).sink { [unowned self] _ in
+            updateExplicitConstraints()
         }
     }
 
@@ -683,29 +683,29 @@ open class Widget: Bounded, Parent, Child {
             explicitConstraints.minSize.height = 0
         }
 
-        if let explicitMinWidth = stylePropertyValue(StyleKeys.minWidth, as: Double.self) {
+        if let explicitMinWidth = minWidth {
             explicitConstraints.minSize.width = explicitMinWidth
             explicitConstraints.maxSize.width = max(explicitConstraints.minSize.width, explicitConstraints.maxSize.width)
         }
-        if let explicitMinHeight = stylePropertyValue(StyleKeys.minHeight, as: Double.self) {
+        if let explicitMinHeight = minHeight {
             explicitConstraints.minSize.height = explicitMinHeight
             explicitConstraints.maxSize.height = max(explicitConstraints.minSize.height, explicitConstraints.maxSize.height)
         }
 
-        if let explicitMaxWidth = stylePropertyValue(StyleKeys.maxWidth, as: Double.self) {
+        if let explicitMaxWidth = maxWidth {
             explicitConstraints.maxSize.width = explicitMaxWidth 
             explicitConstraints.minSize.width = min(explicitConstraints.minSize.width, explicitConstraints.maxSize.width)
         }
-        if let explicitMaxHeight = stylePropertyValue(StyleKeys.maxHeight, as: Double.self) {
+        if let explicitMaxHeight = maxHeight {
             explicitConstraints.maxSize.height = explicitMaxHeight 
             explicitConstraints.minSize.height = min(explicitConstraints.minSize.height, explicitConstraints.maxSize.height)
         }
 
-        if let explicitWidth = stylePropertyValue(StyleKeys.width, as: Double.self) {
+        if let explicitWidth = width {
             explicitConstraints.minSize.width = explicitWidth
             explicitConstraints.maxSize.width = explicitWidth
         }
-        if let explicitHeight = stylePropertyValue(StyleKeys.height, as: Double.self) {
+        if let explicitHeight = height {
             explicitConstraints.minSize.height = explicitHeight
             explicitConstraints.maxSize.height = explicitHeight
         }

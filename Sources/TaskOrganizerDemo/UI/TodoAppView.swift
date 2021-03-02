@@ -78,10 +78,7 @@ public class TodoAppView: ComposedWidget {
   }
 
   private func buildMenu() -> Widget {
-    Container().with(classes: ["menu"], styleProperties: {
-      ($0.layout, SimpleLinearLayout.self)
-      ($0.width, 250)
-    }).withContent { [unowned self] in
+    Container().with(classes: ["menu"]).withContent { [unowned self] in
       buildSearch()
 
       Container().with(classes: ["padded-container"]).withContent {
@@ -106,12 +103,8 @@ public class TodoAppView: ComposedWidget {
   }
 
   private func buildSearch() -> Widget {
-    Container().with(classes: ["padded-container"]).withContent { [unowned self] in
-      TextInput(mutableText: $searchQuery, placeholder: "search").with(styleProperties: { _ in
-        (SimpleLinearLayout.ChildKeys.shrink, 1.0)
-        (SimpleLinearLayout.ChildKeys.grow, 1.0)
-        (SimpleLinearLayout.ChildKeys.margin, Insets(right: 16))
-      })
+    Container().with(classes: ["padded-container", "search-container"]).withContent { [unowned self] in
+      TextInput(mutableText: $searchQuery, placeholder: "search").with(classes: ["search-input"])
 
       Button().onClick {
         searchStore.dispatch(.updateResults(""))
@@ -199,10 +192,21 @@ public class TodoAppView: ComposedWidget {
       Experimental.Style(".menu", Container.self) {
         (\.$alignSelf, .stretch)
         (\.$direction, .column)
+        (\.$width, 250)
       }
 
       Experimental.Style(".padded-container") {
         (\.$padding, Insets(all: 32))
+      }
+
+      Experimental.Style(".search-container") {
+        (\.$alignSelf, .stretch)
+      }
+
+      Experimental.Style(".search-input") {
+        (\.$shrink, 1.0)
+        (\.$grow, 1.0)
+        (\.$margin, Insets(right: 16))
       }
 
       Experimental.Style(".menu-item-list") {

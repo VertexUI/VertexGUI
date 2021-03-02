@@ -126,11 +126,11 @@ public final class TextInput: ComposedWidget, StylableWidgetProtocol, GUIKeyEven
         (\.$visibility, $placeholderVisibility.immutable)
       })
       
-      Drawing(draw: drawCaret).connect(ref: $caretWidget).with(styleProperties: {
-        ($0.width, 0.0)
-        ($0.height, 0.0)
-        ($0.transform, $caretPositionTransforms)
-      })
+      Drawing(draw: drawCaret).experimentalWith(styleProperties: {
+        (\.$width, 0)
+        (\.$height, 0)
+        //(\.$transform, $caretPositionTransforms)
+      }).connect(ref: $caretWidget)
     }.connect(ref: $stackContainer).onClick { [unowned self] in
       handleClick($0)
     }
@@ -140,6 +140,7 @@ public final class TextInput: ComposedWidget, StylableWidgetProtocol, GUIKeyEven
     Experimental.Style("&") {
       (\.$padding, Insets(all: 16))
       (\.$fontSize, 16)
+      (\.$overflowX, .cut)
     } nested: {
 
       Experimental.Style("& Container", Container.self) {
@@ -149,7 +150,6 @@ public final class TextInput: ComposedWidget, StylableWidgetProtocol, GUIKeyEven
 
       Experimental.Style(".text") {
         (\.$foreground, .white)
-        //(\.$transform, $caretPositionTransforms)
       }
 
       Experimental.Style(".placeholder") {

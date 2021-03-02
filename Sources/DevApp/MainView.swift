@@ -45,6 +45,42 @@ public class MainView: ContentfulWidget, SlotAcceptingWidgetProtocol {
       }
 
       Container().experimentalWith(styleProperties: {
+        (\.$width, 200)
+        (\.$height, 150)
+        (\.$background, .black)
+      })
+
+      Container().experimentalWith(styleProperties: {
+        (\.$background, .white)
+        (\.$width, 150)
+        (\.$maxHeight, 120)
+        (\.$alignSelf, .stretch)
+      })
+
+      Container().experimentalWith(styleProperties: {
+        (\.$background, .blue)
+        (\.$minWidth, 10)
+        (\.$minHeight, 10)
+        (\.$padding, Insets(all: 128))
+        (\.$maxHeight, 30)
+      })
+
+      Container().experimentalWith(styleProperties: {
+        (\.$background, .orange)
+        (\.$maxWidth, 200)
+        (\.$minHeight, 40)
+        (\.$grow, 1)
+      })
+
+      Container().experimentalWith(styleProperties: {
+        (\.$background, .white)
+        (\.$minHeight, 120)
+        (\.$minWidth, 10)
+        (\.$padding, Insets(all: 128))
+        (\.$shrink, 1)
+      })
+
+      /*Container().experimentalWith(styleProperties: {
         (\.$background, .blue)
         (\.$padding, Insets(all: 32))
         (\.$grow, 1)
@@ -56,7 +92,7 @@ public class MainView: ContentfulWidget, SlotAcceptingWidgetProtocol {
         (\.$grow, $testGrow.immutable)
       })
 
-      Container().with(classes: ["container-3"])
+      Container().with(classes: ["container-3"])*/
 
       /*Button().withContent {
         Text("ADD")
