@@ -17,33 +17,33 @@ extension Flex {
       let constraints1 = BoxConstraints(minSize: .zero, maxSize: constraints.maxSize)
       let child1 = item1.content
       child1.layout(constraints: constraints1)
-      child1.position[mainAxisVectorIndex] = item1.getMainAxisStartMargin(orientation)
+      child1.layoutedPosition[mainAxisVectorIndex] = item1.getMainAxisStartMargin(orientation)
 
       let item2 = items[1]
       var minSize2 = DSize2.zero
       if item2.grow > 0 && constraints.maxSize[mainAxisVectorIndex].isFinite {
-        minSize2[mainAxisVectorIndex] = constraints.maxSize[mainAxisVectorIndex] - child1.size[mainAxisVectorIndex]
+        minSize2[mainAxisVectorIndex] = constraints.maxSize[mainAxisVectorIndex] - child1.layoutedSize[mainAxisVectorIndex]
       }
       if item2.crossAlignment == .Stretch && constraints.maxSize[crossAxisVectorIndex].isFinite {
         minSize2[crossAxisVectorIndex] = constraints.maxSize[crossAxisVectorIndex]
       } else if item2.crossAlignment == .Stretch {
-        minSize2[crossAxisVectorIndex] = child1.size[crossAxisVectorIndex]
+        minSize2[crossAxisVectorIndex] = child1.layoutedSize[crossAxisVectorIndex]
       }
       var maxSize2 = constraints.maxSize
-      maxSize2[mainAxisVectorIndex] -= child1.size[mainAxisVectorIndex]
+      maxSize2[mainAxisVectorIndex] -= child1.layoutedSize[mainAxisVectorIndex]
       let constraints2 = BoxConstraints(minSize: minSize2, maxSize: maxSize2)
       let child2 = item2.content
       child2.layout(constraints: constraints2)
-      child2.position[mainAxisVectorIndex] = child1.position[mainAxisVectorIndex]
-      child2.position[mainAxisVectorIndex] += child1.size[mainAxisVectorIndex]
-      child2.position[mainAxisVectorIndex] += spacing
-      child2.position[mainAxisVectorIndex] += item1.getMainAxisEndMargin(orientation)
-      child2.position[mainAxisVectorIndex] += item2.getMainAxisStartMargin(orientation)
+      child2.layoutedPosition[mainAxisVectorIndex] = child1.layoutedPosition[mainAxisVectorIndex]
+      child2.layoutedPosition[mainAxisVectorIndex] += child1.layoutedSize[mainAxisVectorIndex]
+      child2.layoutedPosition[mainAxisVectorIndex] += spacing
+      child2.layoutedPosition[mainAxisVectorIndex] += item1.getMainAxisEndMargin(orientation)
+      child2.layoutedPosition[mainAxisVectorIndex] += item2.getMainAxisStartMargin(orientation)
 
       var totalSize = DSize2.zero
-      totalSize[mainAxisVectorIndex] = child2.position[mainAxisVectorIndex] + child2.size[mainAxisVectorIndex]
+      totalSize[mainAxisVectorIndex] = child2.layoutedPosition[mainAxisVectorIndex] + child2.layoutedSize[mainAxisVectorIndex]
       totalSize[crossAxisVectorIndex] = max(
-        child1.size[crossAxisVectorIndex], child2.size[crossAxisVectorIndex])
+        child1.layoutedSize[crossAxisVectorIndex], child2.layoutedSize[crossAxisVectorIndex])
 
       // TODO: cross axis center and end alignments not yet implemented for both children
 

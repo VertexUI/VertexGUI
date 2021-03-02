@@ -18,8 +18,8 @@ extension Widget {
     var trackLength: Double {
       let trackLengthBase: Double
       switch orientation {
-      case .horizontal: trackLengthBase = width
-      case .vertical: trackLengthBase = height
+      case .horizontal: trackLengthBase = layoutedSize.width
+      case .vertical: trackLengthBase = layoutedSize.height
       }
       return trackLengthBase / (1 + maxScrollProgress)
     }
@@ -76,9 +76,9 @@ extension Widget {
       let trackRect: DRect
       switch orientation {
       case .horizontal:
-        trackRect = DRect(min: DVec2(trackOffset, 0), size: DSize2(trackLength, height))
+        trackRect = DRect(min: DVec2(trackOffset, 0), size: DSize2(trackLength, layoutedSize.height))
       case .vertical:
-        trackRect = DRect(min: DVec2(0, trackOffset), size: DSize2(width, trackLength))
+        trackRect = DRect(min: DVec2(0, trackOffset), size: DSize2(layoutedSize.width, trackLength))
       }
       drawingContext.drawRect(rect: trackRect, paint: Paint(color: foreground))
     }

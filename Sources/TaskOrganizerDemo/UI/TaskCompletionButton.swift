@@ -18,9 +18,9 @@ public class TaskCompletionButton: LeafWidget {
     }
 
     override public func draw(_ drawingContext: DrawingContext) {
-        drawingContext.drawCircle(center: DVec2(size / 2), radius: size.min()! * 0.9, paint: Paint(strokeWidth: 1.0, strokeColor: color))
+        drawingContext.drawCircle(center: DVec2(layoutedSize / 2), radius: layoutedSize.min()! * 0.9, paint: Paint(strokeWidth: 1.0, strokeColor: color))
         if completed {
-            drawingContext.drawCircle(center: DVec2(size / 2), radius: size.min()! * 0.8, paint: Paint(color: color))
+            drawingContext.drawCircle(center: DVec2(layoutedSize / 2), radius: layoutedSize.min()! * 0.8, paint: Paint(color: color))
         }
     }
 }

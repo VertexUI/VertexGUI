@@ -76,13 +76,13 @@ public class SimpleLinearLayout: Layout {
       accumulatedSize[primaryAxisIndex] += getWidgetStartMargin(widget, primaryAxisIndex)
       widgetPosition[primaryAxisIndex] = accumulatedSize[primaryAxisIndex]
       widgetPosition[secondaryAxisIndex] = getWidgetStartMargin(widget, secondaryAxisIndex)
-      widget.position = widgetPosition
+      widget.layoutedPosition = widgetPosition
 
-      accumulatedSize[primaryAxisIndex] += widget.size[primaryAxisIndex]
+      accumulatedSize[primaryAxisIndex] += widget.layoutedSize[primaryAxisIndex]
       accumulatedSize[primaryAxisIndex] += getWidgetEndMargin(widget, primaryAxisIndex)
 
       let widgetSecondaryAxisSpan =
-        widget.position[secondaryAxisIndex] + widget.size[secondaryAxisIndex]
+        widget.layoutedPosition[secondaryAxisIndex] + widget.layoutedSize[secondaryAxisIndex]
         + getWidgetEndMargin(widget, secondaryAxisIndex)
       if widgetSecondaryAxisSpan > accumulatedSize[secondaryAxisIndex] {
         accumulatedSize[secondaryAxisIndex] = widgetSecondaryAxisSpan
@@ -95,7 +95,7 @@ public class SimpleLinearLayout: Layout {
     var currentPrimaryAxisPosition = 0.0
     for widget in widgets {
       currentPrimaryAxisPosition += getWidgetStartMargin(widget, primaryAxisIndex)
-      widget.position[primaryAxisIndex] = currentPrimaryAxisPosition
+      widget.layoutedPosition[primaryAxisIndex] = currentPrimaryAxisPosition
 
       var needRelayout = false
       var widgetConstraints = BoxConstraints(minSize: .zero, maxSize: .infinity)
@@ -104,27 +104,27 @@ public class SimpleLinearLayout: Layout {
       // TODO: implement property definitions forwarding to children!
       switch widget.alignSelf ?? alignContent {
       case .start:
-        widget.position[secondaryAxisIndex] = getWidgetStartMargin(widget, secondaryAxisIndex)
+        widget.layoutedPosition[secondaryAxisIndex] = getWidgetStartMargin(widget, secondaryAxisIndex)
 
       case .center:
         let centerArea =
           constrainedAccumulatedSize[secondaryAxisIndex]
           - getWidgetStartMargin(widget, secondaryAxisIndex)
           - getWidgetEndMargin(widget, secondaryAxisIndex)
-        widget.position[secondaryAxisIndex] =
-          centerArea / 2 - widget.size[secondaryAxisIndex] / 2
+        widget.layoutedPosition[secondaryAxisIndex] =
+          centerArea / 2 - widget.layoutedSize[secondaryAxisIndex] / 2
           + getWidgetStartMargin(widget, secondaryAxisIndex)
 
       case .end:
-        widget.position[secondaryAxisIndex] =
-          constrainedAccumulatedSize[secondaryAxisIndex] - widget.size[secondaryAxisIndex]
+        widget.layoutedPosition[secondaryAxisIndex] =
+          constrainedAccumulatedSize[secondaryAxisIndex] - widget.layoutedSize[secondaryAxisIndex]
           - getWidgetEndMargin(widget, secondaryAxisIndex)
 
       case .stretch:
         needRelayout = true
         widgetConstraints.minSize[secondaryAxisIndex] =
           constrainedAccumulatedSize[secondaryAxisIndex]
-        widgetConstraints.maxSize[primaryAxisIndex] = widget.size[primaryAxisIndex]
+        widgetConstraints.maxSize[primaryAxisIndex] = widget.layoutedSize[primaryAxisIndex]
 
         widget.referenceConstraints!.minSize[secondaryAxisIndex] = constrainedAccumulatedSize[secondaryAxisIndex]
       }
@@ -133,7 +133,7 @@ public class SimpleLinearLayout: Layout {
         widget.layout(constraints: widgetConstraints)
       }
 
-      currentPrimaryAxisPosition += widget.size[primaryAxisIndex]
+      currentPrimaryAxisPosition += widget.layoutedSize[primaryAxisIndex]
       currentPrimaryAxisPosition += getWidgetEndMargin(widget, primaryAxisIndex)
     }
 
@@ -145,15 +145,15 @@ public class SimpleLinearLayout: Layout {
     currentPrimaryAxisPosition = 0
     for widget in widgets {
       currentPrimaryAxisPosition += getWidgetStartMargin(widget, primaryAxisIndex)
-      widget.position[primaryAxisIndex] = currentPrimaryAxisPosition
+      widget.layoutedPosition[primaryAxisIndex] = currentPrimaryAxisPosition
 
       let growWeight = widget.grow
       if deltaAccumulatedSize[primaryAxisIndex] > 0 && growWeight > 0 {
         let relativeGrowWeight = growWeight / totalGrowWeight
         let primaryAxisGrowSpace = deltaAccumulatedSize[primaryAxisIndex] * relativeGrowWeight
         var targetSize = DSize2.zero
-        targetSize[primaryAxisIndex] = widget.size[primaryAxisIndex] + primaryAxisGrowSpace
-        targetSize[secondaryAxisIndex] = widget.size[secondaryAxisIndex]
+        targetSize[primaryAxisIndex] = widget.layoutedSize[primaryAxisIndex] + primaryAxisGrowSpace
+        targetSize[secondaryAxisIndex] = widget.layoutedSize[secondaryAxisIndex]
         let widgetConstraints = BoxConstraints(size: targetSize)
         widget.layout(constraints: widgetConstraints)
       }
@@ -163,15 +163,15 @@ public class SimpleLinearLayout: Layout {
         let relativeShrinkWeight = shrinkWeight / totalShrinkWeight
         let primaryAxisShrinkSpace = deltaAccumulatedSize[primaryAxisIndex] * relativeShrinkWeight
         var targetSize = DSize2.zero
-        targetSize[primaryAxisIndex] = widget.size[primaryAxisIndex] + primaryAxisShrinkSpace
-        targetSize[secondaryAxisIndex] = widget.size[secondaryAxisIndex]
+        targetSize[primaryAxisIndex] = widget.layoutedSize[primaryAxisIndex] + primaryAxisShrinkSpace
+        targetSize[secondaryAxisIndex] = widget.layoutedSize[secondaryAxisIndex]
         let widgetConstraints = BoxConstraints(size: targetSize)
         widget.layout(constraints: widgetConstraints)
 
         widget.referenceConstraints!.maxSize[primaryAxisIndex] = targetSize[primaryAxisIndex]
       }
 
-      currentPrimaryAxisPosition += widget.size[primaryAxisIndex]
+      currentPrimaryAxisPosition += widget.layoutedSize[primaryAxisIndex]
       currentPrimaryAxisPosition += getWidgetEndMargin(widget, primaryAxisIndex)
     }
 
@@ -187,11 +187,11 @@ public class SimpleLinearLayout: Layout {
       case .center:
         let mainAxisStartEndSpace = deltaAccumulatedSize[primaryAxisIndex] / 2
         for widget in widgets {
-          widget.position[primaryAxisIndex] += mainAxisStartEndSpace
+          widget.layoutedPosition[primaryAxisIndex] += mainAxisStartEndSpace
         }
       case .end:
         for widget in widgets {
-          widget.position[primaryAxisIndex] += deltaAccumulatedSize[primaryAxisIndex]
+          widget.layoutedPosition[primaryAxisIndex] += deltaAccumulatedSize[primaryAxisIndex]
         }
       }
     }

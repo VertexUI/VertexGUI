@@ -43,12 +43,12 @@ public class BarChart: LeafWidget {
 
     makeYTicks(drawingContext)
 
-    drawingData.barAreaWidth = width - drawingData.widestYTickWidth
+    drawingData.barAreaWidth = layoutedSize.width - drawingData.widestYTickWidth
 
     let datumWidth = drawingData.barAreaWidth / Double(data.count)
 
     for (index, datum) in data.enumerated() {
-      let datumHeight = datum.value / maxValue * height
+      let datumHeight = datum.value / maxValue * layoutedSize.height
       let x0 = Double(index) * datumWidth
       let x1 = Double(x0) + datumWidth
       let y0 = 0.0
@@ -68,8 +68,8 @@ public class BarChart: LeafWidget {
         paint: TextPaint(fontConfig: tickFontConfig, color: foreground)
     )
 
-    let tickCount = Int(height / tickTextSize.height)
-    let tickDistance = height / Double(tickCount)
+    let tickCount = Int(layoutedSize.height / tickTextSize.height)
+    let tickDistance = layoutedSize.height / Double(tickCount)
     let tickStep = (drawingData.maxValue - drawingData.minValue) / Double(tickCount)
 
     for index in 0..<tickCount {

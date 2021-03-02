@@ -35,6 +35,6 @@ open class ComposedWidget: Widget {
 
   override open func performLayout(constraints: BoxConstraints) -> DSize2 {
     rootChild?.layout(constraints: constraints)
-    return rootChild?.size ?? .zero
+    return rootChild?.layoutedSize ?? .zero
   }
 }

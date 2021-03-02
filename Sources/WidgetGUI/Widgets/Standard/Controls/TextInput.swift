@@ -161,7 +161,7 @@ public final class TextInput: ComposedWidget, StylableWidgetProtocol, GUIKeyEven
 
   override public func performLayout(constraints: BoxConstraints) -> DSize2 {
     stackContainer.layout(constraints: constraints)
-    return stackContainer.size
+    return stackContainer.layoutedSize
   }
 
   private func syncText() {
@@ -246,11 +246,11 @@ public final class TextInput: ComposedWidget, StylableWidgetProtocol, GUIKeyEven
 
   private func updateCaretPositionTransforms() {
     let caretPositionX = textWidget.measureText(String(text.prefix(caretIndex))).width
-    if caretPositionX > stackContainer.width {
+    if caretPositionX > stackContainer.layoutedSize.width {
       let nextCharX = textWidget.measureText(String(text.prefix(caretIndex + 1))).width
       let currentCharWidth = nextCharX - caretPositionX
-      let extraGap = stackContainer.width * 0.1
-      caretPositionTranslation = DVec2(-caretPositionX + stackContainer.width - currentCharWidth - extraGap, 0)
+      let extraGap = stackContainer.layoutedSize.width * 0.1
+      caretPositionTranslation = DVec2(-caretPositionX + stackContainer.layoutedSize.width - currentCharWidth - extraGap, 0)
     } else if caretPositionX + caretPositionTranslation.x < 0 {
       caretPositionTranslation = DVec2(-caretPositionX, 0)
     }
@@ -265,7 +265,7 @@ public final class TextInput: ComposedWidget, StylableWidgetProtocol, GUIKeyEven
 
     drawingContext.drawLine(
       from: DVec2(caretTranslationX, 0),
-      to: DVec2(caretTranslationX, textWidget.height),
+      to: DVec2(caretTranslationX, textWidget.layoutedSize.height),
       paint: Paint(strokeWidth: caretWidth, strokeColor: caretColor.adjusted(alpha: UInt8(caretBlinkProgress * 255))))
   }
 

@@ -123,26 +123,19 @@ open class Widget: Bounded, Parent, Child {
         }
     }
     
-    open private(set) var size = DSize2(0, 0) {
+    open private(set) var layoutedSize = DSize2(0, 0) {
         didSet {
-            if oldValue != size {
+            if oldValue != layoutedSize {
                 if mounted {
                     if layouted && !layouting && !destroyed {
-                        onSizeChanged.invokeHandlers(size)
+                        onSizeChanged.invokeHandlers(layoutedSize)
                     }
                 }
             }
         }
     }
 
-    open var width: Double {
-        size.width
-    }
-    open var height: Double {
-        size.height
-    }
-    
-    open var position = DPoint2(0, 0) {
+    open var layoutedPosition = DPoint2(0, 0) {
         didSet {
             if mounted {
                 context.queueLifecycleMethodInvocation(.resolveCumulatedValues, target: self, sender: self, reason: .undefined)
@@ -150,7 +143,15 @@ open class Widget: Bounded, Parent, Child {
         }
     }
 
-    @inlinable open var x: Double {
+    /*open var width: Double {
+        size.width
+    }
+    open var height: Double {
+        size.height
+    }*/
+
+
+    /*@inlinable open var x: Double {
         get {
             position.x
         }
@@ -168,10 +169,10 @@ open class Widget: Bounded, Parent, Child {
         set {
             position.y = newValue
         }
-    }
+    }*/
     
     @inlinable open var bounds: DRect {
-        DRect(min: position, size: size)
+        DRect(min: layoutedPosition, size: layoutedSize)
     }
     
     @inlinable open var globalBounds: DRect {
@@ -536,8 +537,8 @@ open class Widget: Bounded, Parent, Child {
 
         if scrollingEnabled.x || scrollingEnabled.y {
             scrollEventHandlerRemovers.append($currentScrollOffset.onChanged { [unowned self] in
-                pseudoScrollBarX.scrollProgress = $0.new.x / width
-                pseudoScrollBarY.scrollProgress = $0.new.y / height
+                pseudoScrollBarX.scrollProgress = $0.new.x / layoutedSize.width
+                pseudoScrollBarY.scrollProgress = $0.new.y / layoutedSize.height
                 for child in children {
                     context.queueLifecycleMethodInvocation(.resolveCumulatedValues, target: child, sender: self, reason: .undefined)
                 }
@@ -545,13 +546,13 @@ open class Widget: Bounded, Parent, Child {
 
             scrollEventHandlerRemovers.append(pseudoScrollBarX.$scrollProgress.onChanged { [unowned self] in
                 if $0.old != $0.new {
-                    currentScrollOffset.x = $0.new * width
+                    currentScrollOffset.x = $0.new * layoutedSize.width
                 }
             })
 
             scrollEventHandlerRemovers.append(pseudoScrollBarY.$scrollProgress.onChanged { [unowned self] in
                 if $0.old != $0.new { 
-                    currentScrollOffset.y = $0.new * height
+                    currentScrollOffset.y = $0.new * layoutedSize.height
                 }
             })
 
@@ -755,10 +756,10 @@ open class Widget: Bounded, Parent, Child {
         onLayoutingStarted.invokeHandlers(constraints)
 
         for child in children {
-            child.position = .zero
+            child.layoutedPosition = .zero
         }
 
-        let previousSize = size
+        let previousSize = layoutedSize
         let isFirstRound = !layouted
         
         let explicitConstraintsConstraints = BoxConstraints(minSize: explicitConstraints.minSize, maxSize: explicitConstraints.maxSize)
@@ -795,7 +796,7 @@ open class Widget: Bounded, Parent, Child {
             minSize: explicitConstraintsConstraints.constrain(constraints.minSize),
             maxSize: explicitConstraintsConstraints.constrain(constraints.maxSize)
         )
-        size = finalSizeConstraints.constrain(targetSize)
+        layoutedSize = finalSizeConstraints.constrain(targetSize)
         /*print("LAYOUT", self)
         print("size", size)
         print("target size", targetSize)
@@ -805,7 +806,7 @@ open class Widget: Bounded, Parent, Child {
         print("final size constraints", finalSizeConstraints)
         print("------------")*/
         
-        scrollableLength = DVec2(targetSize - size)
+        scrollableLength = DVec2(targetSize - layoutedSize)
 
         // TODO: implement logic for overflow == .auto
 
@@ -815,20 +816,20 @@ open class Widget: Bounded, Parent, Child {
         }*/
 
         if scrollingEnabled.x {
-            pseudoScrollBarX.maxScrollProgress = scrollableLength.x / width
+            pseudoScrollBarX.maxScrollProgress = scrollableLength.x / layoutedSize.width
             pseudoScrollBarX.layout(constraints: BoxConstraints(
-                minSize: DSize2(width, 0),
-                maxSize: DSize2(width, .infinity)))
+                minSize: DSize2(layoutedSize.width, 0),
+                maxSize: DSize2(layoutedSize.width, .infinity)))
 
-            pseudoScrollBarX.position = DVec2(0, height - pseudoScrollBarX.height)
+            pseudoScrollBarX.layoutedPosition = DVec2(0, layoutedSize.height - pseudoScrollBarX.layoutedSize.height)
         }
         if scrollingEnabled.y {
-            pseudoScrollBarY.maxScrollProgress = scrollableLength.y / height
+            pseudoScrollBarY.maxScrollProgress = scrollableLength.y / layoutedSize.height
             pseudoScrollBarY.layout(constraints: BoxConstraints(
-                minSize: DSize2(0, height),
-                maxSize: DSize2(.infinity, height)))
+                minSize: DSize2(0, layoutedSize.height),
+                maxSize: DSize2(.infinity, layoutedSize.height)))
 
-            pseudoScrollBarY.position = DVec2(width - pseudoScrollBarY.width, 0)
+            pseudoScrollBarY.layoutedPosition = DVec2(layoutedSize.width - pseudoScrollBarY.layoutedSize.width, 0)
         }
 
         layouting = false
@@ -838,8 +839,8 @@ open class Widget: Bounded, Parent, Child {
         // TODO: where to call this? after setting bounds or before?
         onLayoutingFinished.invokeHandlers(bounds.size)
 
-        if previousSize != size && !isFirstRound {
-            onSizeChanged.invokeHandlers(size)
+        if previousSize != layoutedSize && !isFirstRound {
+            onSizeChanged.invokeHandlers(layoutedSize)
         }
 
         /*for child in children {

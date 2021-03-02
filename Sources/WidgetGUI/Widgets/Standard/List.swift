@@ -76,11 +76,11 @@ public class List<Item: Equatable>: ContentfulWidget, SlotAcceptingWidgetProtoco
         child.layout(constraints: childConstraints)
       }
 
-      child.position = currentPosition
+      child.layoutedPosition = currentPosition
 
-      currentPosition.y += child.height
-      if child.width > maxWidth {
-        maxWidth = child.width
+      currentPosition.y += child.layoutedSize.height
+      if child.layoutedSize.width > maxWidth {
+        maxWidth = child.layoutedSize.width
       }
     }
 

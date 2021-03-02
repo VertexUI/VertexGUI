@@ -27,11 +27,11 @@ public class FlexLayout: Layout {
       var widgetPosition = DVec2.zero
       widgetPosition[primaryAxisIndex] = maxSize[primaryAxisIndex]
       widgetPosition[secondaryAxisIndex] = 0
-      widget.position = widgetPosition
+      widget.layoutedPosition = widgetPosition
 
-      maxSize[primaryAxisIndex] += widget.size[primaryAxisIndex]
-      if widget.size[secondaryAxisIndex] > maxSize[secondaryAxisIndex] {
-        maxSize[secondaryAxisIndex] = widget.size[secondaryAxisIndex]
+      maxSize[primaryAxisIndex] += widget.layoutedSize[primaryAxisIndex]
+      if widget.layoutedSize[secondaryAxisIndex] > maxSize[secondaryAxisIndex] {
+        maxSize[secondaryAxisIndex] = widget.layoutedSize[secondaryAxisIndex]
       }
     }
     return maxSize

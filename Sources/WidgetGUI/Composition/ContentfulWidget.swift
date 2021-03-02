@@ -18,11 +18,11 @@ open class ContentfulWidget: Widget {
     var maxSize = DSize2.zero
     for child in contentChildren {
       child.layout(constraints: constraints)
-      if child.width > maxSize.width {
-        maxSize.width = child.width
+      if child.layoutedSize.width > maxSize.width {
+        maxSize.width = child.layoutedSize.width
       }
-      if child.height > maxSize.height {
-        maxSize.height = child.height
+      if child.layoutedSize.height > maxSize.height {
+        maxSize.height = child.layoutedSize.height
       }
     }
     return maxSize

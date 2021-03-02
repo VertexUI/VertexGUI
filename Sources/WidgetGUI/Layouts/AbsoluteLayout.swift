@@ -5,11 +5,11 @@ public class AbsoluteLayout: Layout {
     var maxSize = DSize2.zero
     for widget in widgets {
       widget.layout(constraints: constraints)
-      if widget.width > maxSize.width {
-        maxSize.width = widget.width
+      if widget.layoutedSize.width > maxSize.width {
+        maxSize.width = widget.layoutedSize.width
       }
-      if widget.height > maxSize.height {
-        maxSize.height = widget.height
+      if widget.layoutedSize.height > maxSize.height {
+        maxSize.height = widget.layoutedSize.height
       }
     }
     return maxSize
