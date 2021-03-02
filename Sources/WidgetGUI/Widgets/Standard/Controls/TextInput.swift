@@ -28,7 +28,7 @@ public final class TextInput: ComposedWidget, StylableWidgetProtocol, GUIKeyEven
   private var caretWidget: Drawing
 
   @ExperimentalStyleProperty
-  public var caretColor: Color = .yellow
+  public var caretColor: Color = .lightBlue
 
   private var caretIndex: Int = 2
   private var lastDrawTimestamp: Double = 0.0

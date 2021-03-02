@@ -29,9 +29,6 @@ public class MainView: ContentfulWidget, SlotAcceptingWidgetProtocol {
 
   override public init() {
     super.init()
-    let test =  Experimental.Style([StyleSelectorPart(type: TextInput.self)], TextInput.self) {
-        (\.$caretColor, .white)
-      }
   }
 
   @ExpDirectContentBuilder override public var content: ExpDirectContent {
