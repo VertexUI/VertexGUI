@@ -13,8 +13,14 @@ extension Widget {
       }
     }
 
-    lazy public var projectedValue = Projector<Value>(getImmutable: { [unowned self] in
-      return Experimental.ImmutableBinding(self, get: {
+    lazy public var projectedValue = Experimental.MutableReactivePropertyProjection<Value>(getImmutable: { [unowned self] in
+      Experimental.ImmutableBinding(self, get: {
+        $0
+      })
+    }, getMutable: { [unowned self] in
+      Experimental.MutableBinding(self, get: {
+        $0
+      }, set: {
         $0
       })
     })
@@ -23,18 +29,6 @@ extension Widget {
 
     public init(wrappedValue: Value) {
       self.wrappedValue = wrappedValue
-    }
-
-    public class Projector<Value> {
-      private let getImmutable: () -> Experimental.ImmutableBinding<Value>
-
-      fileprivate init(getImmutable: @escaping () -> Experimental.ImmutableBinding<Value>) {
-        self.getImmutable = getImmutable
-      }
-
-      public var immutable: Experimental.ImmutableBinding<Value> {
-        getImmutable()
-      }
     }
   }
 }

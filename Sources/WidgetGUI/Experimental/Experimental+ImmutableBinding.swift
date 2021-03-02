@@ -13,22 +13,25 @@ extension Experimental {
     }
     private let _get: () ->Value 
 
-    public var projectedValue: ImmutableBinding<Value> {
-      self
-    }
-
+    lazy public var projectedValue = Experimental.ReactivePropertyProjection<Value>(getImmutable: { [unowned self] in
+      return Experimental.ImmutableBinding(self, get: {
+        $0
+      })
+    })
     var subscriptions: ImmutableBinding<Value>.Subscriptions = []
 
     private var dependencySubscription: AnyCancellable?
 
-    public init<InputValue, P: ExperimentalReactiveProperty>(_ dependency: P, get _get: @escaping (InputValue) -> Value) where P.Value == InputValue {
-      self._get = { [dependency] in
-        _get(dependency.value)
-      }
+    public init<DependencyValue, Dependency: ExperimentalReactiveProperty>(
+      _ dependency: Dependency,
+      get _get: @escaping (DependencyValue) -> Value) where Dependency.Value == DependencyValue {
+        self._get = { [dependency] in
+          _get(dependency.value)
+        }
 
-      dependencySubscription = dependency.sink { [unowned self] _ in
-        notifyChange()
-      }
+        dependencySubscription = dependency.sink { [unowned self] _ in
+          notifyChange()
+        }
     }
   }
 }
