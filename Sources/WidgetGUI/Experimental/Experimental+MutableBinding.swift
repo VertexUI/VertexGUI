@@ -32,6 +32,8 @@ extension Experimental {
       }, set: {
         $0
       })
+    }, receiveSubscriber: { [unowned self] in
+      self.receive(subscriber: $0)
     })
 
     var subscriptions: MutableBinding<V>.Subscriptions = []

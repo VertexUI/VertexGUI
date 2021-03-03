@@ -23,6 +23,8 @@ extension Widget {
       }, set: {
         $0
       })
+    }, receiveSubscriber: { [unowned self] in
+      self.receive(subscriber: $0)
     })
 
     var subscriptions: State<V>.Subscriptions = []

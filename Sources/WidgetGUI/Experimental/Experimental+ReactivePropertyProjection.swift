@@ -1,15 +1,25 @@
+import CombineX
+
 extension Experimental {
-  public class ReactivePropertyProjection<V> {
+  public class ReactivePropertyProjection<V>: Publisher {
     public typealias Value = V
+    public typealias Output = V
+    public typealias Failure = Never
 
     private let getImmutable: () -> ImmutableBinding<Value>
+    private let receiveSubscriber: (AnySubscriber<Value, Never>) -> ()
 
     public var immutable: ImmutableBinding<Value> {
       getImmutable()
     }
 
-    init(getImmutable: @escaping () -> ImmutableBinding<Value>) {
+    init(getImmutable: @escaping () -> ImmutableBinding<Value>, receiveSubscriber: @escaping (AnySubscriber<Value, Never>) -> ()) {
       self.getImmutable = getImmutable
+      self.receiveSubscriber = receiveSubscriber
+    }
+
+    public func receive<S: Subscriber>(subscriber: S) where Failure == S.Failure, Output == S.Input {
+      receiveSubscriber(AnySubscriber(subscriber))
     }
   }
 
@@ -20,9 +30,9 @@ extension Experimental {
       getMutable()
     }
 
-    init(getImmutable: @escaping () -> Experimental.ImmutableBinding<Value>, getMutable: @escaping () -> Experimental.MutableBinding<Value>) {
+    init(getImmutable: @escaping () -> Experimental.ImmutableBinding<Value>, getMutable: @escaping () -> Experimental.MutableBinding<Value>, receiveSubscriber: @escaping (AnySubscriber<Value, Never>) -> ()) {
       self.getMutable = getMutable
-      super.init(getImmutable: getImmutable)
+      super.init(getImmutable: getImmutable, receiveSubscriber: receiveSubscriber)
     }
   }
 }

@@ -17,6 +17,8 @@ extension Experimental {
       return Experimental.ImmutableBinding(self, get: {
         $0
       })
+    }, receiveSubscriber: { [unowned self] in
+      self.receive(subscriber: $0)
     })
     var subscriptions: ImmutableBinding<Value>.Subscriptions = []
 

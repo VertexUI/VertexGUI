@@ -1,5 +1,8 @@
 import ReactiveProperties
 import SwiftGUI
+import CombineX
+import Dispatch
+import Foundation
 
 public class TodoAppView: ComposedWidget {
   public enum Mode {
@@ -30,6 +33,7 @@ public class TodoAppView: ComposedWidget {
 
   @State
   private var searchQuery: String = ""
+  private var searchQuerySubscription: AnyCancellable?
 
   override public init() {
     super.init()
@@ -49,8 +53,9 @@ public class TodoAppView: ComposedWidget {
         apply: {
           searchStore.dispatch(.updateResults($0))
         }, dependencies: [searchStore.$state])
-
-      _ = _searchQuery.onChanged { _ in
+      */
+      searchQuerySubscription = $searchQuery.sink { _ in
+        print("SEARCH QUERY UDPATED")
         if searchQuery.isEmpty {
           switch mainViewRoute {
           case .searchResults:
@@ -66,7 +71,7 @@ public class TodoAppView: ComposedWidget {
             mainViewRoute = .searchResults
           }
         }
-      }*/
+      }
     }
   }
 

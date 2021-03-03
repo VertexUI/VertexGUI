@@ -31,7 +31,7 @@ public class MainView: ContentfulWidget, SlotAcceptingWidgetProtocol {
 
   override public init() {
     super.init()
-    stateSubscription = self._myState.sink {
+    stateSubscription = self.$myState.sink {
       print("MY STATEA CHANGED", $0)
     }
   }
