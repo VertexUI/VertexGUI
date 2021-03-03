@@ -58,13 +58,18 @@ let package = Package(
         ),
 
         .target(
+            name: "CombineXExtensions",
+            dependencies: ["CombineX"]
+        ),
+
+        .target(
             name: "Events"
         ),
 
         .target(
                 // TODO: maybe rename to SwiftApplicationFramework or so...? or split to SwiftApplicationFramework and SwiftUIFramework
             name: "WidgetGUI",
-            dependencies: ["VisualAppBase", "Events", "CombineX", "ReactiveProperties", "GfxMath", "Runtime", "ColorizeSwift", "Easing"],
+            dependencies: ["VisualAppBase", "Events", "CombineX", "CombineXExtensions", "ReactiveProperties", "GfxMath", "Runtime", "ColorizeSwift", "Easing"],
             resources: [.process("Resources")]
         ),
 

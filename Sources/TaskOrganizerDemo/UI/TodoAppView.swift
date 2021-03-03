@@ -1,8 +1,8 @@
 import ReactiveProperties
 import SwiftGUI
-import CombineX
 import Dispatch
-import Foundation
+import CombineX
+import CombineXExtensions
 
 public class TodoAppView: ComposedWidget {
   public enum Mode {
@@ -54,8 +54,7 @@ public class TodoAppView: ComposedWidget {
           searchStore.dispatch(.updateResults($0))
         }, dependencies: [searchStore.$state])
       */
-      searchQuerySubscription = $searchQuery.sink { _ in
-        print("SEARCH QUERY UDPATED")
+      searchQuerySubscription = $searchQuery.debounce(for: .seconds(0.5), scheduler: DispatchQueue.main).sink { _ in
         if searchQuery.isEmpty {
           switch mainViewRoute {
           case .searchResults:
