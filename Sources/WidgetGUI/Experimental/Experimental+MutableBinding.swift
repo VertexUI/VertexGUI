@@ -2,7 +2,7 @@ import CombineX
 
 extension Experimental {
   @propertyWrapper
-  public class MutableBinding<V>: ExperimentalInternalReactiveProperty  {
+  public class MutableBinding<V>: ExperimentalInternalMutableReactiveProperty  {
     public typealias Value = V
 
     public var value: Value {
@@ -27,17 +27,21 @@ extension Experimental {
         $0
       })
     }, getMutable: { [unowned self] in
-      self
+      Experimental.MutableBinding(self, get: {
+        $0
+      }, set: {
+        $0
+      })
     })
 
     var subscriptions: MutableBinding<V>.Subscriptions = []
 
     private var dependencySubscription: AnyCancellable?
 
-    public init<DependencyValue, Dependency: Widget.State<DependencyValue>>(
+    public init<Dependency: ExperimentalMutableReactiveProperty>(
       _ dependency: Dependency,
-      get _get: @escaping (DependencyValue) -> Value,
-      set _set: @escaping (Value) -> DependencyValue) {
+      get _get: @escaping (Dependency.Value) -> Value,
+      set _set: @escaping (Value) -> Dependency.Value) {
         self._get = { [dependency] in
           _get(dependency.value)
         }

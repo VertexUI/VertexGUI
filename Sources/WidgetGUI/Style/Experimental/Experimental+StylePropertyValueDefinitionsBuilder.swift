@@ -31,13 +31,6 @@ extension Experimental {
       )]
     }
 
-    /*public static func buildExpression<V, P: Publisher>(_ expression: (KeyPath<Widget, Experimental.DefaultStyleProperty<V>>, P)) -> [StylePropertyValueDefinition] where P.Output == V, P.Failure == Never {
-      return [StylePropertyValueDefinition(
-        keyPath: expression.0,
-        value: .reactive(expression.1.map { AnyStylePropertyValue.some($0) }.eraseToAnyPublisher())
-      )]
-    }*/
-
     public static func buildExpression<V, P: ExperimentalReactiveProperty>(_ expression: (KeyPath<Widget, Experimental.DefaultStyleProperty<V>>, P)) -> [StylePropertyValueDefinition] where P.Value == V {
       [StylePropertyValueDefinition(
         keyPath: expression.0,

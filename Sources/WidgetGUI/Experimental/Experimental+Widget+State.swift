@@ -1,6 +1,6 @@
 extension Widget {
   @propertyWrapper
-  public class State<V>: ExperimentalInternalReactiveProperty {
+  public class State<V>: ExperimentalInternalMutableReactiveProperty {
     public typealias Value = V
 
     public var value: Value {

@@ -1,5 +1,6 @@
 import ReactiveProperties
-import SwiftGUI 
+import SwiftGUI
+import CombineX
 
 public class MainView: ContentfulWidget, SlotAcceptingWidgetProtocol {
   @Inject
@@ -22,24 +23,26 @@ public class MainView: ContentfulWidget, SlotAcceptingWidgetProtocol {
   var myState: String = "This is a value from an @State property."
   @State
   var testBackgroundColor: Color = .orange
-  @State var testGrow: Double = 1
 
   static let TestSlot1 = Slot(key: "testSlot1", data: Void.self)
   private var testSlot1 = SlotContentManager(MainView.TestSlot1)
 
+  var stateSubscription: AnyCancellable?
+
   override public init() {
     super.init()
+    stateSubscription = self._myState.sink {
+      print("MY STATEA CHANGED", $0)
+    }
   }
 
   @ExpDirectContentBuilder override public var content: ExpDirectContent {
     Container().experimentalWith(styleProperties: {
       (\.$background, .red)
     }).withContent { [unowned self] in
-      Button().withContent {
-        Text("Set Test Grow")
-      }.onClick {
-        testGrow = 2
-      }
+   
+
+      TestWidget(boundText: $myState.mutable)
 
       Container().experimentalWith(styleProperties: {
         (\.$width, 200)
@@ -76,6 +79,8 @@ public class MainView: ContentfulWidget, SlotAcceptingWidgetProtocol {
         (\.$padding, Insets(all: 128))
         (\.$shrink, 1)
       })
+
+
 
       /*Container().experimentalWith(styleProperties: {
         (\.$background, .blue)

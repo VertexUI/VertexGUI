@@ -1,16 +1,16 @@
 import SwiftGUI
 
 public class TestWidget: ContentfulWidget {
-  @Experimental.ImmutableBinding
+  @Experimental.MutableBinding
   public var boundText: String
 
-  public init(boundText: Experimental.ImmutableBinding<String>) {
+  public init(boundText: Experimental.MutableBinding<String>) {
     self._boundText = boundText
   }
 
   @ExpDirectContentBuilder override public var content: ExpDirectContent {
     Container().with(classes: ["container"]).withContent {
-      Text($boundText.immutable).experimentalWith(styleProperties: {
+      TextInput(mutableText: $boundText.mutable, placeholder: "placeholder").experimentalWith(styleProperties: {
         (\.$foreground, .black)
       })
     }

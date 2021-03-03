@@ -73,27 +73,4 @@ extension Experimental {
       })
     }
   }
-  /*
-  public class TypelessReactiveProperty: ExperimentalInternalReactiveProperty {
-    public typealias Value = Any
-
-    public var value: Value {
-      didSet {
-        notifyChange()
-      }
-    }
-
-    var ownedWrapped: AnyObject
-    var wrappedSubscription: AnyCancellable?
-
-    var subscribers: TypelessReactiveProperty.Subscribers = []
-
-    public init<P: ExperimentalReactiveProperty>(_ wrapped: P) {
-      self.value = wrapped.value
-      self.ownedWrapped = wrapped
-      wrappedSubscription = wrapped.sink(receiveValue: { [unowned self] in
-        value = $0
-      })
-    }
-  }*/
 }
