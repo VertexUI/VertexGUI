@@ -11,7 +11,26 @@ extension ExperimentalReactiveProperty {
   public typealias Failure = Never
 }
 
-internal protocol ExperimentalInternalReactiveProperty: ExperimentalReactiveProperty {
+internal protocol ExperimentalErasedInternalReactiveProperty {
+  func notifyChange()
+}
+
+internal class ExperimentalAnyErasedInternalReactiveProperty: ExperimentalErasedInternalReactiveProperty {
+  let _notifyChange: () -> ()
+
+  let wrapped: Any
+
+  init<T: ExperimentalErasedInternalReactiveProperty>(wrapping wrapped: T) {
+    self._notifyChange = wrapped.notifyChange
+    self.wrapped = wrapped
+  }
+
+  func notifyChange() {
+    _notifyChange()
+  }
+}
+
+internal protocol ExperimentalInternalReactiveProperty: ExperimentalReactiveProperty, ExperimentalErasedInternalReactiveProperty {
   var subscriptions: Subscriptions { get set }
 }
 
