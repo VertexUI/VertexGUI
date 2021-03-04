@@ -1,7 +1,7 @@
 import ReactiveProperties
 import VisualAppBase
 import GfxMath
-import CombineX
+import CXShim
 
 public class Text: LeafWidget {
   @ObservableProperty

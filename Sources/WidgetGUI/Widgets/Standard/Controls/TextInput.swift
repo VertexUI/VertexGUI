@@ -2,7 +2,7 @@ import GfxMath
 import Foundation
 import VisualAppBase
 import ReactiveProperties
-import CombineX
+import CXShim
 
 public final class TextInput: ComposedWidget, StylableWidgetProtocol, GUIKeyEventConsumer, GUITextEventConsumer
 {

@@ -1,4 +1,4 @@
-import CombineX
+import CXShim
 
 extension Experimental {
   public struct StylePropertyValueDefinition {

@@ -4,7 +4,7 @@ import VisualAppBase
 import ColorizeSwift
 import ReactiveProperties
 import Events
-import CombineX
+import CXShim
 
 open class Widget: Bounded, Parent, Child {
     /* identification

@@ -1,6 +1,6 @@
 import ReactiveProperties
 import SwiftGUI
-import CombineX
+import CXShim
 
 public class MainView: ContentfulWidget, SlotAcceptingWidgetProtocol {
   @Inject

@@ -1,5 +1,5 @@
 import GfxMath
-import CombineX
+import CXShim
 
 public class SimpleLinearLayout: Layout {
   /*override public var parentPropertySupportDefinitions: StylePropertySupportDefinitions {

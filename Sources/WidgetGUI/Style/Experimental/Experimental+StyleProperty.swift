@@ -1,5 +1,5 @@
 import ReactiveProperties
-import CombineX
+import CXShim
 
 protocol ExperimentalAnyStylePropertyProtocol: class {
   //var anyStyleValue: Experimental.AnyStylePropertyValue? { get set }

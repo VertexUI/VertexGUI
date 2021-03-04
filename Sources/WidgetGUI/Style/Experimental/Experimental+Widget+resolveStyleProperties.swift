@@ -1,4 +1,4 @@
-import CombineX
+import CXShim
 
 extension Widget {
   internal func resolveStyleProperties() {

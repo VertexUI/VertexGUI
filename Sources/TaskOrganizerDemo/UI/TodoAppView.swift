@@ -1,8 +1,7 @@
 import ReactiveProperties
 import SwiftGUI
 import Dispatch
-import CombineX
-import CombineXExtensions
+import CXShim
 
 public class TodoAppView: ComposedWidget {
   public enum Mode {

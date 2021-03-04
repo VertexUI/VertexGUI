@@ -1,4 +1,4 @@
-import CombineX
+import CXShim
 
 public protocol ExperimentalReactiveProperty: AnyObject, Publisher {
   associatedtype Value

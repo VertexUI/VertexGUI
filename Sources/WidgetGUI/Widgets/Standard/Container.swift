@@ -1,5 +1,5 @@
 import GfxMath
-import CombineX
+import CXShim
 
 public class Container: ContentfulWidget, SlotAcceptingWidgetProtocol, StylableWidgetProtocol {
   public static let defaultSlot = Slot(key: "default", data: Void.self)

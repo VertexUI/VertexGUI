@@ -1,4 +1,4 @@
-import CombineX
+import CXShim
 
 @propertyWrapper
 public class LayoutProperty<T>: AnyLayoutProperty {
