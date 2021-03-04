@@ -2,6 +2,7 @@ import Foundation
 import ReactiveProperties
 import VisualAppBase
 import GfxMath
+import CXShim
 
 fileprivate var itemSlots = [ObjectIdentifier: AnySlot]()
 
@@ -29,6 +30,9 @@ public class List<Item: Equatable>: ContentfulWidget, SlotAcceptingWidgetProtoco
     }
   }
 
+  private var ownedImmutableItems: Any?
+  private var itemsSubscription: AnyCancellable?
+
   public init<P: ReactiveProperty>(_ itemsProperty: P) where P.Value == [Item] {
     super.init()
     self.$items.bind(itemsProperty)
@@ -36,6 +40,24 @@ public class List<Item: Equatable>: ContentfulWidget, SlotAcceptingWidgetProtoco
     _ = $items.onChanged { [unowned self] in
       processItemUpdate(old: $0.old, new: $0.new)
     }
+  }
+
+  public init(items immutableItems: Experimental.ImmutableBinding<[Item]>) {
+    super.init()
+
+    self.ownedImmutableItems = immutableItems
+
+    let itemsBackingProperty = MutableProperty<[Item]>(immutableItems.value)
+    itemsSubscription = immutableItems.sink {
+      itemsBackingProperty.value = $0
+    }
+
+    self.$items.bind(itemsBackingProperty)
+    _ = $items.onChanged { [unowned self] in
+      processItemUpdate(old: $0.old, new: $0.new)
+    }
+
+    processItemUpdate(old: [], new: items)
   }
 
   private func processItemUpdate(old: [Item], new: [Item]) {
