@@ -56,8 +56,8 @@ public final class TextInput: ComposedWidget, StylableWidgetProtocol, GUIKeyEven
   private var textSubscription: AnyCancellable?
 
   public init(
-    mutableText textBinding: MutableBinding<String>,
-    placeholder: String) {
+    text textBinding: MutableBinding<String>,
+    placeholder: String = "") {
         
       self._text = textBinding
       self.textBuffer = textBinding.value

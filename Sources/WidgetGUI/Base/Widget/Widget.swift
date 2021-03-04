@@ -473,7 +473,7 @@ open class Widget: Bounded, Parent, Child {
     public internal(set) var onFocusChanged = WidgetEventHandlerManager<Bool>()
     public internal(set) var onDestroy = EventHandlerManager<Void>()
 
-    /* mouse events
+    /* input events
     --------------------------
     */
     public let onClickHandlerManager = EventHandlerManager<GUIMouseButtonClickEvent>()
@@ -481,7 +481,8 @@ open class Widget: Bounded, Parent, Child {
     public let onMouseUpHandlerManager = EventHandlerManager<GUIMouseButtonUpEvent>()
     public let onMouseMoveHandlerManager = EventHandlerManager<GUIMouseMoveEvent>()
     public let onMouseWheelHandlerManager = EventHandlerManager<GUIMouseWheelEvent>()
-    /* end mouse events */
+    public let onKeyHandlerManager = EventHandlerManager<GUIKeyEvent>()
+    /* end input events */
     
     public init() {
         self.id = Self.nextId

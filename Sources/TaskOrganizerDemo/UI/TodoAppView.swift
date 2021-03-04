@@ -56,7 +56,7 @@ public class TodoAppView: ComposedWidget {
       searchQuerySubscription = $searchQuery
         .debounce(for: .seconds(0.5), scheduler: CXWrappers.DispatchQueue(wrapping: DispatchQueue.main))
         .removeDuplicates().sink {
-          experimentalStore.dispatch(.updateSearchResults(query: $0))
+          experimentalStore.dispatch(.updateSearchResult(query: $0))
           if $0.isEmpty {
             switch mainViewRoute {
             case .searchResults:
@@ -91,7 +91,7 @@ public class TodoAppView: ComposedWidget {
         Button().with(classes: ["button"]).withContent {
           Text("New List")
         }.onClick { [unowned self] in
-          handleNewListClick()
+          experimentalStore.commit(.addTodoList)
         }
       }
 
@@ -105,7 +105,7 @@ public class TodoAppView: ComposedWidget {
 
   private func buildSearch() -> Widget {
     Container().with(classes: ["padded-container", "search-container"]).withContent { [unowned self] in
-      TextInput(mutableText: $searchQuery.mutable, placeholder: "search").with(classes: ["search-input"])
+      TextInput(text: $searchQuery.mutable, placeholder: "search").with(classes: ["search-input"])
 
       Button().onClick {
         searchStore.dispatch(.updateResults(""))
@@ -127,7 +127,7 @@ public class TodoAppView: ComposedWidget {
 
       Text(list.name).with(classes: ["list-item-name"])
     }.onClick { [unowned self] in
-      experimentalStore.commit(.setSelectedListId(list.id))
+      experimentalStore.commit(.setSelectedTodoListId(list.id))
       if navigationStore.state.mainViewRoute != .selectedList {
         navigationStore.commit(.updateMainViewRoute(.selectedList))
       }
@@ -144,23 +144,13 @@ public class TodoAppView: ComposedWidget {
           Text("no list selected").with(classes: ["no-active-view-label"])
 
         case let .selectedList:
-          TodoListView(listId: experimentalStore.$state.selectedListId.immutable)
+          TodoListView(listId: experimentalStore.$state.selectedListId.immutable).with(classes: ["active-view"])
 
         case .searchResults:
-          SearchResultsView().with(styleProperties: {
-            ($0.padding, Insets(top: 48, left: 48))
-            (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.stretch)
-            (SimpleLinearLayout.ChildKeys.grow, 1.0)
-            (SimpleLinearLayout.ChildKeys.shrink, 1.0)
-          })
+          SearchResultsView().with(classes: ["active-view"])
         }
       }
     }
-  }
-
-  private func handleNewListClick() {
-    todoStore.commit(.AddList)
-    experimentalStore.commit(.addList)
   }
 
   override public var style: Style {
@@ -240,14 +230,13 @@ public class TodoAppView: ComposedWidget {
         (\.$direction, .column)
         (\.$alignSelf, .stretch)
         (\.$justifyContent, .center)
-      } nested: {
+      }
 
-        Experimental.Style([StyleSelectorPart(type: TodoListView.self)]) {
-          (\.$padding, Insets(top: 48, left: 48))
-          (\.$alignSelf, .stretch)
-          (\.$grow, 1)
-          (\.$shrink, 1)
-        }
+      Experimental.Style(".active-view") {
+        (\.$padding, Insets(top: 48, left: 48))
+        (\.$alignSelf, .stretch)
+        (\.$grow, 1)
+        (\.$shrink, 1)
       }
 
       Experimental.Style(".no-active-view-label") {

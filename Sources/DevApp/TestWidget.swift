@@ -10,7 +10,7 @@ public class TestWidget: ContentfulWidget {
 
   @ExpDirectContentBuilder override public var content: ExpDirectContent {
     Container().with(classes: ["container"]).withContent {
-      TextInput(mutableText: $boundText.mutable, placeholder: "placeholder").experimentalWith(styleProperties: {
+      TextInput(text: $boundText.mutable, placeholder: "placeholder").experimentalWith(styleProperties: {
         (\.$foreground, .black)
       })
     }

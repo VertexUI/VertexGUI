@@ -3,32 +3,24 @@ import ReactiveProperties
 import CXShim
 
 public class TodoListView: ContentfulWidget {
-  @Inject
-  private var store: TodoStore
-  @Inject
-  private var experimentalStore: ExperimentalTodoStore
+  @Inject private var store: TodoStore
+  @Inject private var experimentalStore: ExperimentalTodoStore
 
-  @ImmutableBinding
-  private var listId: Int
+  @ImmutableBinding private var listId: Int
 
-  @State
-  private var list: TodoList?
+  @State private var list: TodoList?
 
   var listIdSubscription: AnyCancellable?
+  var storeListsSubscription: AnyCancellable?
 
-  @MutableProperty
-  private var editable: Bool
+  @State private var editable: Bool
   private var checkable: Bool
-  private var expandedItemIndices: Set<Int> = []
 
-  @MutableProperty
-  private var nameEditMode: Bool = false
-  private var updatedNameBuffer: String = ""
+  @State private var editingName: Bool = false
+  @State private var updatedNameBuffer: String = ""
 
-  @MutableProperty
-  private var editingItemIndex: Int? = nil
+  @State private var editingItemIndex: Int? = nil
   private var updatedItemDescription: String = ""
-
 
   public init(listId immutableListId: Experimental.ImmutableBinding<Int>, editable: Bool = true, checkable: Bool = true) {
     self._listId = immutableListId
@@ -37,10 +29,18 @@ public class TodoListView: ContentfulWidget {
     super.init()
 
     _ = onDependenciesInjected { [unowned self] in
-      listIdSubscription = $listId.sink { newListId in
-        list = experimentalStore.state.lists.first { $0.id == newListId }
+      listIdSubscription = $listId.sink { _ in
+        resolveList()
+      }
+
+      storeListsSubscription = experimentalStore.$state.lists.sink { _ in
+        resolveList()
       }
     }
+  }
+
+  func resolveList() {
+    list = experimentalStore.state.lists.first { $0.id == listId }
   }
 
   @ExpDirectContentBuilder override public var content: ExpDirectContent {
@@ -49,23 +49,32 @@ public class TodoListView: ContentfulWidget {
     }).withContent { [unowned self] in
 
       Container().with(classes: ["header"]).withContent {
-
-        Text(list?.name ?? "").with(classes: ["list-name"])
-
-        Space(DSize2(24, 0))
+        
+        Dynamic($editingName) {
+          if editingName {
+            TextInput(text: $updatedNameBuffer.mutable, placeholder: "list name").with(classes: ["list-name", "list-name-input"]).onKey {
+              print("KEY ", $0)
+            }.requestFocus()
+          } else {
+            Text(list?.name ?? "").with(classes: ["list-name"]).onClick {
+              if editable {
+                editingName = true
+                updatedNameBuffer = list?.name ?? ""
+              }
+            }
+          }
+        }
 
         Dynamic($editable) {
           if editable {
             Button().withContent {
               Text("add todo")
             }.onClick {
-              handleAddTodoClick()
+              experimentalStore.commit(.addTodoItem(listId: list!.id))
             }
           }
         }
       }
-
-      Space(DSize2(0, 48))
 
       List(items: Experimental.ImmutableBinding($list.immutable, get: { $0?.items ?? [] })).with(classes: ["todo-item-list"]).withContent {
         $0.itemSlot {
@@ -83,12 +92,18 @@ public class TodoListView: ContentfulWidget {
     Experimental.Style("&") {} nested: {
       Experimental.Style(".header", Container.self) {
         (\.$alignContent, .center)
+        (\.$margin, Insets(bottom: 48))
       }
 
       Experimental.Style(".list-name") {
         (\.$foreground, .white)
         (\.$fontWeight, .bold)
         (\.$fontSize, 36)
+        (\.$margin, Insets(right: 24))
+      }
+
+      Experimental.Style(".list-name-input") {
+        (\.$width, 200)
       }
 
       Experimental.Style(".todo-item-list") {
@@ -97,9 +112,5 @@ public class TodoListView: ContentfulWidget {
         (\.$overflowY, .scroll)
       }
     }
-  }
-
-  private func handleAddTodoClick() {
-    store.commit(.AddItem(listId: list!.id))
   }
 }

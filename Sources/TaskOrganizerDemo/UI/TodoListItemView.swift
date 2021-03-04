@@ -2,11 +2,13 @@ import SwiftGUI
 
 public class TodoListItemView: ComposedWidget {
   @Inject
-  private var store: TodoStore
+  private var experimentalStore: ExperimentalTodoStore
+
   private var item: TodoItem
   private var editable: Bool
   private var checkable: Bool
-  @MutableProperty
+
+  @State
   private var editing: Bool = false
   private var updatedDescriptionBuffer: String = ""
 
@@ -25,7 +27,7 @@ public class TodoListItemView: ComposedWidget {
         if checkable {
           var updatedItem = item
           updatedItem.completed = !updatedItem.completed
-          store.dispatch(.UpdateTodoItem(updatedItem))
+          experimentalStore.commit(.updateTodoItem(updatedItem: updatedItem))
         }
       }
 

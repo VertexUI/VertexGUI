@@ -55,7 +55,7 @@ extension SearchStore {
     
     let preparedQuery = query.lowercased()
 
-    for list in todoStore.state.lists {
+    for list in todoStore.state.todoLists {
       for item in list.items {
         if item.description.lowercased().contains(preparedQuery) {
           results.append(SearchResult(listId: list.id, itemId: item.id))

@@ -10,34 +10,34 @@ public class TodoStore: ReduxStore<TodoState, TodoGetters, TodoMutation, TodoAct
   override public func performMutation(state: inout State, mutation: Mutation) {
     outer: switch mutation {
     case let .AddList:
-      state.lists.append(TodoList(id: state.nextListId, name: "New List", color: .yellow, items: []))
-      state.nextListId += 1
+      state.todoLists.append(TodoList(id: state.nextTodoListId, name: "New List", color: .yellow, items: []))
+      state.nextTodoListId += 1
 
     case let .UpdateListName(newName, listId):
-      for (index, var list) in state.lists.enumerated() {
+      for (index, var list) in state.todoLists.enumerated() {
         if list.id == listId {
           list.name = newName
-          state.lists[index] = list
+          state.todoLists[index] = list
           break
         }
       }
 
     case let .AddItem(listId):
-      let item = TodoItem(description: "New Item")
-      for (index, var list) in state.lists.enumerated() {
+      let item = TodoItem(listId: listId, description: "New Item")
+      for (index, var list) in state.todoLists.enumerated() {
         if list.id == listId {
           list.items.append(item)
-          state.lists[index] = list
+          state.todoLists[index] = list
           break
         }
       }
 
     case let .UpdateTodoItem(updatedItem):
-      for (listIndex, var list) in state.lists.enumerated() {
+      for (listIndex, var list) in state.todoLists.enumerated() {
         for (itemIndex, var item) in list.items.enumerated() {
           if item.id == updatedItem.id {
             list.items[itemIndex] = updatedItem
-            state.lists[listIndex] = list
+            state.todoLists[listIndex] = list
             break outer
           }
         }
@@ -81,7 +81,7 @@ public class TodoStore: ReduxStore<TodoState, TodoGetters, TodoMutation, TodoAct
 
     var newSearchResult = TodoSearchResult(query: query, filteredLists: [])
 
-    for list in state.lists {
+    for list in state.todoLists {
       var filteredList = FilteredTodoList(baseList: list, filteredIndices: [])
       for (index, item) in list.items.enumerated() {
         if item.description.lowercased().contains(query.lowercased()) {
@@ -96,8 +96,8 @@ public class TodoStore: ReduxStore<TodoState, TodoGetters, TodoMutation, TodoAct
 }
 
 public struct TodoState {
-  public var nextListId: Int = 0
-  public var lists: [TodoList] = []
+  public var nextTodoListId: Int = 0
+  public var todoLists: [TodoList] = []
   public var searchQuery: String? = nil
   public var searchResult: TodoSearchResult? = nil
 }
@@ -105,7 +105,7 @@ public struct TodoState {
 public class TodoGetters: ReduxGetters<TodoState> {
   /*@ReduxGetter(compute: { (state: State) in
     if let id = state.selectedListId {
-      return state.lists.first { $0.id == id }
+      return state.todoLists.first { $0.id == id }
     }
     return nil
   })

@@ -48,4 +48,14 @@ extension Widget {
     _ = onMouseWheelHandlerManager.addHandler({ _ in handler() })
     return self
   }
+
+  public func onKey(_ handler: @escaping (GUIKeyEvent) -> ()) -> Self {
+    _ = onKeyHandlerManager.addHandler(handler)
+    return self
+  }
+
+  public func onKey(_ handler: @escaping () -> ()) -> Self {
+    _ = onKeyHandlerManager.addHandler({ _ in handler() })
+    return self
+  }
 }
