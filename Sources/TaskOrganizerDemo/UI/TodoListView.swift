@@ -1,14 +1,21 @@
 import SwiftGUI
 import ReactiveProperties
+import CXShim
 
 public class TodoListView: ContentfulWidget {
   @Inject
   private var store: TodoStore
+  @Inject
+  private var experimentalStore: ExperimentalTodoStore
 
-  @ObservableProperty
+  @ImmutableBinding
   private var listId: Int
-  @ComputedProperty
-  private var list: TodoList
+
+  @State
+  private var list: TodoList?
+
+  var listIdSubscription: AnyCancellable?
+
   @MutableProperty
   private var editable: Bool
   private var checkable: Bool
@@ -23,18 +30,16 @@ public class TodoListView: ContentfulWidget {
   private var updatedItemDescription: String = ""
 
 
-  public init<P: ReactiveProperty>(listId listIdProperty: P, editable: Bool = true, checkable: Bool = true) where P.Value == Int {
+  public init(listId immutableListId: Experimental.ImmutableBinding<Int>, editable: Bool = true, checkable: Bool = true) {
+    self._listId = immutableListId
     self.editable = editable
     self.checkable = checkable
     super.init()
-    let binding = self.$listId.bind(listIdProperty)
+
     _ = onDependenciesInjected { [unowned self] in
-      self.$list.reinit(compute: { [unowned self] in
-        store.state.lists.first { $0.id == listId }!
-      }, dependencies: [$listId, store.$state])
-    }
-    _ = onDestroy { [unowned binding] in
-      binding.destroy()
+      listIdSubscription = $listId.sink { newListId in
+        list = experimentalStore.state.lists.first { $0.id == newListId }
+      }
     }
   }
 
@@ -45,7 +50,7 @@ public class TodoListView: ContentfulWidget {
 
       Container().with(classes: ["header"]).withContent {
 
-        Text(list.name).with(classes: ["list-name"])
+        Text(list?.name ?? "").with(classes: ["list-name"])
 
         Space(DSize2(24, 0))
 
@@ -62,9 +67,7 @@ public class TodoListView: ContentfulWidget {
 
       Space(DSize2(0, 48))
 
-      List(ComputedProperty<[TodoItem]>(compute: {
-        list.items
-      }, dependencies: [$list])).with(classes: ["todo-item-list"]).withContent {
+      List(items: Experimental.ImmutableBinding($list.immutable, get: { $0?.items ?? [] })).with(classes: ["todo-item-list"]).withContent {
         $0.itemSlot {
           build(todo: $0)
         }
@@ -97,6 +100,6 @@ public class TodoListView: ContentfulWidget {
   }
 
   private func handleAddTodoClick() {
-    store.commit(.AddItem(listId: list.id))
+    store.commit(.AddItem(listId: list!.id))
   }
 }

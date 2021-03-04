@@ -14,6 +14,7 @@ open class TodoApp: WidgetsApp {
     let todoStore: TodoStore
     let searchStore: SearchStore
     let navigationStore: NavigationStore
+    let experimentalStore: ExperimentalTodoStore = ExperimentalTodoStore()
 
     public init() {
         todoStore = TodoStore()
@@ -25,7 +26,7 @@ open class TodoApp: WidgetsApp {
             TodoAppView().experimentalWith(styleProperties: {
                 (\.$grow, 1)
             })
-        }.provide(dependencies: todoStore, searchStore, navigationStore))
+        }.provide(dependencies: todoStore, searchStore, navigationStore, experimentalStore))
         guiRoot.renderObjectSystemEnabled = false
         super.init(baseApp: SDL2OpenGL3NanoVGVisualApp())
     }

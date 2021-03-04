@@ -84,7 +84,7 @@ let package = Package(
        
         .target(
             name: "TaskOrganizerDemo",
-            dependencies: ["SwiftGUI", "ColorizeSwift", "Swim"],
+            dependencies: ["SwiftGUI", "ColorizeSwift", "Swim", .product(name: "CXShim", package: "CombineX")],
             resources: [.copy("Resources")]),
 
         .target(

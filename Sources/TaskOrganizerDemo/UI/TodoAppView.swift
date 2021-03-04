@@ -9,6 +9,9 @@ public class TodoAppView: ComposedWidget {
   }
 
   @Inject
+  private var experimentalStore: ExperimentalTodoStore
+
+  @Inject
   private var todoStore: TodoStore
 
   @Inject
@@ -33,6 +36,7 @@ public class TodoAppView: ComposedWidget {
   @State
   private var searchQuery: String = ""
   private var searchQuerySubscription: AnyCancellable?
+  private var storeSearchQuerySubscription: AnyCancellable?
 
   override public init() {
     super.init()
@@ -45,32 +49,30 @@ public class TodoAppView: ComposedWidget {
           navigationStore.commit(.updateMainViewRoute($0))
         }, dependencies: [navigationStore.$state])
 
-      /*_searchQuery.reinit(
-        compute: {
-          searchStore.state.searchQuery
-        },
-        apply: {
-          searchStore.dispatch(.updateResults($0))
-        }, dependencies: [searchStore.$state])
-      */
+      storeSearchQuerySubscription = experimentalStore.$state.searchQuery.sink {
+        searchQuery = $0
+      }
 
-      searchQuerySubscription = $searchQuery.debounce(for: .seconds(0.5), scheduler: CXWrappers.DispatchQueue(wrapping: DispatchQueue.main)).sink { _ in
-        if searchQuery.isEmpty {
-          switch mainViewRoute {
-          case .searchResults:
-            mainViewRoute = navigationStore.state.previousMainViewRoute ?? .none 
-          default:
-            break
-          }
-        } else {
-          switch mainViewRoute {
-          case .searchResults:
-            break
-          default:
-            mainViewRoute = .searchResults
+      searchQuerySubscription = $searchQuery
+        .debounce(for: .seconds(0.5), scheduler: CXWrappers.DispatchQueue(wrapping: DispatchQueue.main))
+        .removeDuplicates().sink {
+          experimentalStore.dispatch(.updateSearchResults(query: $0))
+          if $0.isEmpty {
+            switch mainViewRoute {
+            case .searchResults:
+              mainViewRoute = navigationStore.state.previousMainViewRoute ?? .none 
+            default:
+              break
+            }
+          } else {
+            switch mainViewRoute {
+            case .searchResults:
+              break
+            default:
+              mainViewRoute = .searchResults
+            }
           }
         }
-      }
     }
   }
 
@@ -93,12 +95,7 @@ public class TodoAppView: ComposedWidget {
         }
       }
 
-      List(
-        ComputedProperty(
-          compute: {
-            todoStore.state.lists
-          }, dependencies: [todoStore.$state])
-      ).with(classes: ["menu-item-list"]).withContent {
+      List(items: experimentalStore.$state.lists.immutable).with(classes: ["menu-item-list"]).withContent {
         $0.itemSlot {
           buildMenuListItem(for: $0)
         }
@@ -130,7 +127,7 @@ public class TodoAppView: ComposedWidget {
 
       Text(list.name).with(classes: ["list-item-name"])
     }.onClick { [unowned self] in
-      navigationStore.commit(.setSelectedListId(list.id))
+      experimentalStore.commit(.setSelectedListId(list.id))
       if navigationStore.state.mainViewRoute != .selectedList {
         navigationStore.commit(.updateMainViewRoute(.selectedList))
       }
@@ -147,7 +144,7 @@ public class TodoAppView: ComposedWidget {
           Text("no list selected").with(classes: ["no-active-view-label"])
 
         case let .selectedList:
-          TodoListView(listId: ComputedProperty(compute: { navigationStore.state.selectedListId }, dependencies: [navigationStore.$state]))
+          TodoListView(listId: experimentalStore.$state.selectedListId.immutable)
 
         case .searchResults:
           SearchResultsView().with(styleProperties: {
@@ -163,6 +160,7 @@ public class TodoAppView: ComposedWidget {
 
   private func handleNewListClick() {
     todoStore.commit(.AddList)
+    experimentalStore.commit(.addList)
   }
 
   override public var style: Style {
