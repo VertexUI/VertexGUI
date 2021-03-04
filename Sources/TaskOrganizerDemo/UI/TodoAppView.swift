@@ -53,7 +53,8 @@ public class TodoAppView: ComposedWidget {
           searchStore.dispatch(.updateResults($0))
         }, dependencies: [searchStore.$state])
       */
-      searchQuerySubscription = $searchQuery.debounce(for: .seconds(0.5), scheduler: DispatchQueue.main).sink { _ in
+
+      searchQuerySubscription = $searchQuery.debounce(for: .seconds(0.5), scheduler: CXWrappers.DispatchQueue(wrapping: DispatchQueue.main)).sink { _ in
         if searchQuery.isEmpty {
           switch mainViewRoute {
           case .searchResults:
