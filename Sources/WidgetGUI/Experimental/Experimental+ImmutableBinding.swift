@@ -35,5 +35,9 @@ extension Experimental {
           notifyChange()
         }
     }
+
+    public init(get _get: @escaping () -> Value) {
+      self._get = _get
+    }
   }
 }
