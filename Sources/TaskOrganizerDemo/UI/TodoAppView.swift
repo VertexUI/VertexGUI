@@ -153,25 +153,6 @@ public class TodoAppView: ComposedWidget {
     }
   }
 
-  override public var style: Style {
-    Style("&") {
-      FlatTheme(
-        primaryColor: AppTheme.primaryColor, secondaryColor: AppTheme.primaryColor,
-        backgroundColor: AppTheme.backgroundColor
-      ).styles
-
-      Style(".menu-item") {
-        ($0.foreground, Color.white)
-        ($0.background, Color.transparent)
-      }
-
-      Style(".menu-item:hover") {
-        ($0.background, AppTheme.primaryColor)
-        ($0.foreground, Color.black)
-      }
-    }
-  }
-
   override public var experimentalStyle: Experimental.Style {
     Experimental.Style("&") {
       (\.$background, AppTheme.backgroundColor)

@@ -5,7 +5,7 @@ import ReactiveProperties
 public class BarChart: LeafWidget {
   public typealias Data = [(label: String, value: Double)]
 
-  @ObservableProperty
+  @Experimental.ImmutableBinding
   private var data: Data
 
   private var drawingData = DrawingData()
@@ -19,9 +19,9 @@ public class BarChart: LeafWidget {
     )
   }
 
-  public init<P: ReactiveProperty>(_ dataProperty: P) where P.Value == Data {
+  public init(_ data: Experimental.ImmutableBinding<Data>) {
+    self._data = data
     super.init()
-    self.$data.bind(dataProperty)
   }
 
   override public func performLayout(constraints: BoxConstraints) -> DSize2 {

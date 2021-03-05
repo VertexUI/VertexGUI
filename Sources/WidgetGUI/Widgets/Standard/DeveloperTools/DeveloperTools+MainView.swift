@@ -61,10 +61,10 @@ extension DeveloperTools {
     @ExpDirectContentBuilder func buildActiveView() -> ExpDirectContent {
       Dynamic(store.$state.activateMainRoute) { [unowned self] in
         switch store.state.activateMainRoute {
-        /*case .performance:
-          DeveloperTools.PerformanceView()*/
         case .inspector:
           DeveloperTools.InspectorView()
+        case .performance:
+          DeveloperTools.PerformanceView()
         }
       }
     }
@@ -87,75 +87,5 @@ extension DeveloperTools {
         theme.experimentalStyles
       }
     }
-
-    /*override public func buildChild() -> Widget {
-      Experimental.SimpleRow { [unowned self] in
-        DefaultTheme()
-
-        Column(spacing: 16) {
-          Row {
-            Button().withContent {
-              Text("Inspector")
-            } onClick: {
-              activeTab = .Inspector
-            }
-
-            Button().withContent {
-              Text("Event Cumulation")
-            } onClick: {
-              activeTab = .EventRoll
-            }
-
-            Button().withContent {
-              Text("Event Log")
-            } onClick: {
-              activeTab = .EventLog
-            }
-
-            Flex.Item(grow: 1) {
-              Space(.zero)
-            }
-            
-            //LiveText { "fps: \(self.context.realFps)" }
-          }
-
-          ObservingBuilder($activeTab) {
-            switch activeTab {
-            case .Inspector:
-              InspectorView(inspectedRoot).onInspectWidget.chain {
-                inspectedWidget = $0
-              }
-            case .EventRoll:
-              EventCumulationView(inspectedRoot)
-            case .EventLog:
-              Space(.zero)
-              /*EventLogView(inspectedRoot, messages: $bufferedMessages.observable) {
-                inspectedWidget = $0
-              }*/
-            case .Lifecycle:
-              LifecycleView(widgetLifecycleMethodInvocationSignalBuffer, $widgetLifecycleMethodInvocationSignalGroups)
-            }
-          }
-        }
-
-        ObservingBuilder($inspectedWidget) {
-          if let inspectedWidget = inspectedWidget {
-            WidgetDetailView(inspectedWidget)
-          } else {
-            Space(.zero)
-          }
-        }
-      }
-    }
-
-    override public func destroySelf() {
-      messages.clear()
-      widgetLifecycleMethodInvocationSignalBuffer.destroy()
-      super.destroySelf()
-    }
-
-    deinit {
-      print("DEINITIALIZED DEV TOOLS VIEW")
-    }*/
   }
 }

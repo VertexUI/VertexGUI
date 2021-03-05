@@ -6,9 +6,9 @@ extension DeveloperTools {
     @Inject
     var inspectedRoot: Root
 
-    var barChartDataProperties: [ChartContent: MutableProperty<BarChart.Data>] = ChartContent.allCases.reduce(into: [:]) {
-        $0[$1] = MutableProperty([])
-      }
+    var barChartData = ObservableDictionary(ChartContent.allCases.reduce(into: [:]) {
+      $0[$1] = BarChart.Data()
+    })
 
     override public init() {
       super.init()
@@ -21,39 +21,39 @@ extension DeveloperTools {
 
     @ExpDirectContentBuilder override public var content: ExpDirectContent {
       Container().withContent { [unowned self] in
-        Container().with(classes: ["chart-group"]).with(styleProperties: { _ in
-          (SimpleLinearLayout.ParentKeys.direction, SimpleLinearLayout.Direction.column)
+        Container().with(classes: ["chart-group"]).experimentalWith(styleProperties: {
+          (\.$direction, .column)
         }).withContent {
-          buildChart(title: ChartContent.processMouseEvent.rawValue, dataProperty:barChartDataProperties[.processMouseEvent]!)
-          buildChart(title: ChartContent.processKeyEvent.rawValue, dataProperty:barChartDataProperties[.processKeyEvent]!)
-          buildChart(title: ChartContent.processTextEvent.rawValue, dataProperty:barChartDataProperties[.processTextEvent]!)
+          buildChart(.processMouseEvent)
+          buildChart(.processKeyEvent)
+          buildChart(.processTextEvent)
         }
 
-        Container().with(classes: ["chart-group"]).with(styleProperties: { _ in
-          (SimpleLinearLayout.ParentKeys.direction, SimpleLinearLayout.Direction.column)
+        Container().with(classes: ["chart-group"]).experimentalWith(styleProperties: {
+          (\.$direction, .column)
         }).withContent {
-          buildChart(title: ChartContent.tick.rawValue, dataProperty: barChartDataProperties[.tick]!)
-          buildChart(title: ChartContent.build.rawValue, dataProperty: barChartDataProperties[.build]!)
-          buildChart(title: ChartContent.updateChildren.rawValue, dataProperty: barChartDataProperties[.updateChildren]!)
-          buildChart(title: ChartContent.resolveMatchedStyles.rawValue, dataProperty: barChartDataProperties[.resolveMatchedStyles]!)
-          buildChart(title: ChartContent.resolveStyleProperties.rawValue, dataProperty: barChartDataProperties[.resolveStyleProperties]!)
-          buildChart(title: ChartContent.layout.rawValue, dataProperty: barChartDataProperties[.layout]!)
-          buildChart(title: ChartContent.updateCumulatedValues.rawValue, dataProperty: barChartDataProperties[.updateCumulatedValues]!)
+          buildChart(.tick)
+          buildChart(.build)
+          buildChart(.updateChildren)
+          buildChart(.resolveMatchedStyles)
+          buildChart(.resolveStyleProperties)
+          buildChart(.layout)
+          buildChart(.updateCumulatedValues)
         }
 
-        buildChart(title: ChartContent.draw.rawValue, dataProperty: barChartDataProperties[.draw]!).with(styleProperties: { _ in
-          (SimpleLinearLayout.ChildKeys.margin, Insets(bottom: 16))
+        buildChart(.draw).experimentalWith(styleProperties: {
+          (\.$margin, Insets(bottom: 16))
         })
       }
     }
 
-    func buildChart(title: String, dataProperty: MutableProperty<BarChart.Data>) -> Widget {
-      Container().with(styleProperties: { _ in
-        (SimpleLinearLayout.ParentKeys.direction, SimpleLinearLayout.Direction.column)
+    func buildChart(_ content: ChartContent) -> Widget {
+      Container().experimentalWith(styleProperties: {
+        (\.$direction, .column)
       }).withContent {
-        Text(title).with(classes: ["chart-title"])
+        Text(content.rawValue).with(classes: ["chart-title"])
 
-        BarChart(dataProperty).with(classes: ["chart"])
+        BarChart(Experimental.ImmutableBinding(barChartData.bindings[content].immutable, get: { $0 ?? [] })).with(classes: ["chart"])
       }
     }
 
@@ -91,26 +91,26 @@ extension DeveloperTools {
         }
       }
 
-      for (chartContent, property) in barChartDataProperties {
-        property.value = updatedBarChartData[chartContent]!
+      for chartContent in barChartData.keys {
+        barChartData[chartContent] = updatedBarChartData[chartContent]
       }
     }
 
-    override public var style: Style {
-      Style("&") {
-        Style(".chart-group") {
-          (SimpleLinearLayout.ChildKeys.margin, Insets(right: 16))
+    override public var experimentalStyle: Experimental.Style {
+      Experimental.Style("&") {} nested: {
+        Experimental.Style(".chart-group") {
+          (\.$margin, Insets(right: 16))
         }
 
-        Style(".chart-title") {
-          ($0.fontWeight, FontWeight.bold)
+        Experimental.Style(".chart-title") {
+          (\.$fontWeight, .bold)
         }
 
-        Style(".chart") {
-          (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.stretch)
-          ($0.height, 200)
-          ($0.width, 400)
-          (SimpleLinearLayout.ChildKeys.margin, Insets(bottom: 16))
+        Experimental.Style(".chart") {
+          (\.$alignSelf, .stretch)
+          (\.$height, 200)
+          (\.$width, 400)
+          (\.$margin, Insets(bottom: 16))
         }
       }
     }
