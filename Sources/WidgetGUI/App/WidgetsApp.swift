@@ -104,7 +104,7 @@ open class WidgetsApp: EventfulObject {
     }
 
     public func openDevTools(for window: Window) {
-        let devToolsView = DeveloperToolsView(guiRoots[window.id]!)
+        let devToolsView = DeveloperTools.MainView(guiRoots[window.id]!)
         let devToolsGuiRoot = WidgetGUI.Root(
             rootWidget: devToolsView
         )

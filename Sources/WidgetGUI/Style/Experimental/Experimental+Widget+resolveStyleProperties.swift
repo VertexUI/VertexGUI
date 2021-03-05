@@ -2,7 +2,17 @@ import CXShim
 
 extension Widget {
   internal func resolveStyleProperties() {
-    let matchedStylesDefinitions = experimentalMatchedStyles.flatMap { $0.propertyValueDefinitions }
+    let sortedMatchedStyles = experimentalMatchedStyles.sorted {
+      if ($0.treePath == nil && $1.treePath != nil) || ($0.treePath == nil && $1.treePath == nil) {
+        return true
+      } else if $0.treePath != nil && $1.treePath == nil {
+        return false
+      } else {
+        return $0.treePath! < $1.treePath!
+      }
+    }
+
+    let matchedStylesDefinitions = sortedMatchedStyles.flatMap { $0.propertyValueDefinitions }
     let mergedDefinitions = mergeDefinitions(matchedStylesDefinitions + experimentalDirectStylePropertyValueDefinitions)
 
     var resolvedProperties = [ExperimentalAnyStylePropertyProtocol]()

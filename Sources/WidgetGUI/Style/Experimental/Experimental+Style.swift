@@ -1,9 +1,12 @@
+import VisualAppBase
+
 extension Experimental {
   public class Style {
     let selector: StyleSelector
     let propertyValueDefinitions: [StylePropertyValueDefinition]
     let children: [Style]
     let sourceScope: UInt
+    var treePath: TreePath? = nil
 
     public init<W: Widget>(
       _ selector: StyleSelector,

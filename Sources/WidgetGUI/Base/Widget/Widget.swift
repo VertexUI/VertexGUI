@@ -61,7 +61,11 @@ open class Widget: Bounded, Parent, Child {
             onParentChanged.invokeHandlers(parent)
         }
     }
-    public internal(set) var treePath: TreePath = []
+    public internal(set) var treePath: TreePath = [] {
+        didSet {
+            experimentalSpecificWidgetStyle?.treePath = treePath
+        }
+    }
     /** The topmost parent or the widget instance itself if not mounted into a parent. */
     public var rootParent: Widget {
         var maxParent = parent as? Widget
@@ -305,6 +309,7 @@ open class Widget: Bounded, Parent, Child {
     var experimentalMergedProvidedStyles: [Experimental.Style] {
         if experimentalSpecificWidgetStyle == nil {
             experimentalSpecificWidgetStyle = experimentalStyle
+            experimentalSpecificWidgetStyle?.treePath = treePath
         }
         return experimentalProvidedStyles + (experimentalSpecificWidgetStyle == nil ? [] : [experimentalSpecificWidgetStyle!])
     }

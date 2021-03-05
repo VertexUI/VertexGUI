@@ -2,17 +2,20 @@ import GfxMath
 import VisualAppBase
 
 extension DeveloperTools {
-  public class WidgetPropertiesView: ComposedWidget {
+  public class WidgetPropertiesView: ContentfulWidget {
     @Inject
     var store: DeveloperTools.Store
 
-    override public func performBuild() {
-      rootChild = Container().withContent { [unowned self] in
-        Dynamic(store.$state) {
+    @ExpDirectContentBuilder override public var content: ExpDirectContent {
+      Container().withContent { [unowned self] in
+
+        Dynamic(store.$state.inspectedWidget) {
+
           if let inspectedWidget = store.state.inspectedWidget {
-            Container().with(styleProperties: { _ in
-              (SimpleLinearLayout.ChildKeys.grow, 1.0)
-              (SimpleLinearLayout.ParentKeys.direction, SimpleLinearLayout.Direction.column)
+
+            Container().experimentalWith(styleProperties: {
+              (\.$grow, 1.0)
+              (\.$direction, SimpleLinearLayout.Direction.column)
             }).withContent {
 
               Text(inspectedWidget.name).with(classes: ["widget-name"])
@@ -22,11 +25,8 @@ extension DeveloperTools {
                 Text(String(describing: inspectedWidget.treePath))
               }
 
-              buildResolvedStyleProperties(inspectedWidget)
-
-              buildStylePropertyDefinitions(inspectedWidget)
-
-              buildMatchedStyles(inspectedWidget)
+              buildStyleProperties(for: inspectedWidget)
+              buildMatchedStyles(for: inspectedWidget)
             }
           } else {
             Space(.zero)
@@ -35,57 +35,40 @@ extension DeveloperTools {
       }
     }
 
-    public func buildStylePropertyDefinitions(_ inspectedWidget: Widget) -> Widget {
-      Container().with(classes: ["section"]).withContent {
-        Text("style property definitions").with(classes: ["section-heading"])
+    func buildStyleProperties(for widget: Widget) -> Widget {
+      var propertyRepresentations = [Widget]()
 
-        inspectedWidget.mergedSupportedStyleProperties.flatMap {
-          buildStylePropertyDefinition($0, inspectedWidget)
+      let mirror = Mirror(reflecting: widget)
+      for child in mirror.allChildren {
+        if type(of: child.value) is ExperimentalAnyStylePropertyProtocol.Type, let property = child.value as? ExperimentalAnyStylePropertyProtocol {
+          propertyRepresentations.append(buildStyleProperty(child.label ?? "", property))
         }
       }
-    }
 
-    public func buildStylePropertyDefinition(_ definition: StylePropertySupportDefinition, _ inspectedWidget: Widget) -> Widget {
-      Container().with(classes: ["key-value-item"]).withContent {
-        Text(definition.key.asString).with(classes: ["key"])
+      return Container().with(classes: ["section"]).experimentalWith(styleProperties: {
+        (\.$direction, .column)
+      }).withContent {
+        Text("style properties").with(classes: ["section-heading"])
 
-        Container().withContent {
-          Text("default:")
-          
-          Text(String(describing: definition.defaultValue))
-        }
+        propertyRepresentations
       }
     }
 
-    public func buildResolvedStyleProperties(_ inspectedWidget: Widget) -> Widget {
-      Container().with(classes: ["section"]).withContent {
-        Text("resolved style properties").with(classes: ["section-heading"])
-
-        inspectedWidget.mergedSupportedStyleProperties.flatMap {
-          buildResolvedStyleProperty($0.key, inspectedWidget)
-        }
-      }
+    func buildStyleProperty(_ name: String, _ property: ExperimentalAnyStylePropertyProtocol) -> Widget {
+      Text(name).with(classes: ["key"])
     }
 
-    public func buildResolvedStyleProperty(_ key: StyleKey, _ inspectedWidget: Widget) -> Widget {
-      Container().with(classes: ["key-value-item"]).withContent { _ in
-        Text(key.asString + ":").with(classes: ["key"])
-
-        Text(String(describing: inspectedWidget.stylePropertyValue(key)))
-      }
-    }
-
-    public func buildMatchedStyles(_ inspectedWidget: Widget) -> Widget {
+    func buildMatchedStyles(for widget: Widget) -> Widget {
       Container().with(classes: ["section"]).withContent {
         Text("matched styles").with(classes: ["section-heading"])
 
-        inspectedWidget.matchedStyles.map {
+        widget.experimentalMatchedStyles.map {
           buildStyleInfo($0)
         }
       }
     }
 
-    public func buildStyleInfo(_ style: Style) -> Widget {
+    func buildStyleInfo(_ style: Experimental.Style) -> Widget {
       Container().with(classes: ["style-info"]).withContent {
         Text("style: \(style.selector)").with(classes: ["style-identifier"])
 
@@ -94,56 +77,56 @@ extension DeveloperTools {
           Text("\(style.treePath)")
         }
 
-        style.properties.map { property in
+        style.propertyValueDefinitions.map { definition in
           Container().with(classes: ["key-value-item"]).withContent {
-            Text("\(property.key)").with(classes: ["key"])
-            Text("\(String(describing: property.value))")
+            Text("\(definition.keyPath)").with(classes: ["key"])
+            Text("\(String(describing: definition.value))")
           }
         }
       }
     }
 
-    override public var style: Style {
-      Style("&") {
-        ($0.background, Color.white)
-        ($0.foreground, Color.black)
-        ($0.padding, Insets(all: 16))
-
-        Style(".widget-name") {
-          ($0.fontSize, 20.0)
-          ($0.fontWeight, FontWeight.bold)
-          (SimpleLinearLayout.ChildKeys.margin, Insets(bottom: 16))
+    override public var experimentalStyle: Experimental.Style {
+      Experimental.Style("&") {
+        (\.$background, .white)
+        (\.$foreground, .black)
+        (\.$padding, Insets(all: 16))
+      } nested: {
+        Experimental.Style(".widget-name") {
+          (\.$fontSize, 20.0)
+          (\.$fontWeight, .bold)
+          (\.$margin, Insets(bottom: 16))
         }
 
-        Style(".section") {
-          (SimpleLinearLayout.ChildKeys.margin, Insets(bottom: 16))
-          (SimpleLinearLayout.ParentKeys.direction, SimpleLinearLayout.Direction.column)
+        Experimental.Style(".section", Container.self) {
+          (\.$margin, Insets(bottom: 16))
+          (\.$direction, .column)
         }
 
-        Style(".section-heading") {
-          ($0.fontSize, 16.0)
-          ($0.fontWeight, FontWeight.bold)
-          (SimpleLinearLayout.ChildKeys.margin, Insets(bottom: 8))
+        Experimental.Style(".section-heading") {
+          (\.$fontSize, 16.0)
+          (\.$fontWeight, FontWeight.bold)
+          (\.$margin, Insets(bottom: 8))
         }
 
-        Style(".key-value-item") {
-          (SimpleLinearLayout.ChildKeys.margin, Insets(bottom: 8))
-          (SimpleLinearLayout.ParentKeys.direction, SimpleLinearLayout.Direction.row)
+        Experimental.Style(".key-value-item", Container.self) {
+          (\.$margin, Insets(bottom: 8))
+          (\.$direction, .row)
         }
 
-        Style(".key") {
-          ($0.fontWeight, FontWeight.bold)
+        Experimental.Style(".key") {
+          (\.$fontWeight, .bold)
         }
 
-        Style(".style-info") {
-          (SimpleLinearLayout.ParentKeys.direction, SimpleLinearLayout.Direction.column)
-          (SimpleLinearLayout.ChildKeys.margin, Insets(bottom: 16))
+        Experimental.Style(".style-info", Container.self) {
+          (\.$direction, .column)
+          (\.$margin, Insets(bottom: 16))
         }
 
-        Style(".style-identifier") {
-          ($0.fontWeight, FontWeight.bold)
-          ($0.fontSize, 16.0)
-          (SimpleLinearLayout.ChildKeys.margin, Insets(bottom: 8))
+        Experimental.Style(".style-identifier") {
+          (\.$fontWeight, .bold)
+          (\.$fontSize, 16.0)
+          (\.$margin, Insets(bottom: 8))
         }
       }
     }
