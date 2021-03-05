@@ -6,7 +6,13 @@ extension Experimental {
     let propertyValueDefinitions: [StylePropertyValueDefinition]
     let children: [Style]
     let sourceScope: UInt
-    var treePath: TreePath? = nil
+    var treePath: TreePath? = nil {
+      didSet {
+        for child in children {
+          child.treePath = treePath
+        }
+      }
+    }
 
     public init<W: Widget>(
       _ selector: StyleSelector,
