@@ -326,7 +326,9 @@ open class Widget: Bounded, Parent, Child {
     }
     internal var experimentalMatchedStyles: [Experimental.Style] = [] {
         didSet {
-            resolveStyleProperties()
+            if oldValue.count != experimentalMatchedStyles.count || !oldValue.allSatisfy({ old in experimentalMatchedStyles.contains { $0 === old } }) {
+                invalidateResolvedStyleProperties()
+            }
         }
     }
     /** Style properties that are applied to this Widget instance directly
@@ -339,7 +341,7 @@ open class Widget: Bounded, Parent, Child {
     }
     public internal(set) var experimentalDirectStylePropertyValueDefinitions: [Experimental.StylePropertyValueDefinition] = [] {
         didSet {
-            resolveStyleProperties()
+            invalidateResolvedStyleProperties()
         }
     }
 
