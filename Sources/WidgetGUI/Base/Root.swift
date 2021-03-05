@@ -41,12 +41,6 @@ open class Root: Parent {
   // TODO: implement getTick!
   lazy public private(set) var widgetLifecycleManager = Widget.LifecycleManager { Tick(deltaTime: 0, totalTime: 0) }
   public let widgetLifecycleBus = WidgetBus<WidgetLifecycleMessage>()
-  private var widgetLifecycleMessages = WidgetBus<WidgetLifecycleMessage>.MessageBuffer()
-  private var rebuildWidgets = WidgetBuffer()
-  private var reboxConfigWidgets = WidgetBuffer()
-  private var relayoutWidgets = WidgetBuffer()
-  private var rerenderWidgets = WidgetBuffer()
-  private var matchedStylesInvalidatedWidgets = WidgetBuffer()
 
   lazy var treeManager = WidgetTreeManager(widgetContext: widgetContext!, widgetLifecycleBus: widgetLifecycleBus)
   lazy var styleManager = StyleManager()
@@ -83,7 +77,6 @@ open class Root: Parent {
 
   public init(rootWidget contentRootWidget: Widget) {
     self.rootWidget = contentRootWidget
-    _ = onDestroy(self.widgetLifecycleBus.pipe(into: widgetLifecycleMessages))
   }
   
   open func setup(
@@ -176,22 +169,15 @@ open class Root: Parent {
 
     widgetContext!.onTick.invokeHandlers(tick)
 
-    for message in widgetLifecycleMessages {
-      processLifecycleMessage(message)
-    }
-    widgetLifecycleMessages.clear()
-
-    let removeOnAdd = widgetLifecycleMessages.onMessageAdded { [unowned self] in
-      processLifecycleMessage($0)
-    }
-
     var stepData = runTickStep {
-      for widget in rebuildWidgets {
-        if !widget.destroyed {
-          treeManager.buildChildren(of: widget)
+      let buildQueue = widgetLifecycleManager.queues[.build]!
+      var iterator = buildQueue.iterate()
+      while let entry = iterator.next() {
+        if !entry.target.destroyed {
+          treeManager.buildChildren(of: entry.target)
         }
       }
-      rebuildWidgets.clear()
+      buildQueue.clear()
     }
     operation.storeStep(.build, data: stepData)
 
@@ -207,12 +193,14 @@ open class Root: Parent {
     // TODO: check whether any parent of the widget was already processed (which automatically leads to a reprocessing of the styles)
     // TODO: or rather follow the pattern of invalidate...()? --> invalidateStyle()
     stepData = runTickStep {
-      for widget in matchedStylesInvalidatedWidgets {
-        if !widget.destroyed && widget.mounted {
-          styleManager.processTree(widget)
+      let matchedStylesQueue = widgetLifecycleManager.queues[.updateMatchedStyles]!
+      var iterator = matchedStylesQueue.iterate()
+      while let entry = iterator.next() {
+        if !entry.target.destroyed && entry.target.mounted {
+          styleManager.processTree(entry.target)
         }
       }
-      matchedStylesInvalidatedWidgets.clear()
+      matchedStylesQueue.clear()
     }
     operation.storeStep(.resolveStyles, data: stepData)
 
@@ -238,9 +226,6 @@ open class Root: Parent {
     }
     operation.storeStep(.updateCumulatedValues, data: stepData)
 
-    removeOnAdd()
-    widgetLifecycleMessages.clear()
-
     operation.recordEnd()
     debugManager.data.storeOperation(operation)
   }
@@ -251,22 +236,6 @@ open class Root: Parent {
     block()
     stepData.recordEnd()
     return stepData
-  }
-
-  @inline(__always)
-  private func processLifecycleMessage(_ message: WidgetLifecycleMessage) {
-    switch message.content {
-    case .BuildInvalidated:
-      rebuildWidgets.append(message.sender)
-    case .MatchedStylesInvalidated:
-      matchedStylesInvalidatedWidgets.append(message.sender)
-    case .BoxConfigInvalidated:
-      reboxConfigWidgets.append(message.sender)
-    case .LayoutInvalidated:
-      relayoutWidgets.append(message.sender)
-    case .RenderStateInvalidated:
-      rerenderWidgets.append(message.sender)
-    }
   }
 
   open func draw(_ drawingContext: DrawingContext) {

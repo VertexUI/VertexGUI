@@ -2,6 +2,7 @@ import CXShim
 
 extension Widget {
   internal func resolveStyleProperties() {
+    print("RESOLVE")
     let sortedMatchedStyles = experimentalMatchedStyles.sorted {
       if ($0.treePath == nil && $1.treePath != nil) || ($0.treePath == nil && $1.treePath == nil) {
         return true

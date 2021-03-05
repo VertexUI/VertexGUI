@@ -659,7 +659,7 @@ open class Widget: Bounded, Parent, Child {
     internal final func _invalidateBuild() {
         buildInvalid = true
 
-        lifecycleBus.publish(WidgetLifecycleMessage(sender: self, content: .BuildInvalidated))
+        context.queueLifecycleMethodInvocation(.build, target: self, sender: self, reason: .undefined)
         
         onBuildInvalidated.invokeHandlers()
     }

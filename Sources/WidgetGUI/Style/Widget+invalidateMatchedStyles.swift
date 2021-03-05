@@ -1,5 +1,9 @@
 extension Widget {
   public func invalidateMatchedStyles() {
-    lifecycleBus.publish(WidgetLifecycleMessage(sender: self, content: .MatchedStylesInvalidated))
+    if !mounted {
+      // print("warning: called invalidateMatchedStyles on widget that has not yet been mounted")
+      return
+    }
+    context.queueLifecycleMethodInvocation(.updateMatchedStyles, target: self, sender: self, reason: .undefined)
   }
 }
