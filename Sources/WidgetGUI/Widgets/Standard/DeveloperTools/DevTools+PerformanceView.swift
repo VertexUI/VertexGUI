@@ -35,7 +35,8 @@ extension DeveloperTools {
           buildChart(title: ChartContent.tick.rawValue, dataProperty: barChartDataProperties[.tick]!)
           buildChart(title: ChartContent.build.rawValue, dataProperty: barChartDataProperties[.build]!)
           buildChart(title: ChartContent.updateChildren.rawValue, dataProperty: barChartDataProperties[.updateChildren]!)
-          buildChart(title: ChartContent.resolveStyles.rawValue, dataProperty: barChartDataProperties[.resolveStyles]!)
+          buildChart(title: ChartContent.resolveMatchedStyles.rawValue, dataProperty: barChartDataProperties[.resolveMatchedStyles]!)
+          buildChart(title: ChartContent.resolveStyleProperties.rawValue, dataProperty: barChartDataProperties[.resolveStyleProperties]!)
           buildChart(title: ChartContent.layout.rawValue, dataProperty: barChartDataProperties[.layout]!)
           buildChart(title: ChartContent.updateCumulatedValues.rawValue, dataProperty: barChartDataProperties[.updateCumulatedValues]!)
         }
@@ -77,7 +78,8 @@ extension DeveloperTools {
 
           updatedBarChartData[.build]!.append((label: "wow", operation.steps[.build]!.duration))
           updatedBarChartData[.updateChildren]!.append((label: "wow", operation.steps[.updateChildren]!.duration))
-          updatedBarChartData[.resolveStyles]!.append((label: "wow", operation.steps[.resolveStyles]!.duration))
+          updatedBarChartData[.resolveMatchedStyles]!.append((label: "wow", operation.steps[.resolveMatchedStyles]!.duration))
+          updatedBarChartData[.resolveStyleProperties]!.append((label: "wow", operation.steps[.resolveStyleProperties]!.duration))
           updatedBarChartData[.layout]!.append((label: "wow", operation.steps[.layout]!.duration))
           updatedBarChartData[.updateCumulatedValues]!.append((label: "wow", operation.steps[.updateCumulatedValues]!.duration))
 
@@ -114,7 +116,7 @@ extension DeveloperTools {
     }
 
     enum ChartContent: String, CaseIterable {
-      case processMouseEvent, processKeyEvent, processTextEvent, tick, build, updateChildren, resolveStyles, layout, updateCumulatedValues, draw
+      case processMouseEvent, processKeyEvent, processTextEvent, tick, build, updateChildren, resolveMatchedStyles, resolveStyleProperties, layout, updateCumulatedValues, draw
     }
   }
 }

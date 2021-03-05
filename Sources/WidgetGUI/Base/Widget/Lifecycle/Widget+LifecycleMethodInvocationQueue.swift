@@ -77,6 +77,18 @@ extension Widget {
         entries.popLast()
       }
 
+      func removeDuplicates() {
+        var occurredEntries = [ObjectIdentifier]()
+        entries = entries.filter {
+          let id = ObjectIdentifier($0)
+          if !occurredEntries.contains(id) {
+            occurredEntries.append(id)
+            return true
+          }
+          return false
+        }
+      }
+
       deinit {
         onDestroy.invokeHandlers()
       }

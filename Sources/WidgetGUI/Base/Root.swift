@@ -194,7 +194,7 @@ open class Root: Parent {
     // TODO: or rather follow the pattern of invalidate...()? --> invalidateStyle()
     stepData = runTickStep {
       let matchedStylesQueue = widgetLifecycleManager.queues[.updateMatchedStyles]!
-      var iterator = matchedStylesQueue.iterate()
+      var iterator = matchedStylesQueue.iterateSubTreeRoots()
       while let entry = iterator.next() {
         if !entry.target.destroyed && entry.target.mounted {
           styleManager.processTree(entry.target)
@@ -202,7 +202,19 @@ open class Root: Parent {
       }
       matchedStylesQueue.clear()
     }
-    operation.storeStep(.resolveStyles, data: stepData)
+    operation.storeStep(.resolveMatchedStyles, data: stepData)
+
+    stepData = runTickStep {
+      let stylePropertiesQueue = widgetLifecycleManager.queues[.resolveStyleProperties]!
+      var iterator = stylePropertiesQueue.iterate()
+      while let entry = iterator.next() {
+        if !entry.target.destroyed && entry.target.mounted {
+          entry.target.resolveStyleProperties()
+        }
+      }
+      stylePropertiesQueue.clear()
+    }
+    operation.storeStep(.resolveStyleProperties, data: stepData)
 
     stepData = runTickStep {
       let layoutQueue = widgetLifecycleManager.queues[.layout]!
@@ -444,7 +456,8 @@ extension Root {
   public enum TickOperationStep {
     case build
     case updateChildren
-    case resolveStyles
+    case resolveMatchedStyles
+    case resolveStyleProperties
     case layout
     case updateCumulatedValues 
   }
