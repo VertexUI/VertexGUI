@@ -97,7 +97,6 @@ open class Widget: Bounded, Parent, Child {
     public var providedDependencies: [Dependency] = []
 
     /* focus */
-    public internal(set) var focusable = false
     @State internal var internalFocused: Bool = false
     @ImmutableBinding public var focused: Bool
     /* end focus */

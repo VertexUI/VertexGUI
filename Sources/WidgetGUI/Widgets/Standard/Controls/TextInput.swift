@@ -71,8 +71,6 @@ public final class TextInput: ComposedWidget, StylableWidgetProtocol, GUIKeyEven
         textBuffer = $0
         updatePlaceholderVisibility()
       }
-
-      self.focusable = true
   }
 
   private func updatePlaceholderVisibility() {
