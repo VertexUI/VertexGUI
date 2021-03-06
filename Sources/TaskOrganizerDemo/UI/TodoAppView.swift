@@ -8,33 +8,15 @@ public class TodoAppView: ComposedWidget {
     case SelectedList, Search
   }
 
-  @Inject
-  private var experimentalStore: ExperimentalTodoStore
+  @Inject private var experimentalStore: ExperimentalTodoStore
+  @Inject private var todoStore: TodoStore
+  @Inject private var searchStore: SearchStore
+  @Inject private var navigationStore: NavigationStore
+  @Reference private var activeViewTopSpace: Space
 
-  @Inject
-  private var todoStore: TodoStore
+  @MutableComputedProperty private var mainViewRoute: MainViewRoute
 
-  @Inject
-  private var searchStore: SearchStore
-
-  @Inject
-  private var navigationStore: NavigationStore
-
-  /*private var todoLists: [TodoList] {
-    store.state.lists
-  }*/
-
-  @Reference
-  private var activeViewTopSpace: Space
-
-  /*@MutableProperty
-  private var mode: Mode = .SelectedList*/
-
-  @MutableComputedProperty
-  private var mainViewRoute: MainViewRoute
-
-  @State
-  private var searchQuery: String = ""
+  @State private var searchQuery: String = ""
   private var searchQuerySubscription: AnyCancellable?
   private var storeSearchQuerySubscription: AnyCancellable?
 

@@ -17,6 +17,13 @@ public class ExperimentalTodoStore: Experimental.Store<ExperimentalTodoStore.Sta
     case .addTodoList:
       state.lists.append(TodoList(id: state.nextListId, name: "new list", color: .lightBlue, items: []))
       state.nextListId += 1
+    case let .updateTodoListName(listId, name):
+      for (index, list) in state.lists.enumerated() {
+        if list.id == listId {
+          state.lists[index].name = name
+          break
+        }
+      }
     case let .addTodoItem(listId):
       state.lists = state.lists.map { 
         if $0.id == listId {
@@ -73,6 +80,7 @@ public class ExperimentalTodoStore: Experimental.Store<ExperimentalTodoStore.Sta
 
   public enum Mutation {
     case addTodoList
+    case updateTodoListName(listId: Int, name: String)
     case addTodoItem(listId: Int)
     case updateTodoItem(updatedItem: TodoItem)
     case setSelectedTodoListId(Int)

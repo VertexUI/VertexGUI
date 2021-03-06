@@ -52,11 +52,16 @@ public class TodoListView: ContentfulWidget {
         
         Dynamic($editingName) {
           if editingName {
-            TextInput(text: $updatedNameBuffer.mutable, placeholder: "list name").with(classes: ["list-name", "list-name-input"]).onKey {
-              print("KEY ", $0)
-            }.with { widget in
+            TextInput(text: $updatedNameBuffer.mutable, placeholder: "list name").with(classes: ["list-name", "list-name-input"]).with { widget in
               _ = widget.onMounted {
                 widget.requestFocus()
+              }
+
+              widget.onKeyUp {
+                if $0.key == .Return {
+                  experimentalStore.commit(.updateTodoListName(listId: list?.id ?? -1, name: updatedNameBuffer))
+                  editingName = false
+                }
               }
             }
           } else {
