@@ -54,7 +54,11 @@ public class TodoListView: ContentfulWidget {
           if editingName {
             TextInput(text: $updatedNameBuffer.mutable, placeholder: "list name").with(classes: ["list-name", "list-name-input"]).onKey {
               print("KEY ", $0)
-            }.requestFocus()
+            }.with { widget in
+              _ = widget.onMounted {
+                widget.requestFocus()
+              }
+            }
           } else {
             Text(list?.name ?? "").with(classes: ["list-name"]).onClick {
               if editable {

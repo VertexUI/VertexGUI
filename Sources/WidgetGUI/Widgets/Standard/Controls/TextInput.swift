@@ -98,6 +98,7 @@ public final class TextInput: ComposedWidget, StylableWidgetProtocol, GUIKeyEven
       Drawing(draw: drawCaret).experimentalWith(styleProperties: {
         (\.$width, 0)
         (\.$height, 0)
+        (\.$opacity, ImmutableBinding($focused.immutable, get: { $0 ? 1 : 0 }))
         (\.$transform, Experimental.ImmutableBinding($textTranslation.immutable, get: {
           [DTransform2.translate($0)]
         }))
