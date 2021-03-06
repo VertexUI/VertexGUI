@@ -111,7 +111,7 @@ public final class TextInput: ComposedWidget, StylableWidgetProtocol
 
   override public var experimentalStyle: Experimental.Style {
     Experimental.Style("&") {
-      (\.$padding, Insets(all: 16))
+      (\.$padding, Insets(top: 16, right: 0, bottom: 16, left: 0))
       (\.$fontSize, 16)
       (\.$overflowX, .cut)
     } nested: {

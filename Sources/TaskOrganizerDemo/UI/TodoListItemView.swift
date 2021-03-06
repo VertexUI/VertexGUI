@@ -1,101 +1,60 @@
 import SwiftGUI
 
-public class TodoListItemView: ComposedWidget {
-  @Inject
-  private var experimentalStore: ExperimentalTodoStore
+public class TodoListItemView: ContentfulWidget {
+  @Inject private var store: ExperimentalTodoStore
 
   private var item: TodoItem
   private var editable: Bool
   private var checkable: Bool
 
-  @State
-  private var editing: Bool = false
-  private var updatedDescriptionBuffer: String = ""
+  @State private var editing: Bool = false
+  @State private var updatedDescriptionBuffer: String = ""
 
   public init(_ item: TodoItem, editable: Bool = false, checkable: Bool = true) {
     self.item = item
     self.editable = editable
     self.checkable = checkable
-    super.init()
+    updatedDescriptionBuffer = item.description
   }
 
-  override public func performBuild() {
-    rootChild = Container().withContent { [unowned self] in
-      TaskCompletionButton(item.completed).with(classes: ["completion-button"], styleProperties: { _ in
-        (SimpleLinearLayout.ChildKeys.alignSelf, SimpleLinearLayout.Align.center)
-      }).onClick {
+  @ExpDirectContentBuilder override public var content: ExpDirectContent {
+    Container().with(classes: ["root-container"]).withContent { [unowned self] in
+      TaskCompletionButton(item.completed).with(classes: ["completion-button"]).onClick {
         if checkable {
           var updatedItem = item
           updatedItem.completed = !updatedItem.completed
-          experimentalStore.commit(.updateTodoItem(updatedItem: updatedItem))
+          store.commit(.updateTodoItem(updatedItem: updatedItem))
         }
       }
 
-      Text(item.description).with(classes: ["description"])
-    }
-    /*MouseArea { [unowned self] in
-      Padding(all: 16) {
-        Row(spacing: 48) {
-          Row.Item(crossAlignment: .Center) {
-            TaskCompletionButton(StaticProperty(item.completed), color: .yellow) { _ in
-              if checkable {
+      Dynamic($editing) {
+        if editing {
+
+          TextInput(text: $updatedDescriptionBuffer.mutable).with(classes: ["description"]).with { instance in
+            _ = instance.onMounted {
+              instance.requestFocus()
+            }
+
+            instance.onKeyUp {
+              if $0.key == .Return {
                 var updatedItem = item
-                updatedItem.completed = !updatedItem.completed
-                store.dispatch(.UpdateTodoItem(updatedItem))
+                updatedItem.description = updatedDescriptionBuffer
+                store.commit(.updateTodoItem(updatedItem: updatedItem))
               }
             }
           }
+        } else {
 
-          Row.Item(crossAlignment: .Center) {
-            ObservingBuilder($editing) {
-              if editing {
-                Row(spacing: 16) {
-                  Row.Item {
-                    {
-                      let textField = TextField(item.description)
-                      
-                      _ = onDestroy(textField.$text.onChanged {
-                        updatedDescriptionBuffer = $0.new
-                      })
-
-                      _ = onDestroy(textField.onFocusChanged.addHandler { focused in
-                        if !focused {
-                          editing = false
-                        }
-                      })
-
-                      _ = textField.onMounted.once {
-                        textField.requestFocus()
-                      }
-
-                      return textField
-                    }()
-                  }
-
-                  Button().withContent {
-                    Text("done")
-                  } onClick: {
-                    var updatedItem = item
-                    updatedItem.description = updatedDescriptionBuffer
-                    editing = false
-                    store.dispatch(.UpdateTodoItem(updatedItem))
-                  }
-                }
-              } else {
-                MouseArea {
-                  Text(item.description, wrap: true)
-                } onClick: { _ in
-                  if editable {
-                    editing = true
-                    updatedDescriptionBuffer = item.description
-                  }
-                }
+          Text(item.description).with(classes: ["description"]).with { instance in
+            if editable {
+              instance.onClick {
+                editing = true
               }
             }
           }
         }
       }
-    }*/
+    }
   }
 
   override public var experimentalStyle: Experimental.Style {
@@ -105,19 +64,23 @@ public class TodoListItemView: ComposedWidget {
       (\.$borderColor, AppTheme.listItemDividerColor)
       (\.$borderWidth, BorderWidth(bottom: 1.0))
     } nested: {
-
-      Experimental.Style(".description") {
-        (\.$alignSelf, .center)
-        (\.$padding, Insets(left: 32))
+      Experimental.Style(".root-container", Container.self) {
+        (\.$alignContent, .center)
       }
 
       Experimental.Style(".completion-button") {
         (\.$foreground, AppTheme.primaryColor)
+        (\.$margin, Insets(right: 24))
       } nested: {
 
         Experimental.Style("&:hover") {
           (\.$foreground, AppTheme.primaryColor.darkened(40))
         }
+      }
+
+      Experimental.Style(".description") {
+        (\.$alignSelf, .center)
+        (\.$grow, 1)
       }
     }
   }
