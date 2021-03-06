@@ -49,13 +49,33 @@ extension Widget {
     return self
   }
 
-  public func onKey(_ handler: @escaping (GUIKeyEvent) -> ()) -> Self {
-    _ = onKeyHandlerManager.addHandler(handler)
+  public func onKeyDown(_ handler: @escaping (GUIKeyDownEvent) -> ()) -> Self {
+    _ = onKeyDownHandlerManager.addHandler(handler)
     return self
   }
 
-  public func onKey(_ handler: @escaping () -> ()) -> Self {
-    _ = onKeyHandlerManager.addHandler({ _ in handler() })
+  public func onKeyDown(_ handler: @escaping () -> ()) -> Self {
+    _ = onKeyDownHandlerManager.addHandler({ _ in handler() })
+    return self
+  }
+
+  public func onKeyUp(_ handler: @escaping (GUIKeyUpEvent) -> ()) -> Self {
+    _ = onKeyUpHandlerManager.addHandler(handler)
+    return self
+  }
+
+  public func onKeyUp(_ handler: @escaping () -> ()) -> Self {
+    _ = onKeyUpHandlerManager.addHandler({ _ in handler() })
+    return self
+  }
+
+  public func onTextInput(_ handler: @escaping (GUITextInputEvent) -> ()) -> Self {
+    _ = onTextInputHandlerManager.addHandler(handler)
+    return self
+  }
+
+  public func onTextInput(_ handler: @escaping () -> ()) -> Self {
+    _ = onTextInputHandlerManager.addHandler({ _ in handler() })
     return self
   }
 }

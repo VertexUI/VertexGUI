@@ -4,7 +4,7 @@ import VisualAppBase
 import ReactiveProperties
 import CXShim
 
-public final class TextInput: ComposedWidget, StylableWidgetProtocol, GUIKeyEventConsumer, GUITextEventConsumer
+public final class TextInput: ComposedWidget, StylableWidgetProtocol
 {
   @MutableBinding
   public var text: String
@@ -71,6 +71,9 @@ public final class TextInput: ComposedWidget, StylableWidgetProtocol, GUIKeyEven
         textBuffer = $0
         updatePlaceholderVisibility()
       }
+
+      _ = onKeyDown(handleKeyDown)
+      _ = onTextInput(handleTextInput)
   }
 
   private func updatePlaceholderVisibility() {
@@ -161,57 +164,43 @@ public final class TextInput: ComposedWidget, StylableWidgetProtocol, GUIKeyEven
     caretIndex = maxIndexBelowX
   }
 
-  public func consume(_ event: GUIMouseEvent) {
-    if event is GUIMouseEnterEvent {
-      dropCursorRequest = context.requestCursor(.Text)
-    } else if event is GUIMouseLeaveEvent {
-      if let drop = dropCursorRequest {
-        drop()
+  public func handleKeyDown(_ event: GUIKeyDownEvent) {
+    switch event.key {
+    case .Backspace:
+      if caretIndex > 0 && textBuffer.count >= caretIndex {
+        textBuffer.remove(
+          at: textBuffer.index(textBuffer.startIndex, offsetBy: caretIndex - 1))
+        caretIndex -= 1
+        syncText()
+        updateTextTranslation()
       }
+    case .Delete:
+      if caretIndex < textBuffer.count {
+        textBuffer.remove(at: textBuffer.index(textBuffer.startIndex, offsetBy: caretIndex))
+        syncText()
+      }
+    case .ArrowLeft:
+      if caretIndex > 0 {
+        caretIndex -= 1
+        updateTextTranslation()
+      }
+    case .ArrowRight:
+      if caretIndex < textBuffer.count {
+        caretIndex += 1
+        updateTextTranslation()
+      }
+    default:
+      break
     }
   }
 
-  public func consume(_ event: GUIKeyEvent) {
-    if let event = event as? GUIKeyDownEvent {
-      switch event.key {
-      case .Backspace:
-        if caretIndex > 0 && textBuffer.count >= caretIndex {
-          textBuffer.remove(
-            at: textBuffer.index(textBuffer.startIndex, offsetBy: caretIndex - 1))
-          caretIndex -= 1
-          syncText()
-          updateTextTranslation()
-        }
-      case .Delete:
-        if caretIndex < textBuffer.count {
-          textBuffer.remove(at: textBuffer.index(textBuffer.startIndex, offsetBy: caretIndex))
-          syncText()
-        }
-      case .ArrowLeft:
-        if caretIndex > 0 {
-          caretIndex -= 1
-          updateTextTranslation()
-        }
-      case .ArrowRight:
-        if caretIndex < textBuffer.count {
-          caretIndex += 1
-          updateTextTranslation()
-        }
-      default:
-        break
-      }
-    }
-  }
-
-  public func consume(_ event: GUITextEvent) {
-    if let event = event as? GUITextInputEvent {
-      textBuffer.insert(
-        contentsOf: event.text,
-        at: textBuffer.index(textBuffer.startIndex, offsetBy: caretIndex))
-      caretIndex += event.text.count
-      syncText()
-      updateTextTranslation()
-    }
+  public func handleTextInput(_ event: GUITextInputEvent) {
+    textBuffer.insert(
+      contentsOf: event.text,
+      at: textBuffer.index(textBuffer.startIndex, offsetBy: caretIndex))
+    caretIndex += event.text.count
+    syncText()
+    updateTextTranslation()
   }
 
   private func updateTextTranslation() {

@@ -444,12 +444,18 @@ open class Widget: Bounded, Parent, Child {
     /* input events
     --------------------------
     */
+    public let onMouseEnterHandlerManager = EventHandlerManager<GUIMouseEnterEvent>()
+    public let onMouseMoveHandlerManager = EventHandlerManager<GUIMouseMoveEvent>()
+    public let onMouseLeaveHandlerManager = EventHandlerManager<GUIMouseLeaveEvent>()
     public let onClickHandlerManager = EventHandlerManager<GUIMouseButtonClickEvent>()
     public let onMouseDownHandlerManager = EventHandlerManager<GUIMouseButtonDownEvent>()
     public let onMouseUpHandlerManager = EventHandlerManager<GUIMouseButtonUpEvent>()
-    public let onMouseMoveHandlerManager = EventHandlerManager<GUIMouseMoveEvent>()
     public let onMouseWheelHandlerManager = EventHandlerManager<GUIMouseWheelEvent>()
-    public let onKeyHandlerManager = EventHandlerManager<GUIKeyEvent>()
+
+    public let onKeyDownHandlerManager = EventHandlerManager<GUIKeyDownEvent>()
+    public let onKeyUpHandlerManager = EventHandlerManager<GUIKeyUpEvent>()
+
+    public let onTextInputHandlerManager = EventHandlerManager<GUITextInputEvent>()
     /* end input events */
     
     public init() {

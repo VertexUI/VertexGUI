@@ -277,21 +277,17 @@ open class Root: Parent {
     Event Propagation
     --------------------
     */
-  internal var previousMouseEventTargets: [ObjectIdentifier: [Widget & GUIMouseEventConsumer]] = [
-    ObjectIdentifier(GUIMouseButtonDownEvent.self): [],
-    ObjectIdentifier(GUIMouseMoveEvent.self): [],
-  ]
-
   internal func propagate(_ rawKeyEvent: KeyEvent) {
-    if let focus = focusManager.currentFocusedWidget as? GUIKeyEventConsumer {
+    var next = Optional(rootWidget)
+    while let current = next {
       if let keyDownEvent = rawKeyEvent as? KeyDownEvent {
-        focus.consume(
+        current.processKeyEvent(
           GUIKeyDownEvent(
             key: keyDownEvent.key,
             keyStates: keyDownEvent.keyStates,
             repetition: keyDownEvent.repetition))
       } else if let keyUpEvent = rawKeyEvent as? KeyUpEvent {
-        focus.consume(
+        current.processKeyEvent(
           GUIKeyUpEvent(
             key: keyUpEvent.key,
             keyStates: keyUpEvent.keyStates,
@@ -299,13 +295,30 @@ open class Root: Parent {
       } else {
         fatalError("Unsupported event type: \(rawKeyEvent)")
       }
+      
+      next = nil
+      for child in current.children {
+        if child.focused {
+          next = child
+          break
+        }
+      }
     }
   }
 
   internal func propagate(_ event: TextEvent) {
-    if let focused = focusManager.currentFocusedWidget as? GUITextEventConsumer {
+    var next = Optional(rootWidget)
+    while let current = next {
       if let event = event as? TextInputEvent {
-        focused.consume(GUITextInputEvent(event.text))
+        current.processTextEvent(GUITextInputEvent(event.text))
+      }
+
+      next = nil
+      for child in current.children {
+        if child.focused {
+          next = child
+          break
+        }
       }
     }
   }
