@@ -1,6 +1,5 @@
 import XCTest
-@testable import ReactiveProperties
-
+@testable 
 final class MutablePropertyTests: XCTestCase {
   func testInstantiation() {
     let property = MutableProperty("testString")

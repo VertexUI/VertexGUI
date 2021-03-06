@@ -1,6 +1,5 @@
 import XCTest
-@testable import ReactiveProperties
-
+@testable 
 final class StaticPropertyTests: XCTestCase {
   func testSimpleStaticProperty() {
     let property = StaticProperty("testString")

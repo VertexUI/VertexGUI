@@ -1,6 +1,5 @@
 import XCTest
 import GfxMath
-import ReactiveProperties
 @testable import WidgetGUI
 
 class ContainerTests: XCTestCase, LayoutTest {

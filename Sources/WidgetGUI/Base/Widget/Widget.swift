@@ -2,7 +2,6 @@ import Foundation
 import GfxMath
 import VisualAppBase
 import ColorizeSwift
-import ReactiveProperties
 import Events
 import CXShim
 
@@ -332,9 +331,8 @@ open class Widget: Bounded, Parent, Child {
     }
     var scrollingEnabledUpdateSubscription: AnyCancellable?
     /** removers for event handlers that are registered to manage scrolling */
-    private var scrollEventHandlerRemovers: [() -> ()] = []
     private var scrollingSpeed = 20.0
-    @MutableProperty
+    @State
     internal var currentScrollOffset: DVec2 = .zero
     internal var scrollableLength: DVec2 = .zero
     /** Mainly used to avoid scroll bars being translated with the rest of the content. */
@@ -342,6 +340,9 @@ open class Widget: Bounded, Parent, Child {
 
     lazy internal var pseudoScrollBarX = ScrollBar(orientation: .horizontal)
     lazy internal var pseudoScrollBarY = ScrollBar(orientation: .vertical)
+
+    var scrollSubscriptions = [AnyCancellable]()
+    var scrollMouseWheelHandlerRemover: (() -> ())?
     /* end scrolling */
 
     @usableFromInline internal var reference: AnyReferenceProtocol? {
@@ -352,7 +353,7 @@ open class Widget: Bounded, Parent, Child {
         }
     }
 
-    @MutableProperty
+    @State
     public var debugLayout: Bool = false
 
     public internal(set) var onParentChanged = EventHandlerManager<Parent?>()
@@ -434,34 +435,42 @@ open class Widget: Bounded, Parent, Child {
     }
 
     private func updateScrollEventHandlers() {
-        for remove in scrollEventHandlerRemovers {
-            remove()
-        }
+        scrollSubscriptions = []
+        scrollMouseWheelHandlerRemover?()
 
         if scrollingEnabled.x || scrollingEnabled.y {
-            scrollEventHandlerRemovers.append($currentScrollOffset.onChanged { [unowned self] in
-                pseudoScrollBarX.scrollProgress = $0.new.x / layoutedSize.width
-                pseudoScrollBarY.scrollProgress = $0.new.y / layoutedSize.height
+            $currentScrollOffset.removeDuplicates().sink { [unowned self] in
+                let updatedXProgress = $0.x / layoutedSize.width
+                if !updatedXProgress.isNaN && updatedXProgress != pseudoScrollBarX.scrollProgress {
+                    pseudoScrollBarX.scrollProgress = updatedXProgress
+                }
+
+                let updatedYProgress = $0.y / layoutedSize.height
+                if !updatedYProgress.isNaN && updatedYProgress != pseudoScrollBarY.scrollProgress {
+                    pseudoScrollBarY.scrollProgress = updatedYProgress
+                }
                 for child in children {
                     context.queueLifecycleMethodInvocation(.resolveCumulatedValues, target: child, sender: self, reason: .undefined)
                 }
-            })
+            }.store(in: &scrollSubscriptions)
 
-            scrollEventHandlerRemovers.append(pseudoScrollBarX.$scrollProgress.onChanged { [unowned self] in
-                if $0.old != $0.new {
-                    currentScrollOffset.x = $0.new * layoutedSize.width
+            pseudoScrollBarX.$scrollProgress.removeDuplicates().sink { [unowned self] in
+                let updated = $0 * layoutedSize.width
+                if updated != currentScrollOffset.x {
+                    currentScrollOffset.x = updated
                 }
-            })
+            }.store(in: &scrollSubscriptions)
 
-            scrollEventHandlerRemovers.append(pseudoScrollBarY.$scrollProgress.onChanged { [unowned self] in
-                if $0.old != $0.new { 
-                    currentScrollOffset.y = $0.new * layoutedSize.height
+            pseudoScrollBarY.$scrollProgress.removeDuplicates().sink { [unowned self] in
+                let updated = $0 * layoutedSize.height
+                if updated != currentScrollOffset.y {
+                    currentScrollOffset.y = updated
                 }
-            })
+            }.store(in: &scrollSubscriptions)
 
-            scrollEventHandlerRemovers.append(onMouseWheelHandlerManager.addHandler { [unowned self] event in
+            scrollMouseWheelHandlerRemover = onMouseWheelHandlerManager.addHandler { [unowned self] event in
                 processMouseWheelEventUpdateScroll(event)
-            })
+            }
         }
     }
 

@@ -1,6 +1,5 @@
 import XCTest
-@testable import ReactiveProperties
-
+@testable 
 class MutableComputedPropertyTests: XCTestCase {
   func testSingleVariableBacked() {
     var storage = "test1"

@@ -1,12 +1,8 @@
-import ReactiveProperties
 import VisualAppBase
 import GfxMath
 import CXShim
 
 public class Text: LeafWidget {
-  @ObservableProperty
-  private var text: String
-
   private var fontConfig: FontConfig {
     FontConfig(
       family: fontFamily,
@@ -21,33 +17,15 @@ public class Text: LeafWidget {
   }
 
   @Experimental.ImmutableBinding
-  private var expText: String
+  private var text: String
   private var expTextSubscription: AnyCancellable?
 
-  public init<P: ReactiveProperty>(
-    _ textProperty: P) where P.Value == String {
-      self._expText = Experimental.ImmutableBinding<String>(State(wrappedValue: "wow"), get: { $0 })
-      super.init()
-
-       self.$text.bind(textProperty)
-      _ = onDestroy(self.$text.onChanged { [unowned self] _ in
-        invalidateLayout()
-      })
-  }
-
   public init(_ text: Experimental.ImmutableBinding<String>) {
-    self._expText = text
-    super.init()
-    let tmpBackingProperty = MutableProperty<String>()
-    tmpBackingProperty.value = text.value
-    self.$text.bind(tmpBackingProperty)
-    expTextSubscription = self._expText.sink(receiveValue: { [unowned self] in
-      tmpBackingProperty.value = $0
-    })
+    self._text = text
   }
 
-  public convenience init(_ text: String) {
-      self.init(StaticProperty(text))
+  public init(_ text: String) {
+      self._text = ImmutableBinding(get: { text })
   }
   
   override public func performLayout(constraints: BoxConstraints) -> DSize2 {

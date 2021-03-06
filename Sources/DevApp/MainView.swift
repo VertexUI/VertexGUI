@@ -1,23 +1,9 @@
-import ReactiveProperties
 import SwiftGUI
 import CXShim
 
 public class MainView: ContentfulWidget, SlotAcceptingWidgetProtocol {
   @Inject
   var someInjectedData: String
-
-  @MutableProperty
-  private var flag: Bool = false
-  @MutableProperty
-  private var text1: String = "initial reactive Text 1"
-  @MutableProperty
-  private var text2: String = "initial reactive Text 2"
-
-  @MutableProperty
-  var items: [String] = []
-
-  @MutableProperty
-  var layoutDirection: SimpleLinearLayout.Direction = .row
 
   @State
   var myState: String = "This is a value from an @State property."

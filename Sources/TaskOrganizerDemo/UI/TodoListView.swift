@@ -1,9 +1,7 @@
 import SwiftGUI
-import ReactiveProperties
 import CXShim
 
 public class TodoListView: ContentfulWidget {
-  @Inject private var store: TodoStore
   @Inject private var experimentalStore: ExperimentalTodoStore
 
   @ImmutableBinding private var listId: Int

@@ -1,5 +1,4 @@
 import XCTest
-import ReactiveProperties
 @testable import WidgetGUI
 
 class StylePropertiesResolverTests: XCTestCase {

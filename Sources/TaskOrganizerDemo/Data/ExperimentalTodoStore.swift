@@ -53,6 +53,9 @@ public class ExperimentalTodoStore: Experimental.Store<ExperimentalTodoStore.Sta
       state.searchQuery = query
     case let .setSearchResult(result):
       state.searchResult = result
+    case let .setMainViewRoute(route):
+      state.previousMainViewRoute = state.mainViewRoute
+      state.mainViewRoute = route
     }
   }
 
@@ -69,6 +72,9 @@ public class ExperimentalTodoStore: Experimental.Store<ExperimentalTodoStore.Sta
   }
 
   public struct State {
+    public var mainViewRoute: MainViewRoute = .none
+    public var previousMainViewRoute: MainViewRoute = .none
+
     public var nextListId = 0
     public var lists: [TodoList] = []
 
@@ -86,6 +92,8 @@ public class ExperimentalTodoStore: Experimental.Store<ExperimentalTodoStore.Sta
     case setSelectedTodoListId(Int)
     case setSearchQuery(String)
     case setSearchResult(TodoSearchResult)
+
+    case setMainViewRoute(MainViewRoute)
   }
 
   public enum Action {

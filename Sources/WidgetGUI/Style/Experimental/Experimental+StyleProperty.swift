@@ -1,4 +1,3 @@
-import ReactiveProperties
 import CXShim
 
 protocol ExperimentalAnyStylePropertyProtocol: class {

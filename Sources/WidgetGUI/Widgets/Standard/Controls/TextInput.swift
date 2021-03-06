@@ -1,35 +1,26 @@
 import GfxMath
 import Foundation
 import VisualAppBase
-import ReactiveProperties
 import CXShim
 
 public final class TextInput: ContentfulWidget
 {
-  @MutableBinding
-  public var text: String
+  @MutableBinding public var text: String
   private var textBuffer: String
 
-  @ObservableProperty
-  private var placeholderText: String
+  @State private var placeholderText: String
 
-  @State
-  private var placeholderVisibility: Visibility = .visible
+  @State private var placeholderVisibility: Visibility = .visible
 
-  @State
-  private var textTranslation: DVec2 = .zero
+  @State private var textTranslation: DVec2 = .zero
   /*@State
   private var caretPositionTransforms: [DTransform2]*/
 
-  @Reference
-  private var stackContainer: Container
-  @Reference
-  private var textWidget: Text
-  @Reference
-  private var caretWidget: Drawing
+  @Reference private var stackContainer: Container
+  @Reference private var textWidget: Text
+  @Reference private var caretWidget: Drawing
 
-  @ExperimentalStyleProperty
-  public var caretColor: Color = .lightBlue
+  @ExperimentalStyleProperty public var caretColor: Color = .lightBlue
 
   private var caretIndex: Int = 2
   private var lastDrawTimestamp: Double = 0.0
@@ -61,10 +52,10 @@ public final class TextInput: ContentfulWidget
         
       self._text = textBinding
       self.textBuffer = textBinding.value
+      self.placeholderText = placeholder
 
       super.init()
 
-      self.$placeholderText.bind(StaticProperty(placeholder))
       updatePlaceholderVisibility()
 
       textSubscription = self._text.sink { [unowned self] in
@@ -92,7 +83,7 @@ public final class TextInput: ContentfulWidget
         }))
       }).connect(ref: $textWidget)
 
-      Text($placeholderText).with(classes: ["placeholder"]).experimentalWith(styleProperties: {
+      Text($placeholderText.immutable).with(classes: ["placeholder"]).experimentalWith(styleProperties: {
         (\.$visibility, $placeholderVisibility.immutable)
       })
       

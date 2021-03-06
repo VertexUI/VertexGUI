@@ -1,4 +1,3 @@
-import ReactiveProperties
 import SwiftGUI
 import Dispatch
 import CXShim
@@ -9,12 +8,7 @@ public class TodoAppView: ContentfulWidget {
   }
 
   @Inject private var experimentalStore: ExperimentalTodoStore
-  @Inject private var todoStore: TodoStore
-  @Inject private var searchStore: SearchStore
-  @Inject private var navigationStore: NavigationStore
   @Reference private var activeViewTopSpace: Space
-
-  @MutableComputedProperty private var mainViewRoute: MainViewRoute
 
   @State private var searchQuery: String = ""
   private var searchQuerySubscription: AnyCancellable?
@@ -23,14 +17,6 @@ public class TodoAppView: ContentfulWidget {
   override public init() {
     super.init()
     _ = onDependenciesInjected { [unowned self] _ in
-      _mainViewRoute.reinit(
-        compute: {
-          navigationStore.state.mainViewRoute
-        },
-        apply: {
-          navigationStore.commit(.updateMainViewRoute($0))
-        }, dependencies: [navigationStore.$state])
-
       storeSearchQuerySubscription = experimentalStore.$state.searchQuery.sink {
         searchQuery = $0
       }
@@ -40,18 +26,18 @@ public class TodoAppView: ContentfulWidget {
         .removeDuplicates().sink {
           experimentalStore.dispatch(.updateSearchResult(query: $0))
           if $0.isEmpty {
-            switch mainViewRoute {
+            switch experimentalStore.state.mainViewRoute {
             case .searchResults:
-              mainViewRoute = navigationStore.state.previousMainViewRoute ?? .none 
+              experimentalStore.commit(.setMainViewRoute(experimentalStore.state.previousMainViewRoute))
             default:
               break
             }
           } else {
-            switch mainViewRoute {
+            switch experimentalStore.state.mainViewRoute {
             case .searchResults:
               break
             default:
-              mainViewRoute = .searchResults
+              experimentalStore.commit(.setMainViewRoute(.searchResults))
             }
           }
         }
@@ -90,7 +76,7 @@ public class TodoAppView: ContentfulWidget {
       TextInput(text: $searchQuery.mutable, placeholder: "search").with(classes: ["search-input"])
 
       Button().onClick {
-        searchStore.dispatch(.updateResults(""))
+        experimentalStore.commit(.setMainViewRoute(experimentalStore.state.previousMainViewRoute))
       }.withContent {
         MaterialDesignIcon(.close)
       }
@@ -110,8 +96,8 @@ public class TodoAppView: ContentfulWidget {
       Text(list.name).with(classes: ["list-item-name"])
     }.onClick { [unowned self] in
       experimentalStore.commit(.setSelectedTodoListId(list.id))
-      if navigationStore.state.mainViewRoute != .selectedList {
-        navigationStore.commit(.updateMainViewRoute(.selectedList))
+      if experimentalStore.state.mainViewRoute != .selectedList {
+        experimentalStore.commit(.setMainViewRoute(.selectedList))
       }
     }
   }
@@ -120,8 +106,8 @@ public class TodoAppView: ContentfulWidget {
     return Container().with(classes: ["active-view-container"]).withContent { [unowned self] in
       Space(DSize2(0, 0)).connect(ref: $activeViewTopSpace)
 
-      Dynamic($mainViewRoute) {
-        switch mainViewRoute {
+      Dynamic(experimentalStore.$state.mainViewRoute) {
+        switch experimentalStore.state.mainViewRoute {
         case .none:
           Text("no list selected").with(classes: ["no-active-view-label"])
 

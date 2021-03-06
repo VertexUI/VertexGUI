@@ -1,8 +1,7 @@
 import SwiftGUI 
-import ReactiveProperties
 
 public class MainView: ContentfulWidget {
-  @MutableProperty
+  @State
   private var counter = 0
 
   @ExpDirectContentBuilder override public var content: ExpDirectContent {
@@ -14,9 +13,7 @@ public class MainView: ContentfulWidget {
       Button().onClick {
         counter += 1
       }.withContent {
-        Text(ComputedProperty(compute: {
-          "counter: \(counter)"
-        }, dependencies: [$counter]))
+        Text(Experimental.ImmutableBinding($counter.immutable, get: { "counter: \($0)" }))
       }
     }
   }

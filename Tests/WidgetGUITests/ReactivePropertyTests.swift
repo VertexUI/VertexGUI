@@ -1,7 +1,6 @@
 import XCTest
 @testable import SwiftGUI
-@testable import ReactiveProperties
-
+@testable 
 final class ReactivePropertyTests: XCTestCase {
   class UniDirectionalBindingSourceWidget: Widget {
     @MutableProperty

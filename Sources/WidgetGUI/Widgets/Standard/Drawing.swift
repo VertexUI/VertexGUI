@@ -1,11 +1,7 @@
 import VisualAppBase
 import GfxMath
-import ReactiveProperties
 
 public class Drawing: LeafWidget {
-  @ObservableProperty
-  private var paint: Paint
-
   private let _draw: (DrawingContext) -> ()
 
   public init(draw: @escaping (DrawingContext) -> ()) {

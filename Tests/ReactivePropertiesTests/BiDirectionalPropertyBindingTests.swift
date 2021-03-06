@@ -1,6 +1,5 @@
 import XCTest
-@testable import ReactiveProperties
-
+@testable 
 final class BiDirectionalPropertyBindingTests: XCTestCase {
   func testInitialValueApplication() {
     var property1 = MutableProperty<String>()

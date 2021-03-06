@@ -1,6 +1,5 @@
 import XCTest
-@testable import ReactiveProperties
-
+@testable 
 final class UniDirectionalPropertyBindingTests: XCTestCase {
   func testSimpleSourceChangeAppliedToSink() {
     let property1 = MutableProperty<String>()

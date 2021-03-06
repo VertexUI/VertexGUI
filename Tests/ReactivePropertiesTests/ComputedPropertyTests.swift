@@ -1,6 +1,5 @@
 import XCTest
-@testable import ReactiveProperties
-
+@testable 
 final class ComputedPropertyTests: XCTestCase {
   func testStaticCompute() {
     let property = ComputedProperty(compute: {

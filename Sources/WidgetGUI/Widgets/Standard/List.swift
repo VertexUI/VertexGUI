@@ -1,5 +1,4 @@
 import Foundation
-import ReactiveProperties
 import VisualAppBase
 import GfxMath
 import CXShim
@@ -7,8 +6,9 @@ import CXShim
 fileprivate var itemSlots = [ObjectIdentifier: AnySlot]()
 
 public class List<Item: Equatable>: ContentfulWidget, SlotAcceptingWidgetProtocol {
-  @ObservableProperty
+  @ImmutableBinding
   private var items: [Item]
+  private var previousItems: [Item] = []
 
   public static var itemSlot: Slot<Item> {
     if itemSlots[ObjectIdentifier(Item.self)] == nil {
@@ -30,31 +30,15 @@ public class List<Item: Equatable>: ContentfulWidget, SlotAcceptingWidgetProtoco
     }
   }
 
-  private var ownedImmutableItems: Any?
   private var itemsSubscription: AnyCancellable?
 
-  public init<P: ReactiveProperty>(_ itemsProperty: P) where P.Value == [Item] {
-    super.init()
-    self.$items.bind(itemsProperty)
-    processItemUpdate(old: [], new: items)
-    _ = $items.onChanged { [unowned self] in
-      processItemUpdate(old: $0.old, new: $0.new)
-    }
-  }
-
   public init(items immutableItems: Experimental.ImmutableBinding<[Item]>) {
+    self._items = immutableItems
     super.init()
 
-    self.ownedImmutableItems = immutableItems
-
-    let itemsBackingProperty = MutableProperty<[Item]>(immutableItems.value)
-    itemsSubscription = immutableItems.sink {
-      itemsBackingProperty.value = $0
-    }
-
-    self.$items.bind(itemsBackingProperty)
-    _ = $items.onChanged { [unowned self] in
-      processItemUpdate(old: $0.old, new: $0.new)
+    itemsSubscription = immutableItems.sink { [unowned self] in
+      processItemUpdate(old: previousItems, new: $0)
+      previousItems = $0
     }
 
     processItemUpdate(old: [], new: items)

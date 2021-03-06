@@ -1,5 +1,4 @@
 import XCTest
-import ReactiveProperties
 import GfxMath
 @testable import WidgetGUI
 

@@ -1,6 +1,5 @@
 import XCTest
-@testable import ReactiveProperties
-
+@testable 
 class ObservablePropertyTests: XCTestCase {
   func testSettingDirectly() {
     let property = ObservableProperty<Double>()

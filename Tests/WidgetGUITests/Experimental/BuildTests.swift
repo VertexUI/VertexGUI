@@ -1,7 +1,6 @@
 import XCTest
 @testable import WidgetGUI
-@testable import ReactiveProperties
-
+@testable 
 class BuildTests: XCTestCase {
   func testInvalidationWithMutableProperty() {
     let property = MutableProperty<String>()

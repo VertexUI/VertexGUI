@@ -1,6 +1,5 @@
 import GfxMath
 import VisualAppBase
-import ReactiveProperties
 
 extension Widget {
   public class ScrollBar: LeafWidget {
@@ -11,7 +10,7 @@ extension Widget {
     @ExperimentalStyleProperty
     public var yBarWidth: Double = 40
 
-    @MutableProperty
+    @State
     public var scrollProgress = 0.0
     public var maxScrollProgress = 0.0
 

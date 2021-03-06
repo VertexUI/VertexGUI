@@ -11,22 +11,16 @@ import ColorizeSwift
 // TODO: create a subclass of App, DesktopApp which supports windows/screens which can support different resolutions --> renderContexts --> different text boundsSize
 open class TodoApp: WidgetsApp {    
     let guiRoot: WidgetGUI.Root
-    let todoStore: TodoStore
-    let searchStore: SearchStore
-    let navigationStore: NavigationStore
     let experimentalStore: ExperimentalTodoStore = ExperimentalTodoStore()
 
     public init() {
-        todoStore = TodoStore()
-        searchStore = SearchStore(todoStore: todoStore)
-        navigationStore = NavigationStore()
         guiRoot = WidgetGUI.Root(rootWidget: Container().experimentalWith(styleProperties: {
             (\.$alignContent, .stretch)
         }).withContent {
             TodoAppView().experimentalWith(styleProperties: {
                 (\.$grow, 1)
             })
-        }.provide(dependencies: todoStore, searchStore, navigationStore, experimentalStore))
+        }.provide(dependencies: experimentalStore))
         guiRoot.renderObjectSystemEnabled = false
         super.init(baseApp: SDL2OpenGL3NanoVGVisualApp())
     }

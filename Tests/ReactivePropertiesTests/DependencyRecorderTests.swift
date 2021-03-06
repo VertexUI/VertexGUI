@@ -1,8 +1,7 @@
 import XCTest
 import Dispatch
 import Foundation
-@testable import ReactiveProperties
-
+@testable 
 class DependencyRecorderTests: XCTestCase {
   func testAsyncConcurrentDispatchQueueRecording() {
     let expectation = XCTestExpectation(description: "perform concurrent accesses")
