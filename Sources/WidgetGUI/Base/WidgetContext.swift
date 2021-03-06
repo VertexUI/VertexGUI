@@ -9,18 +9,6 @@ public class WidgetContext {
     private var _requestCursor: (_ cursor: Cursor) -> () -> Void
     private let _getKeyStates: () -> KeyStatesContainer
     private var _createWindow: (_ guiRootBuilder: @autoclosure () -> Root, _ options: Window.Options) -> Window
-    weak public internal(set) var focusedWidget: Widget? {
-        didSet {
-            if let unregister = unregisterOnFocusChanged {
-                unregister()
-            }
-            if let unregister = unregisterOnFocusDestroyed {
-                unregister()
-            }
-        }
-    }
-    private var unregisterOnFocusChanged: (() -> ())?
-    private var unregisterOnFocusDestroyed: (() -> ())?
     public internal(set) var debugLayout: Bool = false
     private let _getApplicationTime: () -> Double
     public var applicationTime: Double {
@@ -44,6 +32,8 @@ public class WidgetContext {
 
     public let globalStylePropertySupportDefinitions: StylePropertySupportDefinitions
 
+    public let focusManager: FocusManager
+
     public init(
         window: Window,
         getTextBoundsSize: @escaping (_ text: String, _ fontConfig: FontConfig, _ maxWidth: Double?) -> DSize2,
@@ -55,7 +45,8 @@ public class WidgetContext {
         requestCursor: @escaping (_ cursor: Cursor) -> () -> Void,
         queueLifecycleMethodInvocation: @escaping (Widget.LifecycleMethod, Widget, Widget, Widget.LifecycleMethodInvocationReason) -> (),
         lifecycleMethodInvocationSignalBus: Bus<Widget.LifecycleMethodInvocationSignal>,
-        globalStylePropertySupportDefinitions: StylePropertySupportDefinitions) {
+        globalStylePropertySupportDefinitions: StylePropertySupportDefinitions,
+        focusManager: FocusManager) {
             self.window = window
             self._getTextBoundsSize = getTextBoundsSize
             self._measureText = measureText
@@ -67,6 +58,7 @@ public class WidgetContext {
             self._queueLifecycleMethodInvocation = queueLifecycleMethodInvocation
             self.lifecycleMethodInvocationSignalBus = lifecycleMethodInvocationSignalBus
             self.globalStylePropertySupportDefinitions = globalStylePropertySupportDefinitions
+            self.focusManager = focusManager
     }
 
     public func getTextBoundsSize(_ text: String, fontConfig: FontConfig, maxWidth: Double? = nil) -> DSize2 {
@@ -83,28 +75,6 @@ public class WidgetContext {
 
     public func createWindow(guiRoot guiRootBuilder: @autoclosure () -> Root, options: Window.Options) -> Window {
         _createWindow(guiRootBuilder(), options)
-    }
-
-    // TODO: maybe need an extra focusedWidget context for specific areas / child trees
-    public func requestFocus(_ widget: Widget) -> Bool {
-        if let previousFocusedWidget = focusedWidget {
-            previousFocusedWidget.dropFocus()
-        }
-        focusedWidget = widget
-        focusedWidget!.focused = true
-        unregisterOnFocusDestroyed = focusedWidget!.onDestroy { [unowned self] _ in
-            if let focusedWidget = focusedWidget, focusedWidget === widget {
-                self.focusedWidget = nil
-            }
-        }
-        unregisterOnFocusChanged = focusedWidget!.onFocusChanged.addHandler { [unowned self] focused in
-            if let focusedWidget = focusedWidget {
-                if focusedWidget === widget && !focused {
-                    self.focusedWidget = nil
-                }
-            }
-        }
-        return true
     }
 
     public func queueLifecycleMethodInvocation(_ method: Widget.LifecycleMethod, target: Widget, sender: Widget, reason: Widget.LifecycleMethodInvocationReason) {

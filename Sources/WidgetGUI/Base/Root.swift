@@ -49,8 +49,14 @@ open class Root: Parent {
   /* end Widget lifecycle management */
 
   //private var focusContext = FocusContext()
+  /* focus management
+  --------------------------*/
+  var focusManager = FocusManager()
+  /* end focus management */
 
-  /* event propagation */
+  /* event propagation
+  ----------------------------
+  */
   lazy private var mouseEventManager = WidgetTreeMouseEventManager(root: self)
   private var mouseMoveEventBurstLimiter = BurstLimiter(minDelay: 0.015)
   /* end event propagation */
@@ -100,7 +106,8 @@ open class Root: Parent {
       requestCursor: requestCursor,
       queueLifecycleMethodInvocation: { [unowned self] in widgetLifecycleManager.queue($0, target: $1, sender: $2, reason: $3) },
       lifecycleMethodInvocationSignalBus: Bus<Widget.LifecycleMethodInvocationSignal>(),
-      globalStylePropertySupportDefinitions: globalStylePropertySupportDefinitions
+      globalStylePropertySupportDefinitions: globalStylePropertySupportDefinitions,
+      focusManager: focusManager
     )
 
     //rootWidget.mount(parent: self, treePath: [], context: widgetContext!, lifecycleBus: widgetLifecycleBus)
@@ -276,7 +283,7 @@ open class Root: Parent {
   ]
 
   internal func propagate(_ rawKeyEvent: KeyEvent) {
-    if let focus = widgetContext?.focusedWidget as? GUIKeyEventConsumer {
+    if let focus = focusManager.currentFocusedWidget as? GUIKeyEventConsumer {
       if let keyDownEvent = rawKeyEvent as? KeyDownEvent {
         focus.consume(
           GUIKeyDownEvent(
@@ -296,7 +303,7 @@ open class Root: Parent {
   }
 
   internal func propagate(_ event: TextEvent) {
-    if let focused = widgetContext?.focusedWidget as? GUITextEventConsumer {
+    if let focused = focusManager.currentFocusedWidget as? GUITextEventConsumer {
       if let event = event as? TextInputEvent {
         focused.consume(GUITextInputEvent(event.text))
       }
