@@ -41,15 +41,6 @@ public class WidgetTreeManager {
       } else {
         child.treePath = widget.treePath/index
       }
-
-      if let specificStyle = widget.specificWidgetStyle {
-        let newPath = widget.treePath/widget.children.count
-        if newPath != specificStyle.treePath {
-          specificStyle.treePath = newPath
-          // TODO: maybe instead have something like widget.notifySpecificStyleChanged() / widget.notifyProvidedStylesChanged() ...
-          child.invalidateMatchedStyles()
-        }
-      }
     }
 
     for child in removedChildren {
@@ -67,23 +58,9 @@ public class WidgetTreeManager {
     widget.context = widgetContext 
     widget.setupContext()
 
-    widget.stylePropertiesResolver.propertySupportDefinitions = widget.mergedSupportedStyleProperties
-
     widget.lifecycleBus = widgetLifecycleBus
     
     widget.parent = parent
-
-    if let parent = parent as? Widget {
-      widget.stylePropertiesResolver.inheritableValues = parent.stylePropertiesResolver.resolvedPropertyValues
-      // the binding to the parents resolved style properties gets released when the parent changes
-      // DANGLING HANDLER
-      let removeParentHandler = parent.stylePropertiesResolver.onResolvedPropertyValuesChanged { [unowned widget, unowned parent] _ in
-          widget.stylePropertiesResolver.inheritableValues = parent.stylePropertiesResolver.resolvedPropertyValues
-          widget.stylePropertiesResolver.resolve()
-      }
-      _ = widget.onParentChanged.once({ _ in removeParentHandler() })
-      _ = widget.onDestroy(removeParentHandler)
-    }
 
     widget.treePath = treePath
 
@@ -125,11 +102,6 @@ public class WidgetTreeManager {
     widget.built = true
 
     widget.onBuilt.invokeHandlers(Void())
-
-    if let style = widget.style {
-      widget.specificWidgetStyle = style
-      widget.specificWidgetStyle!.treePath = widget.treePath/widget.children.count
-    }
 
     widget.invalidateMatchedStyles()
     widget.invalidateLayout()

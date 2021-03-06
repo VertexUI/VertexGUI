@@ -1,7 +1,7 @@
 import GfxMath
 import CXShim
 
-public class Container: ContentfulWidget, SlotAcceptingWidgetProtocol, StylableWidgetProtocol {
+public class Container: ContentfulWidget, SlotAcceptingWidgetProtocol {
   public static let defaultSlot = Slot(key: "default", data: Void.self)
   var defaultSlotManager = SlotContentManager(Container.defaultSlot)
   public var defaultNoDataSlotContentManager: SlotContentManager<Void>? {
@@ -95,9 +95,5 @@ public class Container: ContentfulWidget, SlotAcceptingWidgetProtocol, StylableW
   override public func performLayout(constraints: BoxConstraints) -> DSize2 {
     let accumulatedSize = layoutInstance!.layout(constraints: constraints)
     return accumulatedSize
-  }
-
-  public enum StyleKeys: String, StyleKey, DefaultStyleKeys {
-    case layout
   }
 }

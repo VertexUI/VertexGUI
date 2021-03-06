@@ -134,14 +134,6 @@ public class MainView: ContentfulWidget, SlotAcceptingWidgetProtocol {
     }
   }
 
-  override public var style: Style? {
-    Style("&") {
-      Style("&< .container") {
-        ($0.background, Color.blue)
-      }
-    }
-  }
-
   override public var experimentalStyle: Experimental.Style? {
     Experimental.Style("&") {} nested: {
       Experimental.Style(".container-3") {
@@ -151,52 +143,6 @@ public class MainView: ContentfulWidget, SlotAcceptingWidgetProtocol {
       }
 
       FlatTheme(primaryColor: .orange, secondaryColor: .blue, backgroundColor: Color(10, 30, 50, 255)).experimentalStyles
-    }
-  }
-
-  struct NestedData: Equatable {
-    var content: String
-    var children: [NestedData]
-  }
-
-  class NestedWidget: ComposedWidget {
-    @MutableProperty
-    var data: NestedData
-    @ComputedProperty
-    var childData: [NestedData]
-
-    public init(_ data: NestedData) {
-      self.data = data
-      super.init()
-      self._childData.reinit(compute: { [unowned self] in
-        self.data.children
-      }, dependencies: [$data])
-    }
-
-    override func performBuild() {
-      rootChild = Container().with(styleProperties: {
-        ($0.padding, Insets(left: 16))
-      }).withContent { [unowned self] in
-        Text(styleProperties: {
-          ($0.foreground, Color.black)
-        }, data.content)
-
-        Container().with(styleProperties: {
-          ($0.padding, Insets(all: 32))
-        }).withContent {
-          Button().withContent {
-            Text("add child content")
-          }.onClick {
-            data.children.append(NestedData(content: "child", children: []))
-          }
-        }
-
-        List($childData).withContent {
-          $0.itemSlot {
-            NestedWidget($0)
-          }
-        }
-      }
     }
   }
 }

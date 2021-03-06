@@ -8,4 +8,8 @@ extension PseudoClass where Self: RawRepresentable, Self.RawValue == String {
   }
 }
 
-extension String: PseudoClass {}
+extension String: PseudoClass {
+  public var asString: String {
+    self
+  }
+}

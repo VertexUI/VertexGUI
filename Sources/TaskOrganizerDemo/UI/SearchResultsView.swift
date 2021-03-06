@@ -23,7 +23,7 @@ public class SearchResultsView: ContentfulWidget {
   }
 
   func buildListHeader(_ list: TodoListProtocol) -> Widget {
-    Text(classes: ["list-header"], list.name)
+    Text(list.name).with(classes: ["list-header"])
   }
 
   func buildSearchResult(_ todoItem: TodoItem) -> Widget {

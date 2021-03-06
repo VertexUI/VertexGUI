@@ -1,12 +1,12 @@
 import SwiftGUI 
 import ReactiveProperties
 
-public class MainView: ComposedWidget {
+public class MainView: ContentfulWidget {
   @MutableProperty
   private var counter = 0
 
-  override public func performBuild() {
-    rootChild = Container().experimentalWith(styleProperties: {
+  @ExpDirectContentBuilder override public var content: ExpDirectContent {
+    Container().experimentalWith(styleProperties: {
       (\.$alignContent, .center)
       (\.$justifyContent, .center)
     }).withContent { [unowned self] in

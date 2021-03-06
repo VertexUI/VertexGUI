@@ -25,18 +25,11 @@ public class Text: LeafWidget {
   private var expTextSubscription: AnyCancellable?
 
   public init<P: ReactiveProperty>(
-    classes: [String]? = nil,
-    @StylePropertiesBuilder styleProperties stylePropertiesBuilder: (StyleKeys.Type) -> StyleProperties = { _ in [] },
     _ textProperty: P) where P.Value == String {
       self._expText = Experimental.ImmutableBinding<String>(State(wrappedValue: "wow"), get: { $0 })
       super.init()
 
-      if let classes = classes {
-        self.classes = classes
-      }
-      self.directStyleProperties.append(stylePropertiesBuilder(StyleKeys.self))
-
-      self.$text.bind(textProperty)
+       self.$text.bind(textProperty)
       _ = onDestroy(self.$text.onChanged { [unowned self] _ in
         invalidateLayout()
       })
@@ -53,11 +46,8 @@ public class Text: LeafWidget {
     })
   }
 
-  public convenience init(
-    classes: [String]? = nil,
-    @StylePropertiesBuilder styleProperties stylePropertiesBuilder: (StyleKeys.Type) -> StyleProperties = { _ in [] },
-    _ text: String) {
-      self.init(classes: classes, styleProperties: stylePropertiesBuilder, StaticProperty(text))
+  public convenience init(_ text: String) {
+      self.init(StaticProperty(text))
   }
   
   override public func performLayout(constraints: BoxConstraints) -> DSize2 {

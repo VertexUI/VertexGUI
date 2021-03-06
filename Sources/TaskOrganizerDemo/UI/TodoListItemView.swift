@@ -42,6 +42,12 @@ public class TodoListItemView: ContentfulWidget {
                 store.commit(.updateTodoItem(updatedItem: updatedItem))
               }
             }
+
+            instance.$focused.sink {
+              if !$0 {
+                editing = false
+              }
+            }.store(in: &instance.cancellables)
           }
         } else {
 

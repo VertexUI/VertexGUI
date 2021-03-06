@@ -19,9 +19,9 @@ public class FlexLayout: Layout {
     var maxSize = DSize2.zero
     for widget in widgets {
       var widgetConstraints = constraints
-      if widget.stylePropertyValue(ChildKeys.alignSelf, as: FlexAlign.self) == .stretch {
+      /*if widget.stylePropertyValue(ChildKeys.alignSelf, as: FlexAlign.self) == .stretch {
         widgetConstraints.minSize.width = maxSize.width
-      }
+      }*/
       widget.layout(constraints: widgetConstraints)
 
       var widgetPosition = DVec2.zero
@@ -43,14 +43,5 @@ public class FlexLayout: Layout {
 
   public enum FlexAlign {
     case start, stretch
-  }
-
-  public enum ParentKeys: String, StyleKey {
-    case direction
-  }
-
-  public enum ChildKeys: String, StyleKey {
-    case grow 
-    case alignSelf 
   }
 }

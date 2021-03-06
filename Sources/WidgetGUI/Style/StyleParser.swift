@@ -1,5 +1,5 @@
 public class StyleParser {
-  public init() {}
+  /*public init() {}
 
   public func parse(_ source: String) throws -> [Style] {
     var selector: StyleSelector
@@ -55,5 +55,5 @@ public class StyleParser {
 
   public enum ParserError: Error {
     case invalidValueLiteral
-  }
+  }*/
 }

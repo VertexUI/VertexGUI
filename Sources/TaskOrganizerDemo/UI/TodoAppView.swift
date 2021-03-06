@@ -3,7 +3,7 @@ import SwiftGUI
 import Dispatch
 import CXShim
 
-public class TodoAppView: ComposedWidget {
+public class TodoAppView: ContentfulWidget {
   public enum Mode {
     case SelectedList, Search
   }
@@ -58,8 +58,8 @@ public class TodoAppView: ComposedWidget {
     }
   }
 
-  override public func performBuild() {
-    rootChild = Container().withContent { [unowned self] in
+  @ExpDirectContentBuilder override public var content: ExpDirectContent {
+    Container().withContent { [unowned self] in
       buildMenu()
       buildActiveView()
     }

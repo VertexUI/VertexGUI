@@ -6,12 +6,22 @@ open class ContentfulWidget: Widget {
     fatalError("content not implemented")
   }
 
+  override public init() {
+    super.init()
+    _ = onDestroy { [unowned self] in
+      if let content = _content {
+        content.destroy()
+      }
+      _content = nil
+    }
+  }
+
   final override public func performBuild() {
     _content = content 
     contentChildren = _content!.widgets
-    _ = _content!.onChanged { [unowned self] in
+    _ = onDestroy(_content!.onChanged { [unowned self] in
       contentChildren = _content!.widgets
-    }
+    })
   }
 
   override open func performLayout(constraints: BoxConstraints) -> DSize2 {
@@ -26,11 +36,5 @@ open class ContentfulWidget: Widget {
       }
     }
     return maxSize
-  }
-
-  override public func destroySelf() {
-    if let content = _content {
-      content.destroy()
-    }
   }
 }

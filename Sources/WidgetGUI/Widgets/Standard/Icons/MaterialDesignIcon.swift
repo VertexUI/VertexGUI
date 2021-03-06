@@ -3,7 +3,7 @@ import Foundation
 import VisualAppBase
 
 // TODO: actually these are MaterialDESIGNIcons (not from google) --> use the google ones
-public class MaterialDesignIcon: ComposedWidget {
+public class MaterialDesignIcon: ContentfulWidget {
   private let identifier: Identifier
 
   private static let materialFontFamily = FontFamily(
@@ -21,8 +21,8 @@ public class MaterialDesignIcon: ComposedWidget {
     super.init()
   }
 
-  override public func performBuild() {
-    rootChild = Text(String(Unicode.Scalar(identifier.code)!)).experimentalWith(styleProperties: {
+  @ExpDirectContentBuilder override public var content: ExpDirectContent {
+    Text(String(Unicode.Scalar(identifier.code)!)).experimentalWith(styleProperties: {
       (\.$fontFamily, MaterialDesignIcon.materialFontFamily)
     })
   }

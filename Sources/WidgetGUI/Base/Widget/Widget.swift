@@ -194,51 +194,11 @@ open class Widget: Bounded, Parent, Child {
     public internal(set) var pseudoClasses = Set<String>()
 
     /** storage for the the value from style getter property */
-    internal var specificWidgetStyle: Style? = nil 
-    /** storage for the the value from style getter property */
     internal var experimentalSpecificWidgetStyle: Experimental.Style? = nil
-    /** this style will be added to every widget instance as the last style */ 
-    open var style: Style? {
-        nil
-    }
     /** this style will be added to every widget instance as the last style */ 
     open var experimentalStyle: Experimental.Style? {
         nil
     } 
-
-    /** Style property support declared by the Widget instance's context. */
-    public var supportedGlobalStyleProperties: StylePropertySupportDefinitions {
-        if let context = _context {
-            return context.globalStylePropertySupportDefinitions
-        } else {
-            return []
-        }
-    }
-    /** 
-    // TODO: this property is not used yet, added as a reminder to implement such functionality.
-
-    For which globally defined properties should the lifecycle management of this Widget be done automatically.
-    Example: rerendering if a color property changes.
-    */
-    public var globalPropertyKeysWithAutomaticLifecycleManagement: [StyleKey] {
-        []
-    }
-    /** Style property support declared for this Widget instance as the child of it's parent. 
-    Given as a dictionary so that the parent can add properties in groups and conveniently update the groups instead
-    of reapplying everything.
-    */
-    public var supportedParentStyleProperties: [String: StylePropertySupportDefinitions] = [:]
-    /** Style property support declared by this Widget instance. */
-    open var supportedStyleProperties: StylePropertySupportDefinitions { [] }
-    /** */
-    public var mergedSupportedStyleProperties: StylePropertySupportDefinitions {
-            do {
-                return try StylePropertySupportDefinitions(merge: [supportedGlobalStyleProperties] +
-                    supportedParentStyleProperties.values + [supportedStyleProperties])
-            } catch {
-                fatalError("error while merging style property support definitions in Widget: \(self), error: \(error)")
-            }
-        }
 
     /** whether this Widget creates a new scope for the children which it itself instantiates */
     public var createsStyleScope: Bool = false {
@@ -251,22 +211,10 @@ open class Widget: Bounded, Parent, Child {
     /** the scope this Widget belongs to */
     public var styleScope: UInt = 0
     public static let rootStyleScope: UInt = 1
-    internal private(set) static var activeStyleScope: UInt = rootStyleScope
-
-    @discardableResult
-    public static func inStyleScope<T>(_ scope: UInt, block: () -> T) -> T {
-        let previousActiveStyleScope = Widget.activeStyleScope
-        Widget.activeStyleScope = scope
-        defer { Widget.activeStyleScope = previousActiveStyleScope }
-        return block()
-    }
+    internal static var activeStyleScope: UInt = rootStyleScope
 
     /** Styles which can be applied to this Widget instance or any of 
     it's children (deep) according to their selector. */
-    public var providedStyles: [Style] = []
-    var mergedProvidedStyles: [Style] {
-        providedStyles + (specificWidgetStyle == nil ? [] : [specificWidgetStyle!])
-    }
     public var experimentalProvidedStyles: [Experimental.Style] = []
     var experimentalMergedProvidedStyles: [Experimental.Style] {
         if experimentalSpecificWidgetStyle == nil {
@@ -277,15 +225,6 @@ open class Widget: Bounded, Parent, Child {
     }
 
     internal var matchedStylesInvalid = false
-    /** Styles whose selectors match this Widget instance. */
-    internal var matchedStyles: [Style] = [] {
-        didSet {
-            if matchedStyles.count != oldValue.count || !matchedStyles.allSatisfy({ style in oldValue.contains { $0 === style } }) {
-                stylePropertiesResolver.styles = matchedStyles
-                stylePropertiesResolver.resolve()
-            }
-        }
-    }
     internal var experimentalMatchedStyles: [Experimental.Style] = [] {
         didSet {
             if oldValue.count != experimentalMatchedStyles.count || !oldValue.allSatisfy({ old in experimentalMatchedStyles.contains { $0 === old } }) {
@@ -293,23 +232,11 @@ open class Widget: Bounded, Parent, Child {
             }
         }
     }
-    /** Style properties that are applied to this Widget instance directly
-    without any selector based testing. */
-    public internal(set) var directStyleProperties: [StyleProperties] = [] {
-        didSet {
-            stylePropertiesResolver.directProperties = directStyleProperties
-            stylePropertiesResolver.resolve()
-        }
-    }
     public internal(set) var experimentalDirectStylePropertyValueDefinitions: [Experimental.StylePropertyValueDefinition] = [] {
         didSet {
             invalidateResolvedStyleProperties()
         }
     }
-
-    lazy internal var stylePropertiesResolver = StylePropertiesResolver(
-        propertySupportDefinitions: mergedSupportedStyleProperties,
-        widget: self)
 
     @Experimental.DefaultStyleProperty
     public var width: Double? = nil
@@ -457,6 +384,8 @@ open class Widget: Bounded, Parent, Child {
 
     public let onTextInputHandlerManager = EventHandlerManager<GUITextInputEvent>()
     /* end input events */
+
+    public var cancellables = Set<AnyCancellable>()
     
     public init() {
         self.id = Self.nextId
@@ -470,7 +399,6 @@ open class Widget: Bounded, Parent, Child {
         self._destroyed = self.$internalDestroyed.immutable
 
         setupWidgetEventHandlerManagers()
-        setupFromStyleWrappers()
         setupExperimentalStyleProperties()
         setupExplicitConstraintsUpdateTriggers()
         setupScrollingEnabled()
@@ -485,15 +413,6 @@ open class Widget: Bounded, Parent, Child {
         for child in mirror.allChildren {
             if var manager = child.value as? AnyWidgetEventHandlerManager {
                 manager.widget = self
-            }
-        }
-    }
-
-    private func setupFromStyleWrappers() {
-        let mirror = Mirror(reflecting: self)
-        for child in mirror.allChildren {
-            if let fromStyle = child.value as? FromStyleProtocol {
-                fromStyle.registerWidget(self)
             }
         }
     }
@@ -888,6 +807,8 @@ open class Widget: Bounded, Parent, Child {
     
     // TODO: how to name this?
     public final func destroy() {
+        cancellables = []
+
         for child in children {
             child.destroy()
         }

@@ -2,23 +2,6 @@ import GfxMath
 import CXShim
 
 public class SimpleLinearLayout: Layout {
-  /*override public var parentPropertySupportDefinitions: StylePropertySupportDefinitions {
-    StylePropertySupportDefinitions {
-      (ParentKeys.direction, type: .specific(Direction.self), default: Direction.row)
-      (ParentKeys.alignContent, type: .specific(Align.self), default: Align.start)
-      (ParentKeys.justifyContent, type: .specific(Justify.self), default: Justify.start)
-    }
-  }
-
-  override public var childPropertySupportDefinitions: StylePropertySupportDefinitions {
-    StylePropertySupportDefinitions {
-      (ChildKeys.grow, type: .specific(Double.self), default: 0.0)
-      (ChildKeys.shrink, type: .specific(Double.self), default: 0.0)
-      (ChildKeys.alignSelf, type: .specific(Align.self))
-      (ChildKeys.margin, type: .specific(Insets.self))
-    }
-  }*/
-
   @LayoutProperty(\.$direction)
   var direction: Direction
 
@@ -225,18 +208,5 @@ public class SimpleLinearLayout: Layout {
 
   public enum Justify {
     case start, center, end
-  }
-
-  public enum ParentKeys: String, StyleKey {
-    case direction
-    case alignContent
-    case justifyContent
-  }
-
-  public enum ChildKeys: String, StyleKey {
-    case grow
-    case shrink
-    case alignSelf
-    case margin
   }
 }

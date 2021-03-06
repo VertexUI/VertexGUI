@@ -3,7 +3,7 @@ import VisualAppBase
 import ReactiveProperties
 
 extension Widget {
-  public class ScrollBar: LeafWidget, StylableWidgetProtocol {
+  public class ScrollBar: LeafWidget {
     private let orientation: Orientation
 
     @ExperimentalStyleProperty
@@ -85,11 +85,6 @@ extension Widget {
 
     public enum Orientation {
       case horizontal, vertical
-    }
-
-    public enum StyleKeys: String, StyleKey, DefaultStyleKeys {
-      case xBarHeight
-      case yBarWidth
     }
   }
 }

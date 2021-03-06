@@ -8,16 +8,8 @@ public class Drawing: LeafWidget {
 
   private let _draw: (DrawingContext) -> ()
 
-  public init(
-    classes: [String]? = nil,
-    @StylePropertiesBuilder styleProperties buildStyleProperties: (StyleKeys.Type) -> StyleProperties = { _ in [] },
-    draw: @escaping (DrawingContext) -> ()) {
+  public init(draw: @escaping (DrawingContext) -> ()) {
       self._draw = draw
-      super.init()
-      if let classes = classes {
-        self.classes.append(contentsOf: classes)
-      }
-      self.directStyleProperties.append(buildStyleProperties(StyleKeys.self))
   }
 
   override public func performLayout(constraints: BoxConstraints) -> DSize2 {

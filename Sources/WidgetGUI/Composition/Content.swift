@@ -31,10 +31,12 @@ extension ExpContentProtocol {
 public class ExpContent: NSObject, EventfulObject {
   public let onChanged = EventHandlerManager<Void>()
   public let onDestroy = EventHandlerManager<Void>()
+  public private(set) var destroyed = false
 
   public func destroy() {
     onDestroy.invokeHandlers()
     removeAllEventHandlers()
+    destroyed = true
   }
 
   deinit {
@@ -45,7 +47,9 @@ public class ExpContent: NSObject, EventfulObject {
 public class ExpDirectContent: ExpContent, ExpContentProtocol {
   public var partials: [Partial] = [] {
     didSet {
-      resolve()
+      if !destroyed {
+        resolve()
+      }
     }
   }
   public var widgets: [Widget] = []
@@ -115,7 +119,9 @@ extension ExpDirectContent {
 public class ExpSlottingContent: ExpContent, ExpContentProtocol {
   public var partials: [Partial] = [] {
     didSet {
-      resolve()
+      if !destroyed {
+        resolve()
+      }
     }
   }
   public var slotContentDefinitions = [AnySlotContentDefinition]()

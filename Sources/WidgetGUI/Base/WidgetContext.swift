@@ -30,8 +30,6 @@ public class WidgetContext {
         _getKeyStates()
     }
 
-    public let globalStylePropertySupportDefinitions: StylePropertySupportDefinitions
-
     public let focusManager: FocusManager
 
     public init(
@@ -45,7 +43,6 @@ public class WidgetContext {
         requestCursor: @escaping (_ cursor: Cursor) -> () -> Void,
         queueLifecycleMethodInvocation: @escaping (Widget.LifecycleMethod, Widget, Widget, Widget.LifecycleMethodInvocationReason) -> (),
         lifecycleMethodInvocationSignalBus: Bus<Widget.LifecycleMethodInvocationSignal>,
-        globalStylePropertySupportDefinitions: StylePropertySupportDefinitions,
         focusManager: FocusManager) {
             self.window = window
             self._getTextBoundsSize = getTextBoundsSize
@@ -57,7 +54,6 @@ public class WidgetContext {
             self._requestCursor = requestCursor
             self._queueLifecycleMethodInvocation = queueLifecycleMethodInvocation
             self.lifecycleMethodInvocationSignalBus = lifecycleMethodInvocationSignalBus
-            self.globalStylePropertySupportDefinitions = globalStylePropertySupportDefinitions
             self.focusManager = focusManager
     }
 

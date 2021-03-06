@@ -25,8 +25,6 @@ open class Root: Parent {
 
   public var rootWidget: Widget
 
-  var globalStylePropertySupportDefinitions = defaultStylePropertySupportDefinitions 
-  var globalStyles = defaultGlobalStyles 
   var widgetContext: WidgetContext? {
     didSet {
       if let widgetContext = widgetContext {
@@ -106,7 +104,6 @@ open class Root: Parent {
       requestCursor: requestCursor,
       queueLifecycleMethodInvocation: { [unowned self] in widgetLifecycleManager.queue($0, target: $1, sender: $2, reason: $3) },
       lifecycleMethodInvocationSignalBus: Bus<Widget.LifecycleMethodInvocationSignal>(),
-      globalStylePropertySupportDefinitions: globalStylePropertySupportDefinitions,
       focusManager: focusManager
     )
 
@@ -114,7 +111,6 @@ open class Root: Parent {
     //rootWidget.focusContext = focusContext
     treeManager.mountAsRoot(widget: rootWidget, root: self)
     treeManager.buildSubTree(rootWidget: rootWidget)
-    rootWidget.provideStyles(globalStyles)
 
     styleManager.processTree(rootWidget)
   }

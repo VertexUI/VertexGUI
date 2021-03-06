@@ -4,7 +4,7 @@ import VisualAppBase
 import ReactiveProperties
 import CXShim
 
-public final class TextInput: ComposedWidget, StylableWidgetProtocol
+public final class TextInput: ContentfulWidget
 {
   @MutableBinding
   public var text: String
@@ -84,8 +84,8 @@ public final class TextInput: ComposedWidget, StylableWidgetProtocol
     }
   }
 
-  override public func performBuild() {
-    rootChild = Container().withContent { [unowned self] _ in
+  @ExpDirectContentBuilder override public var content: ExpDirectContent {
+    Container().withContent { [unowned self] _ in
       Text($text.immutable).with(classes: ["text"]).experimentalWith(styleProperties: {
         (\.$transform, Experimental.ImmutableBinding($textTranslation.immutable, get: {
           [DTransform2.translate($0)]
@@ -232,9 +232,5 @@ public final class TextInput: ComposedWidget, StylableWidgetProtocol
     if let drop = dropCursorRequest {
       drop()
     }
-  }
-
-  public enum StyleKeys: String, StyleKey, DefaultStyleKeys {
-    case caretColor
   }
 }
