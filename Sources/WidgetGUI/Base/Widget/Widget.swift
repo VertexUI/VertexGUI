@@ -95,6 +95,12 @@ open class Widget: Bounded, Parent, Child {
     }
 
     public var providedDependencies: [Dependency] = []
+
+    /* focus */
+    public internal(set) var focusable = false
+    @State internal var internalFocused: Bool = false
+    @ImmutableBinding public var focused: Bool
+    /* end focus */
     /* end tree properties */
 
     /* lifecycle
@@ -107,6 +113,7 @@ open class Widget: Bounded, Parent, Child {
     private var nextLifecycleMethodInvocationIds: [LifecycleMethod: Int] = LifecycleMethod.allCases.reduce(into: [:]) {
         $0[$1] = 0
     }
+    var nextTickHandlerRemovers: [() -> ()] = []
     /* end lifecycle */
     
     /* layout, position
@@ -148,34 +155,6 @@ open class Widget: Bounded, Parent, Child {
         }
     }
 
-    /*open var width: Double {
-        size.width
-    }
-    open var height: Double {
-        size.height
-    }*/
-
-
-    /*@inlinable open var x: Double {
-        get {
-            position.x
-        }
-        
-        set {
-            position.x = newValue
-        }
-    }
-
-    @inlinable open var y: Double {
-        get {
-            position.y
-        }
-        
-        set {
-            position.y = newValue
-        }
-    }*/
-    
     @inlinable open var bounds: DRect {
         DRect(min: layoutedPosition, size: layoutedSize)
     }
@@ -191,23 +170,6 @@ open class Widget: Bounded, Parent, Child {
     public internal(set) var cumulatedTransforms: [DTransform2] = []
     /* end layout, position */
  
-    public internal(set) var focusable = false
-    public internal(set) var focused = false {
-        didSet {
-            onFocusChanged.invokeHandlers(focused)
-        }
-    }
-    /// bridge focused property for use in @inlinable functions
-    @usableFromInline internal var _focused: Bool {
-        get {
-            return focused
-        }
-
-        set {
-            focused = newValue
-        }
-    }
-
     public internal(set) var mounted = false
     public internal(set) var built = false
     // TODO: maybe something better
@@ -219,7 +181,8 @@ open class Widget: Bounded, Parent, Child {
     public private(set) var layouted = false
     // TODO: maybe rename to boundsInvalid???
     public internal(set) var layoutInvalid = false
-    public internal(set) var destroyed = false
+    @State private var internalDestroyed = false
+    @ImmutableBinding public var destroyed: Bool
 
     /* style
     -----------------
@@ -477,7 +440,6 @@ open class Widget: Bounded, Parent, Child {
     public internal(set) var onLayoutingStarted = EventHandlerManager<BoxConstraints>()
     public internal(set) var onLayoutingFinished = EventHandlerManager<DSize2>()
     public internal(set) var onRenderStateInvalidated = EventHandlerManager<Widget>()
-    public internal(set) var onFocusChanged = WidgetEventHandlerManager<Bool>()
     public internal(set) var onDestroy = EventHandlerManager<Void>()
 
     /* input events
@@ -495,6 +457,12 @@ open class Widget: Bounded, Parent, Child {
         self.id = Self.nextId
         Self.nextId += 1
         self.styleScope = Widget.activeStyleScope
+
+        self._focused = ImmutableBinding(get: { false })        
+        self._destroyed = ImmutableBinding(get: { false })
+
+        self._focused = self.$internalFocused.immutable
+        self._destroyed = self.$internalDestroyed.immutable
 
         setupWidgetEventHandlerManagers()
         setupFromStyleWrappers()
@@ -905,31 +873,6 @@ open class Widget: Bounded, Parent, Child {
     public final func invalidateRenderState(deep: Bool = false, after block: () -> ()) {
     }
 
-    @discardableResult
-    open func requestFocus() -> Self {
-        if focusable {
-            // TODO: maybe run requestfocus and let the context notify the focused widget of receiving focus?
-            if mounted {
-                //focusContext.requestFocus(self)
-                context.requestFocus(self)
-            } else {
-                _ = onMounted.once { [unowned self] in
-                    context.requestFocus(self)
-                }
-            }
-        }
-        return self
-    }
-
-    @inlinable
-    public func dropFocus() {
-        if focusable {
-            _focused = false
-        }
-    }
-
-    var nextTickHandlerRemovers: [() -> ()] = []
-
     /**
     Run something on the next tick.
     */
@@ -988,7 +931,7 @@ open class Widget: Bounded, Parent, Child {
             }*/
         } 
 
-        destroyed = true
+        internalDestroyed = true
 
         Logger.log("Destroyed Widget: \(self), \(id)", level: .Message, context: .Default)
     }

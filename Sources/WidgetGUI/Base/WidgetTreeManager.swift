@@ -150,12 +150,6 @@ public class WidgetTreeManager {
             parent.invalidateLayout()
         }
       })
-      
-      _ = child.onFocusChanged { [weak parent] in
-        if let parent = parent {
-            parent.focused = $0
-        }
-      }
     } else {
       print("warning: tried to setup child to parent effects, but child was not yet mounted or already destroyed, parent: \(parent), child: \(child)")
     }
