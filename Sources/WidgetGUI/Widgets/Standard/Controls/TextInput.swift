@@ -60,6 +60,9 @@ public final class TextInput: ContentfulWidget
 
       textSubscription = self._text.sink { [unowned self] in
         textBuffer = $0
+        if caretIndex > textBuffer.count {
+          caretIndex = textBuffer.count
+        }
         updatePlaceholderVisibility()
       }
 
