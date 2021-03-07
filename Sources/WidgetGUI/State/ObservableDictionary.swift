@@ -3,7 +3,7 @@ public final class ObservableDictionary<K: Hashable, V>: ExpressibleByDictionary
   public typealias Value = V
 
   fileprivate var data: [Key: Value]
-  fileprivate var _bindings: [Key: Experimental.ImmutableBinding<Value?>] = [:]
+  fileprivate var _bindings: [Key: ImmutableBinding<Value?>] = [:]
 
   lazy public private(set) var bindings = BindingProxy(self)
 
@@ -36,9 +36,9 @@ public final class ObservableDictionary<K: Hashable, V>: ExpressibleByDictionary
       self.dictionary = dictionary
     }
   
-    public subscript(key: Key) -> Experimental.ReactivePropertyProjection<Value?> {
+    public subscript(key: Key) -> ReactivePropertyProjection<Value?> {
       if dictionary._bindings[key] == nil {
-        dictionary._bindings[key] = Experimental.ImmutableBinding(get: { [unowned self] in
+        dictionary._bindings[key] = ImmutableBinding(get: { [unowned self] in
           dictionary.data[key]
         })
       }

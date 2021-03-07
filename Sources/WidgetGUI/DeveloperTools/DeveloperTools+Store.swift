@@ -1,5 +1,5 @@
 extension DeveloperTools {
-  public class Store: Experimental.Store<Store.State, Store.Mutation, Store.Action> {
+  public class Store: WidgetGUI.Store<Store.State, Store.Mutation, Store.Action> {
     public init() {
       super.init(initialState: State())
     }

@@ -1,8 +1,8 @@
 import GfxMath
 
 open class ContentfulWidget: Widget {
-  private var _content: ExpDirectContent?
-  open var content: ExpDirectContent {
+  private var _content: DirectContent?
+  open var content: DirectContent {
     fatalError("content not implemented")
   }
 

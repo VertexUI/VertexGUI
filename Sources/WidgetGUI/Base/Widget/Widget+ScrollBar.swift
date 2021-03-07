@@ -5,9 +5,9 @@ extension Widget {
   public class ScrollBar: LeafWidget {
     private let orientation: Orientation
 
-    @ExperimentalStyleProperty
+    @StyleProperty
     public var xBarHeight: Double = 40
-    @ExperimentalStyleProperty
+    @StyleProperty
     public var yBarWidth: Double = 40
 
     @State

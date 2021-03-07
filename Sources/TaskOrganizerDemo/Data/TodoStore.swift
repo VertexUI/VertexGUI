@@ -1,7 +1,7 @@
 import SwiftGUI
 import CXShim
 
-public class ExperimentalTodoStore: Experimental.Store<ExperimentalTodoStore.State, ExperimentalTodoStore.Mutation, ExperimentalTodoStore.Action> {
+public class TodoStore: Store<TodoStore.State, TodoStore.Mutation, TodoStore.Action> {
   var listsSubscription: AnyCancellable?
 
   public init() {

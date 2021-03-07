@@ -21,8 +21,8 @@ public class MaterialDesignIcon: ContentfulWidget {
     super.init()
   }
 
-  @ExpDirectContentBuilder override public var content: ExpDirectContent {
-    Text(String(Unicode.Scalar(identifier.code)!)).experimentalWith(styleProperties: {
+  @DirectContentBuilder override public var content: DirectContent {
+    Text(String(Unicode.Scalar(identifier.code)!)).with(styleProperties: {
       (\.$fontFamily, MaterialDesignIcon.materialFontFamily)
     })
   }

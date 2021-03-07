@@ -2,7 +2,7 @@ import CXShim
 
 extension Widget {
   internal func resolveStyleProperties() {
-    let sortedMatchedStyles = experimentalMatchedStyles.sorted {
+    let sortedMatchedStyles = matchedStyles.sorted {
       if ($0.treePath == nil && $1.treePath != nil) || ($0.treePath == nil && $1.treePath == nil) {
         return true
       } else if $0.treePath != nil && $1.treePath == nil {
@@ -13,14 +13,14 @@ extension Widget {
     }
 
     let matchedStylesDefinitions = sortedMatchedStyles.flatMap { $0.propertyValueDefinitions }
-    let mergedDefinitions = mergeDefinitions(matchedStylesDefinitions + experimentalDirectStylePropertyValueDefinitions)
+    let mergedDefinitions = mergeDefinitions(matchedStylesDefinitions + DirectStylePropertyValueDefinitions)
 
-    var resolvedProperties = [ExperimentalAnyStylePropertyProtocol]()
+    var resolvedProperties = [AnyStylePropertyProtocol]()
 
     for definition in mergedDefinitions {
       let definitionWidgetIdentifier = ObjectIdentifier(type(of: definition.keyPath).rootType)
 
-      if let property = self[keyPath: definition.keyPath] as? ExperimentalAnyStylePropertyProtocol {
+      if let property = self[keyPath: definition.keyPath] as? AnyStylePropertyProtocol {
         resolvedProperties.append(property)
 
         property.definitionValue = definition.value
@@ -29,8 +29,8 @@ extension Widget {
 
     let mirror = Mirror(reflecting: self)
     for child in mirror.allChildren {
-      if type(of: child.value) is ExperimentalAnyStylePropertyProtocol.Type {
-        let property = child.value as! ExperimentalAnyStylePropertyProtocol
+      if type(of: child.value) is AnyStylePropertyProtocol.Type {
+        let property = child.value as! AnyStylePropertyProtocol
 
         if resolvedProperties.allSatisfy({ $0 !== property }) {
           property.definitionValue = nil
@@ -39,8 +39,8 @@ extension Widget {
     }
   }
 
-  fileprivate func mergeDefinitions(_ definitions: [Experimental.StylePropertyValueDefinition]) -> [Experimental.StylePropertyValueDefinition] {
-    var merged = [AnyKeyPath: (Int, Experimental.StylePropertyValueDefinition)]()
+  fileprivate func mergeDefinitions(_ definitions: [StylePropertyValueDefinition]) -> [StylePropertyValueDefinition] {
+    var merged = [AnyKeyPath: (Int, StylePropertyValueDefinition)]()
     for (index, definition) in definitions.enumerated() {
       merged[definition.keyPath] = (index, definition)
     }

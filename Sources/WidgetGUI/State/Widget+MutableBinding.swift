@@ -1,3 +1,3 @@
 extension Widget {
-  public typealias MutableBinding<V> = Experimental.MutableBinding<V>
+  public typealias MutableBinding<V> = WidgetGUI.MutableBinding<V>
 }

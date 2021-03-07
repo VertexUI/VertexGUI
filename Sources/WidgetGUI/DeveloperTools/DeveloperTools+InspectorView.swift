@@ -5,7 +5,7 @@ extension DeveloperTools {
     @Inject var inspectedRoot: Root
     @Inject var store: DeveloperTools.Store
 
-    @ExpDirectContentBuilder override public var content: ExpDirectContent {
+    @DirectContentBuilder override public var content: DirectContent {
       Container().withContent { [unowned self] in
         DeveloperTools.WidgetNestingView(inspectedRoot.rootWidget)
       }

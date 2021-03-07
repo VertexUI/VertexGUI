@@ -18,9 +18,9 @@ extension DeveloperTools {
       }
     }
 
-    @ExpDirectContentBuilder override public var content: ExpDirectContent {
+    @DirectContentBuilder override public var content: DirectContent {
       Container().withContent { [unowned self] in
-        Container().with(classes: ["chart-group"]).experimentalWith(styleProperties: {
+        Container().with(classes: ["chart-group"]).with(styleProperties: {
           (\.$direction, .column)
         }).withContent {
           buildChart(.processMouseEvent)
@@ -28,7 +28,7 @@ extension DeveloperTools {
           buildChart(.processTextEvent)
         }
 
-        Container().with(classes: ["chart-group"]).experimentalWith(styleProperties: {
+        Container().with(classes: ["chart-group"]).with(styleProperties: {
           (\.$direction, .column)
         }).withContent {
           buildChart(.tick)
@@ -40,19 +40,19 @@ extension DeveloperTools {
           buildChart(.updateCumulatedValues)
         }
 
-        buildChart(.draw).experimentalWith(styleProperties: {
+        buildChart(.draw).with(styleProperties: {
           (\.$margin, Insets(bottom: 16))
         })
       }
     }
 
     func buildChart(_ content: ChartContent) -> Widget {
-      Container().experimentalWith(styleProperties: {
+      Container().with(styleProperties: {
         (\.$direction, .column)
       }).withContent {
         Text(content.rawValue).with(classes: ["chart-title"])
 
-        BarChart(Experimental.ImmutableBinding(barChartData.bindings[content].immutable, get: { $0 ?? [] })).with(classes: ["chart"])
+        BarChart(ImmutableBinding(barChartData.bindings[content].immutable, get: { $0 ?? [] })).with(classes: ["chart"])
       }
     }
 
@@ -95,17 +95,17 @@ extension DeveloperTools {
       }
     }
 
-    override public var experimentalStyle: Experimental.Style {
-      Experimental.Style("&") {} nested: {
-        Experimental.Style(".chart-group") {
+    override public var style: Style {
+      Style("&") {} nested: {
+        Style(".chart-group") {
           (\.$margin, Insets(right: 16))
         }
 
-        Experimental.Style(".chart-title") {
+        Style(".chart-title") {
           (\.$fontWeight, .bold)
         }
 
-        Experimental.Style(".chart") {
+        Style(".chart") {
           (\.$alignSelf, .stretch)
           (\.$height, 200)
           (\.$width, 400)

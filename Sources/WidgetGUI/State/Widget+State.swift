@@ -1,6 +1,6 @@
 extension Widget {
   @propertyWrapper
-  public class State<V>: ExperimentalInternalMutableReactiveProperty {
+  public class State<V>: InternalMutableReactiveProperty {
     public typealias Value = V
 
     public var value: Value {
@@ -13,12 +13,12 @@ extension Widget {
       }
     }
 
-    lazy public var projectedValue = Experimental.MutableReactivePropertyProjection<Value>(getImmutable: { [unowned self] in
-      Experimental.ImmutableBinding(self, get: {
+    lazy public var projectedValue = MutableReactivePropertyProjection<Value>(getImmutable: { [unowned self] in
+      ImmutableBinding(self, get: {
         $0
       })
     }, getMutable: { [unowned self] in
-      Experimental.MutableBinding(self, get: {
+      MutableBinding(self, get: {
         $0
       }, set: {
         $0

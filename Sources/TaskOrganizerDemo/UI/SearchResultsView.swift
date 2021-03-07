@@ -2,9 +2,9 @@ import SwiftGUI
 
 public class SearchResultsView: ContentfulWidget {
   @Inject
-  private var store: ExperimentalTodoStore
+  private var store: TodoStore
 
-  @ExpDirectContentBuilder override public var content: ExpDirectContent {
+  @DirectContentBuilder override public var content: DirectContent {
     Container().with(classes: ["lists-container"]).withContent { [unowned self] in
 
       Dynamic(store.$state.searchResult) {
@@ -30,21 +30,21 @@ public class SearchResultsView: ContentfulWidget {
     TodoListItemView(todoItem).with(classes: ["list-item"])
   }
 
-  override public var experimentalStyle: Experimental.Style {
-    Experimental.Style("&") {} nested: {
-      Experimental.Style(".lists-container", Container.self) {
+  override public var style: Style {
+    Style("&") {} nested: {
+      Style(".lists-container", Container.self) {
         (\.$direction, .column)
         (\.$overflowY, .scroll)
         (\.$alignContent, .stretch)
       }
 
-      Experimental.Style(".list", Container.self) {
+      Style(".list", Container.self) {
         (\.$direction, .column)
         (\.$margin, Insets(bottom: 64))
         (\.$alignContent, .stretch)
       }
 
-      Experimental.Style(".list-header") {
+      Style(".list-header") {
         (\.$margin, Insets(bottom: 32))
         (\.$fontWeight, .bold)
         (\.$fontSize, 36.0)

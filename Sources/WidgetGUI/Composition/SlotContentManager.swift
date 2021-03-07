@@ -23,8 +23,8 @@ public class SlotContentManager<D>: AnySlotContentManager, EventfulObject {
     self.slot = slot
   }
 
-  public func callAsFunction(_ data: D) -> ExpDirectContent {
-    let content = ExpDirectContent(partials: [])
+  public func callAsFunction(_ data: D) -> DirectContent {
+    let content = DirectContent(partials: [])
     if let definition = definition {
       content.partials = definition.build(data)
     }
@@ -38,7 +38,7 @@ public class SlotContentManager<D>: AnySlotContentManager, EventfulObject {
     return content
   }
 
-  public func callAsFunction() -> ExpDirectContent where D == Void {
+  public func callAsFunction() -> DirectContent where D == Void {
     callAsFunction(Void())
   }
 }

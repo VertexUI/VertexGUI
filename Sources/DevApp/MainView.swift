@@ -22,20 +22,20 @@ public class MainView: ContentfulWidget, SlotAcceptingWidgetProtocol {
     }
   }
 
-  @ExpDirectContentBuilder override public var content: ExpDirectContent {
-    Container().experimentalWith(styleProperties: {
+  @DirectContentBuilder override public var content: DirectContent {
+    Container().with(styleProperties: {
       (\.$background, .red)
       (\.$overflowY, .scroll)
     }).withContent { [unowned self] in
    
       Container().withContent {
-        Container().experimentalWith(styleProperties: {
+        Container().with(styleProperties: {
           (\.$width, 200)
           (\.$height, 150)
           (\.$background, .black)
         })
 
-        Container().experimentalWith(styleProperties: {
+        Container().with(styleProperties: {
           (\.$background, .white)
           (\.$width, 150)
           (\.$maxHeight, 120)
@@ -44,7 +44,7 @@ public class MainView: ContentfulWidget, SlotAcceptingWidgetProtocol {
           print("WOW")
         }
 
-        Container().experimentalWith(styleProperties: {
+        Container().with(styleProperties: {
           (\.$background, .blue)
           (\.$minWidth, 10)
           (\.$minHeight, 10)
@@ -52,14 +52,14 @@ public class MainView: ContentfulWidget, SlotAcceptingWidgetProtocol {
           (\.$maxHeight, 30)
         })
 
-        Container().experimentalWith(styleProperties: {
+        Container().with(styleProperties: {
           (\.$background, .orange)
           (\.$maxWidth, 200)
           (\.$minHeight, 40)
           (\.$grow, 1)
         })
 
-        Container().experimentalWith(styleProperties: {
+        Container().with(styleProperties: {
           (\.$background, .white)
           (\.$minHeight, 120)
           (\.$minWidth, 10)
@@ -70,13 +70,13 @@ public class MainView: ContentfulWidget, SlotAcceptingWidgetProtocol {
 
 
 
-      /*Container().experimentalWith(styleProperties: {
+      /*Container().with(styleProperties: {
         (\.$background, .blue)
         (\.$padding, Insets(all: 32))
         (\.$grow, 1)
       })
 
-      Container().experimentalWith(styleProperties: {
+      Container().with(styleProperties: {
         (\.$background, .yellow)
         (\.$padding, Insets(all: 32))
         (\.$grow, $testGrow.immutable)
@@ -92,11 +92,11 @@ public class MainView: ContentfulWidget, SlotAcceptingWidgetProtocol {
         testBackgroundColor = .white
       }
 
-      /*Text(myState).experimentalWith(styleProperties: {
+      /*Text(myState).with(styleProperties: {
         (\.$background, .black)
       })*/
 
-      TestWidget(boundText: $myState.immutable).experimentalWith(styleProperties: {
+      TestWidget(boundText: $myState.immutable).with(styleProperties: {
         (\.$background, $testBackgroundColor.immutable)
       })
 
@@ -114,7 +114,7 @@ public class MainView: ContentfulWidget, SlotAcceptingWidgetProtocol {
               Text(item).with()
             }
           }
-        }.experimentalWith(styleProperties: {
+        }.with(styleProperties: {
           (\.$background, Color.lightBlue)
           (\.$shrink, 1)
         })
@@ -122,15 +122,15 @@ public class MainView: ContentfulWidget, SlotAcceptingWidgetProtocol {
     }
   }
 
-  override public var experimentalStyle: Experimental.Style? {
-    Experimental.Style("&") {} nested: {
-      Experimental.Style(".container-3") {
+  override public var style: Style? {
+    Style("&") {} nested: {
+      Style(".container-3") {
         (\.$padding, Insets(all: 32))
         (\.$background, .white)
         (\.$grow, 1)
       }
 
-      FlatTheme(primaryColor: .orange, secondaryColor: .blue, backgroundColor: Color(10, 30, 50, 255)).experimentalStyles
+      FlatTheme(primaryColor: .orange, secondaryColor: .blue, backgroundColor: Color(10, 30, 50, 255)).styles
     }
   }
 }

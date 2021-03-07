@@ -9,7 +9,7 @@ public class DevApp: WidgetsApp {
 
   override open func setup() {
     let guiRoot = WidgetGUI.Root(rootWidget: Container().withContent {
-      MainView().experimentalWith(styleProperties: {
+      MainView().with(styleProperties: {
         (\.$alignSelf, .stretch)
         (\.$grow, 1)
       })

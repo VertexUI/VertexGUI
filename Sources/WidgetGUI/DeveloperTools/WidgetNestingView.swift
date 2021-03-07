@@ -18,12 +18,12 @@ extension DeveloperTools {
       super.init()
     }
 
-    @ExpDirectContentBuilder override public var content: ExpDirectContent {
-      Container().experimentalWith(styleProperties: {
+    @DirectContentBuilder override public var content: DirectContent {
+      Container().with(styleProperties: {
         (\.$direction, .column)
       }).withContent { [unowned self] _ in
 
-        Container().with(classes: ["info-container"]).experimentalWith(styleProperties: {
+        Container().with(classes: ["info-container"]).with(styleProperties: {
           (\.$alignContent, .center)
         }).withContent { _ in
 
@@ -36,7 +36,7 @@ extension DeveloperTools {
           }
         }
 
-        Container().experimentalWith(styleProperties: {
+        Container().with(styleProperties: {
           (\.$direction, .column)
           (\.$padding, Insets(left: 16))
         }).withContent {
@@ -53,21 +53,21 @@ extension DeveloperTools {
       }
     }
 
-    override public var experimentalStyle: Experimental.Style {
-      Experimental.Style("&") {} nested: {
-        Experimental.Style(".info-container") {} nested: {
-          Experimental.Style("&:hover") {
+    override public var style: Style {
+      Style("&") {} nested: {
+        Style(".info-container") {} nested: {
+          Style("&:hover") {
             (\.$background, theme.backgroundColor.darkened(10))
           }
         }
 
-        Experimental.Style(".expand-icon") {
+        Style(".expand-icon") {
           (\.$foreground, .white)
           (\.$fontSize, 24.0)
           (\.$padding, Insets(left: 16))
         }
 
-        Experimental.Style(".description-text") {
+        Style(".description-text") {
           (\.$foreground, theme.textColorOnBackground)
           (\.$padding, Insets(all: 16))
         }

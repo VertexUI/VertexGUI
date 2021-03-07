@@ -30,8 +30,8 @@ extension DeveloperTools {
       })*/
     }
 
-    @ExpDirectContentBuilder override public var content: ExpDirectContent {
-      Container().experimentalWith(styleProperties: {
+    @DirectContentBuilder override public var content: DirectContent {
+      Container().with(styleProperties: {
         (\.$direction, .column)
         (\.$alignContent, .stretch)
         (\.$overflowY, .scroll)
@@ -57,7 +57,7 @@ extension DeveloperTools {
       }
     }
 
-    @ExpDirectContentBuilder func buildActiveView() -> ExpDirectContent {
+    @DirectContentBuilder func buildActiveView() -> DirectContent {
       Dynamic(store.$state.activateMainRoute) { [unowned self] in
         switch store.state.activateMainRoute {
         case .inspector:
@@ -68,22 +68,22 @@ extension DeveloperTools {
       }
     }
 
-    override public var experimentalStyle: Experimental.Style {
-      Experimental.Style("&") {
+    override public var style: Style {
+      Style("&") {
         (\.$background, theme.backgroundColor)
         (\.$foreground, theme.textColorOnBackground)
       } nested: {
-        Experimental.Style(".menu-item") {
+        Style(".menu-item") {
           (\.$background, theme.primaryColor)
           (\.$fontWeight, .bold)
           (\.$padding, Insets(all: 16))
         } nested: {
-          Experimental.Style("&:hover") {
+          Style("&:hover") {
             (\.$background, theme.primaryColor.darkened(30))
           }
         }
 
-        theme.experimentalStyles
+        theme.styles
       }
     }
   }

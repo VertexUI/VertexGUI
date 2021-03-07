@@ -1,7 +1,7 @@
 import Events
 import CXShim
 
-public class Dynamic<C: ExpContentProtocol> {
+public class Dynamic<C: ContentProtocol> {
   var associatedStyleScope: UInt
 
   let content: C
@@ -22,14 +22,14 @@ public class Dynamic<C: ExpContentProtocol> {
   }
 }
 
-extension Dynamic where C == ExpDirectContent {
-  public convenience init<P: Publisher>(_ trigger: P, @ExpDirectContentBuilder build: @escaping () -> [C.Partial]) where P.Failure == Never {
+extension Dynamic where C == DirectContent {
+  public convenience init<P: Publisher>(_ trigger: P, @DirectContentBuilder build: @escaping () -> [C.Partial]) where P.Failure == Never {
     self.init(trigger: trigger, build: build)
   }
 }
 
-extension Dynamic where C == ExpSlottingContent {
-  public convenience init<P: Publisher>(_ trigger: P, @ExpSlottingContentBuilder build: @escaping () -> [C.Partial]) where P.Failure == Never {
+extension Dynamic where C == SlottingContent {
+  public convenience init<P: Publisher>(_ trigger: P, @SlottingContentBuilder build: @escaping () -> [C.Partial]) where P.Failure == Never {
     self.init(trigger: trigger, build: build)
   }
 }

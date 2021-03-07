@@ -2,7 +2,7 @@ import SwiftGUI
 import CXShim
 
 public class TodoListView: ContentfulWidget {
-  @Inject private var experimentalStore: ExperimentalTodoStore
+  @Inject private var store: TodoStore
 
   @ImmutableBinding private var listId: Int
 
@@ -17,7 +17,7 @@ public class TodoListView: ContentfulWidget {
   @State private var editingName: Bool = false
   @State private var updatedNameBuffer: String = ""
 
-  public init(listId immutableListId: Experimental.ImmutableBinding<Int>, editable: Bool = true, checkable: Bool = true) {
+  public init(listId immutableListId: ImmutableBinding<Int>, editable: Bool = true, checkable: Bool = true) {
     self._listId = immutableListId
     self.editable = editable
     self.checkable = checkable
@@ -28,19 +28,19 @@ public class TodoListView: ContentfulWidget {
         resolveList()
       }
 
-      storeListsSubscription = experimentalStore.$state.lists.sink { _ in
+      storeListsSubscription = store.$state.lists.sink { _ in
         resolveList()
       }
     }
   }
 
   func resolveList() {
-    list = experimentalStore.state.lists.first { $0.id == listId }
+    list = store.state.lists.first { $0.id == listId }
     editingName = false 
   }
 
-  @ExpDirectContentBuilder override public var content: ExpDirectContent {
-    Container().experimentalWith(styleProperties: {
+  @DirectContentBuilder override public var content: DirectContent {
+    Container().with(styleProperties: {
       (\.$direction, .column)
     }).withContent { [unowned self] in
 
@@ -55,7 +55,7 @@ public class TodoListView: ContentfulWidget {
 
               widget.onKeyUp {
                 if $0.key == .Return {
-                  experimentalStore.commit(.updateTodoListName(listId: list?.id ?? -1, name: updatedNameBuffer))
+                  store.commit(.updateTodoListName(listId: list?.id ?? -1, name: updatedNameBuffer))
                   editingName = false
                 }
               }
@@ -75,13 +75,13 @@ public class TodoListView: ContentfulWidget {
             Button().withContent {
               Text("add todo")
             }.onClick {
-              experimentalStore.commit(.addTodoItem(listId: list!.id))
+              store.commit(.addTodoItem(listId: list!.id))
             }
           }
         }
       }
 
-      List(items: Experimental.ImmutableBinding($list.immutable, get: { $0?.items ?? [] })).with(classes: ["todo-item-list"]).withContent {
+      List(items: ImmutableBinding($list.immutable, get: { $0?.items ?? [] })).with(classes: ["todo-item-list"]).withContent {
         $0.itemSlot {
           build(todo: $0)
         }
@@ -93,25 +93,25 @@ public class TodoListView: ContentfulWidget {
     TodoListItemView(todo, editable: editable, checkable: checkable)
   }
 
-  override public var experimentalStyle: Experimental.Style {
-    Experimental.Style("&") {} nested: {
-      Experimental.Style(".header", Container.self) {
+  override public var style: Style {
+    Style("&") {} nested: {
+      Style(".header", Container.self) {
         (\.$alignContent, .center)
         (\.$margin, Insets(bottom: 48))
       }
 
-      Experimental.Style(".list-name") {
+      Style(".list-name") {
         (\.$foreground, .white)
         (\.$fontWeight, .bold)
         (\.$fontSize, 36)
         (\.$margin, Insets(right: 24))
       }
 
-      Experimental.Style(".list-name-input") {
+      Style(".list-name-input") {
         (\.$width, 200)
       }
 
-      Experimental.Style(".todo-item-list") {
+      Style(".todo-item-list") {
         (\.$alignSelf, .stretch)
         (\.$shrink, 1)
         (\.$overflowY, .scroll)

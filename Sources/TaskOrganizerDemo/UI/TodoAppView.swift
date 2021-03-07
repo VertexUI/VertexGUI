@@ -7,7 +7,7 @@ public class TodoAppView: ContentfulWidget {
     case SelectedList, Search
   }
 
-  @Inject private var experimentalStore: ExperimentalTodoStore
+  @Inject private var store: TodoStore
   @Reference private var activeViewTopSpace: Space
 
   @State private var searchQuery: String = ""
@@ -17,34 +17,34 @@ public class TodoAppView: ContentfulWidget {
   override public init() {
     super.init()
     _ = onDependenciesInjected { [unowned self] _ in
-      storeSearchQuerySubscription = experimentalStore.$state.searchQuery.sink {
+      storeSearchQuerySubscription = store.$state.searchQuery.sink {
         searchQuery = $0
       }
 
       searchQuerySubscription = $searchQuery
         .debounce(for: .seconds(0.5), scheduler: CXWrappers.DispatchQueue(wrapping: DispatchQueue.main))
         .removeDuplicates().sink {
-          experimentalStore.dispatch(.updateSearchResult(query: $0))
+          store.dispatch(.updateSearchResult(query: $0))
           if $0.isEmpty {
-            switch experimentalStore.state.mainViewRoute {
+            switch store.state.mainViewRoute {
             case .searchResults:
-              experimentalStore.commit(.setMainViewRoute(experimentalStore.state.previousMainViewRoute))
+              store.commit(.setMainViewRoute(store.state.previousMainViewRoute))
             default:
               break
             }
           } else {
-            switch experimentalStore.state.mainViewRoute {
+            switch store.state.mainViewRoute {
             case .searchResults:
               break
             default:
-              experimentalStore.commit(.setMainViewRoute(.searchResults))
+              store.commit(.setMainViewRoute(.searchResults))
             }
           }
         }
     }
   }
 
-  @ExpDirectContentBuilder override public var content: ExpDirectContent {
+  @DirectContentBuilder override public var content: DirectContent {
     Container().withContent { [unowned self] in
       buildMenu()
       buildActiveView()
@@ -59,11 +59,11 @@ public class TodoAppView: ContentfulWidget {
         Button().with(classes: ["button"]).withContent {
           Text("New List")
         }.onClick { [unowned self] in
-          experimentalStore.commit(.addTodoList)
+          store.commit(.addTodoList)
         }
       }
 
-      List(items: experimentalStore.$state.lists.immutable).with(classes: ["menu-item-list"]).withContent {
+      List(items: store.$state.lists.immutable).with(classes: ["menu-item-list"]).withContent {
         $0.itemSlot {
           buildMenuListItem(for: $0)
         }
@@ -76,7 +76,7 @@ public class TodoAppView: ContentfulWidget {
       TextInput(text: $searchQuery.mutable, placeholder: "search").with(classes: ["search-input"])
 
       Button().onClick {
-        experimentalStore.commit(.setMainViewRoute(experimentalStore.state.previousMainViewRoute))
+        store.commit(.setMainViewRoute(store.state.previousMainViewRoute))
       }.withContent {
         MaterialDesignIcon(.close)
       }
@@ -85,7 +85,7 @@ public class TodoAppView: ContentfulWidget {
 
   private func buildMenuListItem(for list: TodoList) -> Widget {
     Container().with(classes: ["menu-item"]).withContent {
-      Container().experimentalWith(styleProperties: {
+      Container().with(styleProperties: {
         (\.$background, list.color)
         (\.$padding, Insets(all: 8))
         (\.$alignSelf, .center)
@@ -95,9 +95,9 @@ public class TodoAppView: ContentfulWidget {
 
       Text(list.name).with(classes: ["list-item-name"])
     }.onClick { [unowned self] in
-      experimentalStore.commit(.setSelectedTodoListId(list.id))
-      if experimentalStore.state.mainViewRoute != .selectedList {
-        experimentalStore.commit(.setMainViewRoute(.selectedList))
+      store.commit(.setSelectedTodoListId(list.id))
+      if store.state.mainViewRoute != .selectedList {
+        store.commit(.setMainViewRoute(.selectedList))
       }
     }
   }
@@ -106,13 +106,13 @@ public class TodoAppView: ContentfulWidget {
     return Container().with(classes: ["active-view-container"]).withContent { [unowned self] in
       Space(DSize2(0, 0)).connect(ref: $activeViewTopSpace)
 
-      Dynamic(experimentalStore.$state.mainViewRoute) {
-        switch experimentalStore.state.mainViewRoute {
+      Dynamic(store.$state.mainViewRoute) {
+        switch store.state.mainViewRoute {
         case .none:
           Text("no list selected").with(classes: ["no-active-view-label"])
 
         case let .selectedList:
-          TodoListView(listId: experimentalStore.$state.selectedListId.immutable).with(classes: ["active-view"])
+          TodoListView(listId: store.$state.selectedListId.immutable).with(classes: ["active-view"])
 
         case .searchResults:
           SearchResultsView().with(classes: ["active-view"])
@@ -121,42 +121,42 @@ public class TodoAppView: ContentfulWidget {
     }
   }
 
-  override public var experimentalStyle: Experimental.Style {
-    Experimental.Style("&") {
+  override public var style: Style {
+    Style("&") {
       (\.$background, AppTheme.backgroundColor)
     } nested: {
       FlatTheme(
         primaryColor: AppTheme.primaryColor, secondaryColor: AppTheme.primaryColor,
         backgroundColor: AppTheme.backgroundColor
-      ).experimentalStyles
+      ).styles
 
-      Experimental.Style(".menu", Container.self) {
+      Style(".menu", Container.self) {
         (\.$alignSelf, .stretch)
         (\.$direction, .column)
         (\.$width, 250)
       }
 
-      Experimental.Style(".padded-container") {
+      Style(".padded-container") {
         (\.$padding, Insets(all: 32))
       }
 
-      Experimental.Style(".search-container") {
+      Style(".search-container") {
         (\.$alignSelf, .stretch)
       }
 
-      Experimental.Style(".search-input") {
+      Style(".search-input") {
         (\.$shrink, 1.0)
         (\.$grow, 1.0)
         (\.$margin, Insets(right: 16))
       }
 
-      Experimental.Style(".menu-item-list") {
+      Style(".menu-item-list") {
         (\.$overflowY, .scroll)
         (\.$alignSelf, .stretch)
         (\.$shrink, 1)
       }
 
-      Experimental.Style(".menu-item") {
+      Style(".menu-item") {
         (\.$foreground, .white)
         (\.$background, .transparent)
         (\.$padding, Insets(top: 16, right: 24, bottom: 16, left: 24))
@@ -164,31 +164,31 @@ public class TodoAppView: ContentfulWidget {
         (\.$borderColor, AppTheme.listItemDividerColor)
       }
 
-      Experimental.Style(".menu-item:hover") {
+      Style(".menu-item:hover") {
         (\.$background, AppTheme.primaryColor)
         (\.$foreground, .black)
       }
 
-      Experimental.Style(".list-item-name") {
+      Style(".list-item-name") {
         (\.$alignSelf, .center)
         (\.$padding, Insets(left: 8))
       }
 
-      Experimental.Style(".active-view-container", Container.self) {
+      Style(".active-view-container", Container.self) {
         (\.$grow, 1)
         (\.$direction, .column)
         (\.$alignSelf, .stretch)
         (\.$justifyContent, .center)
       }
 
-      Experimental.Style(".active-view") {
+      Style(".active-view") {
         (\.$padding, Insets(top: 48, left: 48))
         (\.$alignSelf, .stretch)
         (\.$grow, 1)
         (\.$shrink, 1)
       }
 
-      Experimental.Style(".no-active-view-label") {
+      Style(".no-active-view-label") {
         (\.$foreground, .white)
         (\.$fontSize, 24)
         (\.$fontWeight, .bold)

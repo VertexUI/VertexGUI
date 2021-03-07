@@ -2,7 +2,7 @@ import CXShim
 
 @propertyWrapper
 public class LayoutProperty<T>: AnyLayoutProperty {
-  private var keyPath: KeyPath<Container, Experimental.SpecialStyleProperty<Container, T>>
+  private var keyPath: KeyPath<Container, AnySpecialStyleProperty<Container, T>>
   unowned var layoutInstance: Layout? {
     didSet {
       setupInstancePropertySubscription()
@@ -14,7 +14,7 @@ public class LayoutProperty<T>: AnyLayoutProperty {
     layoutInstance!.container[keyPath: keyPath].resolvedValue
   }
 
-  public init(_ keyPath: KeyPath<Container, Experimental.SpecialStyleProperty<Container, T>>) {
+  public init(_ keyPath: KeyPath<Container, AnySpecialStyleProperty<Container, T>>) {
     self.keyPath = keyPath
   }
 

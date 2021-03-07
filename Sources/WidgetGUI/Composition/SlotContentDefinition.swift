@@ -3,9 +3,9 @@ public class SlotContentDefinition<D>: AnySlotContentDefinition {
   public var anySlot: AnySlot {
     slot
   }
-  var build: (D) -> [ExpDirectContent.Partial]
+  var build: (D) -> [DirectContent.Partial]
 
-  public init(slot: Slot<D>, @ExpDirectContentBuilder build: @escaping (D) -> [ExpDirectContent.Partial]) {
+  public init(slot: Slot<D>, @DirectContentBuilder build: @escaping (D) -> [DirectContent.Partial]) {
     self.slot = slot
     let associatedStyleScope = Widget.activeStyleScope
     self.build = { data in

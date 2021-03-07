@@ -1,17 +1,17 @@
-public protocol ExperimentalStylePropertiesContainer: Widget {}
+public protocol StylePropertiesContainer: Widget {}
 
-extension ExperimentalStylePropertiesContainer {
-  public typealias ExperimentalStyleProperty<Value> = Experimental.SpecialStyleProperty<Self, Value>
+extension StylePropertiesContainer {
+  public typealias StyleProperty<V> = WidgetGUI.AnySpecialStyleProperty<Self, V>
 
-  public func experimentalWith(@Experimental.StylePropertyValueDefinitionsBuilder<Self> styleProperties build: () -> [Experimental.StylePropertyValueDefinition]) -> Self {
-    self.experimentalDirectStylePropertyValueDefinitions.append(contentsOf: build())
+  public func with(@StylePropertyValueDefinitionsBuilder<Self> styleProperties build: () -> [StylePropertyValueDefinition]) -> Self {
+    self.DirectStylePropertyValueDefinitions.append(contentsOf: build())
     return self
   }
 
-  public func setupExperimentalStyleProperties() {
+  public func setupStyleProperties() {
     let mirror = Mirror(reflecting: self)
     for child in mirror.allChildren {
-      if var property = child.value as? ExperimentalAnyStylePropertyProtocol {
+      if var property = child.value as? AnyStylePropertyProtocol {
         property.container = self
         property.name = child.label
       }
@@ -19,4 +19,4 @@ extension ExperimentalStylePropertiesContainer {
   }
 }
 
-extension Widget: ExperimentalStylePropertiesContainer {}
+extension Widget: StylePropertiesContainer {}

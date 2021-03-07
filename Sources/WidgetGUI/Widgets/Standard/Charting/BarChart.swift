@@ -4,7 +4,7 @@ import VisualAppBase
 public class BarChart: LeafWidget {
   public typealias Data = [(label: String, value: Double)]
 
-  @Experimental.ImmutableBinding
+  @ImmutableBinding
   private var data: Data
 
   private var drawingData = DrawingData()
@@ -18,7 +18,7 @@ public class BarChart: LeafWidget {
     )
   }
 
-  public init(_ data: Experimental.ImmutableBinding<Data>) {
+  public init(_ data: ImmutableBinding<Data>) {
     self._data = data
     super.init()
   }

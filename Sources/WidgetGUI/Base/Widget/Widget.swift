@@ -62,7 +62,7 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     }
     public internal(set) var treePath: TreePath = [] {
         didSet {
-            experimentalSpecificWidgetStyle?.treePath = treePath
+            specificWidgetStyle?.treePath = treePath
         }
     }
     /** The topmost parent or the widget instance itself if not mounted into a parent. */
@@ -187,9 +187,9 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     public internal(set) var pseudoClasses = Set<String>()
 
     /** storage for the the value from style getter property */
-    internal var experimentalSpecificWidgetStyle: Experimental.Style? = nil
+    internal var specificWidgetStyle: Style? = nil
     /** this style will be added to every widget instance as the last style */ 
-    open var experimentalStyle: Experimental.Style? {
+    open var style: Style? {
         nil
     } 
 
@@ -208,105 +208,105 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
 
     /** Styles which can be applied to this Widget instance or any of 
     it's children (deep) according to their selector. */
-    public var experimentalProvidedStyles: [Experimental.Style] = []
-    var experimentalMergedProvidedStyles: [Experimental.Style] {
-        if experimentalSpecificWidgetStyle == nil {
-            experimentalSpecificWidgetStyle = experimentalStyle
-            experimentalSpecificWidgetStyle?.treePath = treePath
+    public var providedStyles: [Style] = []
+    var mergedProvidedStyles: [Style] {
+        if specificWidgetStyle == nil {
+            specificWidgetStyle = style
+            specificWidgetStyle?.treePath = treePath
         }
-        return experimentalProvidedStyles + (experimentalSpecificWidgetStyle == nil ? [] : [experimentalSpecificWidgetStyle!])
+        return providedStyles + (specificWidgetStyle == nil ? [] : [specificWidgetStyle!])
     }
 
     internal var matchedStylesInvalid = false
-    internal var experimentalMatchedStyles: [Experimental.Style] = [] {
+    internal var matchedStyles: [Style] = [] {
         didSet {
-            if oldValue.count != experimentalMatchedStyles.count || !oldValue.allSatisfy({ old in experimentalMatchedStyles.contains { $0 === old } }) {
+            if oldValue.count != matchedStyles.count || !oldValue.allSatisfy({ old in matchedStyles.contains { $0 === old } }) {
                 invalidateResolvedStyleProperties()
             }
         }
     }
-    public internal(set) var experimentalDirectStylePropertyValueDefinitions: [Experimental.StylePropertyValueDefinition] = [] {
+    public internal(set) var DirectStylePropertyValueDefinitions: [StylePropertyValueDefinition] = [] {
         didSet {
             invalidateResolvedStyleProperties()
         }
     }
 
-    @Experimental.DefaultStyleProperty
+    @DefaultStyleProperty
     public var width: Double? = nil
 
-    @Experimental.DefaultStyleProperty
+    @DefaultStyleProperty
     public var height: Double? = nil
 
-    @Experimental.DefaultStyleProperty
+    @DefaultStyleProperty
     public var minWidth: Double? = nil
 
-    @Experimental.DefaultStyleProperty
+    @DefaultStyleProperty
     public var minHeight: Double? = nil
 
-    @Experimental.DefaultStyleProperty
+    @DefaultStyleProperty
     public var maxWidth: Double? = nil
 
-    @Experimental.DefaultStyleProperty
+    @DefaultStyleProperty
     public var maxHeight: Double? = nil
 
-    @Experimental.DefaultStyleProperty
+    @DefaultStyleProperty
     public var padding: Insets = .zero
     
-    @Experimental.DefaultStyleProperty
+    @DefaultStyleProperty
     public var transform: [DTransform2] = []
 
-    @Experimental.DefaultStyleProperty
+    @DefaultStyleProperty
     public var overflowX: Overflow = .show
 
-    @Experimental.DefaultStyleProperty
+    @DefaultStyleProperty
     public var overflowY: Overflow = .show
 
-    @Experimental.DefaultStyleProperty
+    @DefaultStyleProperty
     public var opacity: Double = 1
 
-    @Experimental.DefaultStyleProperty
+    @DefaultStyleProperty
     public var visibility: Visibility = .visible
 
-    @Experimental.DefaultStyleProperty
+    @DefaultStyleProperty
     public var borderWidth: BorderWidth = .zero
 
-    @Experimental.DefaultStyleProperty
+    @DefaultStyleProperty
     public var borderColor: Color = .transparent
 
-    @Experimental.DefaultStyleProperty
+    @DefaultStyleProperty
     public var background: Color = .transparent
 
-    @Experimental.DefaultStyleProperty(default: .inherit)
+    @DefaultStyleProperty(default: .inherit)
     public var foreground: Color = .black
 
     // text, font
-    @Experimental.DefaultStyleProperty(default: .inherit)
+    @DefaultStyleProperty(default: .inherit)
     public var fontSize: Double = 16
 
-    @Experimental.DefaultStyleProperty(default: .inherit)
+    @DefaultStyleProperty(default: .inherit)
     public var fontFamily: FontFamily = defaultFontFamily
 
-    @Experimental.DefaultStyleProperty(default: .inherit)
+    @DefaultStyleProperty(default: .inherit)
     public var fontWeight: FontWeight = .regular
 
-    @Experimental.DefaultStyleProperty(default: .inherit)
+    @DefaultStyleProperty(default: .inherit)
     public var fontStyle: FontStyle = .normal
 
-    @Experimental.DefaultStyleProperty(default: .inherit)
+    @DefaultStyleProperty(default: .inherit)
     public var textTransform: TextTransform = .none
     // end text, font
 
     // flex
-    @Experimental.DefaultStyleProperty
+    @DefaultStyleProperty
     public var grow: Double = 0
 
-    @Experimental.DefaultStyleProperty
+    @DefaultStyleProperty
     public var shrink: Double = 0
 
-    @Experimental.DefaultStyleProperty
+    @DefaultStyleProperty
     public var alignSelf: SimpleLinearLayout.Align? = nil
 
-    @Experimental.DefaultStyleProperty
+    @DefaultStyleProperty
     public var margin: Insets = Insets(all: 0)
     // end flex
     /* end style */
@@ -394,7 +394,7 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         self._destroyed = self.$internalDestroyed.immutable
 
         setupWidgetEventHandlerManagers()
-        setupExperimentalStyleProperties()
+        setupStyleProperties()
         setupExplicitConstraintsUpdateTriggers()
         setupScrollingEnabled()
         updateScrollEventHandlers() 

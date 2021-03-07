@@ -16,7 +16,7 @@ public class StyleManager {
 
       // the initialWidget is the first widget to actually receive matched styles
       if index == initialParents.count - 1 {
-        initialWidget.experimentalMatchedStyles = fullMatches 
+        initialWidget.matchedStyles = fullMatches 
       }
 
       partialMatches = updatedPartialMatches
@@ -30,7 +30,7 @@ public class StyleManager {
 
       while let widget = entry.iterator.next() {
         let (newPartialMatches, fullMatches) = continueMatching(previousPartialMatches: entry.partialMatches, widget: widget)
-        widget.experimentalMatchedStyles = fullMatches
+        widget.matchedStyles = fullMatches
         queue.append(QueueEntry(iterator: widget.children.makeIterator(), partialMatches: newPartialMatches))
       }
     }
@@ -43,10 +43,10 @@ public class StyleManager {
     - the styles available to the children of widget, containing all styles that were sub styles of styles that got applied to widget
   */
   private func continueMatching(previousPartialMatches: [PartialMatch], widget: Widget) -> 
-    (partialMatches: [PartialMatch], fullMatches: [Experimental.Style]) {
+    (partialMatches: [PartialMatch], fullMatches: [Style]) {
       var partialMatchesToCheck = previousPartialMatches
 
-      for style in widget.experimentalMergedProvidedStyles {
+      for style in widget.mergedProvidedStyles {
         // use match index -2 to delay matching of non extending styles
         // to the children of the current widget
         partialMatchesToCheck.append(PartialMatch(
@@ -55,7 +55,7 @@ public class StyleManager {
           openScopes: [style.sourceScope]))
       }
 
-      var fullMatches = [Experimental.Style]()
+      var fullMatches = [Style]()
       var newPartialMatches = [PartialMatch]()
 
       var partialMatchIndex = 0
@@ -114,7 +114,7 @@ public class StyleManager {
   }
 
   private struct PartialMatch {
-    let style: Experimental.Style
+    let style: Style
     let matchIndex: Int
     let openScopes: [UInt]
 

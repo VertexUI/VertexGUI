@@ -8,7 +8,7 @@ public class Button: ContentfulWidget, SlotAcceptingWidgetProtocol {
     defaultSlotManager
   }
 
-  override public var content: ExpDirectContent {
+  override public var content: DirectContent {
     defaultSlotManager()
   }
 }

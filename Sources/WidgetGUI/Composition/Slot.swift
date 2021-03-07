@@ -7,11 +7,11 @@ public class Slot<D>: AnySlot {
     self.dataType = data
   }
 
-  public func callAsFunction(@ExpDirectContentBuilder build: @escaping (D) -> [ExpDirectContent.Partial]) -> SlotContentDefinition<D> {
+  public func callAsFunction(@DirectContentBuilder build: @escaping (D) -> [DirectContent.Partial]) -> SlotContentDefinition<D> {
     SlotContentDefinition(slot: self, build: build)
   }
 
-  /*public func callAsFunction(@ExpDirectContentBuilder build: @escaping () -> ExpDirectContent) -> SlotContentDefinition<D> where D == Void {
+  /*public func callAsFunction(@DirectContentBuilder build: @escaping () -> DirectContent) -> SlotContentDefinition<D> where D == Void {
     SlotContentDefinition(slot: self, build: { _ in build() })
   }*/
 }

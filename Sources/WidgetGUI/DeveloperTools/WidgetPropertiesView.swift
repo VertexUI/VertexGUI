@@ -6,14 +6,14 @@ extension DeveloperTools {
     @Inject
     var store: DeveloperTools.Store
 
-    @ExpDirectContentBuilder override public var content: ExpDirectContent {
+    @DirectContentBuilder override public var content: DirectContent {
       Container().withContent { [unowned self] in
 
         Dynamic(store.$state.inspectedWidget) {
 
           if let inspectedWidget = store.state.inspectedWidget {
 
-            Container().experimentalWith(styleProperties: {
+            Container().with(styleProperties: {
               (\.$grow, 1.0)
               (\.$direction, SimpleLinearLayout.Direction.column)
             }).withContent {
@@ -40,12 +40,12 @@ extension DeveloperTools {
 
       let mirror = Mirror(reflecting: widget)
       for child in mirror.allChildren {
-        if type(of: child.value) is ExperimentalAnyStylePropertyProtocol.Type, let property = child.value as? ExperimentalAnyStylePropertyProtocol {
+        if type(of: child.value) is AnyStylePropertyProtocol.Type, let property = child.value as? AnyStylePropertyProtocol {
           propertyRepresentations.append(buildStyleProperty(child.label ?? "", property))
         }
       }
 
-      return Container().with(classes: ["section"]).experimentalWith(styleProperties: {
+      return Container().with(classes: ["section"]).with(styleProperties: {
         (\.$direction, .column)
       }).withContent {
         Text("style properties").with(classes: ["section-heading"])
@@ -54,7 +54,7 @@ extension DeveloperTools {
       }
     }
 
-    func buildStyleProperty(_ name: String, _ property: ExperimentalAnyStylePropertyProtocol) -> Widget {
+    func buildStyleProperty(_ name: String, _ property: AnyStylePropertyProtocol) -> Widget {
       Text(name).with(classes: ["key"])
     }
 
@@ -62,13 +62,13 @@ extension DeveloperTools {
       Container().with(classes: ["section"]).withContent {
         Text("matched styles").with(classes: ["section-heading"])
 
-        widget.experimentalMatchedStyles.map {
+        widget.matchedStyles.map {
           buildStyleInfo($0)
         }
       }
     }
 
-    func buildStyleInfo(_ style: Experimental.Style) -> Widget {
+    func buildStyleInfo(_ style: Style) -> Widget {
       Container().with(classes: ["style-info"]).withContent {
         Text("style: \(style.selector)").with(classes: ["style-identifier"])
 
@@ -86,44 +86,44 @@ extension DeveloperTools {
       }
     }
 
-    override public var experimentalStyle: Experimental.Style {
-      Experimental.Style("&") {
+    override public var style: Style {
+      Style("&") {
         (\.$background, .white)
         (\.$foreground, .black)
         (\.$padding, Insets(all: 16))
       } nested: {
-        Experimental.Style(".widget-name") {
+        Style(".widget-name") {
           (\.$fontSize, 20.0)
           (\.$fontWeight, .bold)
           (\.$margin, Insets(bottom: 16))
         }
 
-        Experimental.Style(".section", Container.self) {
+        Style(".section", Container.self) {
           (\.$margin, Insets(bottom: 16))
           (\.$direction, .column)
         }
 
-        Experimental.Style(".section-heading") {
+        Style(".section-heading") {
           (\.$fontSize, 16.0)
           (\.$fontWeight, FontWeight.bold)
           (\.$margin, Insets(bottom: 8))
         }
 
-        Experimental.Style(".key-value-item", Container.self) {
+        Style(".key-value-item", Container.self) {
           (\.$margin, Insets(bottom: 8))
           (\.$direction, .row)
         }
 
-        Experimental.Style(".key") {
+        Style(".key") {
           (\.$fontWeight, .bold)
         }
 
-        Experimental.Style(".style-info", Container.self) {
+        Style(".style-info", Container.self) {
           (\.$direction, .column)
           (\.$margin, Insets(bottom: 16))
         }
 
-        Experimental.Style(".style-identifier") {
+        Style(".style-identifier") {
           (\.$fontWeight, .bold)
           (\.$fontSize, 16.0)
           (\.$margin, Insets(bottom: 8))

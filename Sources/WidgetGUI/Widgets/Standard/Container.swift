@@ -8,7 +8,7 @@ public class Container: ContentfulWidget, SlotAcceptingWidgetProtocol {
     defaultSlotManager
   }
 
-  override public var content: ExpDirectContent {
+  override public var content: DirectContent {
     defaultSlotManager()
   }
 
@@ -20,17 +20,17 @@ public class Container: ContentfulWidget, SlotAcceptingWidgetProtocol {
 
   private var layoutInstance: Layout?
 
-  @ExperimentalStyleProperty
+  @StyleProperty
   public var layout: Layout.Type = SimpleLinearLayout.self
   var layoutChangeSubscription: AnyCancellable?
 
-  @ExperimentalStyleProperty
+  @StyleProperty
   public var direction: SimpleLinearLayout.Direction = .row
 
-  @ExperimentalStyleProperty
+  @StyleProperty
   public var alignContent: SimpleLinearLayout.Align = .start
 
-  @ExperimentalStyleProperty
+  @StyleProperty
   public var justifyContent: SimpleLinearLayout.Justify = .start
 
   override public init() {

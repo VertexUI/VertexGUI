@@ -1,7 +1,7 @@
 import Foundation
 import Events
 
-public protocol ExpContentProtocol: class {
+public protocol ContentProtocol: class {
   associatedtype Partial
 
   var partials: [Partial] { get set }
@@ -12,7 +12,7 @@ public protocol ExpContentProtocol: class {
   init(partials: [Partial])
 }
 
-extension ExpContentProtocol {
+extension ContentProtocol {
   func updateReplacementRanges(ranges: [Int: Range<Int>], from startIndex: Int, deltaLength: Int) -> [Int: Range<Int>] {
     var result = ranges
     for (rangeIndex, range) in result {
@@ -28,7 +28,7 @@ extension ExpContentProtocol {
 
 // need to subclass NSObject because otherwise crashes occur
 // when this object is being type casted e.g. in a mirror over a class
-public class ExpContent: NSObject, EventfulObject {
+public class Content: NSObject, EventfulObject {
   public let onChanged = EventHandlerManager<Void>()
   public let onDestroy = EventHandlerManager<Void>()
   public private(set) var destroyed = false
@@ -46,7 +46,7 @@ public class ExpContent: NSObject, EventfulObject {
   }
 }
 
-public class ExpDirectContent: ExpContent, ExpContentProtocol {
+public class DirectContent: Content, ContentProtocol {
   public var partials: [Partial] = [] {
     didSet {
       if !destroyed {
@@ -79,7 +79,7 @@ public class ExpDirectContent: ExpContent, ExpContentProtocol {
         widgets.append(widget)
 
       default:
-        let nestedContent: ExpDirectContent
+        let nestedContent: DirectContent
 
         if case let .content(nested) = partial {
           nestedContent = nested
@@ -123,15 +123,15 @@ public class ExpDirectContent: ExpContent, ExpContentProtocol {
   }
 }
 
-extension ExpDirectContent {
+extension DirectContent {
   public enum Partial {
     case widget(Widget)
-    case content(ExpDirectContent)
-    case dynamic(Dynamic<ExpDirectContent>)
+    case content(DirectContent)
+    case dynamic(Dynamic<DirectContent>)
   }
 }
 
-public class ExpSlottingContent: ExpContent, ExpContentProtocol {
+public class SlottingContent: Content, ContentProtocol {
   public var partials: [Partial] = [] {
     didSet {
       if !destroyed {
@@ -142,8 +142,8 @@ public class ExpSlottingContent: ExpContent, ExpContentProtocol {
   public var slotContentDefinitions = [AnySlotContentDefinition]()
   var replacementRanges = [Int: Range<Int>]()
   var nestedHandlerRemovers = [() -> ()]()
-  var directContentPartials: [ExpDirectContent.Partial] = []
-  let directContent = ExpDirectContent(partials: [])
+  var directContentPartials: [DirectContent.Partial] = []
+  let directContent = DirectContent(partials: [])
 
   public required init(partials: [Partial]) {
     self.partials = partials
@@ -224,11 +224,11 @@ public class ExpSlottingContent: ExpContent, ExpContentProtocol {
   }
 }
 
-extension ExpSlottingContent {
+extension SlottingContent {
   public enum Partial {
     case widget(Widget)
-    case directContent(ExpDirectContent)
+    case directContent(DirectContent)
     case slotContentDefinition(AnySlotContentDefinition)
-    case dynamic(Dynamic<ExpSlottingContent>)
+    case dynamic(Dynamic<SlottingContent>)
   }
 }

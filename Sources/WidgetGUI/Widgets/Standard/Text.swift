@@ -16,11 +16,11 @@ public class Text: LeafWidget {
     textTransform.apply(to: text)
   }
 
-  @Experimental.ImmutableBinding
+  @ImmutableBinding
   private var text: String
   private var expTextSubscription: AnyCancellable?
 
-  public init(_ text: Experimental.ImmutableBinding<String>) {
+  public init(_ text: ImmutableBinding<String>) {
     self._text = text
   }
 

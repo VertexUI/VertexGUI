@@ -1,7 +1,7 @@
 import SwiftGUI
 
 public class TodoListItemView: ContentfulWidget {
-  @Inject private var store: ExperimentalTodoStore
+  @Inject private var store: TodoStore
 
   private var item: TodoItem
   private var editable: Bool
@@ -17,7 +17,7 @@ public class TodoListItemView: ContentfulWidget {
     updatedDescriptionBuffer = item.description
   }
 
-  @ExpDirectContentBuilder override public var content: ExpDirectContent {
+  @DirectContentBuilder override public var content: DirectContent {
     Container().with(classes: ["root-container"]).withContent { [unowned self] in
       TaskCompletionButton(item.completed).with(classes: ["completion-button"]).onClick {
         if checkable {
@@ -63,28 +63,28 @@ public class TodoListItemView: ContentfulWidget {
     }
   }
 
-  override public var experimentalStyle: Experimental.Style {
-    Experimental.Style("&") {
+  override public var style: Style {
+    Style("&") {
       (\.$foreground, .white)
       (\.$padding, Insets(top: 16, right: 24, bottom: 16, left: 24))
       (\.$borderColor, AppTheme.listItemDividerColor)
       (\.$borderWidth, BorderWidth(bottom: 1.0))
     } nested: {
-      Experimental.Style(".root-container", Container.self) {
+      Style(".root-container", Container.self) {
         (\.$alignContent, .center)
       }
 
-      Experimental.Style(".completion-button") {
+      Style(".completion-button") {
         (\.$foreground, AppTheme.primaryColor)
         (\.$margin, Insets(right: 24))
       } nested: {
 
-        Experimental.Style("&:hover") {
+        Style("&:hover") {
           (\.$foreground, AppTheme.primaryColor.darkened(40))
         }
       }
 
-      Experimental.Style(".description") {
+      Style(".description") {
         (\.$alignSelf, .center)
         (\.$grow, 1)
       }

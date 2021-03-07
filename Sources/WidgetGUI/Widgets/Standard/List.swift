@@ -18,11 +18,11 @@ public class List<Item: Equatable>: ContentfulWidget, SlotAcceptingWidgetProtoco
   }
   var itemSlotManager = SlotContentManager(List.itemSlot)
 
-  var storedContent = ExpDirectContent(partials: [])
-  override public var content: ExpDirectContent {
+  var storedContent = DirectContent(partials: [])
+  override public var content: DirectContent {
     storedContent
   }
-  private var itemContents: [ExpDirectContent] = [] {
+  private var itemContents: [DirectContent] = [] {
     didSet {
       storedContent.partials = itemContents.map {
         .content($0)
@@ -32,7 +32,7 @@ public class List<Item: Equatable>: ContentfulWidget, SlotAcceptingWidgetProtoco
 
   private var itemsSubscription: AnyCancellable?
 
-  public init(items immutableItems: Experimental.ImmutableBinding<[Item]>) {
+  public init(items immutableItems: ImmutableBinding<[Item]>) {
     self._items = immutableItems
   }
 
@@ -45,7 +45,7 @@ public class List<Item: Equatable>: ContentfulWidget, SlotAcceptingWidgetProtoco
   }
 
   private func processItemUpdate(old: [Item], new: [Item]) {
-    var updatedItemContents = [ExpDirectContent]()
+    var updatedItemContents = [DirectContent]()
 
     var usedOldIndices = [Int]()
 

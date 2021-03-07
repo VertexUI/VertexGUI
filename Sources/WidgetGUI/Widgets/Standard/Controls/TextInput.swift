@@ -20,7 +20,7 @@ public final class TextInput: ContentfulWidget
   @Reference private var textWidget: Text
   @Reference private var caretWidget: Drawing
 
-  @ExperimentalStyleProperty public var caretColor: Color = .lightBlue
+  @StyleProperty public var caretColor: Color = .lightBlue
 
   private var caretIndex: Int = 2
   private var lastDrawTimestamp: Double = 0.0
@@ -78,23 +78,23 @@ public final class TextInput: ContentfulWidget
     }
   }
 
-  @ExpDirectContentBuilder override public var content: ExpDirectContent {
+  @DirectContentBuilder override public var content: DirectContent {
     Container().withContent { [unowned self] _ in
-      Text($text.immutable).with(classes: ["text"]).experimentalWith(styleProperties: {
-        (\.$transform, Experimental.ImmutableBinding($textTranslation.immutable, get: {
+      Text($text.immutable).with(classes: ["text"]).with(styleProperties: {
+        (\.$transform, ImmutableBinding($textTranslation.immutable, get: {
           [DTransform2.translate($0)]
         }))
       }).connect(ref: $textWidget)
 
-      Text($placeholderText.immutable).with(classes: ["placeholder"]).experimentalWith(styleProperties: {
+      Text($placeholderText.immutable).with(classes: ["placeholder"]).with(styleProperties: {
         (\.$visibility, $placeholderVisibility.immutable)
       })
       
-      Drawing(draw: drawCaret).experimentalWith(styleProperties: {
+      Drawing(draw: drawCaret).with(styleProperties: {
         (\.$width, 0)
         (\.$height, 0)
         (\.$opacity, ImmutableBinding($focused.immutable, get: { $0 ? 1 : 0 }))
-        (\.$transform, Experimental.ImmutableBinding($textTranslation.immutable, get: {
+        (\.$transform, ImmutableBinding($textTranslation.immutable, get: {
           [DTransform2.translate($0)]
         }))
       }).connect(ref: $caretWidget)
@@ -103,23 +103,23 @@ public final class TextInput: ContentfulWidget
     }
   }
 
-  override public var experimentalStyle: Experimental.Style {
-    Experimental.Style("&") {
+  override public var style: Style {
+    Style("&") {
       (\.$padding, Insets(top: 16, right: 0, bottom: 16, left: 0))
       (\.$fontSize, 16)
       (\.$overflowX, .cut)
     } nested: {
 
-      Experimental.Style("& Container", Container.self) {
+      Style("& Container", Container.self) {
         (\.$layout, AbsoluteLayout.self)
         (\.$overflowX, .cut)
       }
 
-      Experimental.Style(".text") {
+      Style(".text") {
         (\.$foreground, .white)
       }
 
-      Experimental.Style(".placeholder") {
+      Style(".placeholder") {
         (\.$opacity, 0.5)
         (\.$foreground, .white)
       }

@@ -30,33 +30,33 @@ public class FlatTheme {
     }
   }
 
-  public var experimentalStyles: Experimental.Style {
-    Experimental.Style("&") {
+  public var styles: Style {
+    Style("&") {
       (\.$foreground, textColorOnBackground)
     } nested: {
 
-      Experimental.Style([StyleSelectorPart(type: Button.self)]) {
+      Style([StyleSelectorPart(type: Button.self)]) {
         (\.$background, primaryColor)
         (\.$padding, Insets(all: 16))
         (\.$foreground, textColorOnPrimary)
       } nested: {
-        Experimental.Style([StyleSelectorPart(extendsParent: true, pseudoClasses: ["hover"])]) {
+        Style([StyleSelectorPart(extendsParent: true, pseudoClasses: ["hover"])]) {
           (\.$background, primaryColor.darkened(30))
         }
       }
 
-      Experimental.Style([StyleSelectorPart(type: TextInput.self)], TextInput.self) {
+      Style([StyleSelectorPart(type: TextInput.self)], TextInput.self) {
         (\.$caretColor, primaryColor)
       }
 
-      Experimental.Style([StyleSelectorPart(type: Widget.ScrollBar.self)], Widget.ScrollBar.self) {
+      Style([StyleSelectorPart(type: Widget.ScrollBar.self)], Widget.ScrollBar.self) {
         (\.$background, .transparent)
         (\.$foreground, primaryColor)
         (\.$xBarHeight, 20)
         (\.$yBarWidth, 20)
       } nested: {
 
-        Experimental.Style("&:hover") {
+        Style("&:hover") {
           (\.$foreground, primaryColor.darkened(30))
         }
       }
