@@ -49,7 +49,7 @@ open class WidgetsApp: EventfulObject {
         guiRoots[windowId] = guiRoot
 
         guiRoot.bounds.size = window.size
-        
+
         _ = window.onMouse { [unowned self] in
             guiRoots[windowId]!.consume($0)
         }

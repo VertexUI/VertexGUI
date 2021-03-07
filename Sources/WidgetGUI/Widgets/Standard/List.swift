@@ -34,14 +34,14 @@ public class List<Item: Equatable>: ContentfulWidget, SlotAcceptingWidgetProtoco
 
   public init(items immutableItems: Experimental.ImmutableBinding<[Item]>) {
     self._items = immutableItems
-    super.init()
+  }
 
-    itemsSubscription = immutableItems.sink { [unowned self] in
+  override public func performBuild() {
+    itemsSubscription = _items.sink { [unowned self] in
       processItemUpdate(old: previousItems, new: $0)
       previousItems = $0
     }
-
-    processItemUpdate(old: [], new: items)
+    super.performBuild()
   }
 
   private func processItemUpdate(old: [Item], new: [Item]) {

@@ -5,7 +5,7 @@ import ColorizeSwift
 import Events
 import CXShim
 
-open class Widget: Bounded, Parent, Child {
+open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     /* identification
     ------------------------------
     */
@@ -137,6 +137,7 @@ open class Widget: Bounded, Parent, Child {
         didSet {
             if oldValue != layoutedSize {
                 if mounted {
+                    invalidateCumulatedValues()
                     if layouted && !layouting && !destroyed {
                         onSizeChanged.invokeHandlers(layoutedSize)
                     }
@@ -148,7 +149,7 @@ open class Widget: Bounded, Parent, Child {
     open var layoutedPosition = DPoint2(0, 0) {
         didSet {
             if mounted {
-                context.queueLifecycleMethodInvocation(.resolveCumulatedValues, target: self, sender: self, reason: .undefined)
+                invalidateCumulatedValues()
             }
         }
     }
@@ -448,9 +449,6 @@ open class Widget: Bounded, Parent, Child {
                 let updatedYProgress = $0.y / layoutedSize.height
                 if !updatedYProgress.isNaN && updatedYProgress != pseudoScrollBarY.scrollProgress {
                     pseudoScrollBarY.scrollProgress = updatedYProgress
-                }
-                for child in children {
-                    context.queueLifecycleMethodInvocation(.resolveCumulatedValues, target: child, sender: self, reason: .undefined)
                 }
             }.store(in: &scrollSubscriptions)
 

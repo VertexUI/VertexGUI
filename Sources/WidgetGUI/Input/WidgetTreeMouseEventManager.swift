@@ -34,10 +34,7 @@ public class WidgetTreeMouseEventManager {
 
       if testTarget.globalBounds.contains(point: processedRawMouseEvent.position) {
         currentTargets.append(testTarget)
-        var iterator = testTarget.children.makeIterator()
-        while let child = iterator.next() {
-          testMouseEventTargets.insert(child, at: 0)
-        }
+        testMouseEventTargets.insert(contentsOf: testTarget.children, at: 0)
       }
     }
 

@@ -36,7 +36,7 @@ extension Widget {
       outer: for entry in entries {
         for (otherPath, otherEntry) in byTreePath {
           if entry.target.treePath.isParent(of: otherPath) {
-            byTreePath[otherPath] = nil
+            byTreePath.removeValue(forKey: otherPath)
           } else if otherPath.isParent(of: entry.target.treePath) {
             continue outer
           }

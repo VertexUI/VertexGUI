@@ -49,6 +49,7 @@ public class WidgetTreeManager {
 
     if anyChildChanged {
       widget.invalidateLayout()
+      widget.invalidateCumulatedValues()
     }
 
     widget.previousChildren = widget.children
@@ -80,8 +81,6 @@ public class WidgetTreeManager {
     built = true
 
     onBuilt.invokeHandlers(Void())*/
-
-    widget.context.queueLifecycleMethodInvocation(.resolveCumulatedValues, target: widget, sender: widget, reason: .undefined)
   }
 
   public func buildChildren(of widget: Widget) {

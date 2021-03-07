@@ -14,11 +14,10 @@ open class TodoApp: WidgetsApp {
     let experimentalStore: ExperimentalTodoStore = ExperimentalTodoStore()
 
     public init() {
-        guiRoot = WidgetGUI.Root(rootWidget: Container().experimentalWith(styleProperties: {
-            (\.$alignContent, .stretch)
-        }).withContent {
+        guiRoot = WidgetGUI.Root(rootWidget: Container().withContent {
             TodoAppView().experimentalWith(styleProperties: {
                 (\.$grow, 1)
+                (\.$alignSelf, .stretch)
             })
         }.provide(dependencies: experimentalStore))
         guiRoot.renderObjectSystemEnabled = false

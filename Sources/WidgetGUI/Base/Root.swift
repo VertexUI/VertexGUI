@@ -107,16 +107,14 @@ open class Root: Parent {
       focusManager: focusManager
     )
 
-    //rootWidget.mount(parent: self, treePath: [], context: widgetContext!, lifecycleBus: widgetLifecycleBus)
-    //rootWidget.focusContext = focusContext
     treeManager.mountAsRoot(widget: rootWidget, root: self)
     treeManager.buildSubTree(rootWidget: rootWidget)
-
     styleManager.processTree(rootWidget)
   }
   
   open func layout() {
     rootWidget.layout(constraints: BoxConstraints(size: bounds.size / scale))
+    cumulatedValuesProcessor.resolveSubTree(rootWidget: rootWidget)
   }
 
   @discardableResult
@@ -126,9 +124,7 @@ open class Root: Parent {
         if let self = self {
           var operation = ProcessMouseEventOperationDebugData()
           operation.recordStart()
-          if !self.renderObjectSystemEnabled {
-            self.mouseEventManager.propagate(rawMouseEvent)
-          }
+          self.mouseEventManager.propagate(rawMouseEvent)
           operation.recordEnd()
           self.debugManager.data.storeOperation(operation)
         }
@@ -136,9 +132,7 @@ open class Root: Parent {
     } else {
       var operation = ProcessMouseEventOperationDebugData()
       operation.recordStart()
-      if !self.renderObjectSystemEnabled {
-        mouseEventManager.propagate(rawMouseEvent)
-      }
+      mouseEventManager.propagate(rawMouseEvent)
       operation.recordEnd()
       self.debugManager.data.storeOperation(operation)
     }

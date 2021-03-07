@@ -16,7 +16,7 @@ open class ContentfulWidget: Widget {
     }
   }
 
-  final override public func performBuild() {
+  override public func performBuild() {
     _content = content 
     contentChildren = _content!.widgets
     _ = onDestroy(_content!.onChanged { [unowned self] in
