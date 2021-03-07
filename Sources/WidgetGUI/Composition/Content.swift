@@ -40,7 +40,9 @@ public class ExpContent: NSObject, EventfulObject {
   }
 
   deinit {
-    destroy()
+    if !destroyed {
+      destroy()
+    }
   }
 }
 
@@ -75,14 +77,25 @@ public class ExpDirectContent: ExpContent, ExpContentProtocol {
       switch partial {
       case let .widget(widget):
         widgets.append(widget)
-      case let .content(nestedContent):
+
+      default:
+        let nestedContent: ExpDirectContent
+
+        if case let .content(nested) = partial {
+          nestedContent = nested
+        } else if case let .dynamic(dynamic) = partial {
+          nestedContent = dynamic.content
+        } else {
+          fatalError("unhandled case")
+        }
+
         let nestedWidgets = nestedContent.widgets
 
         replacementRanges[index] = widgets.count..<(widgets.count + nestedWidgets.count)
 
         widgets.append(contentsOf: nestedWidgets)
 
-        nestedHandlerRemovers.append(nestedContent.onChanged { [unowned self] in
+        nestedHandlerRemovers.append(nestedContent.onChanged { [unowned self, unowned nestedContent] in
           let nestedWidgets = nestedContent.widgets
           widgets.replaceSubrange(replacementRanges[index]!, with: nestedWidgets)
 
@@ -93,7 +106,7 @@ public class ExpDirectContent: ExpContent, ExpContentProtocol {
 
           onChanged.invokeHandlers()
         })
-      }
+      }     
     }
 
     onChanged.invokeHandlers()
@@ -106,6 +119,7 @@ public class ExpDirectContent: ExpContent, ExpContentProtocol {
     for remove in nestedHandlerRemovers {
       remove()
     }
+    nestedHandlerRemovers = []
   }
 }
 
@@ -113,6 +127,7 @@ extension ExpDirectContent {
   public enum Partial {
     case widget(Widget)
     case content(ExpDirectContent)
+    case dynamic(Dynamic<ExpDirectContent>)
   }
 }
 
@@ -156,7 +171,9 @@ public class ExpSlottingContent: ExpContent, ExpContentProtocol {
       case let .slotContentDefinition(definition):
         slotContentDefinitions.append(definition)
 
-      case let .slottingContent(nestedSlotContent):
+      case let .dynamic(dynamic):
+        let nestedSlotContent = dynamic.content
+
         directContentPartials.append(.content(nestedSlotContent.directContent))
 
         let nestedDefinitions = nestedSlotContent.slotContentDefinitions
@@ -165,7 +182,7 @@ public class ExpSlottingContent: ExpContent, ExpContentProtocol {
 
         slotContentDefinitions.append(contentsOf: nestedDefinitions)
 
-        nestedHandlerRemovers.append(nestedSlotContent.onChanged { [unowned self] in
+        nestedHandlerRemovers.append(nestedSlotContent.onChanged { [unowned self, unowned nestedSlotContent] in
           let nestedDefinitions = nestedSlotContent.slotContentDefinitions
           self.slotContentDefinitions.replaceSubrange(replacementRanges[index]!, with: nestedDefinitions)
 
@@ -194,13 +211,16 @@ public class ExpSlottingContent: ExpContent, ExpContentProtocol {
 
   override public func destroy() {
     super.destroy()
-    slotContentDefinitions = []
-    partials = []
+
     for remove in nestedHandlerRemovers {
       remove()
     }
+    nestedHandlerRemovers = []
+
     directContentPartials = []
     directContent.destroy()
+    slotContentDefinitions = []
+    partials = []
   }
 }
 
@@ -209,6 +229,6 @@ extension ExpSlottingContent {
     case widget(Widget)
     case directContent(ExpDirectContent)
     case slotContentDefinition(AnySlotContentDefinition)
-    case slottingContent(ExpSlottingContent)
+    case dynamic(Dynamic<ExpSlottingContent>)
   }
 }

@@ -6,8 +6,6 @@ public class Dynamic<C: ExpContentProtocol> {
 
   let content: C
 
-  let onDependenciesChanged = EventHandlerManager<Void>()
-
   var triggerSubscription: AnyCancellable?
 
   private init<P: Publisher>(trigger: P, build: @escaping () -> [C.Partial]) where P.Failure == Never {
@@ -17,19 +15,10 @@ public class Dynamic<C: ExpContentProtocol> {
     self.content = C(partials: partials)
     
     triggerSubscription = trigger.sink { [unowned self] _ in
-      onDependenciesChanged.invokeHandlers()
-
       Widget.inStyleScope(self.associatedStyleScope) {
         self.content.partials = build()
       }
     }
-
-    // don't need to update content anymore after it is destroyed
-    // it's necessary to manual destroy because this Dynamic object
-    // is captured within the handler, to avoid early deallocation
-    _ = content.onDestroy({ [self] in
-      self.triggerSubscription?.cancel()
-    })
   }
 }
 

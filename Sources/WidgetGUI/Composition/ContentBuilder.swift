@@ -13,7 +13,7 @@ public struct ExpDirectContentBuilder {
   }
 
   public static func buildExpression(_ dynamic: Dynamic<ExpDirectContent>) -> [ExpDirectContent.Partial] {
-    [.content(dynamic.content)]
+    [.dynamic(dynamic)]
   }
 
   public static func buildOptional(_ partials: [ExpDirectContent.Partial]?) -> [ExpDirectContent.Partial] {
@@ -64,7 +64,7 @@ public struct ExpSlottingContentBuilder {
   }
 
   public static func buildExpression(_ dynamic: Dynamic<ExpSlottingContent>) -> [ExpSlottingContent.Partial] {
-    [.slottingContent(dynamic.content)]
+    [.dynamic(dynamic)]
   }
 
   public static func buildEither(first: [ExpSlottingContent.Partial]) -> [ExpSlottingContent.Partial] {
