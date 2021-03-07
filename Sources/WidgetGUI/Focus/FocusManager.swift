@@ -1,61 +1,40 @@
 import CXShim
 
 public final class FocusManager {
-  var currentFocusedWidget: Widget? = nil
-  var destroySubscription: AnyCancellable?
+  var currentFocusChain: [Widget] = []
 
   public func requestFocus(on widget: Widget) {
-    if let previousFocusedWidget = currentFocusedWidget {
-      currentFocusedWidget?.internalFocused = false
-      unfocusParentChain(leaf: previousFocusedWidget)
-    }
-    destroySubscription = nil
-
-    currentFocusedWidget = widget
-    destroySubscription = widget.$destroyed.sink { [unowned self] in
-      if $0 {
-        currentFocusedWidget = nil
-        destroySubscription = nil
+    let newChain = focusParentChain(leaf: widget)
+    for index in 0..<currentFocusChain.count {
+      if index >= newChain.count || currentFocusChain[index] !== newChain[index] {
+        currentFocusChain[index].internalFocused = false
       }
     }
-    focusParentChain(leaf: widget)
+    currentFocusChain = newChain
   }
 
   public func dropFocus(on widget: Widget) {
-    if currentFocusedWidget === widget {
-      unfocusChildrenChain(parent: widget)
-      currentFocusedWidget = nil
-      destroySubscription = nil
+    var unfocusChain = [Widget]()
+    for (index, focusedWidget) in currentFocusChain.enumerated() {
+      if focusedWidget === widget {
+        unfocusChain = Array(currentFocusChain[index..<currentFocusChain.count])
+        currentFocusChain = Array(currentFocusChain[0..<index])
+        break
+      }
+    }
+    for widget in unfocusChain {
+      widget.internalFocused = false
     }
   }
 
-  private func focusParentChain(leaf: Widget) {
+  private func focusParentChain(leaf: Widget) -> [Widget] {
+    var chain = [Widget]()
     var next = Optional(leaf)
     while let current = next {
       current.internalFocused = true
       next = current.parent as? Widget
+      chain.append(current)
     }
-  }
-
-  private func unfocusParentChain(leaf: Widget) {
-    var next = Optional(leaf)
-    while let current = next {
-      current.internalFocused = false
-      next = current.parent as? Widget
-    }
-  }
-
-  private func unfocusChildrenChain(parent: Widget) {
-    var next = Optional(parent)
-    while let current = next {
-      current.internalFocused = false
-      next = nil
-      for child in current.children {
-        if child.focused {
-          next = child
-          break
-        }
-      }
-    }
+    return chain.reversed()
   }
 }
