@@ -100,7 +100,6 @@ open class Root: Parent {
       createWindow: createWindow,
       requestCursor: requestCursor,
       queueLifecycleMethodInvocation: { [unowned self] in widgetLifecycleManager.queue($0, target: $1, sender: $2, reason: $3) },
-      lifecycleMethodInvocationSignalBus: Bus<Widget.LifecycleMethodInvocationSignal>(),
       focusManager: focusManager
     )
 

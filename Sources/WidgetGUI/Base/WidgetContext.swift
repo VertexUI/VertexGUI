@@ -20,7 +20,6 @@ public class WidgetContext {
     }
 
     private let _queueLifecycleMethodInvocation: (Widget.LifecycleMethod, Widget, Widget, Widget.LifecycleMethodInvocationReason) -> ()
-    public let lifecycleMethodInvocationSignalBus: Bus<Widget.LifecycleMethodInvocationSignal>
     
     public let inspectionBus = WidgetBus<WidgetInspectionMessage>()
 
@@ -42,7 +41,6 @@ public class WidgetContext {
         createWindow: @escaping (_ guiRootBuilder: @autoclosure () -> Root, _ options: Window.Options) -> Window,
         requestCursor: @escaping (_ cursor: Cursor) -> () -> Void,
         queueLifecycleMethodInvocation: @escaping (Widget.LifecycleMethod, Widget, Widget, Widget.LifecycleMethodInvocationReason) -> (),
-        lifecycleMethodInvocationSignalBus: Bus<Widget.LifecycleMethodInvocationSignal>,
         focusManager: FocusManager) {
             self.window = window
             self._getTextBoundsSize = getTextBoundsSize
@@ -53,7 +51,6 @@ public class WidgetContext {
             self._createWindow = createWindow
             self._requestCursor = requestCursor
             self._queueLifecycleMethodInvocation = queueLifecycleMethodInvocation
-            self.lifecycleMethodInvocationSignalBus = lifecycleMethodInvocationSignalBus
             self.focusManager = focusManager
     }
 

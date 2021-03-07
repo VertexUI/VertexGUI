@@ -39,7 +39,6 @@ let package = Package(
     ],
 
     targets: [
-
         .systemLibrary(
             name: "CSDL2",
             pkgConfig: "sdl2",
@@ -57,7 +56,6 @@ let package = Package(
         ),
 
         .target(
-                // TODO: maybe rename to SwiftApplicationFramework or so...? or split to SwiftApplicationFramework and SwiftUIFramework
             name: "WidgetGUI",
             dependencies: ["VisualAppBase", "Events", .product(name: "CXShim", package: "CombineX"), "GfxMath", "Runtime", "ColorizeSwift", "Easing"],
             resources: [.process("Resources")]
@@ -67,15 +65,6 @@ let package = Package(
             name: "VisualAppBaseImplSDL2OpenGL3NanoVG",
             dependencies: ["WidgetGUI", "CSDL2", "GL", "Events", "GLUtils", "Swim", .product(name: "CnanovgGL3", package: "Cnanovg"), "GfxMath", .product(name: "Path", package: "Path.swift")],
             resources: [.process("Resources")]),
-       
-        /*.target(
-            name: "Demo2DRaycastingApp",
-            dependencies: ["WidgetGUI", "VisualAppBase", "VisualAppBaseImplSDL2OpenGL3NanoVG"]),
-       
-        .target(
-            name: "DemoGameApp",
-            dependencies: ["WidgetGUI", "VisualAppBase", "VisualAppBaseImplSDL2OpenGL3NanoVG"],
-            resources: [.process("Resources")]),*/
        
         .target(
             name: "TaskOrganizerDemo",
@@ -98,15 +87,6 @@ let package = Package(
             resources: [.process("Resources")]
         ),
 
-        /*.target(
-            name: "CTestSDL"
-        ),*/
-        /*.target(
-            name: "TestSDLSwift", dependencies: ["CTestSDL", "CSDL2", "GL", .product(name: "CnanovgGL3", package: "Cnanovg"), "VisualAppBaseImplSDL2OpenGL3NanoVG"], linkerSettings: [LinkerSetting.linkedLibrary("SDL2")]
-        ),*/
-
-        //.testTarget(name: "VisualAppBaseTests", dependencies: ["VisualAppBase", "Events"]),
-        
         .testTarget(name: "WidgetGUITests", dependencies: ["SwiftGUI"])
     ]
 )

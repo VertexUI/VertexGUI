@@ -104,13 +104,6 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     /* lifecycle
     ---------------------------
     */
-    public private(set) var lifecycleFlags: [LifecycleFlag] = [.initialized]
-    private var lifecycleMethodInvocationSignalBus: Bus<LifecycleMethodInvocationSignal> {
-        context.lifecycleMethodInvocationSignalBus
-    }
-    private var nextLifecycleMethodInvocationIds: [LifecycleMethod: Int] = LifecycleMethod.allCases.reduce(into: [:]) {
-        $0[$1] = 0
-    }
     var nextTickHandlerRemovers: [() -> ()] = []
     /* end lifecycle */
     
@@ -480,12 +473,6 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     }
     /* end internal widget setup / management */
 
-    /** side effect: increments the stored next id for the next call of this function. */
-    private func getNextLifecycleMethodInvocationId(_ method: LifecycleMethod) -> Int {
-        defer { nextLifecycleMethodInvocationIds[method]! += 1 }
-        return nextLifecycleMethodInvocationIds[method]!
-    }
-
     // TODO: maybe find better names for the following functions?
     @inlinable
     public final func with(key: String) -> Self {
@@ -624,11 +611,6 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     }
 
     public final func layout(constraints: BoxConstraints) {
-        let invocationId = getNextLifecycleMethodInvocationId(.layout)
-        if mounted {
-            lifecycleMethodInvocationSignalBus.publish(.started(method: .layout, reason: .undefined, invocationId: invocationId, timestamp: context.applicationTime ))
-        }
-
         if !layoutInvalid, let previousConstraints = previousConstraints, constraints == previousConstraints {
             #if DEBUG
             Logger.log("Constraints equal pervious constraints and layout is not invalid.", "Not performing layout.".with(fg: .yellow), level: .Message, context: .WidgetLayouting)
