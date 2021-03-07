@@ -20,7 +20,7 @@ public class MainView: ContentfulWidget {
 
   override public var experimentalStyle: Experimental.Style {
     Experimental.Style("&") {} nested: {
-      FlatTheme(primaryColor: .blue, secondaryColor: .green, backgroundColor: Color(10, 20, 50, 255)).experimentalStyles
+      FlatTheme(primaryColor: .lightBlue, secondaryColor: .green, backgroundColor: Color(10, 20, 50, 255)).experimentalStyles
     }
   }
 }

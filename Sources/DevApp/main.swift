@@ -14,7 +14,6 @@ public class DevApp: WidgetsApp {
         (\.$grow, 1)
       })
     })
-    guiRoot.renderObjectSystemEnabled = false 
 
     let window = createWindow(guiRoot: guiRoot, options: Window.Options(background: Color(20, 36, 50, 255)), immediate: true)
     //openDevTools(for: window)

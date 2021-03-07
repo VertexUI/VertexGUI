@@ -20,7 +20,6 @@ open class TodoApp: WidgetsApp {
                 (\.$alignSelf, .stretch)
             })
         }.provide(dependencies: experimentalStore))
-        guiRoot.renderObjectSystemEnabled = false
         super.init(baseApp: SDL2OpenGL3NanoVGVisualApp())
     }
 

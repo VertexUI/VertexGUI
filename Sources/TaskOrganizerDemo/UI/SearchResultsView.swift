@@ -27,7 +27,7 @@ public class SearchResultsView: ContentfulWidget {
   }
 
   func buildSearchResult(_ todoItem: TodoItem) -> Widget {
-    TodoListItemView(todoItem)
+    TodoListItemView(todoItem).with(classes: ["list-item"])
   }
 
   override public var experimentalStyle: Experimental.Style {
@@ -35,11 +35,13 @@ public class SearchResultsView: ContentfulWidget {
       Experimental.Style(".lists-container", Container.self) {
         (\.$direction, .column)
         (\.$overflowY, .scroll)
+        (\.$alignContent, .stretch)
       }
 
       Experimental.Style(".list", Container.self) {
         (\.$direction, .column)
         (\.$margin, Insets(bottom: 64))
+        (\.$alignContent, .stretch)
       }
 
       Experimental.Style(".list-header") {

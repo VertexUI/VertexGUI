@@ -17,9 +17,6 @@ public class TodoListView: ContentfulWidget {
   @State private var editingName: Bool = false
   @State private var updatedNameBuffer: String = ""
 
-  @State private var editingItemIndex: Int? = nil
-  private var updatedItemDescription: String = ""
-
   public init(listId immutableListId: Experimental.ImmutableBinding<Int>, editable: Bool = true, checkable: Bool = true) {
     self._listId = immutableListId
     self.editable = editable
@@ -39,6 +36,7 @@ public class TodoListView: ContentfulWidget {
 
   func resolveList() {
     list = experimentalStore.state.lists.first { $0.id == listId }
+    editingName = false 
   }
 
   @ExpDirectContentBuilder override public var content: ExpDirectContent {

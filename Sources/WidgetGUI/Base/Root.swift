@@ -71,9 +71,6 @@ open class Root: Parent {
       }
     }
   }
-
-  /** this flag should be deleted once the direct draw call approach is fully implemented */
-  public var renderObjectSystemEnabled = true
   /* end debugging */
 
   public private(set) var destroyed = false
