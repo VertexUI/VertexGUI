@@ -36,7 +36,6 @@ open class WidgetsApp: EventfulObject {
 
         guiRoot.setup(
                       window: window,
-                      getTextBoundsSize: { [unowned self] in windowContexts[windowId]!.renderer.getTextBoundsSize($0, fontConfig: $1, maxWidth: $2) },
                       measureText: { [unowned self] in windowContexts[windowId]!.window.getDrawingContext().measureText(text: $0, paint: $1) },
                       getKeyStates: { [unowned self] in baseApp.system.keyStates },
                       getApplicationTime: { [unowned self] in baseApp.system.currentTime },

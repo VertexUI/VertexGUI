@@ -8,12 +8,4 @@ open class SDL2OpenGL3NanoVGVisualApp: VisualApp {
   override open func createRawWindow(options: Window.Options) -> Window {
     try! SDL2OpenGL3NanoVGWindow(options: options)
   }
-
-  override open func createRenderer(for window: Window) -> Renderer {
-    SDL2OpenGL3NanoVGRenderer(for: window as! SDL2OpenGL3NanoVGWindow)
-  }
-
-  override open func createTreeSliceRenderer(context: ApplicationContext) -> RenderObjectTreeSliceRenderer {
-    SDL2OpenGL3NanoVGRenderObjectTreeSliceRenderer(context: context)
-  }
 }

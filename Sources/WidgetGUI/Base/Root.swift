@@ -82,7 +82,6 @@ open class Root: Parent {
   
   open func setup(
     window: Window,
-    getTextBoundsSize: @escaping (_ text: String, _ fontConfig: FontConfig, _ maxWidth: Double?) -> DSize2,
     measureText: @escaping (_ text: String, _ paint: TextPaint) -> DSize2,
     getKeyStates: @escaping () -> KeyStatesContainer,
     getApplicationTime: @escaping () -> Double,
@@ -92,7 +91,6 @@ open class Root: Parent {
   ) {
     self.widgetContext = WidgetContext(
       window: window,
-      getTextBoundsSize: getTextBoundsSize,
       measureText: measureText,
       getKeyStates: getKeyStates,
       getApplicationTime: getApplicationTime,
