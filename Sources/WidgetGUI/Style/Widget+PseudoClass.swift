@@ -1,5 +1,5 @@
 extension Widget {
   public enum PseudoClasses: String, PseudoClass {
-    case hover
+    case hover, active
   }
 }

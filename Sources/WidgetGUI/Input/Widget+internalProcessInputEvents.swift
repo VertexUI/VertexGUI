@@ -13,9 +13,11 @@ extension Widget {
       self.onMouseLeaveHandlerManager.invokeHandlers(event)
 
     case let event as GUIMouseButtonDownEvent:
+      self.enablePseudoClass(Widget.PseudoClasses.active)
       self.onMouseDownHandlerManager.invokeHandlers(event)
 
     case let event as GUIMouseButtonUpEvent:
+      self.disablePseudoClass(Widget.PseudoClasses.active)
       self.onMouseUpHandlerManager.invokeHandlers(event)
 
     case let event as GUIMouseButtonClickEvent:
