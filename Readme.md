@@ -5,151 +5,454 @@
 
 SwiftGUI is a Swift framework for writing cross-platform GUI applications.
 
+<br>
+
 ## Demo
 
 <img alt="screenshot of demo app" src="Docs/demo.png?raw=true"/>
 
-Currently Linux and MacOS are supported. To run the demo application, you need a [Swift 5.3 toolchain](https://swift.org/download/#releases), [the SDL2 library](https://wiki.libsdl.org/Installation) and OpenGL 3 headers must be present on your system.
+Currently Linux and MacOS are supported. Windows support is planned.
 
-Installing SDL2 on Ubuntu:
+To run the demo follow the installation instructions for SDL2 below, clone the repository and in the root directory execute `swift run TaskOrganizerDemo`.
+
+The code for the demo app can be found in [Sources/TaskOrganizerDemo](Sources/TaskOrganizerDemo)
+
+**I'm working on a tutorial.**
+
+<br>
+
+## Table of Contents
+
+* [Installation](#installation)
+* [Simple Code Example](#simple-code-example)
+* [Feature Overview](#feature-overview)
+* [Current Limitations](#current-limitations)
+* [Roadmap](#roadmap)
+* [Contribute](#contribute)
+* [VSCode Setup on Linux](#vscode-setup-linux)
+* [Dependencies](#dependencies)
+
+<br>
+
+## [Installation](#installation)
+
+### SDL2
+
+The framework depends on SDL2 to create windows and receive events.
+
+On Ubuntu install it with:
 
     sudo apt-get install libsdl2-dev
 
-Installing SDL2 on MacOS ([Homebrew](https://brew.sh/) required):
+on MacOS (via homebrew):
 
-    brew install sdl2 
+    brew install sdl2
 
-When the requirements are met, clone this repo and from it's root directory run:
- 
-    swift run TaskOrganizerDemo
+for other platforms see: [Installing SDL](https://wiki.libsdl.org/Installation).
 
 <br>
 
-## **NOTE**: I'm currently redesigning a large part of the framework and most examples are outdated, most widgets are not yet updated to the new api design
+### SwiftGUI
 
-<br>
+This project is under heavy development. I will not create releases until there is some API stability.
 
-I estimate that around mid-March the framework will be in a more usable state.
+Just use the master branch:
 
-<br>
+    dependencies: [
+      ...,
+      .package(name: "SwiftGUI", url: "https://github.com/UnGast/swift-gui", .branch("master")),
+    ],
+    targets: [
+      ...,
+      .target(name: "SomeTarget", dependencies: ["SwiftGUI", ...])
+    ]
 
-## Use
+A [Swift 5.3 toolchain](https://swift.org/download/#releases) is required.
 
-I do not recommend using the library for applications that need to be useful for now. There is a lot to be improved and optimized which will lead to API changes breaking your application.
+<br><br>
 
-To get a sense for the syntax, here is a minimal example to create the following GUI:
+## [Simple Code Example](#simple-code-example)
 
-<img alt="screenshot of minimal demo app" src="Docs/minimal_demo.png?raw=true" width="200"/>
+Result:
 
-    import SwiftGUI
+<img alt="screenshot of minimal demo app" src="Docs/minimal_demo.png?raw=true" width="300"/>
 
-    public class MainView: SingleChildWidget {
-      @MutableProperty
+    import SwiftGUI 
+
+    public class MainView: ContentfulWidget {
+      @State
       private var counter = 0
 
-      override public func buildChild() -> Widget {
-        Center { [unowned self] in
-          Button().withContent {
-            ObservingBuilder($counter) {
-              Text("Hello world \(counter)")
-            }
-          } onClick: { _ in
+      @DirectContentBuilder override public var content: DirectContent {
+        Container().with(classes: ["container"]).withContent { [unowned self] in
+          Button().onClick {
             counter += 1
+          }.withContent {
+            Text(ImmutableBinding($counter.immutable, get: { "counter: \($0)" }))
+          }
+        }
+      }
+
+      // you can define themes, so this can also be done in three lines
+      override public var style: Style {
+        let primaryColor = Color(77, 255, 154, 255)
+
+        return Style("&") {
+          (\.$background, Color(10, 20, 30, 255))
+        } nested: {
+
+          Style(".container", Container.self) {
+            (\.$alignContent, .center)
+            (\.$justifyContent, .center)
+          }
+
+          Style("Button") {
+            (\.$padding, Insets(all: 16))
+            (\.$background, primaryColor)
+            (\.$foreground, .black)
+            (\.$fontWeight, .bold)
+          } nested: {
+
+            Style("&:hover") {
+              (\.$background, primaryColor.darkened(20))
+            }
+
+            Style("&:active") {
+              (\.$background, primaryColor.darkened(40))
+            }
           }
         }
       }
     }
 
-When the button is pressed, the counter after "hello world" should be incremented.
-There is some more wrapper code involved in displaying the GUI. You can find all of it in [Sources/MinimalDemo](Sources/MinimalDemo)
+When you press the button, the counter should be incremented.
 
-A more detailed example in the form of a simple task organizer app can be found in [Sources/TaskOrganizerDemo](Sources/TaskOrganizerDemo)
+Some additional setup code is necessary to display the window. You can find all of it in [Sources/MinimalDemo](Sources/MinimalDemo)
 
-<br>
+<br><br>
 
-## Why?
-
-Swift is a great language I enjoy to write because it is quite concise and clear. It seems to facilitate getting work done. The use of libraries like SwiftUI is however limited to Apple platforms. Enabling GUI development on other platforms could be an important addition to the Swift ecosystem.
+## [Feature Overview](#feature-overview)
 
 <br>
 
-Additionally there could be some interesting applications of [Swift for Tensorflow](https://github.com/tensorflow/swift) in the future. Maybe deep learning techniques can be included in applications to automate workflows by learning from the user.
+### **Declarative GUI Structure**
+
+Using Swift's [function/result builders](https://github.com/apple/swift-evolution/blob/main/proposals/0289-result-builders.md).
+
+    Container().withContent {
+      Button().withContent {
+        Text("Hello World")
+
+        $0.iconSlot {
+          Icon(identifier: .party)
+        }
+      }
+    }
+
+    List(items).withContent {
+      $0.itemSlot { itemData in
+        Text(itemData)
+      }
+    }
 
 <br>
 
-## Comparison with other frameworks
+### **Custom Widgets**
 
-- SwiftGUI provides a declarative way for defining user interfaces like SwiftUI, Flutter, Qt's QML and VueJS do
-- in comparison with SwiftUI, SwiftGUI's components are heavier and provide more flexibility to the developer to adjust the functionality, style and rendering output
-- Qt uses two languages, C++ and QML (with Javascript), with Swift this is not necessary since there are ways to represent tree structures that define the UI in a concise way with [result builders](https://github.com/apple/swift-evolution/blob/main/proposals/0289-result-builders.md)
+#### **by composing other Widgets**
+
+Create reusable views consiting of multiple Widgets. Pass child Widgets to your custom Widget instances by using slots. Parts of the composition API might be renamed in the future.
+
+    class MyCustomView: ContentfulWidget, SlotAcceptingWidgetProtocol {
+      
+      static let childSlot = Slot(key: "child", data: String.self)
+      let childSlotManager = SlotContentManager(MyCustomView.childSlot)
+
+      @DirectContentBuilder override var content: DirectContent {
+        Container().withContent {
+          Text("some text 1")
+
+          childSlotManager("the data passed to the child slot definition")
+
+          Button().withContent {
+            Text("this Text Widget goes to the default slot of the Button")
+          }
+        }
+      }
+    }
+
+    // use your custom Widget
+    Container() {
+      Text("any other place in your code")
+
+      MyCustomView().withContent {
+        $0.childSlot { data in
+          // this Text Widget will receive the String
+          // passed to the childSlotManager() call above
+          Text(data)
+        }
+      }
+    }
 
 <br>
 
-## Concepts
+#### **by drawing graphics primitives (LeafWidget)**
+
+LeafWidgets are directly drawn to the screen. They do not have children.
+
+    class MyCustomLeafWidget: LeafWidget {
+      override func draw(_ drawingContext: DrawingContext) {
+        drawingContext.drawRect(rect: ..., paint: Paint(color: ..., strokeWidth: ...))
+        drawingContext.drawLine(...)
+        drawingContext.drawText(...)
+      }
+    }
 
 <br>
 
-**OUTDATED**
+### **Styling API similar to CSS**
+
+    Container().with(classes: ["container"]) {
+      Button().withContent {
+        Text("Hello World")
+      }
+    }
+
+    // select by class
+    Style(".container") {
+      (\.$background, .white)
+      // foreground is similar to color in css, color of text = foreground
+      (\.$foreground, Color(120, 40, 0, 255))
+    } nested: {
+
+      // select by Widget type
+      Style("Text") {
+        // inherit is the default for foreground, so this is not necessary
+        (\.$foreground, .inherit)
+        (\.$fontWeight, .bold)
+      }
+
+      // & references the parent style, in this case .container and extends it
+      // the currently supported pseudo classes are :hover and :active
+      Style("&:hover") {
+        (\.$background, .black)
+      }
+    }
 
 <br>
 
-- RenderObject
-  - organized as a tree structure
-  - leaf RenderObjects: e.g. Text, Rectangle, Path, describe a specific drawable thing
-  - branch RenderObjects: e.g. Cachable, RenderStyle, Translation, provide information (also meta information) about multiple children
-  - RenderObjects are rendered by a rendering backend, which can be swapped out to support different environments the application needs to run in, for example an OpenGL capable environment and an environment where the rendering needs to be done in software
-- Widget
-  - organized as a tree strucure
-  - are UI components that handle layout, interaction and output a RenderObject tree
-  - a Widget can ouput actually paintable RenderObjects or wrap it's children's RenderObjects and translate them or discard them or whatever
+#### **custom Widgets can have special style properties**
+
+    class MyCustomWidget {
+      ...
+
+      @StyleProperty
+      public var myCustomStyleProperty: Double = 0.0
+
+      ...
+    }
+
+    // somewhere else in your code
+    Style(".class-applied-to-my-custom-widget) {
+      (\.$myCustomStyleProperty, 1.0)
+    }
 
 <br>
 
-## Current state
+### **Reactive Widget Content**
 
-- runs on Linux (tested on Ubuntu 20.04) and MacOS (tested on MacOS 10.15)
+Update the content and structure of your Widgets when data changes.
+
+
+    class MyCustomWidget: ContentfulWidget {
+      @State private var someState: Int = 0
+      @ImmutableBinding private var someStateFromTheOutside: String
+
+      public init(_ outsideStateBinding: ImmutableBinding<String>) {
+        self._someStateFromTheOutside = outSideStateBinding
+      }
+
+      @DirectContentBuilder override var content: DirectContent {
+        Container().withContent { [unowned self] in
+
+          // use Dynamic for changing the structure of a Widget
+          Dynamic($someState) {
+            if someState == 0 {
+              Button().onClick {
+                someState += 1
+              }.withContent {
+                Text("change someState")
+              }
+            } else {
+              Text("someState is not 0")
+            }
+          }
+
+          // pass a Binding to a child to have it always reflect the latest state
+          Text($someStateFromTheOutside.immutable)
+
+          // you can construct proxy bindings
+          // in this case the proxy converts the Int property to a String
+          Text(ImmutableBinding($someState.immutable, get: { String($0) }))
+        }
+      }
+    }
+
+<br>
+
+### **Inject Dependencies Into Widgets**
+
+This should be changed so that providing dependencies can be done by using a property wrapper as well.
+Dependencies are resolved by comparing keys (if given) and types.
+
+    class MyCustomWidget: ContentfulWidget {
+      ...
+
+      @Inject(key: <nil or a String>) private var myDependency: String
+    }
+
+    class MyCustomParentWidget: ContentfulWidget {
+      // API will be changed, so that this dependency can be provided by doing:
+      // @Provide(key: <nil or a String>)
+      let providedDependency: String = "dependency"
+
+      @DirectContentBuilder override var content: DirectContent {
+        Container().withContent {
+          MyCustomWidget()
+        }.provide(dependencies: providedDependency)
+      }
+    }
+
+<br>
+
+### **Global App State Management**
+
+The approach is similar to Vuex. Defining mutations and actions as enum cases instead of methods allows for automatic recording where and when which change was made to the state.
+
+    class MyAppStore: Store<MyAppState, MyAppMutation, MyAppAction> {
+      init() {
+        super.init(initialState: MyAppState(
+          stateProperty1: "initial"))
+      }
+
+      override func perform(mutation: Mutation, state: SetterProxy) {
+        switch mutation {
+        case let .setStateProperty1(value):
+          state.stateProperty1 = value
+        }
+      }
+
+      override func perform(action: Action) {
+        switch action {
+        case .doSomeAsynchronousOperation:
+          // ... do stuff
+          // when finished:
+          commit(.setStateProperty1(resultOfOperation))
+        }
+      }
+    }
+
+    struct MyAppState {
+      var stateProperty1: String
+    }
+
+    enum MyAppMutation {
+      case .setStateProperty1(String)
+    }
+
+    enum MyAppAction {
+      case .doSomeAsynchronousOperation
+    }
+
+<br>
+
+Now you can use the store in your whole app like so:
+
+    class TheRootView: ContentfulWidget {
+      let store = MyAppStore()
+
+      @DirectContentBuilder override var content: DirectContent {
+        Container().provide(dependencies: store).withContent {
+          ...
+          // can be deeply nested
+          MyCustomWidget()
+          ...
+        }
+      }
+    }
+
+    class MyCustomWidget: ContentfulWidget {
+      @Inject var store: MyAppStore
+
+      @DirectContentBuilder override var content: DirectContent {
+        Container().withContent { [unowned self] in
+          // the store exposes reactive bindings
+          // to every state property via store.$state
+          Text(store.$state.stateProperty1.immutable)
+
+          Dynamic(store.$state.stateProperty1) {
+            // ... everything inside here will be rebuilt
+            // when stateProperty1 changes
+          }
+
+          Button().onClick {
+            store.commit(.setStateProperty1("changed by button click"))
+          }.withContent {
+            Text("change stateProperty1")
+          }
+        }
+      }
+    }
+
+
+<br>
+
+## [Current Limitations](#current-limitations)
+
+- only runs on Linux (tested on Ubuntu 20.04) and MacOS (tested on MacOS 10.15)
 - depends on SDL2 for handling cross platform window management
-- depends on NanoVG (specifically on the OpenGL 3.3 implementation of NanoVG) for rendering graphics primitives
-- rendering happens when something in the application changes or a transition is active, the application is rendered as a whole which is not optimal for performance
-- animations, transitions are not yet well supported
-- state mangement was only taken as far as necessary to make the organizer demo app possible
+- depends on NanoVG (specifically on the OpenGL 3.3 implementation of NanoVG) for rendering primitives (line, rect, ...)
+- a few core Widget types (Container, Button, Text, TextInput, ...) are available
+- the graphics api has only been implemented in so far as to be able to create the above demos
+- everything is redrawn on every frame
+- animations, transitions are not yet supported
+- only one layout type is well supported, very similar to CSS flexbox, but does not yet support line breaks
+
+<br><br>
+
+## [Roadmap](#roadmap)
+
+- Windows support
+- WebAssembly support
+- extend drawing api
+  - gradients
+  - rounded rects
+  - arbitrary paths
+  - ...
+- consider adding Skia as additional drawing backend
+- more core Widgets
+  - RadioButton
+  - Checkbox
+  - Image
+  - Textarea
+  - ...
+- full flexbox layout system
+- other layout systems
+  - absolute
+  - anchor
+  - ...
+- transitions, animations
+- optimize drawing, only redraw on update
 
 <br>
 
-## Roadmap
+## [Contribute](#contribute)
 
-- might find a better name for the framework
-- find better names for all the components of the framework
-- platforms:
-  - add windows support, SDL2 supports windows, so it should be possible with a managable amount of work
-  - work on other platforms after the API is somewhat more stable
-- Widgets:
-  - styling, maybe in the form of selector based stylesheets, theming, different themes in different parts of application, switchable themes, reactive styles
-  - support complex animations, moving widgets around, fading them in and out, find out which kinds of properties need to and can be animated and how to do it in a performant manner
-  - improve performance by running build, layout, render first for top level parents and then go down the tree
-  - reimplement retaining state
-- rendering:
-  - improve the rendering backend api, provide a clear and concise api for rendering graphics primitives by calling functions, similar to HTML canvas and NanoVG
-  - improve the RenderObject api, which types of RenderObjects are necessary?
-  - support different types of fills for RenderObjects, such as pure color, gradients, images, patterns
-  - implement optimized rendering, only render if something changed and only the area that changed, need an algorithm to split the RenderObject tree into different chunks to balance the frequency of rerendering and the amount of rerendering that needs to be done
-  - find some solution to support environments without OpenGL 3.3, maybe switch the rendering backend to something other than NanoVG in order to get software rendering
-  - support loading fonts dynamically from the host system by their specified name
--misc:
-  - replace the custom Vector types with Swift's SIMD types
-  - write tests
+The main ways to contribute currently are feature requests, opinions on API design and reporting bugs. There are no guidelines. Just open an issue.
 
-<br>
+<br><br>
 
-## Contribute
-
-You can contribute by suggesting features, implementing demo apps which show where improvements are necessary, reporting bugs and creating pull requests for the features you want to see.
-
-<br>
-
-## VSCode setup for debugging on Linux
-
-**TODO: verify this information**
+## [VSCode Setup for Debugging on Linux](#vscode-setup-linux)
 
 Copied from: [github.com/ewconnell/swiftrt](https://github.com/ewconnell/swiftrt)
 
@@ -167,22 +470,26 @@ It is very important that settings.json contains the following entry to pickup t
 SourceKit-LSP (Pavel Vasek)
 
 There is a version of the server as part of the toolchain already, so you don't need to build it. Make sure to configure the extension
-"sourcekit-lsp.serverPath": "PathToSwiftToolchain/usr/bin/sourcekit-lsp"
+"sourcekit-lsp.serverPath": "PathToSwiftToolchain/usr/bin/sourcekit-lsp".
 
 <br>
 
-## Dependencies
+## [Dependencies](#dependencies)
 
 This package depends on:
 
 [SDL2](https://www.libsdl.org/index.php)
 
-[NanoVG: github.com/memononen/nanovg](https://github.com/memononen/nanovg)
+[NanoVG](https://github.com/memononen/nanovg)
 
 [GL (OpenGL loader written in Swift): github.com/kelvin13/swift-opengl](https://github.com/kelvin13/swift-opengl)
 
-[Path: github.com/mxcl/Path.swift.git](https://github.com/mxcl/Path.swift.git)
+[CombineX (open source implementation of Apple's Combine framework)](https://github.com/cx-org/CombineX.git)
+
+[Path](https://github.com/mxcl/Path.swift.git)
 
 [Swim (Image handling): github.com/t-ae/swim.git](https://github.com/t-ae/swim.git)
 
-[Cnanovg (NanoVG wrapper in Swift): github.com/UnGast/Cnanovg.git](https://github.com/UnGast/Cnanovg.git)
+[Cnanovg (NanoVG wrapper for Swift): github.com/UnGast/Cnanovg.git](https://github.com/UnGast/Cnanovg.git)
+
+[ColorizeSwift](https://github.com/mtynior/ColorizeSwift.git)
