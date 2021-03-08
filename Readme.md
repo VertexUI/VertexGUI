@@ -29,7 +29,7 @@ The code for the demo app can be found in [Sources/TaskOrganizerDemo](Sources/Ta
 * [Current Limitations](#current-limitations)
 * [Roadmap](#roadmap)
 * [Contribute](#contribute)
-* [VSCode Setup on Linux](#vscode-setup-linux)
+* [VSCode Setup on Linux](#vscode-setup-on-linux)
 * [Dependencies](#dependencies)
 
 <br>
@@ -58,14 +58,16 @@ This project is under heavy development. I will not create releases until there 
 
 Just use the master branch:
 
-    dependencies: [
-      ...,
-      .package(name: "SwiftGUI", url: "https://github.com/UnGast/swift-gui", .branch("master")),
-    ],
-    targets: [
-      ...,
-      .target(name: "SomeTarget", dependencies: ["SwiftGUI", ...])
-    ]
+```swift
+dependencies: [
+  ...,
+  .package(name: "SwiftGUI", url: "https://github.com/UnGast/swift-gui", .branch("master")),
+],
+targets: [
+  ...,
+  .target(name: "SomeTarget", dependencies: ["SwiftGUI", ...])
+]
+```
 
 A [Swift 5.3 toolchain](https://swift.org/download/#releases) is required.
 
@@ -77,53 +79,55 @@ Result:
 
 <img alt="screenshot of minimal demo app" src="Docs/minimal_demo.png?raw=true" width="300"/>
 
-    import SwiftGUI 
+```swift
+import SwiftGUI 
 
-    public class MainView: ContentfulWidget {
-      @State
-      private var counter = 0
+public class MainView: ContentfulWidget {
+  @State
+  private var counter = 0
 
-      @DirectContentBuilder override public var content: DirectContent {
-        Container().with(classes: ["container"]).withContent { [unowned self] in
-          Button().onClick {
-            counter += 1
-          }.withContent {
-            Text(ImmutableBinding($counter.immutable, get: { "counter: \($0)" }))
-          }
-        }
+  @DirectContentBuilder override public var content: DirectContent {
+    Container().with(classes: ["container"]).withContent { [unowned self] in
+      Button().onClick {
+        counter += 1
+      }.withContent {
+        Text(ImmutableBinding($counter.immutable, get: { "counter: \($0)" }))
+      }
+    }
+  }
+
+  // you can define themes, so this can also be done in three lines
+  override public var style: Style {
+    let primaryColor = Color(77, 255, 154, 255)
+
+    return Style("&") {
+      (\.$background, Color(10, 20, 30, 255))
+    } nested: {
+
+      Style(".container", Container.self) {
+        (\.$alignContent, .center)
+        (\.$justifyContent, .center)
       }
 
-      // you can define themes, so this can also be done in three lines
-      override public var style: Style {
-        let primaryColor = Color(77, 255, 154, 255)
+      Style("Button") {
+        (\.$padding, Insets(all: 16))
+        (\.$background, primaryColor)
+        (\.$foreground, .black)
+        (\.$fontWeight, .bold)
+      } nested: {
 
-        return Style("&") {
-          (\.$background, Color(10, 20, 30, 255))
-        } nested: {
+        Style("&:hover") {
+          (\.$background, primaryColor.darkened(20))
+        }
 
-          Style(".container", Container.self) {
-            (\.$alignContent, .center)
-            (\.$justifyContent, .center)
-          }
-
-          Style("Button") {
-            (\.$padding, Insets(all: 16))
-            (\.$background, primaryColor)
-            (\.$foreground, .black)
-            (\.$fontWeight, .bold)
-          } nested: {
-
-            Style("&:hover") {
-              (\.$background, primaryColor.darkened(20))
-            }
-
-            Style("&:active") {
-              (\.$background, primaryColor.darkened(40))
-            }
-          }
+        Style("&:active") {
+          (\.$background, primaryColor.darkened(40))
         }
       }
     }
+  }
+}
+````
 
 When you press the button, the counter should be incremented.
 
@@ -139,21 +143,23 @@ Some additional setup code is necessary to display the window. You can find all 
 
 Using Swift's [function/result builders](https://github.com/apple/swift-evolution/blob/main/proposals/0289-result-builders.md).
 
-    Container().withContent {
-      Button().withContent {
-        Text("Hello World")
+```swift
+Container().withContent {
+  Button().withContent {
+    Text("Hello World")
 
-        $0.iconSlot {
-          Icon(identifier: .party)
-        }
-      }
+    $0.iconSlot {
+      Icon(identifier: .party)
     }
+  }
+}
 
-    List(items).withContent {
-      $0.itemSlot { itemData in
-        Text(itemData)
-      }
-    }
+List(items).withContent {
+  $0.itemSlot { itemData in
+    Text(itemData)
+  }
+}
+```
 
 <br>
 
@@ -163,36 +169,38 @@ Using Swift's [function/result builders](https://github.com/apple/swift-evolutio
 
 Create reusable views consiting of multiple Widgets. Pass child Widgets to your custom Widget instances by using slots. Parts of the composition API might be renamed in the future.
 
-    class MyCustomView: ContentfulWidget, SlotAcceptingWidgetProtocol {
-      
-      static let childSlot = Slot(key: "child", data: String.self)
-      let childSlotManager = SlotContentManager(MyCustomView.childSlot)
+```swift
+class MyCustomView: ContentfulWidget, SlotAcceptingWidgetProtocol {
 
-      @DirectContentBuilder override var content: DirectContent {
-        Container().withContent {
-          Text("some text 1")
+  static let childSlot = Slot(key: "child", data: String.self)
+  let childSlotManager = SlotContentManager(MyCustomView.childSlot)
 
-          childSlotManager("the data passed to the child slot definition")
+  @DirectContentBuilder override var content: DirectContent {
+    Container().withContent {
+      Text("some text 1")
 
-          Button().withContent {
-            Text("this Text Widget goes to the default slot of the Button")
-          }
-        }
+      childSlotManager("the data passed to the child slot definition")
+
+      Button().withContent {
+        Text("this Text Widget goes to the default slot of the Button")
       }
     }
+  }
+}
 
-    // use your custom Widget
-    Container() {
-      Text("any other place in your code")
+// use your custom Widget
+Container() {
+  Text("any other place in your code")
 
-      MyCustomView().withContent {
-        $0.childSlot { data in
-          // this Text Widget will receive the String
-          // passed to the childSlotManager() call above
-          Text(data)
-        }
-      }
+  MyCustomView().withContent {
+    $0.childSlot { data in
+      // this Text Widget will receive the String
+      // passed to the childSlotManager() call above
+      Text(data)
     }
+  }
+}
+```
 
 <br>
 
@@ -200,62 +208,68 @@ Create reusable views consiting of multiple Widgets. Pass child Widgets to your 
 
 LeafWidgets are directly drawn to the screen. They do not have children.
 
-    class MyCustomLeafWidget: LeafWidget {
-      override func draw(_ drawingContext: DrawingContext) {
-        drawingContext.drawRect(rect: ..., paint: Paint(color: ..., strokeWidth: ...))
-        drawingContext.drawLine(...)
-        drawingContext.drawText(...)
-      }
-    }
+```swift
+class MyCustomLeafWidget: LeafWidget {
+  override func draw(_ drawingContext: DrawingContext) {
+    drawingContext.drawRect(rect: ..., paint: Paint(color: ..., strokeWidth: ...))
+    drawingContext.drawLine(...)
+    drawingContext.drawText(...)
+  }
+}
+```
 
 <br>
 
 ### **Styling API similar to CSS**
 
-    Container().with(classes: ["container"]) {
-      Button().withContent {
-        Text("Hello World")
-      }
-    }
+```swift
+Container().with(classes: ["container"]) {
+  Button().withContent {
+    Text("Hello World")
+  }
+}
 
-    // select by class
-    Style(".container") {
-      (\.$background, .white)
-      // foreground is similar to color in css, color of text = foreground
-      (\.$foreground, Color(120, 40, 0, 255))
-    } nested: {
+// select by class
+Style(".container") {
+  (\.$background, .white)
+  // foreground is similar to color in css, color of text = foreground
+  (\.$foreground, Color(120, 40, 0, 255))
+} nested: {
 
-      // select by Widget type
-      Style("Text") {
-        // inherit is the default for foreground, so this is not necessary
-        (\.$foreground, .inherit)
-        (\.$fontWeight, .bold)
-      }
+  // select by Widget type
+  Style("Text") {
+    // inherit is the default for foreground, so this is not necessary
+    (\.$foreground, .inherit)
+    (\.$fontWeight, .bold)
+  }
 
-      // & references the parent style, in this case .container and extends it
-      // the currently supported pseudo classes are :hover and :active
-      Style("&:hover") {
-        (\.$background, .black)
-      }
-    }
+  // & references the parent style, in this case .container and extends it
+  // the currently supported pseudo classes are :hover and :active
+  Style("&:hover") {
+    (\.$background, .black)
+  }
+}
+```
 
 <br>
 
 #### **custom Widgets can have special style properties**
 
-    class MyCustomWidget {
-      ...
+```swift
+class MyCustomWidget {
+  ...
 
-      @StyleProperty
-      public var myCustomStyleProperty: Double = 0.0
+  @StyleProperty
+  public var myCustomStyleProperty: Double = 0.0
 
-      ...
-    }
+  ...
+}
 
-    // somewhere else in your code
-    Style(".class-applied-to-my-custom-widget) {
-      (\.$myCustomStyleProperty, 1.0)
-    }
+// somewhere else in your code
+Style(".class-applied-to-my-custom-widget") {
+  (\.$myCustomStyleProperty, 1.0)
+}
+```
 
 <br>
 
@@ -263,40 +277,41 @@ LeafWidgets are directly drawn to the screen. They do not have children.
 
 Update the content and structure of your Widgets when data changes.
 
+```swift
+class MyCustomWidget: ContentfulWidget {
+  @State private var someState: Int = 0
+  @ImmutableBinding private var someStateFromTheOutside: String
 
-    class MyCustomWidget: ContentfulWidget {
-      @State private var someState: Int = 0
-      @ImmutableBinding private var someStateFromTheOutside: String
+  public init(_ outsideStateBinding: ImmutableBinding<String>) {
+    self._someStateFromTheOutside = outSideStateBinding
+  }
 
-      public init(_ outsideStateBinding: ImmutableBinding<String>) {
-        self._someStateFromTheOutside = outSideStateBinding
-      }
+  @DirectContentBuilder override var content: DirectContent {
+    Container().withContent { [unowned self] in
 
-      @DirectContentBuilder override var content: DirectContent {
-        Container().withContent { [unowned self] in
-
-          // use Dynamic for changing the structure of a Widget
-          Dynamic($someState) {
-            if someState == 0 {
-              Button().onClick {
-                someState += 1
-              }.withContent {
-                Text("change someState")
-              }
-            } else {
-              Text("someState is not 0")
-            }
+      // use Dynamic for changing the structure of a Widget
+      Dynamic($someState) {
+        if someState == 0 {
+          Button().onClick {
+            someState += 1
+          }.withContent {
+            Text("change someState")
           }
-
-          // pass a Binding to a child to have it always reflect the latest state
-          Text($someStateFromTheOutside.immutable)
-
-          // you can construct proxy bindings
-          // in this case the proxy converts the Int property to a String
-          Text(ImmutableBinding($someState.immutable, get: { String($0) }))
+        } else {
+          Text("someState is not 0")
         }
       }
+
+      // pass a Binding to a child to have it always reflect the latest state
+      Text($someStateFromTheOutside.immutable)
+
+      // you can construct proxy bindings
+      // in this case the proxy converts the Int property to a String
+      Text(ImmutableBinding($someState.immutable, get: { String($0) }))
     }
+  }
+}
+```
 
 <br>
 
@@ -305,23 +320,25 @@ Update the content and structure of your Widgets when data changes.
 This should be changed so that providing dependencies can be done by using a property wrapper as well.
 Dependencies are resolved by comparing keys (if given) and types.
 
-    class MyCustomWidget: ContentfulWidget {
-      ...
+```swift
+class MyCustomWidget: ContentfulWidget {
+  ...
 
-      @Inject(key: <nil or a String>) private var myDependency: String
-    }
+  @Inject(key: <nil or a String>) private var myDependency: String
+}
 
-    class MyCustomParentWidget: ContentfulWidget {
-      // API will be changed, so that this dependency can be provided by doing:
-      // @Provide(key: <nil or a String>)
-      let providedDependency: String = "dependency"
+class MyCustomParentWidget: ContentfulWidget {
+  // API will be changed, so that this dependency can be provided by doing:
+  // @Provide(key: <nil or a String>)
+  let providedDependency: String = "dependency"
 
-      @DirectContentBuilder override var content: DirectContent {
-        Container().withContent {
-          MyCustomWidget()
-        }.provide(dependencies: providedDependency)
-      }
-    }
+  @DirectContentBuilder override var content: DirectContent {
+    Container().withContent {
+      MyCustomWidget()
+    }.provide(dependencies: providedDependency)
+  }
+}
+```
 
 <br>
 
@@ -329,81 +346,84 @@ Dependencies are resolved by comparing keys (if given) and types.
 
 The approach is similar to Vuex. Defining mutations and actions as enum cases instead of methods allows for automatic recording where and when which change was made to the state.
 
-    class MyAppStore: Store<MyAppState, MyAppMutation, MyAppAction> {
-      init() {
-        super.init(initialState: MyAppState(
-          stateProperty1: "initial"))
-      }
+```swift
+class MyAppStore: Store<MyAppState, MyAppMutation, MyAppAction> {
+  init() {
+    super.init(initialState: MyAppState(
+      stateProperty1: "initial"))
+  }
 
-      override func perform(mutation: Mutation, state: SetterProxy) {
-        switch mutation {
-        case let .setStateProperty1(value):
-          state.stateProperty1 = value
-        }
-      }
-
-      override func perform(action: Action) {
-        switch action {
-        case .doSomeAsynchronousOperation:
-          // ... do stuff
-          // when finished:
-          commit(.setStateProperty1(resultOfOperation))
-        }
-      }
+  override func perform(mutation: Mutation, state: SetterProxy) {
+    switch mutation {
+    case let .setStateProperty1(value):
+      state.stateProperty1 = value
     }
+  }
 
-    struct MyAppState {
-      var stateProperty1: String
+  override func perform(action: Action) {
+    switch action {
+    case .doSomeAsynchronousOperation:
+      // ... do stuff
+      // when finished:
+      commit(.setStateProperty1(resultOfOperation))
     }
+  }
+}
 
-    enum MyAppMutation {
-      case .setStateProperty1(String)
-    }
+struct MyAppState {
+  var stateProperty1: String
+}
 
-    enum MyAppAction {
-      case .doSomeAsynchronousOperation
-    }
+enum MyAppMutation {
+  case .setStateProperty1(String)
+}
+
+enum MyAppAction {
+  case .doSomeAsynchronousOperation
+}
+```
 
 <br>
 
 Now you can use the store in your whole app like so:
 
-    class TheRootView: ContentfulWidget {
-      let store = MyAppStore()
+```swift
+class TheRootView: ContentfulWidget {
+  let store = MyAppStore()
 
-      @DirectContentBuilder override var content: DirectContent {
-        Container().provide(dependencies: store).withContent {
-          ...
-          // can be deeply nested
-          MyCustomWidget()
-          ...
-        }
+  @DirectContentBuilder override var content: DirectContent {
+    Container().provide(dependencies: store).withContent {
+      ...
+      // can be deeply nested
+      MyCustomWidget()
+      ...
+    }
+  }
+}
+
+class MyCustomWidget: ContentfulWidget {
+  @Inject var store: MyAppStore
+
+  @DirectContentBuilder override var content: DirectContent {
+    Container().withContent { [unowned self] in
+      // the store exposes reactive bindings
+      // to every state property via store.$state
+      Text(store.$state.stateProperty1.immutable)
+
+      Dynamic(store.$state.stateProperty1) {
+        // ... everything inside here will be rebuilt
+        // when stateProperty1 changes
+      }
+
+      Button().onClick {
+        store.commit(.setStateProperty1("changed by button click"))
+      }.withContent {
+        Text("change stateProperty1")
       }
     }
-
-    class MyCustomWidget: ContentfulWidget {
-      @Inject var store: MyAppStore
-
-      @DirectContentBuilder override var content: DirectContent {
-        Container().withContent { [unowned self] in
-          // the store exposes reactive bindings
-          // to every state property via store.$state
-          Text(store.$state.stateProperty1.immutable)
-
-          Dynamic(store.$state.stateProperty1) {
-            // ... everything inside here will be rebuilt
-            // when stateProperty1 changes
-          }
-
-          Button().onClick {
-            store.commit(.setStateProperty1("changed by button click"))
-          }.withContent {
-            Text("change stateProperty1")
-          }
-        }
-      }
-    }
-
+  }
+}
+```
 
 <br>
 
@@ -452,7 +472,7 @@ The main ways to contribute currently are feature requests, opinions on API desi
 
 <br><br>
 
-## [VSCode Setup for Debugging on Linux](#vscode-setup-linux)
+## [VSCode Setup on Linux](#vscode-setup-on-linux)
 
 Copied from: [github.com/ewconnell/swiftrt](https://github.com/ewconnell/swiftrt)
 
