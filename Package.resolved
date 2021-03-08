@@ -12,11 +12,11 @@
       },
       {
         "package": "ColorizeSwift",
-        "repositoryURL": "https://github.com/mtynior/ColorizeSwift",
+        "repositoryURL": "https://github.com/mtynior/ColorizeSwift.git",
         "state": {
-          "branch": "master",
-          "revision": "04f419e2737daaa3ae8a543dd9d96f1e7b15d9ab",
-          "version": null
+          "branch": null,
+          "revision": "2a354639173d021f4648cf1912b2b00a3a7cd83c",
+          "version": "1.6.0"
         }
       },
       {
@@ -29,39 +29,12 @@
         }
       },
       {
-        "package": "CRuntime",
-        "repositoryURL": "https://github.com/wickwirew/CRuntime.git",
-        "state": {
-          "branch": null,
-          "revision": "95f911318d8c885f6fc05e971471f94adfd39405",
-          "version": "2.1.2"
-        }
-      },
-      {
-        "package": "Easing",
-        "repositoryURL": "https://github.com/manuelCarlos/Easing.git",
-        "state": {
-          "branch": null,
-          "revision": "7f4ef32ad74dcaab33855adce2779dee9f2a919a",
-          "version": "2.0.6"
-        }
-      },
-      {
         "package": "Path.swift",
         "repositoryURL": "https://github.com/mxcl/Path.swift.git",
         "state": {
           "branch": "master",
           "revision": "891d70ec7cb448829acb8a2d73970b088fd9e5a7",
           "version": null
-        }
-      },
-      {
-        "package": "Runtime",
-        "repositoryURL": "https://github.com/wickwirew/Runtime.git",
-        "state": {
-          "branch": null,
-          "revision": "61c9776f47d2951bdc562486ad348e5e1ca2e180",
-          "version": "2.1.1"
         }
       },
       {
@@ -75,20 +48,11 @@
       },
       {
         "package": "GLUtils",
-        "repositoryURL": "https://github.com/UnGast/swift-gl-utils.git",
+        "repositoryURL": "https://github.com/UnGast/swift-gl-utils",
         "state": {
           "branch": "master",
           "revision": "b04851b2c252c72c5bf50a69dde5514c9f386897",
           "version": null
-        }
-      },
-      {
-        "package": "swift-numerics",
-        "repositoryURL": "https://github.com/apple/swift-numerics",
-        "state": {
-          "branch": null,
-          "revision": "6b24333510e9044cf4716a07bed65eeed6bc6393",
-          "version": "0.0.8"
         }
       },
       {

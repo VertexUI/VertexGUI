@@ -30,12 +30,10 @@ let package = Package(
         .package(name: "GL", url: "https://github.com/UnGast/swift-opengl.git", .branch("master")),
         .package(name: "Swim", url: "https://github.com/t-ae/swim.git", .branch("master")),
         .package(url: "https://github.com/UnGast/Cnanovg.git", .branch("master")),
-        .package(url: "https://github.com/wickwirew/Runtime.git", from: "2.1.1"),
-        .package(url: "https://github.com/mtynior/ColorizeSwift", .branch("master")),
-        .package(url: "https://github.com/manuelCarlos/Easing.git", from: "2.0.0"),
         .package(name: "GfxMath", url: "https://github.com/UnGast/swift-gfx-math.git", .branch("master")),
-        .package(name: "GLUtils", url: "https://github.com/UnGast/swift-gl-utils.git", .branch("master")),
-        .package(url: "https://github.com/cx-org/CombineX.git", .branch("master"))
+        .package(url: "https://github.com/cx-org/CombineX.git", .branch("master")),
+        .package(url: "https://github.com/mtynior/ColorizeSwift.git", from: "1.6.0"),
+        .package(name: "GLUtils", url: "https://github.com/UnGast/swift-gl-utils", .branch("master"))
     ],
 
     targets: [
@@ -57,18 +55,18 @@ let package = Package(
 
         .target(
             name: "WidgetGUI",
-            dependencies: ["VisualAppBase", "Events", .product(name: "CXShim", package: "CombineX"), "GfxMath", "Runtime", "ColorizeSwift", "Easing"],
+            dependencies: ["VisualAppBase", "Events", .product(name: "CXShim", package: "CombineX"), "GfxMath", "ColorizeSwift"],
             resources: [.process("Resources")]
         ),
 
         .target(
             name: "VisualAppBaseImplSDL2OpenGL3NanoVG",
-            dependencies: ["WidgetGUI", "CSDL2", "GL", "Events", "GLUtils", "Swim", .product(name: "CnanovgGL3", package: "Cnanovg"), "GfxMath", .product(name: "Path", package: "Path.swift")],
+            dependencies: ["WidgetGUI", "CSDL2", "GL", "GLUtils", "Events", "Swim", .product(name: "CnanovgGL3", package: "Cnanovg"), "GfxMath", .product(name: "Path", package: "Path.swift")],
             resources: [.process("Resources")]),
        
         .target(
             name: "TaskOrganizerDemo",
-            dependencies: ["SwiftGUI", "ColorizeSwift", "Swim", .product(name: "CXShim", package: "CombineX")],
+            dependencies: ["SwiftGUI", "Swim", .product(name: "CXShim", package: "CombineX")],
             resources: [.copy("Resources")]),
 
         .target(
