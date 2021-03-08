@@ -25,14 +25,14 @@ extension SlotAcceptingWidgetProtocol {
         defaultManager.anyDefinition = defaultDefinition
       }
     }
-
+    
     // accessing content in this closure should capture the content object
     // the handler is removed when the widget is destroyed -> content object
     // is released
-    _ = onDestroy(content.onChanged { [unowned self] in
-      resolveSlotContentWrappers(content)
+    _ = onDestroy(content.onChanged { [weak self] in
+      self?.resolveSlotContentWrappers(content)
       
-      if let defaultManager = defaultNoDataSlotContentManager, defaultManager.anyDefinition == nil {
+      if let defaultManager = self?.defaultNoDataSlotContentManager, defaultManager.anyDefinition == nil {
         defaultManager.anyDefinition = defaultDefinition
       }
     })
