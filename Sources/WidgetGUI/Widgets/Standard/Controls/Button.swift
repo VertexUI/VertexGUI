@@ -3,7 +3,7 @@ import VisualAppBase
 
 public class Button: ContentfulWidget, SlotAcceptingWidgetProtocol {
   public static let defaultSlot = Slot(key: "default", data: Void.self)
-  var defaultSlotManager = SlotContentManager(Button.defaultSlot)
+  let defaultSlotManager = SlotContentManager(Button.defaultSlot)
   public var defaultNoDataSlotContentManager: SlotContentManager<Void>? {
     defaultSlotManager
   }

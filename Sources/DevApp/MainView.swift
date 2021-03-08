@@ -11,7 +11,7 @@ public class MainView: ContentfulWidget, SlotAcceptingWidgetProtocol {
   var testBackgroundColor: Color = .orange
 
   static let TestSlot1 = Slot(key: "testSlot1", data: Void.self)
-  private var testSlot1 = SlotContentManager(MainView.TestSlot1)
+  private let testSlot1 = SlotContentManager(MainView.TestSlot1)
 
   var stateSubscription: AnyCancellable?
 
