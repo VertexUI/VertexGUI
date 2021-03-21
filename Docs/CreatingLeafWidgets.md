@@ -34,7 +34,7 @@ The preferred size should be calculated based on the content, so that the conten
 
 The size your Widget will have when you choose to respect the constraints passed in depends on the available space and sizes of other Widgets.
 
-In the `draw` method you have access to the final size through the Widgets `self.size.width` and `self.size.height` properties. Use these values to calculate sizes of the graphics primitives you want to draw.<br>
+In the `draw` method you have access to the final size through the Widget's `self.layoutedSize.width` and `self.layoutedSize.height` properties. Use these values to calculate sizes of the graphics primitives you want to draw.<br>
 Nothing prevents you from drawing outside the bounds of the Widget. However when the Widget's `overflow` property is set to `.cut` any pixels outside of the Widgets bounds will not be displayed.
 
 *details*
