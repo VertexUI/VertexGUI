@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SwiftGUI - CustomRenderObject</title>
+    <link rel="stylesheet" type="text/css" href="http://ungast.github.io/swift-gui/generated-doc/all.css" media="all" />
+</head>
+<body>
+    <header>
+        <a href="http://ungast.github.io/swift-gui/generated-doc">
+            <strong>
+                SwiftGUI
+            </strong>
+            <span>Documentation</span>
+        </a>
+        <sup>Beta</sup>
+    </header>
+
+    <!--
+    <form class="search">
+        <input type="search" placeholder="Search" />
+    </form>
+    -->
+
+    <nav>
+        <div class="wrapper">
+            <h2>On This Page</h2>
+            <ol><li><a href="#relationships">Relationships</a><ul><li><a href="#relationships">Superclass</a></li></ul></li><li><a href="#initializers">Initializers</a><ul><li class="initializer"><a href="#customrenderobject.init(id:_:)">init(id:​_:​)</a></li></ul></li><li><a href="#properties">Properties</a><ul><li class="variable"><a href="#customrenderobject.render">render</a></li><li class="variable"><a href="#customrenderobject.hastimedrendervalue">has​Timed​Render​Value</a></li><li class="variable"><a href="#customrenderobject.debugdescription">debug​Description</a></li><li class="variable"><a href="#customrenderobject.individualhash">individual​Hash</a></li></ul></li><li><a href="#methods">Methods</a><ul><li class="function"><a href="#customrenderobject.objectsat(point:)">objects​At(point:​)</a></li></ul></li></ol>
+        </div>
+    </nav>
+
+    <main>
+        <article>
+            <h1>
+    <small>Class</small>
+    <code class="name">Custom​Render​Object</code>
+</h1>
+
+<div class="declaration">
+<pre class="highlight"><code><span class="attribute">open</span> <span class="keyword">class</span> <span class="type">CustomRenderObject</span>: <span class="type">RenderObject</span> </code></pre>
+</div>
+<section id="relationships">
+    <h2 hidden>Relationships</h2>
+        <figure>
+    
+
+    <figcaption hidden>Inheritance graph for CustomRenderObject.</figcaption>
+</figure>
+        <h3>Superclass</h3>
+<dl>
+    <dt class="class"><code><a href="http://ungast.github.io/swift-gui/generated-doc/RenderObject">RenderObject</a></code></dt>
+<dd></dd>
+</dl>
+</section>
+    <section id="initializers">
+        <h2>Initializers</h2>
+
+        <div role="article" class="initializer" id="customrenderobject.init(id:_:)">
+    <h3>
+        <code>init(id:​_:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">init</span>(<span class="variable">id</span>: <span class="type">UInt</span>, <span class="keyword">_</span> <span class="variable">render</span>: <span class="attribute">@</span><span class="attribute">escaping</span> (<span class="keyword">_</span> <span class="variable">renderer</span>: <span class="type">Renderer</span>) -&gt; <span class="type">Void</span>) </code></pre>
+</div>
+<h4>Parameters</h4>
+
+<table class="parameters">
+  <thead hidden>
+  <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+  </tr>
+  </thead>
+  <tbody>
+    <tr>
+    <th>id</th>
+    <td><code class="type">UInt</code></td>
+    <td><p>Used for hashing, should be unique for each render function.</p>
+</td>
+</tr>
+  </tbody>
+</table>
+</div>
+    </section>
+    <section id="properties">
+        <h2>Properties</h2>
+
+        <div role="article" class="variable" id="customrenderobject.render">
+    <h3>
+        <code>render</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">var</span> <span class="variable">render</span>: (<span class="keyword">_</span> <span class="variable">renderer</span>: <span class="type">Renderer</span>) -&gt; <span class="type">Void</span></code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="customrenderobject.hastimedrendervalue">
+    <h3>
+        <code>has​Timed​Render​Value</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">override</span> <span class="attribute">open</span> <span class="keyword">var</span> <span class="variable">hasTimedRenderValue</span>: <span class="type">Bool</span> </code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="customrenderobject.debugdescription">
+    <h3>
+        <code>debug​Description</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">override</span> <span class="attribute">open</span> <span class="keyword">var</span> <span class="variable">debugDescription</span>: <span class="type">String</span> </code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="customrenderobject.individualhash">
+    <h3>
+        <code>individual​Hash</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">override</span> <span class="attribute">open</span> <span class="keyword">var</span> <span class="variable">individualHash</span>: <span class="type">Int</span> </code></pre>
+</div>
+</div>
+    </section>
+    <section id="methods">
+        <h2>Methods</h2>
+
+        <div role="article" class="function" id="customrenderobject.objectsat(point:)">
+    <h3>
+        <code>objects​At(point:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">override</span> <span class="keyword">public</span> <span class="keyword">func</span> <span class="function">objectsAt</span>(<span class="variable">point</span>: <span class="type">DPoint2</span>) -&gt; [<span class="type">ObjectAtPointResult</span>] </code></pre>
+</div>
+</div>
+    </section>
+
+
+
+        </article>
+    </main>
+
+    <footer>
+        <p>
+    Generated on <time datetime="2021-03-22T08:34:03+0100">March 22, 2021</time> using <a href="https://github.com/SwiftDocOrg/swift-doc">swift-doc</a> <span class="version">1.0.0-beta.5</span>.
+</p>
+    </footer>
+</body>
+</html>

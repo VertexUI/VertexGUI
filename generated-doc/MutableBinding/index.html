@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SwiftGUI - MutableBinding</title>
+    <link rel="stylesheet" type="text/css" href="http://ungast.github.io/swift-gui/generated-doc/all.css" media="all" />
+</head>
+<body>
+    <header>
+        <a href="http://ungast.github.io/swift-gui/generated-doc">
+            <strong>
+                SwiftGUI
+            </strong>
+            <span>Documentation</span>
+        </a>
+        <sup>Beta</sup>
+    </header>
+
+    <!--
+    <form class="search">
+        <input type="search" placeholder="Search" />
+    </form>
+    -->
+
+    <nav>
+        <div class="wrapper">
+            <h2>On This Page</h2>
+            <ol><li><a href="#nested type aliases">Nested Type Aliases</a><ul><li class="typealias"><a href="#mutablebinding.value">Value</a></li></ul></li><li><a href="#initializers">Initializers</a><ul><li class="initializer"><a href="#mutablebinding.init(_:get:set:)">init(_:​get:​set:​)</a></li></ul></li><li><a href="#properties">Properties</a><ul><li class="variable"><a href="#mutablebinding.value">value</a></li><li class="variable"><a href="#mutablebinding.wrappedvalue">wrapped​Value</a></li><li class="variable"><a href="#mutablebinding.projectedvalue">projected​Value</a></li></ul></li></ol>
+        </div>
+    </nav>
+
+    <main>
+        <article>
+            <h1>
+    <small>Class</small>
+    <code class="name">Mutable​Binding</code>
+</h1>
+
+<div class="declaration">
+<pre class="highlight"><code><span class="attribute">@</span><span class="attribute">propertyWrapper</span>
+<span class="keyword">public</span> <span class="keyword">class</span> <span class="type">MutableBinding</span>&lt;<span class="variable">V</span>&gt;: <span class="type">InternalMutableReactiveProperty</span>  </code></pre>
+</div>
+
+    <section id="nested type aliases">
+        <h2>Nested Type Aliases</h2>
+
+        <div role="article" class="typealias" id="mutablebinding.value">
+    <h3>
+        <code>Value</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">typealias</span> <span class="variable">Value</span> = <span class="type">V</span></code></pre>
+</div>
+</div>
+    </section>
+    <section id="initializers">
+        <h2>Initializers</h2>
+
+        <div role="article" class="initializer" id="mutablebinding.init(_:get:set:)">
+    <h3>
+        <code>init(_:​get:​set:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">init</span>&lt;<span class="variable">Dependency</span>: <span class="type">MutableReactiveProperty</span>&gt;(
+    <span class="keyword">_</span> <span class="variable">dependency</span>: <span class="type">Dependency</span>,
+    <span class="variable">get</span> <span class="variable">_get</span>: <span class="attribute">@</span><span class="attribute">escaping</span> (<span class="type">Dependency</span>.<span class="type">Value</span>) -&gt; <span class="type">Value</span>,
+    <span class="variable">set</span> <span class="variable">_set</span>: <span class="attribute">@</span><span class="attribute">escaping</span> (<span class="type">Value</span>) -&gt; <span class="type">Dependency</span>.<span class="type">Value</span>) </code></pre>
+</div>
+</div>
+    </section>
+    <section id="properties">
+        <h2>Properties</h2>
+
+        <div role="article" class="variable" id="mutablebinding.value">
+    <h3>
+        <code>value</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">var</span> <span class="variable">value</span>: <span class="type">Value</span> </code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="mutablebinding.wrappedvalue">
+    <h3>
+        <code>wrapped​Value</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">var</span> <span class="variable">wrappedValue</span>: <span class="type">Value</span> </code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="mutablebinding.projectedvalue">
+    <h3>
+        <code>projected​Value</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">lazy</span> <span class="keyword">public</span> <span class="keyword">var</span> <span class="variable">projectedValue</span> </code></pre>
+</div>
+</div>
+    </section>
+
+
+
+        </article>
+    </main>
+
+    <footer>
+        <p>
+    Generated on <time datetime="2021-03-22T08:34:04+0100">March 22, 2021</time> using <a href="https://github.com/SwiftDocOrg/swift-doc">swift-doc</a> <span class="version">1.0.0-beta.5</span>.
+</p>
+    </footer>
+</body>
+</html>

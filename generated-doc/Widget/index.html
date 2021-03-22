@@ -1,0 +1,1552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SwiftGUI - Widget</title>
+    <link rel="stylesheet" type="text/css" href="http://ungast.github.io/swift-gui/generated-doc/all.css" media="all" />
+</head>
+<body>
+    <header>
+        <a href="http://ungast.github.io/swift-gui/generated-doc">
+            <strong>
+                SwiftGUI
+            </strong>
+            <span>Documentation</span>
+        </a>
+        <sup>Beta</sup>
+    </header>
+
+    <!--
+    <form class="search">
+        <input type="search" placeholder="Search" />
+    </form>
+    -->
+
+    <nav>
+        <div class="wrapper">
+            <h2>On This Page</h2>
+            <ol><li><a href="#relationships">Relationships</a><ul><li><a href="#relationships">Nested Types</a></li><li><a href="#relationships">Subclasses</a></li><li><a href="#relationships">Conforms To</a></li><li><a href="#relationships">Types Conforming to Widget</a></li></ul></li><li><a href="#nested type aliases">Nested Type Aliases</a><ul><li class="typealias"><a href="#widget.immutablebinding">Immutable​Binding</a></li><li class="typealias"><a href="#widget.mutablebinding">Mutable​Binding</a></li></ul></li><li><a href="#initializers">Initializers</a><ul><li class="initializer"><a href="#widget.init()">init()</a></li></ul></li><li><a href="#properties">Properties</a><ul><li class="variable"><a href="#widget.name">name</a></li><li class="variable"><a href="#widget.nextid">next​Id</a></li><li class="variable"><a href="#widget.id">id</a></li><li class="variable"><a href="#widget.key">key</a></li><li class="variable"><a href="#widget.debugdescription">debug​Description</a></li><li class="variable"><a href="#widget._context">_context</a></li><li class="variable"><a href="#widget.context">context</a></li><li class="variable"><a href="#widget.lifecyclebus">lifecycle​Bus</a></li><li class="variable"><a href="#widget.parent">parent</a></li><li class="variable"><a href="#widget.treepath">tree​Path</a></li><li class="variable"><a href="#widget.rootparent">root​Parent</a></li><li class="variable"><a href="#widget.children">children</a></li><li class="variable"><a href="#widget.contentchildren">content​Children</a></li><li class="variable"><a href="#widget.provideddependencies">provided​Dependencies</a></li><li class="variable"><a href="#widget.focused">focused</a></li><li class="variable"><a href="#widget.referenceconstraints">reference​Constraints</a></li><li class="variable"><a href="#widget.previousconstraints">previous​Constraints</a></li><li class="variable"><a href="#widget.explicitconstraints">explicit​Constraints</a></li><li class="variable"><a href="#widget.layoutedsize">layouted​Size</a></li><li class="variable"><a href="#widget.layoutedposition">layouted​Position</a></li><li class="variable"><a href="#widget.bounds">bounds</a></li><li class="variable"><a href="#widget.globalbounds">global​Bounds</a></li><li class="variable"><a href="#widget.globalposition">global​Position</a></li><li class="variable"><a href="#widget.cumulatedtransforms">cumulated​Transforms</a></li><li class="variable"><a href="#widget.mounted">mounted</a></li><li class="variable"><a href="#widget.built">built</a></li><li class="variable"><a href="#widget.layoutable">layoutable</a></li><li class="variable"><a href="#widget.buildinvalid">build​Invalid</a></li><li class="variable"><a href="#widget.layouting">layouting</a></li><li class="variable"><a href="#widget.layouted">layouted</a></li><li class="variable"><a href="#widget.layoutinvalid">layout​Invalid</a></li><li class="variable"><a href="#widget.destroyed">destroyed</a></li><li class="variable"><a href="#widget.classes">classes</a></li><li class="variable"><a href="#widget.pseudoclasses">pseudo​Classes</a></li><li class="variable"><a href="#widget.style">style</a></li><li class="variable"><a href="#widget.createsstylescope">creates​Style​Scope</a></li><li class="variable"><a href="#widget.stylescope">style​Scope</a></li><li class="variable"><a href="#widget.rootstylescope">root​Style​Scope</a></li><li class="variable"><a href="#widget.providedstyles">provided​Styles</a></li><li class="variable"><a href="#widget.directstylepropertyvaluedefinitions">Direct​Style​Property​Value​Definitions</a></li><li class="variable"><a href="#widget.width">width</a></li><li class="variable"><a href="#widget.height">height</a></li><li class="variable"><a href="#widget.minwidth">min​Width</a></li><li class="variable"><a href="#widget.minheight">min​Height</a></li><li class="variable"><a href="#widget.maxwidth">max​Width</a></li><li class="variable"><a href="#widget.maxheight">max​Height</a></li><li class="variable"><a href="#widget.padding">padding</a></li><li class="variable"><a href="#widget.transform">transform</a></li><li class="variable"><a href="#widget.overflowx">overflow​X</a></li><li class="variable"><a href="#widget.overflowy">overflow​Y</a></li><li class="variable"><a href="#widget.opacity">opacity</a></li><li class="variable"><a href="#widget.visibility">visibility</a></li><li class="variable"><a href="#widget.borderwidth">border​Width</a></li><li class="variable"><a href="#widget.bordercolor">border​Color</a></li><li class="variable"><a href="#widget.background">background</a></li><li class="variable"><a href="#widget.foreground">foreground</a></li><li class="variable"><a href="#widget.fontsize">font​Size</a></li><li class="variable"><a href="#widget.fontfamily">font​Family</a></li><li class="variable"><a href="#widget.fontweight">font​Weight</a></li><li class="variable"><a href="#widget.fontstyle">font​Style</a></li><li class="variable"><a href="#widget.texttransform">text​Transform</a></li><li class="variable"><a href="#widget.grow">grow</a></li><li class="variable"><a href="#widget.shrink">shrink</a></li><li class="variable"><a href="#widget.alignself">align​Self</a></li><li class="variable"><a href="#widget.margin">margin</a></li><li class="variable"><a href="#widget.debuglayout">debug​Layout</a></li><li class="variable"><a href="#widget.onparentchanged">on​Parent​Changed</a></li><li class="variable"><a href="#widget.ondependenciesinjected">on​Dependencies​Injected</a></li><li class="variable"><a href="#widget.onmounted">on​Mounted</a></li><li class="variable"><a href="#widget.onbuilt">on​Built</a></li><li class="variable"><a href="#widget.onbuildinvalidated">on​Build​Invalidated</a></li><li class="variable"><a href="#widget.ontick">on​Tick</a></li><li class="variable"><a href="#widget.onsizechanged">on​Size​Changed</a></li><li class="variable"><a href="#widget.onlayoutinvalidated">on​Layout​Invalidated</a></li><li class="variable"><a href="#widget.onlayoutingstarted">on​Layouting​Started</a></li><li class="variable"><a href="#widget.onlayoutingfinished">on​Layouting​Finished</a></li><li class="variable"><a href="#widget.onrenderstateinvalidated">on​Render​State​Invalidated</a></li><li class="variable"><a href="#widget.ondestroy">on​Destroy</a></li><li class="variable"><a href="#widget.onmouseenterhandlermanager">on​Mouse​Enter​Handler​Manager</a></li><li class="variable"><a href="#widget.onmousemovehandlermanager">on​Mouse​Move​Handler​Manager</a></li><li class="variable"><a href="#widget.onmouseleavehandlermanager">on​Mouse​Leave​Handler​Manager</a></li><li class="variable"><a href="#widget.onclickhandlermanager">on​Click​Handler​Manager</a></li><li class="variable"><a href="#widget.onmousedownhandlermanager">on​Mouse​Down​Handler​Manager</a></li><li class="variable"><a href="#widget.onmouseuphandlermanager">on​Mouse​UpHandler​Manager</a></li><li class="variable"><a href="#widget.onmousewheelhandlermanager">on​Mouse​Wheel​Handler​Manager</a></li><li class="variable"><a href="#widget.onkeydownhandlermanager">on​Key​Down​Handler​Manager</a></li><li class="variable"><a href="#widget.onkeyuphandlermanager">on​Key​UpHandler​Manager</a></li><li class="variable"><a href="#widget.ontextinputhandlermanager">on​Text​Input​Handler​Manager</a></li><li class="variable"><a href="#widget.cancellables">cancellables</a></li></ul></li><li><a href="#methods">Methods</a><ul><li class="function"><a href="#widget.findparent(_:)">find​Parent(_:​)</a></li><li class="function"><a href="#widget.getparent(oftype:)">get​Parent(of​Type:​)</a></li><li class="function"><a href="#widget.getparents(oftype:)">get​Parents(of​Type:​)</a></li><li class="function"><a href="#widget.getchild(oftype:)">get​Child(of​Type:​)</a></li><li class="function"><a href="#widget.getchild(where:)">get​Child(where:​)</a></li><li class="function"><a href="#widget.onclick(_:)">on​Click(_:​)</a></li><li class="function"><a href="#widget.onclick(_:)">on​Click(_:​)</a></li><li class="function"><a href="#widget.onmousedown(_:)">on​Mouse​Down(_:​)</a></li><li class="function"><a href="#widget.onmousedown(_:)">on​Mouse​Down(_:​)</a></li><li class="function"><a href="#widget.onmouseup(_:)">on​Mouse​Up(_:​)</a></li><li class="function"><a href="#widget.onmouseup(_:)">on​Mouse​Up(_:​)</a></li><li class="function"><a href="#widget.onmousemove(_:)">on​Mouse​Move(_:​)</a></li><li class="function"><a href="#widget.onmousemove(_:)">on​Mouse​Move(_:​)</a></li><li class="function"><a href="#widget.onmousewheel(_:)">on​Mouse​Wheel(_:​)</a></li><li class="function"><a href="#widget.onmousewheel(_:)">on​Mouse​Wheel(_:​)</a></li><li class="function"><a href="#widget.onkeydown(_:)">on​Key​Down(_:​)</a></li><li class="function"><a href="#widget.onkeydown(_:)">on​Key​Down(_:​)</a></li><li class="function"><a href="#widget.onkeyup(_:)">on​Key​Up(_:​)</a></li><li class="function"><a href="#widget.onkeyup(_:)">on​Key​Up(_:​)</a></li><li class="function"><a href="#widget.ontextinput(_:)">on​Text​Input(_:​)</a></li><li class="function"><a href="#widget.ontextinput(_:)">on​Text​Input(_:​)</a></li><li class="function"><a href="#widget.with(classes:)">with(classes:​)</a></li><li class="function"><a href="#widget.with(key:)">with(key:​)</a></li><li class="function"><a href="#widget.connect(ref:)">connect(ref:​)</a></li><li class="function"><a href="#widget.with(block:)">with(block:​)</a></li><li class="function"><a href="#widget.performbuild()">perform​Build()</a></li><li class="function"><a href="#widget.requestupdatechildren()">request​Update​Children()</a></li><li class="function"><a href="#widget.invalidatebuild()">invalidate​Build()</a></li><li class="function"><a href="#widget.layout(constraints:)">layout(constraints:​)</a></li><li class="function"><a href="#widget.performlayout(constraints:)">perform​Layout(constraints:​)</a></li><li class="function"><a href="#widget.invalidatelayout()">invalidate​Layout()</a></li><li class="function"><a href="#widget.invalidaterenderstate(deep:)">invalidate​Render​State(deep:​)</a></li><li class="function"><a href="#widget.invalidaterenderstate(deep:after:)">invalidate​Render​State(deep:​after:​)</a></li><li class="function"><a href="#widget.nexttick(_:)">next​Tick(_:​)</a></li><li class="function"><a href="#widget.destroy()">destroy()</a></li><li class="function"><a href="#widget.destroyself()">destroy​Self()</a></li><li class="function"><a href="#widget.invalidatecumulatedvalues()">invalidate​Cumulated​Values()</a></li><li class="function"><a href="#widget.provide(dependencies:)">provide(dependencies:​)</a></li><li class="function"><a href="#widget.provide(dependencies:)">provide(dependencies:​)</a></li><li class="function"><a href="#widget.provide(dependencies:)">provide(dependencies:​)</a></li><li class="function"><a href="#widget.instylescope(_:block:)">in​Style​Scope(_:​block:​)</a></li><li class="function"><a href="#widget.enablepseudoclass(_:)">enable​Pseudo​Class(_:​)</a></li><li class="function"><a href="#widget.disablepseudoclass(_:)">disable​Pseudo​Class(_:​)</a></li><li class="function"><a href="#widget.invalidatematchedstyles()">invalidate​Matched​Styles()</a></li><li class="function"><a href="#widget.invalidateresolvedstyleproperties()">invalidate​Resolved​Style​Properties()</a></li><li class="function"><a href="#widget.notifyselectorchanged()">notify​Selector​Changed()</a></li></ul></li></ol>
+        </div>
+    </nav>
+
+    <main>
+        <article>
+            <h1>
+    <small>Class</small>
+    <code class="name">Widget</code>
+</h1>
+
+<div class="declaration">
+<pre class="highlight"><code><span class="attribute">open</span> <span class="keyword">class</span> <span class="type">Widget</span>: <span class="type">Bounded</span>, <span class="type">Parent</span>, <span class="type">Child</span>, <span class="type">CustomDebugStringConvertible</span> </code></pre>
+</div>
+<section id="relationships">
+    <h2 hidden>Relationships</h2>
+        <figure>
+    <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: %3 Pages: 1 -->
+<svg width="1498pt" height="297pt"
+ viewBox="0.00 0.00 1497.88 296.82" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 292.82)">
+<title>%3</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-292.82 1493.88,-292.82 1493.88,4 -4,4"/>
+<!-- Widget -->
+<g id="node1" class="node class current">
+<title>Widget</title>
+<g id="a_node1"><a xlink:href="http://ungast.github.io/swift-gui/generated-doc/Widget" xlink:title="Widget">
+<path fill="none" stroke="black" stroke-width="3" d="M813.47,-161.82C813.47,-161.82 621.47,-161.82 621.47,-161.82 615.47,-161.82 609.47,-155.82 609.47,-149.82 609.47,-149.82 609.47,-137.82 609.47,-137.82 609.47,-131.82 615.47,-125.82 621.47,-125.82 621.47,-125.82 813.47,-125.82 813.47,-125.82 819.47,-125.82 825.47,-131.82 825.47,-137.82 825.47,-137.82 825.47,-149.82 825.47,-149.82 825.47,-155.82 819.47,-161.82 813.47,-161.82"/>
+<text text-anchor="middle" x="717.47" y="-140.12" font-family="Menlo" font-size="14.00">Widget</text>
+</a>
+</g>
+</g>
+<!-- Bounded -->
+<g id="node4" class="node protocol">
+<title>Bounded</title>
+<g id="a_node4"><a xlink:href="http://ungast.github.io/swift-gui/generated-doc/Bounded" xlink:title="Bounded">
+<path fill="none" stroke="black" d="M593.89,-285.92C593.89,-285.92 401.89,-285.92 401.89,-285.92 395.89,-285.92 389.89,-279.92 389.89,-273.92 389.89,-273.92 389.89,-261.92 389.89,-261.92 389.89,-255.92 395.89,-249.92 401.89,-249.92 401.89,-249.92 593.89,-249.92 593.89,-249.92 599.89,-249.92 605.89,-255.92 605.89,-261.92 605.89,-261.92 605.89,-273.92 605.89,-273.92 605.89,-279.92 599.89,-285.92 593.89,-285.92"/>
+<text text-anchor="middle" x="497.89" y="-264.22" font-family="Menlo" font-size="14.00">Bounded</text>
+</a>
+</g>
+</g>
+<!-- Widget&#45;&gt;Bounded -->
+<g id="edge9" class="edge conformsTo">
+<title>Widget&#45;&gt;Bounded</title>
+<path fill="none" stroke="black" d="M685.54,-161.86C646.75,-183.78 581.26,-220.8 538.81,-244.79"/>
+<polygon fill="black" stroke="black" points="536.84,-241.89 529.86,-249.86 540.29,-247.98 536.84,-241.89"/>
+</g>
+<!-- Parent -->
+<g id="node12" class="node protocol">
+<title>Parent</title>
+<g id="a_node12"><a xlink:href="http://ungast.github.io/swift-gui/generated-doc/Parent" xlink:title="Parent">
+<path fill="none" stroke="black" d="M208.18,-193.33C208.18,-193.33 16.18,-193.33 16.18,-193.33 10.18,-193.33 4.18,-187.33 4.18,-181.33 4.18,-181.33 4.18,-169.33 4.18,-169.33 4.18,-163.33 10.18,-157.33 16.18,-157.33 16.18,-157.33 208.18,-157.33 208.18,-157.33 214.18,-157.33 220.18,-163.33 220.18,-169.33 220.18,-169.33 220.18,-181.33 220.18,-181.33 220.18,-187.33 214.18,-193.33 208.18,-193.33"/>
+<text text-anchor="middle" x="112.18" y="-171.63" font-family="Menlo" font-size="14.00">Parent</text>
+</a>
+</g>
+</g>
+<!-- Widget&#45;&gt;Parent -->
+<g id="edge5" class="edge conformsTo">
+<title>Widget&#45;&gt;Parent</title>
+<path fill="none" stroke="black" d="M609.25,-149.45C502.66,-155 340.27,-163.46 230.36,-169.18"/>
+<polygon fill="black" stroke="black" points="230.03,-165.69 220.22,-169.71 230.39,-172.68 230.03,-165.69"/>
+</g>
+<!-- Child -->
+<g id="node13" class="node protocol">
+<title>Child</title>
+<g id="a_node13"><a xlink:href="http://ungast.github.io/swift-gui/generated-doc/Child" xlink:title="Child">
+<path fill="none" stroke="black" d="M1477.88,-167.03C1477.88,-167.03 1285.88,-167.03 1285.88,-167.03 1279.88,-167.03 1273.88,-161.03 1273.88,-155.03 1273.88,-155.03 1273.88,-143.03 1273.88,-143.03 1273.88,-137.03 1279.88,-131.03 1285.88,-131.03 1285.88,-131.03 1477.88,-131.03 1477.88,-131.03 1483.88,-131.03 1489.88,-137.03 1489.88,-143.03 1489.88,-143.03 1489.88,-155.03 1489.88,-155.03 1489.88,-161.03 1483.88,-167.03 1477.88,-167.03"/>
+<text text-anchor="middle" x="1381.88" y="-145.33" font-family="Menlo" font-size="14.00">Child</text>
+</a>
+</g>
+</g>
+<!-- Widget&#45;&gt;Child -->
+<g id="edge13" class="edge conformsTo">
+<title>Widget&#45;&gt;Child</title>
+<path fill="none" stroke="black" d="M825.69,-144.66C945.87,-145.61 1139.23,-147.12 1263.39,-148.1"/>
+<polygon fill="black" stroke="black" points="1263.67,-151.6 1273.69,-148.18 1263.72,-144.6 1263.67,-151.6"/>
+</g>
+<!-- CustomDebugStringConvertible -->
+<g id="node14" class="node unknown">
+<title>CustomDebugStringConvertible</title>
+<path fill="none" stroke="black" d="M1217.47,-273.25C1217.47,-273.25 1004.47,-273.25 1004.47,-273.25 998.47,-273.25 992.47,-267.25 992.47,-261.25 992.47,-261.25 992.47,-249.25 992.47,-249.25 992.47,-243.25 998.47,-237.25 1004.47,-237.25 1004.47,-237.25 1217.47,-237.25 1217.47,-237.25 1223.47,-237.25 1229.47,-243.25 1229.47,-249.25 1229.47,-249.25 1229.47,-261.25 1229.47,-261.25 1229.47,-267.25 1223.47,-273.25 1217.47,-273.25"/>
+<text text-anchor="middle" x="1110.97" y="-251.55" font-family="Menlo" font-size="14.00">CustomDebugStringConvertible</text>
+</g>
+<!-- Widget&#45;&gt;CustomDebugStringConvertible -->
+<g id="edge12" class="edge conformsTo">
+<title>Widget&#45;&gt;CustomDebugStringConvertible</title>
+<path fill="none" stroke="black" d="M781.13,-161.84C851.28,-181.71 963.93,-213.61 1037.7,-234.5"/>
+<polygon fill="black" stroke="black" points="1036.82,-237.89 1047.4,-237.25 1038.73,-231.15 1036.82,-237.89"/>
+</g>
+<!-- StylePropertiesContainer -->
+<g id="node2" class="node protocol">
+<title>StylePropertiesContainer</title>
+<g id="a_node2"><a xlink:href="http://ungast.github.io/swift-gui/generated-doc/StylePropertiesContainer" xlink:title="StylePropertiesContainer">
+<path fill="none" stroke="black" d="M1294.73,-214.39C1294.73,-214.39 1102.73,-214.39 1102.73,-214.39 1096.73,-214.39 1090.73,-208.39 1090.73,-202.39 1090.73,-202.39 1090.73,-190.39 1090.73,-190.39 1090.73,-184.39 1096.73,-178.39 1102.73,-178.39 1102.73,-178.39 1294.73,-178.39 1294.73,-178.39 1300.73,-178.39 1306.73,-184.39 1306.73,-190.39 1306.73,-190.39 1306.73,-202.39 1306.73,-202.39 1306.73,-208.39 1300.73,-214.39 1294.73,-214.39"/>
+<text text-anchor="middle" x="1198.73" y="-192.69" font-family="Menlo" font-size="14.00">StylePropertiesContainer</text>
+</a>
+</g>
+</g>
+<!-- StylePropertiesContainer&#45;&gt;Widget -->
+<g id="edge1" class="edge conformsTo">
+<title>StylePropertiesContainer&#45;&gt;Widget</title>
+<path fill="none" stroke="black" d="M1090.73,-184.59C1015.01,-176.32 913.8,-165.26 835.88,-156.75"/>
+<polygon fill="black" stroke="black" points="835.85,-153.23 825.53,-155.62 835.09,-160.19 835.85,-153.23"/>
+</g>
+<!-- SlotAcceptingWidgetProtocol -->
+<g id="node3" class="node protocol">
+<title>SlotAcceptingWidgetProtocol</title>
+<g id="a_node3"><a xlink:href="http://ungast.github.io/swift-gui/generated-doc/SlotAcceptingWidgetProtocol" xlink:title="SlotAcceptingWidgetProtocol">
+<path fill="none" stroke="black" d="M593.77,-36C593.77,-36 401.77,-36 401.77,-36 395.77,-36 389.77,-30 389.77,-24 389.77,-24 389.77,-12 389.77,-12 389.77,-6 395.77,0 401.77,0 401.77,0 593.77,0 593.77,0 599.77,0 605.77,-6 605.77,-12 605.77,-12 605.77,-24 605.77,-24 605.77,-30 599.77,-36 593.77,-36"/>
+<text text-anchor="middle" x="497.77" y="-14.3" font-family="Menlo" font-size="14.00">SlotAcceptingWidgetProtocol</text>
+</a>
+</g>
+</g>
+<!-- SlotAcceptingWidgetProtocol&#45;&gt;Widget -->
+<g id="edge8" class="edge conformsTo">
+<title>SlotAcceptingWidgetProtocol&#45;&gt;Widget</title>
+<path fill="none" stroke="black" d="M529.25,-36.03C568.13,-58.29 634.34,-96.21 676.97,-120.62"/>
+<polygon fill="black" stroke="black" points="675.27,-123.69 685.69,-125.62 678.75,-117.61 675.27,-123.69"/>
+</g>
+<!-- FocusableWidget -->
+<g id="node5" class="node protocol">
+<title>FocusableWidget</title>
+<g id="a_node5"><a xlink:href="http://ungast.github.io/swift-gui/generated-doc/FocusableWidget" xlink:title="FocusableWidget">
+<path fill="none" stroke="black" d="M894.81,-288.82C894.81,-288.82 702.81,-288.82 702.81,-288.82 696.81,-288.82 690.81,-282.82 690.81,-276.82 690.81,-276.82 690.81,-264.82 690.81,-264.82 690.81,-258.82 696.81,-252.82 702.81,-252.82 702.81,-252.82 894.81,-252.82 894.81,-252.82 900.81,-252.82 906.81,-258.82 906.81,-264.82 906.81,-264.82 906.81,-276.82 906.81,-276.82 906.81,-282.82 900.81,-288.82 894.81,-288.82"/>
+<text text-anchor="middle" x="798.81" y="-267.12" font-family="Menlo" font-size="14.00">FocusableWidget</text>
+</a>
+</g>
+</g>
+<!-- FocusableWidget&#45;&gt;Widget -->
+<g id="edge7" class="edge conformsTo">
+<title>FocusableWidget&#45;&gt;Widget</title>
+<path fill="none" stroke="black" d="M787.15,-252.63C773.38,-231.12 750.35,-195.16 734.56,-170.5"/>
+<polygon fill="black" stroke="black" points="737.44,-168.51 729.1,-161.98 731.55,-172.29 737.44,-168.51"/>
+</g>
+<!-- Space -->
+<g id="node6" class="node class">
+<title>Space</title>
+<g id="a_node6"><a xlink:href="http://ungast.github.io/swift-gui/generated-doc/Space" xlink:title="Space">
+<path fill="none" stroke="black" d="M352.95,-247.84C352.95,-247.84 160.95,-247.84 160.95,-247.84 154.95,-247.84 148.95,-241.84 148.95,-235.84 148.95,-235.84 148.95,-223.84 148.95,-223.84 148.95,-217.84 154.95,-211.84 160.95,-211.84 160.95,-211.84 352.95,-211.84 352.95,-211.84 358.95,-211.84 364.95,-217.84 364.95,-223.84 364.95,-223.84 364.95,-235.84 364.95,-235.84 364.95,-241.84 358.95,-247.84 352.95,-247.84"/>
+<text text-anchor="middle" x="256.95" y="-226.14" font-family="Menlo" font-size="14.00">Space</text>
+</a>
+</g>
+</g>
+<!-- Space&#45;&gt;Widget -->
+<g id="edge2" class="edge inheritsFrom">
+<title>Space&#45;&gt;Widget</title>
+<path fill="none" stroke="black" d="M353.49,-211.8C428.71,-197.75 533.06,-178.26 610.76,-163.75"/>
+<polygon fill="black" stroke="black" points="611.87,-167.1 621.06,-161.82 610.58,-160.22 611.87,-167.1"/>
+</g>
+<!-- ImageView -->
+<g id="node7" class="node class">
+<title>ImageView</title>
+<g id="a_node7"><a xlink:href="http://ungast.github.io/swift-gui/generated-doc/ImageView" xlink:title="ImageView">
+<path fill="none" stroke="black" d="M204,-130.1C204,-130.1 12,-130.1 12,-130.1 6,-130.1 0,-124.1 0,-118.1 0,-118.1 0,-106.1 0,-106.1 0,-100.1 6,-94.1 12,-94.1 12,-94.1 204,-94.1 204,-94.1 210,-94.1 216,-100.1 216,-106.1 216,-106.1 216,-118.1 216,-118.1 216,-124.1 210,-130.1 204,-130.1"/>
+<text text-anchor="middle" x="108" y="-108.4" font-family="Menlo" font-size="14.00">ImageView</text>
+</a>
+</g>
+</g>
+<!-- ImageView&#45;&gt;Widget -->
+<g id="edge3" class="edge inheritsFrom">
+<title>ImageView&#45;&gt;Widget</title>
+<path fill="none" stroke="black" d="M216.26,-117.74C323.81,-123.33 488.3,-131.89 599.22,-137.66"/>
+<polygon fill="black" stroke="black" points="599.28,-141.17 609.45,-138.2 599.64,-134.18 599.28,-141.17"/>
+</g>
+<!-- LeafWidget -->
+<g id="node8" class="node class">
+<title>LeafWidget</title>
+<g id="a_node8"><a xlink:href="http://ungast.github.io/swift-gui/generated-doc/LeafWidget" xlink:title="LeafWidget">
+<path fill="none" stroke="black" d="M1364.82,-103.66C1364.82,-103.66 1172.82,-103.66 1172.82,-103.66 1166.82,-103.66 1160.82,-97.66 1160.82,-91.66 1160.82,-91.66 1160.82,-79.66 1160.82,-79.66 1160.82,-73.66 1166.82,-67.66 1172.82,-67.66 1172.82,-67.66 1364.82,-67.66 1364.82,-67.66 1370.82,-67.66 1376.82,-73.66 1376.82,-79.66 1376.82,-79.66 1376.82,-91.66 1376.82,-91.66 1376.82,-97.66 1370.82,-103.66 1364.82,-103.66"/>
+<text text-anchor="middle" x="1268.82" y="-81.96" font-family="Menlo" font-size="14.00">LeafWidget</text>
+</a>
+</g>
+</g>
+<!-- LeafWidget&#45;&gt;Widget -->
+<g id="edge6" class="edge inheritsFrom">
+<title>LeafWidget&#45;&gt;Widget</title>
+<path fill="none" stroke="black" d="M1160.55,-97.08C1066.96,-106.95 931.93,-121.19 835.57,-131.36"/>
+<polygon fill="black" stroke="black" points="835.07,-127.89 825.49,-132.42 835.8,-134.85 835.07,-127.89"/>
+</g>
+<!-- ContentfulWidget -->
+<g id="node9" class="node class">
+<title>ContentfulWidget</title>
+<g id="a_node9"><a xlink:href="http://ungast.github.io/swift-gui/generated-doc/ContentfulWidget" xlink:title="ContentfulWidget">
+<path fill="none" stroke="black" d="M358.71,-76.73C358.71,-76.73 166.71,-76.73 166.71,-76.73 160.71,-76.73 154.71,-70.73 154.71,-64.73 154.71,-64.73 154.71,-52.73 154.71,-52.73 154.71,-46.73 160.71,-40.73 166.71,-40.73 166.71,-40.73 358.71,-40.73 358.71,-40.73 364.71,-40.73 370.71,-46.73 370.71,-52.73 370.71,-52.73 370.71,-64.73 370.71,-64.73 370.71,-70.73 364.71,-76.73 358.71,-76.73"/>
+<text text-anchor="middle" x="262.71" y="-55.03" font-family="Menlo" font-size="14.00">ContentfulWidget</text>
+</a>
+</g>
+</g>
+<!-- ContentfulWidget&#45;&gt;Widget -->
+<g id="edge11" class="edge inheritsFrom">
+<title>ContentfulWidget&#45;&gt;Widget</title>
+<path fill="none" stroke="black" d="M359.15,-76.77C433.01,-90.59 534.83,-109.64 611.06,-123.91"/>
+<polygon fill="black" stroke="black" points="610.69,-127.4 621.16,-125.8 611.98,-120.52 610.69,-127.4"/>
+</g>
+<!-- Flex -->
+<g id="node10" class="node class">
+<title>Flex</title>
+<g id="a_node10"><a xlink:href="http://ungast.github.io/swift-gui/generated-doc/Flex" xlink:title="Flex">
+<path fill="none" stroke="black" d="M1182.87,-52.23C1182.87,-52.23 990.87,-52.23 990.87,-52.23 984.87,-52.23 978.87,-46.23 978.87,-40.23 978.87,-40.23 978.87,-28.23 978.87,-28.23 978.87,-22.23 984.87,-16.23 990.87,-16.23 990.87,-16.23 1182.87,-16.23 1182.87,-16.23 1188.87,-16.23 1194.87,-22.23 1194.87,-28.23 1194.87,-28.23 1194.87,-40.23 1194.87,-40.23 1194.87,-46.23 1188.87,-52.23 1182.87,-52.23"/>
+<text text-anchor="middle" x="1086.87" y="-30.53" font-family="Menlo" font-size="14.00">Flex</text>
+</a>
+</g>
+</g>
+<!-- Flex&#45;&gt;Widget -->
+<g id="edge4" class="edge inheritsFrom">
+<title>Flex&#45;&gt;Widget</title>
+<path fill="none" stroke="black" d="M1025.87,-52.33C960.54,-71.71 856.99,-102.43 788.15,-122.85"/>
+<polygon fill="black" stroke="black" points="786.84,-119.59 778.25,-125.78 788.83,-126.3 786.84,-119.59"/>
+</g>
+<!-- PixelCanvas -->
+<g id="node11" class="node class">
+<title>PixelCanvas</title>
+<g id="a_node11"><a xlink:href="http://ungast.github.io/swift-gui/generated-doc/PixelCanvas" xlink:title="PixelCanvas">
+<path fill="none" stroke="black" d="M892.48,-38.35C892.48,-38.35 700.48,-38.35 700.48,-38.35 694.48,-38.35 688.48,-32.35 688.48,-26.35 688.48,-26.35 688.48,-14.35 688.48,-14.35 688.48,-8.35 694.48,-2.35 700.48,-2.35 700.48,-2.35 892.48,-2.35 892.48,-2.35 898.48,-2.35 904.48,-8.35 904.48,-14.35 904.48,-14.35 904.48,-26.35 904.48,-26.35 904.48,-32.35 898.48,-38.35 892.48,-38.35"/>
+<text text-anchor="middle" x="796.48" y="-16.65" font-family="Menlo" font-size="14.00">PixelCanvas</text>
+</a>
+</g>
+</g>
+<!-- PixelCanvas&#45;&gt;Widget -->
+<g id="edge10" class="edge inheritsFrom">
+<title>PixelCanvas&#45;&gt;Widget</title>
+<path fill="none" stroke="black" d="M784.82,-38.57C771.58,-59.27 749.83,-93.24 734.64,-116.98"/>
+<polygon fill="black" stroke="black" points="731.62,-115.21 729.17,-125.52 737.51,-118.99 731.62,-115.21"/>
+</g>
+</g>
+</svg>
+
+
+    <figcaption hidden>Inheritance graph for Widget.</figcaption>
+</figure>
+        <h3>Nested Types</h3>
+<dl>
+    <dt class="enumeration"><code><a href="http://ungast.github.io/swift-gui/generated-doc/Widget_LifecycleFlag">Widget.LifecycleFlag</a></code></dt>
+<dd></dd>
+<dt class="class"><code><a href="http://ungast.github.io/swift-gui/generated-doc/Widget_LifecycleManager">Widget.LifecycleManager</a></code></dt>
+<dd></dd>
+<dt class="enumeration"><code><a href="http://ungast.github.io/swift-gui/generated-doc/Widget_LifecycleMethod">Widget.LifecycleMethod</a></code></dt>
+<dd></dd>
+<dt class="enumeration"><code><a href="http://ungast.github.io/swift-gui/generated-doc/Widget_LifecycleMethodInvocationAbortionReason">Widget.LifecycleMethodInvocationAbortionReason</a></code></dt>
+<dd></dd>
+<dt class="enumeration"><code><a href="http://ungast.github.io/swift-gui/generated-doc/Widget_LayoutInvocationAbortionReason">Widget.LayoutInvocationAbortionReason</a></code></dt>
+<dd></dd>
+<dt class="class"><code><a href="http://ungast.github.io/swift-gui/generated-doc/Widget_LifecycleMethodInvocationQueue">Widget.LifecycleMethodInvocationQueue</a></code></dt>
+<dd></dd>
+<dt class="enumeration"><code><a href="http://ungast.github.io/swift-gui/generated-doc/Widget_LifecycleMethodInvocationReason">Widget.LifecycleMethodInvocationReason</a></code></dt>
+<dd></dd>
+<dt class="enumeration"><code><a href="http://ungast.github.io/swift-gui/generated-doc/Widget_BuildInvocationReason">Widget.BuildInvocationReason</a></code></dt>
+<dd></dd>
+<dt class="enumeration"><code><a href="http://ungast.github.io/swift-gui/generated-doc/Widget_MountInvocationReason">Widget.MountInvocationReason</a></code></dt>
+<dd></dd>
+<dt class="enumeration"><code><a href="http://ungast.github.io/swift-gui/generated-doc/Widget_LayoutInvocationReason">Widget.LayoutInvocationReason</a></code></dt>
+<dd></dd>
+<dt class="enumeration"><code><a href="http://ungast.github.io/swift-gui/generated-doc/Widget_RenderInvocationReason">Widget.RenderInvocationReason</a></code></dt>
+<dd></dd>
+<dt class="enumeration"><code><a href="http://ungast.github.io/swift-gui/generated-doc/Widget_UpdateRenderStateInvocationReason">Widget.UpdateRenderStateInvocationReason</a></code></dt>
+<dd></dd>
+<dt class="enumeration"><code><a href="http://ungast.github.io/swift-gui/generated-doc/Widget_UnmountInvocationReason">Widget.UnmountInvocationReason</a></code></dt>
+<dd></dd>
+<dt class="enumeration"><code><a href="http://ungast.github.io/swift-gui/generated-doc/Widget_DestroyInvocationReason">Widget.DestroyInvocationReason</a></code></dt>
+<dd></dd>
+<dt class="enumeration"><code><a href="http://ungast.github.io/swift-gui/generated-doc/Widget_LifecycleMethodInvocationSignal">Widget.LifecycleMethodInvocationSignal</a></code></dt>
+<dd></dd>
+<dt class="structure"><code><a href="http://ungast.github.io/swift-gui/generated-doc/Widget_LifecycleMethodInvocationSignalGroup">Widget.LifecycleMethodInvocationSignalGroup</a></code></dt>
+<dd></dd>
+<dt class="class"><code><a href="http://ungast.github.io/swift-gui/generated-doc/Widget_ScrollBar">Widget.ScrollBar</a></code></dt>
+<dd></dd>
+<dt class="class"><code><a href="http://ungast.github.io/swift-gui/generated-doc/Widget_State">Widget.State</a></code></dt>
+<dd></dd>
+<dt class="enumeration"><code><a href="http://ungast.github.io/swift-gui/generated-doc/Widget_PseudoClasses">Widget.PseudoClasses</a></code></dt>
+<dd></dd>
+</dl>
+<h3>Subclasses</h3>
+<dl>
+    <dt class="class"><code><a href="http://ungast.github.io/swift-gui/generated-doc/ContentfulWidget">ContentfulWidget</a></code></dt>
+<dd></dd>
+<dt class="class"><code><a href="http://ungast.github.io/swift-gui/generated-doc/LeafWidget">LeafWidget</a></code></dt>
+<dd></dd>
+<dt class="class"><code><a href="http://ungast.github.io/swift-gui/generated-doc/PixelCanvas">PixelCanvas</a></code></dt>
+<dd></dd>
+<dt class="class"><code><a href="http://ungast.github.io/swift-gui/generated-doc/ImageView">ImageView</a></code></dt>
+<dd></dd>
+<dt class="class"><code><a href="http://ungast.github.io/swift-gui/generated-doc/Flex">Flex</a></code></dt>
+<dd></dd>
+<dt class="class"><code><a href="http://ungast.github.io/swift-gui/generated-doc/Space">Space</a></code></dt>
+<dd></dd>
+</dl>
+<h3>Conforms To</h3>
+<dl>
+    <dt class="protocol"><code><a href="http://ungast.github.io/swift-gui/generated-doc/Child">Child</a></code></dt>
+<dd></dd>
+<dt class="protocol"><code><a href="http://ungast.github.io/swift-gui/generated-doc/Parent">Parent</a></code></dt>
+<dd></dd>
+<dt class="protocol"><code><a href="http://ungast.github.io/swift-gui/generated-doc/Bounded">Bounded</a></code></dt>
+<dd></dd>
+<dt class="unknown"><code>CustomDebugStringConvertible</code></dt>
+</dl>
+<h3>Types Conforming to <code>Widget</code></h3>
+<dl>
+    <dt class="protocol"><code><a href="http://ungast.github.io/swift-gui/generated-doc/SlotAcceptingWidgetProtocol">SlotAcceptingWidgetProtocol</a></code></dt>
+<dd></dd>
+<dt class="protocol"><code><a href="http://ungast.github.io/swift-gui/generated-doc/FocusableWidget">FocusableWidget</a></code></dt>
+<dd></dd>
+<dt class="protocol"><code><a href="http://ungast.github.io/swift-gui/generated-doc/StylePropertiesContainer">StylePropertiesContainer</a></code></dt>
+<dd></dd>
+</dl>
+</section>
+    <section id="nested type aliases">
+        <h2>Nested Type Aliases</h2>
+
+        <div role="article" class="typealias" id="widget.immutablebinding">
+    <h3>
+        <code>Immutable​Binding</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">typealias</span> <span class="variable">ImmutableBinding</span>&lt;<span class="variable">V</span>&gt; = <span class="type">WidgetGUI</span>.<span class="type">ImmutableBinding</span>&lt;<span class="type">V</span>&gt;</code></pre>
+</div>
+</div>
+<div role="article" class="typealias" id="widget.mutablebinding">
+    <h3>
+        <code>Mutable​Binding</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">typealias</span> <span class="variable">MutableBinding</span>&lt;<span class="variable">V</span>&gt; = <span class="type">WidgetGUI</span>.<span class="type">MutableBinding</span>&lt;<span class="type">V</span>&gt;</code></pre>
+</div>
+</div>
+    </section>
+    <section id="initializers">
+        <h2>Initializers</h2>
+
+        <div role="article" class="initializer" id="widget.init()">
+    <h3>
+        <code>init()</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">init</span>() </code></pre>
+</div>
+</div>
+    </section>
+    <section id="properties">
+        <h2>Properties</h2>
+
+        <div role="article" class="variable" id="widget.name">
+    <h3>
+        <code>name</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">var</span> <span class="variable">name</span>: <span class="type">String</span> </code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widget.nextid">
+    <h3>
+        <code>next​Id</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">var</span> <span class="variable">nextId</span>: <span class="type">UInt</span> = <span class="number literal">2</span></code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widget.id">
+    <h3>
+        <code>id</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">let</span> <span class="variable">id</span>: <span class="type">UInt</span></code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widget.key">
+    <h3>
+        <code>key</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">open</span> <span class="keyword">var</span> <span class="variable">key</span>: <span class="type">String</span>?</code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widget.debugdescription">
+    <h3>
+        <code>debug​Description</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">var</span> <span class="variable">debugDescription</span>: <span class="type">String</span> </code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widget._context">
+    <h3>
+        <code>_context</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">open</span> <span class="keyword">var</span> <span class="variable">_context</span>: <span class="type">WidgetContext</span>?</code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widget.context">
+    <h3>
+        <code>context</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">open</span> <span class="keyword">var</span> <span class="variable">context</span>: <span class="type">WidgetContext</span> </code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widget.lifecyclebus">
+    <h3>
+        <code>lifecycle​Bus</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">internal</span>(<span class="variable">set</span>) <span class="keyword">var</span> <span class="variable">lifecycleBus</span> </code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widget.parent">
+    <h3>
+        <code>parent</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">weak</span> <span class="attribute">open</span> <span class="keyword">var</span> <span class="variable">parent</span>: <span class="type">Parent</span>? = <span class="keyword">nil</span> </code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widget.treepath">
+    <h3>
+        <code>tree​Path</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">internal</span>(<span class="variable">set</span>) <span class="keyword">var</span> <span class="variable">treePath</span>: <span class="type">TreePath</span> = [] </code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widget.rootparent">
+    <h3>
+        <code>root​Parent</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">var</span> <span class="variable">rootParent</span>: <span class="type">Widget</span> </code></pre>
+</div>
+<div class="summary" role="doc-abstract">
+    <p>The topmost parent or the widget instance itself if not mounted into a parent.</p>
+
+</div>
+</div>
+<div role="article" class="variable" id="widget.children">
+    <h3>
+        <code>children</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">var</span> <span class="variable">children</span>: [<span class="type">Widget</span>] </code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widget.contentchildren">
+    <h3>
+        <code>content​Children</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">var</span> <span class="variable">contentChildren</span>: [<span class="type">Widget</span>] = [] </code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widget.provideddependencies">
+    <h3>
+        <code>provided​Dependencies</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">var</span> <span class="variable">providedDependencies</span>: [<span class="type">Dependency</span>] = []</code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widget.focused">
+    <h3>
+        <code>focused</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">@</span><span class="type">ImmutableBinding</span> <span class="keyword">public</span> <span class="keyword">var</span> <span class="variable">focused</span>: <span class="type">Bool</span></code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widget.referenceconstraints">
+    <h3>
+        <code>reference​Constraints</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">var</span> <span class="variable">referenceConstraints</span>: <span class="type">BoxConstraints</span>?</code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widget.previousconstraints">
+    <h3>
+        <code>previous​Constraints</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">internal</span>(<span class="variable">set</span>) <span class="keyword">var</span> <span class="variable">previousConstraints</span>: <span class="type">BoxConstraints</span>?</code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widget.explicitconstraints">
+    <h3>
+        <code>explicit​Constraints</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">lazy</span> <span class="keyword">public</span> <span class="keyword">internal</span>(<span class="variable">set</span>) <span class="keyword">var</span> <span class="variable">explicitConstraints</span> </code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widget.layoutedsize">
+    <h3>
+        <code>layouted​Size</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">open</span> <span class="keyword">private</span>(<span class="variable">set</span>) <span class="keyword">var</span> <span class="variable">layoutedSize</span> </code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widget.layoutedposition">
+    <h3>
+        <code>layouted​Position</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">open</span> <span class="keyword">var</span> <span class="variable">layoutedPosition</span> </code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widget.bounds">
+    <h3>
+        <code>bounds</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">@</span><span class="attribute">inlinable</span> <span class="attribute">open</span> <span class="keyword">var</span> <span class="variable">bounds</span>: <span class="type">DRect</span> </code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widget.globalbounds">
+    <h3>
+        <code>global​Bounds</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">@</span><span class="attribute">inlinable</span> <span class="attribute">open</span> <span class="keyword">var</span> <span class="variable">globalBounds</span>: <span class="type">DRect</span> </code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widget.globalposition">
+    <h3>
+        <code>global​Position</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">@</span><span class="attribute">inlinable</span> <span class="attribute">open</span> <span class="keyword">var</span> <span class="variable">globalPosition</span>: <span class="type">DPoint2</span> </code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widget.cumulatedtransforms">
+    <h3>
+        <code>cumulated​Transforms</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">internal</span>(<span class="variable">set</span>) <span class="keyword">var</span> <span class="variable">cumulatedTransforms</span>: [<span class="type">DTransform2</span>] = []</code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widget.mounted">
+    <h3>
+        <code>mounted</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">internal</span>(<span class="variable">set</span>) <span class="keyword">var</span> <span class="variable">mounted</span> = <span class="keyword">false</span></code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widget.built">
+    <h3>
+        <code>built</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">internal</span>(<span class="variable">set</span>) <span class="keyword">var</span> <span class="variable">built</span> = <span class="keyword">false</span></code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widget.layoutable">
+    <h3>
+        <code>layoutable</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">var</span> <span class="variable">layoutable</span>: <span class="type">Bool</span> </code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widget.buildinvalid">
+    <h3>
+        <code>build​Invalid</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">var</span> <span class="variable">buildInvalid</span> = <span class="keyword">false</span></code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widget.layouting">
+    <h3>
+        <code>layouting</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">private</span>(<span class="variable">set</span>) <span class="keyword">var</span> <span class="variable">layouting</span> = <span class="keyword">false</span></code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widget.layouted">
+    <h3>
+        <code>layouted</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">private</span>(<span class="variable">set</span>) <span class="keyword">var</span> <span class="variable">layouted</span> = <span class="keyword">false</span></code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widget.layoutinvalid">
+    <h3>
+        <code>layout​Invalid</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">internal</span>(<span class="variable">set</span>) <span class="keyword">var</span> <span class="variable">layoutInvalid</span> = <span class="keyword">false</span></code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widget.destroyed">
+    <h3>
+        <code>destroyed</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">@</span><span class="type">ImmutableBinding</span> <span class="keyword">public</span> <span class="keyword">var</span> <span class="variable">destroyed</span>: <span class="type">Bool</span></code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widget.classes">
+    <h3>
+        <code>classes</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">open</span> <span class="keyword">var</span> <span class="variable">classes</span>: [<span class="type">String</span>] = [] </code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widget.pseudoclasses">
+    <h3>
+        <code>pseudo​Classes</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">internal</span>(<span class="variable">set</span>) <span class="keyword">var</span> <span class="variable">pseudoClasses</span> </code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widget.style">
+    <h3>
+        <code>style</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">open</span> <span class="keyword">var</span> <span class="variable">style</span>: <span class="type">Style</span>? </code></pre>
+</div>
+<div class="summary" role="doc-abstract">
+    <p>this style will be added to every widget instance as the last style</p>
+
+</div>
+</div>
+<div role="article" class="variable" id="widget.createsstylescope">
+    <h3>
+        <code>creates​Style​Scope</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">var</span> <span class="variable">createsStyleScope</span>: <span class="type">Bool</span> = <span class="keyword">false</span> </code></pre>
+</div>
+<div class="summary" role="doc-abstract">
+    <p>whether this Widget creates a new scope for the children which it itself instantiates</p>
+
+</div>
+</div>
+<div role="article" class="variable" id="widget.stylescope">
+    <h3>
+        <code>style​Scope</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">var</span> <span class="variable">styleScope</span>: <span class="type">UInt</span> = <span class="number literal">0</span></code></pre>
+</div>
+<div class="summary" role="doc-abstract">
+    <p>the scope this Widget belongs to</p>
+
+</div>
+</div>
+<div role="article" class="variable" id="widget.rootstylescope">
+    <h3>
+        <code>root​Style​Scope</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">let</span> <span class="variable">rootStyleScope</span>: <span class="type">UInt</span> = <span class="number literal">1</span></code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widget.providedstyles">
+    <h3>
+        <code>provided​Styles</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">var</span> <span class="variable">providedStyles</span>: [<span class="type">Style</span>] = []</code></pre>
+</div>
+<div class="summary" role="doc-abstract">
+    <p>Styles which can be applied to this Widget instance or any of
+it's children (deep) according to their selector.</p>
+
+</div>
+</div>
+<div role="article" class="variable" id="widget.directstylepropertyvaluedefinitions">
+    <h3>
+        <code>Direct​Style​Property​Value​Definitions</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">internal</span>(<span class="variable">set</span>) <span class="keyword">var</span> <span class="variable">DirectStylePropertyValueDefinitions</span>: [<span class="type">StylePropertyValueDefinition</span>] = [] </code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widget.width">
+    <h3>
+        <code>width</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">@</span><span class="type">DefaultStyleProperty</span>
+    <span class="keyword">public</span> <span class="keyword">var</span> <span class="variable">width</span>: <span class="type">Double</span>? = <span class="keyword">nil</span></code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widget.height">
+    <h3>
+        <code>height</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">@</span><span class="type">DefaultStyleProperty</span>
+    <span class="keyword">public</span> <span class="keyword">var</span> <span class="variable">height</span>: <span class="type">Double</span>? = <span class="keyword">nil</span></code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widget.minwidth">
+    <h3>
+        <code>min​Width</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">@</span><span class="type">DefaultStyleProperty</span>
+    <span class="keyword">public</span> <span class="keyword">var</span> <span class="variable">minWidth</span>: <span class="type">Double</span>? = <span class="keyword">nil</span></code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widget.minheight">
+    <h3>
+        <code>min​Height</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">@</span><span class="type">DefaultStyleProperty</span>
+    <span class="keyword">public</span> <span class="keyword">var</span> <span class="variable">minHeight</span>: <span class="type">Double</span>? = <span class="keyword">nil</span></code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widget.maxwidth">
+    <h3>
+        <code>max​Width</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">@</span><span class="type">DefaultStyleProperty</span>
+    <span class="keyword">public</span> <span class="keyword">var</span> <span class="variable">maxWidth</span>: <span class="type">Double</span>? = <span class="keyword">nil</span></code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widget.maxheight">
+    <h3>
+        <code>max​Height</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">@</span><span class="type">DefaultStyleProperty</span>
+    <span class="keyword">public</span> <span class="keyword">var</span> <span class="variable">maxHeight</span>: <span class="type">Double</span>? = <span class="keyword">nil</span></code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widget.padding">
+    <h3>
+        <code>padding</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">@</span><span class="type">DefaultStyleProperty</span>
+    <span class="keyword">public</span> <span class="keyword">var</span> <span class="variable">padding</span>: <span class="type">Insets</span> = .<span class="variable">zero</span></code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widget.transform">
+    <h3>
+        <code>transform</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">@</span><span class="type">DefaultStyleProperty</span>
+    <span class="keyword">public</span> <span class="keyword">var</span> <span class="variable">transform</span>: [<span class="type">DTransform2</span>] = []</code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widget.overflowx">
+    <h3>
+        <code>overflow​X</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">@</span><span class="type">DefaultStyleProperty</span>
+    <span class="keyword">public</span> <span class="keyword">var</span> <span class="variable">overflowX</span>: <span class="type">Overflow</span> = .<span class="variable">show</span></code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widget.overflowy">
+    <h3>
+        <code>overflow​Y</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">@</span><span class="type">DefaultStyleProperty</span>
+    <span class="keyword">public</span> <span class="keyword">var</span> <span class="variable">overflowY</span>: <span class="type">Overflow</span> = .<span class="variable">show</span></code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widget.opacity">
+    <h3>
+        <code>opacity</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">@</span><span class="type">DefaultStyleProperty</span>
+    <span class="keyword">public</span> <span class="keyword">var</span> <span class="variable">opacity</span>: <span class="type">Double</span> = <span class="number literal">1</span></code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widget.visibility">
+    <h3>
+        <code>visibility</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">@</span><span class="type">DefaultStyleProperty</span>
+    <span class="keyword">public</span> <span class="keyword">var</span> <span class="variable">visibility</span>: <span class="type">Visibility</span> = .<span class="variable">visible</span></code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widget.borderwidth">
+    <h3>
+        <code>border​Width</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">@</span><span class="type">DefaultStyleProperty</span>
+    <span class="keyword">public</span> <span class="keyword">var</span> <span class="variable">borderWidth</span>: <span class="type">BorderWidth</span> = .<span class="variable">zero</span></code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widget.bordercolor">
+    <h3>
+        <code>border​Color</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">@</span><span class="type">DefaultStyleProperty</span>
+    <span class="keyword">public</span> <span class="keyword">var</span> <span class="variable">borderColor</span>: <span class="type">Color</span> = .<span class="variable">transparent</span></code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widget.background">
+    <h3>
+        <code>background</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">@</span><span class="type">DefaultStyleProperty</span>
+    <span class="keyword">public</span> <span class="keyword">var</span> <span class="variable">background</span>: <span class="type">Color</span> = .<span class="variable">transparent</span></code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widget.foreground">
+    <h3>
+        <code>foreground</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">@</span><span class="type">DefaultStyleProperty</span>(<span class="variable">default</span>: .<span class="variable">inherit</span>)
+    <span class="keyword">public</span> <span class="keyword">var</span> <span class="variable">foreground</span>: <span class="type">Color</span> = .<span class="variable">black</span></code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widget.fontsize">
+    <h3>
+        <code>font​Size</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">@</span><span class="type">DefaultStyleProperty</span>(<span class="variable">default</span>: .<span class="variable">inherit</span>)
+    <span class="keyword">public</span> <span class="keyword">var</span> <span class="variable">fontSize</span>: <span class="type">Double</span> = <span class="number literal">16</span></code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widget.fontfamily">
+    <h3>
+        <code>font​Family</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">@</span><span class="type">DefaultStyleProperty</span>(<span class="variable">default</span>: .<span class="variable">inherit</span>)
+    <span class="keyword">public</span> <span class="keyword">var</span> <span class="variable">fontFamily</span>: <span class="type">FontFamily</span> = <span class="variable">defaultFontFamily</span></code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widget.fontweight">
+    <h3>
+        <code>font​Weight</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">@</span><span class="type">DefaultStyleProperty</span>(<span class="variable">default</span>: .<span class="variable">inherit</span>)
+    <span class="keyword">public</span> <span class="keyword">var</span> <span class="variable">fontWeight</span>: <span class="type">FontWeight</span> = .<span class="variable">regular</span></code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widget.fontstyle">
+    <h3>
+        <code>font​Style</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">@</span><span class="type">DefaultStyleProperty</span>(<span class="variable">default</span>: .<span class="variable">inherit</span>)
+    <span class="keyword">public</span> <span class="keyword">var</span> <span class="variable">fontStyle</span>: <span class="type">FontStyle</span> = .<span class="variable">normal</span></code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widget.texttransform">
+    <h3>
+        <code>text​Transform</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">@</span><span class="type">DefaultStyleProperty</span>(<span class="variable">default</span>: .<span class="variable">inherit</span>)
+    <span class="keyword">public</span> <span class="keyword">var</span> <span class="variable">textTransform</span>: <span class="type">TextTransform</span> = .<span class="variable">none</span></code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widget.grow">
+    <h3>
+        <code>grow</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">@</span><span class="type">DefaultStyleProperty</span>
+    <span class="keyword">public</span> <span class="keyword">var</span> <span class="variable">grow</span>: <span class="type">Double</span> = <span class="number literal">0</span></code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widget.shrink">
+    <h3>
+        <code>shrink</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">@</span><span class="type">DefaultStyleProperty</span>
+    <span class="keyword">public</span> <span class="keyword">var</span> <span class="variable">shrink</span>: <span class="type">Double</span> = <span class="number literal">0</span></code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widget.alignself">
+    <h3>
+        <code>align​Self</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">@</span><span class="type">DefaultStyleProperty</span>
+    <span class="keyword">public</span> <span class="keyword">var</span> <span class="variable">alignSelf</span>: <span class="type">SimpleLinearLayout</span>.<span class="type">Align</span>? = <span class="keyword">nil</span></code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widget.margin">
+    <h3>
+        <code>margin</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">@</span><span class="type">DefaultStyleProperty</span>
+    <span class="keyword">public</span> <span class="keyword">var</span> <span class="variable">margin</span>: <span class="type">Insets</span> </code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widget.debuglayout">
+    <h3>
+        <code>debug​Layout</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">@</span><span class="type">State</span>
+    <span class="keyword">public</span> <span class="keyword">var</span> <span class="variable">debugLayout</span>: <span class="type">Bool</span> = <span class="keyword">false</span></code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widget.onparentchanged">
+    <h3>
+        <code>on​Parent​Changed</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">internal</span>(<span class="variable">set</span>) <span class="keyword">var</span> <span class="variable">onParentChanged</span> </code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widget.ondependenciesinjected">
+    <h3>
+        <code>on​Dependencies​Injected</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">let</span> <span class="variable">onDependenciesInjected</span> </code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widget.onmounted">
+    <h3>
+        <code>on​Mounted</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">internal</span>(<span class="variable">set</span>) <span class="keyword">var</span> <span class="variable">onMounted</span> </code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widget.onbuilt">
+    <h3>
+        <code>on​Built</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">let</span> <span class="variable">onBuilt</span> </code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widget.onbuildinvalidated">
+    <h3>
+        <code>on​Build​Invalidated</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">let</span> <span class="variable">onBuildInvalidated</span> </code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widget.ontick">
+    <h3>
+        <code>on​Tick</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">internal</span>(<span class="variable">set</span>) <span class="keyword">var</span> <span class="variable">onTick</span> </code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widget.onsizechanged">
+    <h3>
+        <code>on​Size​Changed</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">internal</span>(<span class="variable">set</span>) <span class="keyword">var</span> <span class="variable">onSizeChanged</span> </code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widget.onlayoutinvalidated">
+    <h3>
+        <code>on​Layout​Invalidated</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">internal</span>(<span class="variable">set</span>) <span class="keyword">var</span> <span class="variable">onLayoutInvalidated</span> </code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widget.onlayoutingstarted">
+    <h3>
+        <code>on​Layouting​Started</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">internal</span>(<span class="variable">set</span>) <span class="keyword">var</span> <span class="variable">onLayoutingStarted</span> </code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widget.onlayoutingfinished">
+    <h3>
+        <code>on​Layouting​Finished</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">internal</span>(<span class="variable">set</span>) <span class="keyword">var</span> <span class="variable">onLayoutingFinished</span> </code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widget.onrenderstateinvalidated">
+    <h3>
+        <code>on​Render​State​Invalidated</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">internal</span>(<span class="variable">set</span>) <span class="keyword">var</span> <span class="variable">onRenderStateInvalidated</span> </code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widget.ondestroy">
+    <h3>
+        <code>on​Destroy</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">internal</span>(<span class="variable">set</span>) <span class="keyword">var</span> <span class="variable">onDestroy</span> </code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widget.onmouseenterhandlermanager">
+    <h3>
+        <code>on​Mouse​Enter​Handler​Manager</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">let</span> <span class="variable">onMouseEnterHandlerManager</span> </code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widget.onmousemovehandlermanager">
+    <h3>
+        <code>on​Mouse​Move​Handler​Manager</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">let</span> <span class="variable">onMouseMoveHandlerManager</span> </code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widget.onmouseleavehandlermanager">
+    <h3>
+        <code>on​Mouse​Leave​Handler​Manager</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">let</span> <span class="variable">onMouseLeaveHandlerManager</span> </code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widget.onclickhandlermanager">
+    <h3>
+        <code>on​Click​Handler​Manager</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">let</span> <span class="variable">onClickHandlerManager</span> </code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widget.onmousedownhandlermanager">
+    <h3>
+        <code>on​Mouse​Down​Handler​Manager</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">let</span> <span class="variable">onMouseDownHandlerManager</span> </code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widget.onmouseuphandlermanager">
+    <h3>
+        <code>on​Mouse​UpHandler​Manager</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">let</span> <span class="variable">onMouseUpHandlerManager</span> </code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widget.onmousewheelhandlermanager">
+    <h3>
+        <code>on​Mouse​Wheel​Handler​Manager</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">let</span> <span class="variable">onMouseWheelHandlerManager</span> </code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widget.onkeydownhandlermanager">
+    <h3>
+        <code>on​Key​Down​Handler​Manager</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">let</span> <span class="variable">onKeyDownHandlerManager</span> </code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widget.onkeyuphandlermanager">
+    <h3>
+        <code>on​Key​UpHandler​Manager</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">let</span> <span class="variable">onKeyUpHandlerManager</span> </code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widget.ontextinputhandlermanager">
+    <h3>
+        <code>on​Text​Input​Handler​Manager</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">let</span> <span class="variable">onTextInputHandlerManager</span> </code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widget.cancellables">
+    <h3>
+        <code>cancellables</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">var</span> <span class="variable">cancellables</span> </code></pre>
+</div>
+</div>
+    </section>
+    <section id="methods">
+        <h2>Methods</h2>
+
+        <div role="article" class="function" id="widget.findparent(_:)">
+    <h3>
+        <code>find​Parent(_:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="attribute">final</span> <span class="keyword">func</span> <span class="function">findParent</span>(<span class="keyword">_</span> <span class="variable">condition</span>: (<span class="keyword">_</span> <span class="variable">parent</span>: <span class="type">Parent</span>) <span class="keyword">throws</span> -&gt; <span class="type">Bool</span>) <span class="keyword">rethrows</span> -&gt; <span class="type">Parent</span>? </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="widget.getparent(oftype:)">
+    <h3>
+        <code>get​Parent(of​Type:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="attribute">final</span> <span class="keyword">func</span> <span class="function">getParent</span>&lt;<span class="variable">T</span>&gt;(<span class="variable">ofType</span> <span class="variable">type</span>: <span class="type">T</span>.<span class="type">Type</span>) -&gt; <span class="type">T</span>? </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="widget.getparents(oftype:)">
+    <h3>
+        <code>get​Parents(of​Type:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="attribute">final</span> <span class="keyword">func</span> <span class="function">getParents</span>&lt;<span class="variable">T</span>&gt;(<span class="variable">ofType</span> <span class="variable">type</span>: <span class="type">T</span>.<span class="type">Type</span>) -&gt; [<span class="type">T</span>] </code></pre>
+</div>
+  <h4>Returns</h4>
+  <p>all parents of given type, sorted from nearest to farthest</p>
+
+</div>
+<div role="article" class="function" id="widget.getchild(oftype:)">
+    <h3>
+        <code>get​Child(of​Type:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="attribute">final</span> <span class="keyword">func</span> <span class="function">getChild</span>&lt;<span class="variable">W</span>: <span class="type">Widget</span>&gt;(<span class="variable">ofType</span> <span class="variable">type</span>: <span class="type">W</span>.<span class="type">Type</span>) -&gt; <span class="type">W</span>? </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="widget.getchild(where:)">
+    <h3>
+        <code>get​Child(where:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="attribute">final</span> <span class="keyword">func</span> <span class="function">getChild</span>(<span class="variable">where</span> <span class="variable">condition</span>: (<span class="keyword">_</span> <span class="variable">child</span>: <span class="type">Widget</span>) -&gt; <span class="type">Bool</span>) -&gt; <span class="type">Widget</span>? </code></pre>
+</div>
+<div class="summary" role="doc-abstract">
+    <p>Get a child at any depth where the given condition is true. Depth first.</p>
+
+</div>
+</div>
+<div role="article" class="function" id="widget.onclick(_:)">
+    <h3>
+        <code>on​Click(_:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">func</span> <span class="function">onClick</span>(<span class="keyword">_</span> <span class="variable">handler</span>: <span class="attribute">@</span><span class="attribute">escaping</span> (<span class="type">GUIMouseButtonClickEvent</span>) -&gt; ()) -&gt; <span class="keyword">Self</span> </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="widget.onclick(_:)">
+    <h3>
+        <code>on​Click(_:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">func</span> <span class="function">onClick</span>(<span class="keyword">_</span> <span class="variable">handler</span>: <span class="attribute">@</span><span class="attribute">escaping</span> () -&gt; ()) -&gt; <span class="keyword">Self</span> </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="widget.onmousedown(_:)">
+    <h3>
+        <code>on​Mouse​Down(_:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">func</span> <span class="function">onMouseDown</span>(<span class="keyword">_</span> <span class="variable">handler</span>: <span class="attribute">@</span><span class="attribute">escaping</span> (<span class="type">GUIMouseButtonDownEvent</span>) -&gt; ()) -&gt; <span class="keyword">Self</span> </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="widget.onmousedown(_:)">
+    <h3>
+        <code>on​Mouse​Down(_:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">func</span> <span class="function">onMouseDown</span>(<span class="keyword">_</span> <span class="variable">handler</span>: <span class="attribute">@</span><span class="attribute">escaping</span> () -&gt; ()) -&gt; <span class="keyword">Self</span> </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="widget.onmouseup(_:)">
+    <h3>
+        <code>on​Mouse​Up(_:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">func</span> <span class="function">onMouseUp</span>(<span class="keyword">_</span> <span class="variable">handler</span>: <span class="attribute">@</span><span class="attribute">escaping</span> (<span class="type">GUIMouseButtonUpEvent</span>) -&gt; ()) -&gt; <span class="keyword">Self</span> </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="widget.onmouseup(_:)">
+    <h3>
+        <code>on​Mouse​Up(_:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">func</span> <span class="function">onMouseUp</span>(<span class="keyword">_</span> <span class="variable">handler</span>: <span class="attribute">@</span><span class="attribute">escaping</span> () -&gt; ()) -&gt; <span class="keyword">Self</span> </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="widget.onmousemove(_:)">
+    <h3>
+        <code>on​Mouse​Move(_:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">func</span> <span class="function">onMouseMove</span>(<span class="keyword">_</span> <span class="variable">handler</span>: <span class="attribute">@</span><span class="attribute">escaping</span> (<span class="type">GUIMouseMoveEvent</span>) -&gt; ()) -&gt; <span class="keyword">Self</span> </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="widget.onmousemove(_:)">
+    <h3>
+        <code>on​Mouse​Move(_:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">func</span> <span class="function">onMouseMove</span>(<span class="keyword">_</span> <span class="variable">handler</span>: <span class="attribute">@</span><span class="attribute">escaping</span> () -&gt; ()) -&gt; <span class="keyword">Self</span> </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="widget.onmousewheel(_:)">
+    <h3>
+        <code>on​Mouse​Wheel(_:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">func</span> <span class="function">onMouseWheel</span>(<span class="keyword">_</span> <span class="variable">handler</span>: <span class="attribute">@</span><span class="attribute">escaping</span> (<span class="type">GUIMouseWheelEvent</span>) -&gt; ()) -&gt; <span class="keyword">Self</span> </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="widget.onmousewheel(_:)">
+    <h3>
+        <code>on​Mouse​Wheel(_:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">func</span> <span class="function">onMouseWheel</span>(<span class="keyword">_</span> <span class="variable">handler</span>: <span class="attribute">@</span><span class="attribute">escaping</span> () -&gt; ()) -&gt; <span class="keyword">Self</span> </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="widget.onkeydown(_:)">
+    <h3>
+        <code>on​Key​Down(_:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">func</span> <span class="function">onKeyDown</span>(<span class="keyword">_</span> <span class="variable">handler</span>: <span class="attribute">@</span><span class="attribute">escaping</span> (<span class="type">GUIKeyDownEvent</span>) -&gt; ()) -&gt; <span class="keyword">Self</span> </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="widget.onkeydown(_:)">
+    <h3>
+        <code>on​Key​Down(_:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">func</span> <span class="function">onKeyDown</span>(<span class="keyword">_</span> <span class="variable">handler</span>: <span class="attribute">@</span><span class="attribute">escaping</span> () -&gt; ()) -&gt; <span class="keyword">Self</span> </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="widget.onkeyup(_:)">
+    <h3>
+        <code>on​Key​Up(_:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">func</span> <span class="function">onKeyUp</span>(<span class="keyword">_</span> <span class="variable">handler</span>: <span class="attribute">@</span><span class="attribute">escaping</span> (<span class="type">GUIKeyUpEvent</span>) -&gt; ()) -&gt; <span class="keyword">Self</span> </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="widget.onkeyup(_:)">
+    <h3>
+        <code>on​Key​Up(_:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">func</span> <span class="function">onKeyUp</span>(<span class="keyword">_</span> <span class="variable">handler</span>: <span class="attribute">@</span><span class="attribute">escaping</span> () -&gt; ()) -&gt; <span class="keyword">Self</span> </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="widget.ontextinput(_:)">
+    <h3>
+        <code>on​Text​Input(_:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">func</span> <span class="function">onTextInput</span>(<span class="keyword">_</span> <span class="variable">handler</span>: <span class="attribute">@</span><span class="attribute">escaping</span> (<span class="type">GUITextInputEvent</span>) -&gt; ()) -&gt; <span class="keyword">Self</span> </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="widget.ontextinput(_:)">
+    <h3>
+        <code>on​Text​Input(_:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">func</span> <span class="function">onTextInput</span>(<span class="keyword">_</span> <span class="variable">handler</span>: <span class="attribute">@</span><span class="attribute">escaping</span> () -&gt; ()) -&gt; <span class="keyword">Self</span> </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="widget.with(classes:)">
+    <h3>
+        <code>with(classes:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">func</span> <span class="function">with</span>(<span class="variable">classes</span>: [<span class="type">String</span>]? = <span class="keyword">nil</span>) -&gt; <span class="keyword">Self</span> </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="widget.with(key:)">
+    <h3>
+        <code>with(key:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">@</span><span class="attribute">inlinable</span>
+    <span class="keyword">public</span> <span class="attribute">final</span> <span class="keyword">func</span> <span class="function">with</span>(<span class="variable">key</span>: <span class="type">String</span>) -&gt; <span class="keyword">Self</span> </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="widget.connect(ref:)">
+    <h3>
+        <code>connect(ref:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">@</span><span class="attribute">inlinable</span>
+    <span class="keyword">public</span> <span class="attribute">final</span> <span class="keyword">func</span> <span class="function">connect</span>(<span class="variable">ref</span> <span class="variable">reference</span>: <span class="type">AnyReferenceProtocol</span>) -&gt; <span class="keyword">Self</span> </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="widget.with(block:)">
+    <h3>
+        <code>with(block:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">@</span><span class="attribute">inlinable</span>
+    <span class="keyword">public</span> <span class="attribute">final</span> <span class="keyword">func</span> <span class="function">with</span>(<span class="variable">block</span>: (<span class="keyword">Self</span>) -&gt; ()) -&gt; <span class="keyword">Self</span> </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="widget.performbuild()">
+    <h3>
+        <code>perform​Build()</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">open</span> <span class="keyword">func</span> <span class="function">performBuild</span>() </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="widget.requestupdatechildren()">
+    <h3>
+        <code>request​Update​Children()</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="attribute">final</span> <span class="keyword">func</span> <span class="function">requestUpdateChildren</span>() </code></pre>
+</div>
+<div class="summary" role="doc-abstract">
+    <p>Use if children are added after the initial mount, build phase. Executes immediately.
+// TODO: consider whether executing this in root tick handling would be better</p>
+
+</div>
+</div>
+<div role="article" class="function" id="widget.invalidatebuild()">
+    <h3>
+        <code>invalidate​Build()</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">@</span><span class="attribute">inlinable</span>
+    <span class="keyword">public</span> <span class="attribute">final</span> <span class="keyword">func</span> <span class="function">invalidateBuild</span>() </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="widget.layout(constraints:)">
+    <h3>
+        <code>layout(constraints:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="attribute">final</span> <span class="keyword">func</span> <span class="function">layout</span>(<span class="variable">constraints</span>: <span class="type">BoxConstraints</span>) </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="widget.performlayout(constraints:)">
+    <h3>
+        <code>perform​Layout(constraints:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">open</span> <span class="keyword">func</span> <span class="function">performLayout</span>(<span class="variable">constraints</span>: <span class="type">BoxConstraints</span>) -&gt; <span class="type">DSize2</span> </code></pre>
+</div>
+<div class="summary" role="doc-abstract">
+    <p>Layout the content of a widget. Should be implemented by subclasses.</p>
+
+</div>
+  <h4>Returns</h4>
+  <p>The size of the layouted content. The returned size may exceed or fall short of the given constraints.</p>
+
+</div>
+<div role="article" class="function" id="widget.invalidatelayout()">
+    <h3>
+        <code>invalidate​Layout()</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">@</span><span class="attribute">inlinable</span>
+    <span class="keyword">public</span> <span class="attribute">final</span> <span class="keyword">func</span> <span class="function">invalidateLayout</span>() </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="widget.invalidaterenderstate(deep:)">
+    <h3>
+        <code>invalidate​Render​State(deep:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">@</span><span class="attribute">inlinable</span>
+    <span class="attribute">@</span><span class="attribute">available</span>(*, <span class="variable">deprecated</span>, <span class="variable">message</span>: <span class="string literal">&quot;do not use render object api&quot;</span>)
+    <span class="keyword">public</span> <span class="attribute">final</span> <span class="keyword">func</span> <span class="function">invalidateRenderState</span>(<span class="variable">deep</span>: <span class="type">Bool</span> = <span class="keyword">false</span>) </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="widget.invalidaterenderstate(deep:after:)">
+    <h3>
+        <code>invalidate​Render​State(deep:​after:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">@</span><span class="attribute">inlinable</span>
+    <span class="attribute">@</span><span class="attribute">available</span>(*, <span class="variable">deprecated</span>, <span class="variable">message</span>: <span class="string literal">&quot;do not use render object api&quot;</span>)
+    <span class="keyword">public</span> <span class="attribute">final</span> <span class="keyword">func</span> <span class="function">invalidateRenderState</span>(<span class="variable">deep</span>: <span class="type">Bool</span> = <span class="keyword">false</span>, <span class="variable">after</span> <span class="variable">block</span>: () -&gt; ()) </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="widget.nexttick(_:)">
+    <h3>
+        <code>next​Tick(_:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">func</span> <span class="function">nextTick</span>(<span class="keyword">_</span> <span class="variable">block</span>: <span class="attribute">@</span><span class="attribute">escaping</span> (<span class="type">Tick</span>) -&gt; ()) </code></pre>
+</div>
+<div class="summary" role="doc-abstract">
+    <p>Run something on the next tick.</p>
+
+</div>
+</div>
+<div role="article" class="function" id="widget.destroy()">
+    <h3>
+        <code>destroy()</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="attribute">final</span> <span class="keyword">func</span> <span class="function">destroy</span>() </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="widget.destroyself()">
+    <h3>
+        <code>destroy​Self()</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">open</span> <span class="keyword">func</span> <span class="function">destroySelf</span>() </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="widget.invalidatecumulatedvalues()">
+    <h3>
+        <code>invalidate​Cumulated​Values()</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">func</span> <span class="function">invalidateCumulatedValues</span>() </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="widget.provide(dependencies:)">
+    <h3>
+        <code>provide(dependencies:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">func</span> <span class="function">provide</span>(<span class="variable">dependencies</span>: [<span class="type">Dependency</span>]) -&gt; <span class="type">Widget</span> </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="widget.provide(dependencies:)">
+    <h3>
+        <code>provide(dependencies:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">func</span> <span class="function">provide</span>(<span class="variable">dependencies</span>: <span class="type">Dependency</span>...) -&gt; <span class="type">Widget</span> </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="widget.provide(dependencies:)">
+    <h3>
+        <code>provide(dependencies:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">func</span> <span class="function">provide</span>(<span class="variable">dependencies</span>: <span class="keyword">Any</span>...) -&gt; <span class="type">Widget</span> </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="widget.instylescope(_:block:)">
+    <h3>
+        <code>in​Style​Scope(_:​block:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">@</span><span class="attribute">discardableResult</span>
+  <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">func</span> <span class="function">inStyleScope</span>&lt;<span class="variable">T</span>&gt;(<span class="keyword">_</span> <span class="variable">scope</span>: <span class="type">UInt</span>, <span class="variable">block</span>: () -&gt; <span class="type">T</span>) -&gt; <span class="type">T</span> </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="widget.enablepseudoclass(_:)">
+    <h3>
+        <code>enable​Pseudo​Class(_:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">func</span> <span class="function">enablePseudoClass</span>(<span class="keyword">_</span> <span class="variable">pseudoClass</span>: <span class="type">PseudoClass</span>) </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="widget.disablepseudoclass(_:)">
+    <h3>
+        <code>disable​Pseudo​Class(_:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">func</span> <span class="function">disablePseudoClass</span>(<span class="keyword">_</span> <span class="variable">pseudoClass</span>: <span class="type">PseudoClass</span>) </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="widget.invalidatematchedstyles()">
+    <h3>
+        <code>invalidate​Matched​Styles()</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">func</span> <span class="function">invalidateMatchedStyles</span>() </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="widget.invalidateresolvedstyleproperties()">
+    <h3>
+        <code>invalidate​Resolved​Style​Properties()</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">func</span> <span class="function">invalidateResolvedStyleProperties</span>() </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="widget.notifyselectorchanged()">
+    <h3>
+        <code>notify​Selector​Changed()</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">func</span> <span class="function">notifySelectorChanged</span>() </code></pre>
+</div>
+</div>
+    </section>
+
+
+
+        </article>
+    </main>
+
+    <footer>
+        <p>
+    Generated on <time datetime="2021-03-22T08:34:05+0100">March 22, 2021</time> using <a href="https://github.com/SwiftDocOrg/swift-doc">swift-doc</a> <span class="version">1.0.0-beta.5</span>.
+</p>
+    </footer>
+</body>
+</html>

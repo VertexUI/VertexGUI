@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SwiftGUI - OptimizingRenderObjectTreeRenderer.RenderGroup</title>
+    <link rel="stylesheet" type="text/css" href="http://ungast.github.io/swift-gui/generated-doc/all.css" media="all" />
+</head>
+<body>
+    <header>
+        <a href="http://ungast.github.io/swift-gui/generated-doc">
+            <strong>
+                SwiftGUI
+            </strong>
+            <span>Documentation</span>
+        </a>
+        <sup>Beta</sup>
+    </header>
+
+    <!--
+    <form class="search">
+        <input type="search" placeholder="Search" />
+    </form>
+    -->
+
+    <nav>
+        <div class="wrapper">
+            <h2>On This Page</h2>
+            <ol><li><a href="#relationships">Relationships</a><ul><li><a href="#relationships">Member Of</a></li><li><a href="#relationships">Nested Types</a></li></ul></li><li><a href="#initializers">Initializers</a><ul><li class="initializer"><a href="#optimizingrenderobjecttreerenderer.rendergroup.init(slices:)">init(slices:​)</a></li></ul></li><li><a href="#properties">Properties</a><ul><li class="variable"><a href="#optimizingrenderobjecttreerenderer.rendergroup.slices">slices</a></li><li class="variable"><a href="#optimizingrenderobjecttreerenderer.rendergroup.activetransitioncount">active​Transition​Count</a></li><li class="variable"><a href="#optimizingrenderobjecttreerenderer.rendergroup.cachable">cachable</a></li><li class="variable"><a href="#optimizingrenderobjecttreerenderer.rendergroup.cache">cache</a></li><li class="variable"><a href="#optimizingrenderobjecttreerenderer.rendergroup.onmessage">on​Message</a></li></ul></li><li><a href="#methods">Methods</a><ul><li class="function"><a href="#optimizingrenderobjecttreerenderer.rendergroup.processbusmessage(_:)">process​Bus​Message(_:​)</a></li><li class="function"><a href="#optimizingrenderobjecttreerenderer.rendergroup.tick()">tick()</a></li></ul></li></ol>
+        </div>
+    </nav>
+
+    <main>
+        <article>
+            <h1>
+    <small>Class</small>
+    <code class="name">Optimizing​Render​Object​Tree​Renderer.​Render​Group</code>
+</h1>
+
+<div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">class</span> <span class="type">RenderGroup</span> </code></pre>
+</div>
+<section id="relationships">
+    <h2 hidden>Relationships</h2>
+        
+        <h3>Member Of</h3>
+<dl>
+    <dt class="class"><code><a href="http://ungast.github.io/swift-gui/generated-doc/OptimizingRenderObjectTreeRenderer">OptimizingRenderObjectTreeRenderer</a></code></dt>
+<dd></dd>
+</dl>
+<h3>Nested Types</h3>
+<dl>
+    <dt class="enumeration"><code><a href="http://ungast.github.io/swift-gui/generated-doc/OptimizingRenderObjectTreeRenderer_RenderGroup_Message">OptimizingRenderObjectTreeRenderer.RenderGroup.Message</a></code></dt>
+<dd></dd>
+</dl>
+</section>
+    <section id="initializers">
+        <h2>Initializers</h2>
+
+        <div role="article" class="initializer" id="optimizingrenderobjecttreerenderer.rendergroup.init(slices:)">
+    <h3>
+        <code>init(slices:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">init</span>(<span class="variable">slices</span>: [<span class="type">RenderObjectTree</span>.<span class="type">TreeSlice</span>]) </code></pre>
+</div>
+</div>
+    </section>
+    <section id="properties">
+        <h2>Properties</h2>
+
+        <div role="article" class="variable" id="optimizingrenderobjecttreerenderer.rendergroup.slices">
+    <h3>
+        <code>slices</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">var</span> <span class="variable">slices</span>: [<span class="type">RenderObjectTree</span>.<span class="type">TreeSlice</span>]</code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="optimizingrenderobjecttreerenderer.rendergroup.activetransitioncount">
+    <h3>
+        <code>active​Transition​Count</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">var</span> <span class="variable">activeTransitionCount</span> = <span class="number literal">0</span></code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="optimizingrenderobjecttreerenderer.rendergroup.cachable">
+    <h3>
+        <code>cachable</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">var</span> <span class="variable">cachable</span>: <span class="type">Bool</span> </code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="optimizingrenderobjecttreerenderer.rendergroup.cache">
+    <h3>
+        <code>cache</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">var</span> <span class="variable">cache</span>: <span class="type">VirtualScreen</span>? = <span class="keyword">nil</span></code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="optimizingrenderobjecttreerenderer.rendergroup.onmessage">
+    <h3>
+        <code>on​Message</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">internal</span>(<span class="variable">set</span>) <span class="keyword">var</span> <span class="variable">onMessage</span> </code></pre>
+</div>
+</div>
+    </section>
+    <section id="methods">
+        <h2>Methods</h2>
+
+        <div role="article" class="function" id="optimizingrenderobjecttreerenderer.rendergroup.processbusmessage(_:)">
+    <h3>
+        <code>process​Bus​Message(_:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">func</span> <span class="function">processBusMessage</span>(<span class="keyword">_</span> <span class="variable">message</span>: <span class="type">RenderObject</span>.<span class="type">UpwardMessage</span>) </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="optimizingrenderobjecttreerenderer.rendergroup.tick()">
+    <h3>
+        <code>tick()</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">func</span> <span class="function">tick</span>() </code></pre>
+</div>
+</div>
+    </section>
+
+
+
+        </article>
+    </main>
+
+    <footer>
+        <p>
+    Generated on <time datetime="2021-03-22T08:34:03+0100">March 22, 2021</time> using <a href="https://github.com/SwiftDocOrg/swift-doc">swift-doc</a> <span class="version">1.0.0-beta.5</span>.
+</p>
+    </footer>
+</body>
+</html>

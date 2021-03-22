@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SwiftGUI - System</title>
+    <link rel="stylesheet" type="text/css" href="http://ungast.github.io/swift-gui/generated-doc/all.css" media="all" />
+</head>
+<body>
+    <header>
+        <a href="http://ungast.github.io/swift-gui/generated-doc">
+            <strong>
+                SwiftGUI
+            </strong>
+            <span>Documentation</span>
+        </a>
+        <sup>Beta</sup>
+    </header>
+
+    <!--
+    <form class="search">
+        <input type="search" placeholder="Search" />
+    </form>
+    -->
+
+    <nav>
+        <div class="wrapper">
+            <h2>On This Page</h2>
+            <ol><li><a href="#initializers">Initializers</a><ul><li class="initializer"><a href="#system.init()">init()</a></li></ul></li><li><a href="#properties">Properties</a><ul><li class="variable"><a href="#system.keystates">key​States</a></li><li class="variable"><a href="#system.cursorrequests">cursor​Requests</a></li><li class="variable"><a href="#system.nextcursorrequestid">next​Cursor​Request​Id</a></li><li class="variable"><a href="#system.ontick">on​Tick</a></li><li class="variable"><a href="#system.realfps">real​Fps</a></li><li class="variable"><a href="#system.currenttime">current​Time</a></li></ul></li><li><a href="#methods">Methods</a><ul><li class="function"><a href="#system.requestcursor(_:)">request​Cursor(_:​)</a></li><li class="function"><a href="#system.dropcursorrequest(id:)">drop​Cursor​Request(id:​)</a></li><li class="function"><a href="#system.updatecursor()">update​Cursor()</a></li><li class="function"><a href="#system.mainloop()">main​Loop()</a></li><li class="function"><a href="#system.exit()">exit()</a></li></ul></li></ol>
+        </div>
+    </nav>
+
+    <main>
+        <article>
+            <h1>
+    <small>Class</small>
+    <code class="name">System</code>
+</h1>
+
+<div class="declaration">
+<pre class="highlight"><code><span class="attribute">open</span> <span class="keyword">class</span> <span class="type">System</span> </code></pre>
+</div>
+
+    <section id="initializers">
+        <h2>Initializers</h2>
+
+        <div role="article" class="initializer" id="system.init()">
+    <h3>
+        <code>init()</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">init</span>() <span class="keyword">throws</span> </code></pre>
+</div>
+</div>
+    </section>
+    <section id="properties">
+        <h2>Properties</h2>
+
+        <div role="article" class="variable" id="system.keystates">
+    <h3>
+        <code>key​States</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">var</span> <span class="variable">keyStates</span> </code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="system.cursorrequests">
+    <h3>
+        <code>cursor​Requests</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">var</span> <span class="variable">cursorRequests</span>: [<span class="type">UInt64</span>: <span class="type">Cursor</span>] = [:] </code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="system.nextcursorrequestid">
+    <h3>
+        <code>next​Cursor​Request​Id</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">var</span> <span class="variable">nextCursorRequestId</span>: <span class="type">UInt64</span> = <span class="number literal">0</span></code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="system.ontick">
+    <h3>
+        <code>on​Tick</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">var</span> <span class="variable">onTick</span> </code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="system.realfps">
+    <h3>
+        <code>real​Fps</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">open</span> <span class="keyword">var</span> <span class="variable">realFps</span>: <span class="type">Double</span> </code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="system.currenttime">
+    <h3>
+        <code>current​Time</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">open</span> <span class="keyword">var</span> <span class="variable">currentTime</span>: <span class="type">Double</span> </code></pre>
+</div>
+</div>
+    </section>
+    <section id="methods">
+        <h2>Methods</h2>
+
+        <div role="article" class="function" id="system.requestcursor(_:)">
+    <h3>
+        <code>request​Cursor(_:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">open</span> <span class="keyword">func</span> <span class="function">requestCursor</span>(<span class="keyword">_</span> <span class="variable">cursor</span>: <span class="type">Cursor</span>) -&gt; () -&gt; <span class="type">Void</span> </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="system.dropcursorrequest(id:)">
+    <h3>
+        <code>drop​Cursor​Request(id:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">open</span> <span class="keyword">func</span> <span class="function">dropCursorRequest</span>(<span class="variable">id</span>: <span class="type">UInt64</span>) </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="system.updatecursor()">
+    <h3>
+        <code>update​Cursor()</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">open</span> <span class="keyword">func</span> <span class="function">updateCursor</span>() </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="system.mainloop()">
+    <h3>
+        <code>main​Loop()</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">open</span> <span class="keyword">func</span> <span class="function">mainLoop</span>() <span class="keyword">throws</span> </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="system.exit()">
+    <h3>
+        <code>exit()</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">open</span> <span class="keyword">func</span> <span class="function">exit</span>() </code></pre>
+</div>
+</div>
+    </section>
+
+
+
+        </article>
+    </main>
+
+    <footer>
+        <p>
+    Generated on <time datetime="2021-03-22T08:34:05+0100">March 22, 2021</time> using <a href="https://github.com/SwiftDocOrg/swift-doc">swift-doc</a> <span class="version">1.0.0-beta.5</span>.
+</p>
+    </footer>
+</body>
+</html>

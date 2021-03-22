@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SwiftGUI - Renderer</title>
+    <link rel="stylesheet" type="text/css" href="http://ungast.github.io/swift-gui/generated-doc/all.css" media="all" />
+</head>
+<body>
+    <header>
+        <a href="http://ungast.github.io/swift-gui/generated-doc">
+            <strong>
+                SwiftGUI
+            </strong>
+            <span>Documentation</span>
+        </a>
+        <sup>Beta</sup>
+    </header>
+
+    <!--
+    <form class="search">
+        <input type="search" placeholder="Search" />
+    </form>
+    -->
+
+    <nav>
+        <div class="wrapper">
+            <h2>On This Page</h2>
+            <ol><li><a href="#requirements">Requirements</a><ul><li class="variable"><a href="#renderer.virtualscreenstack">virtual​Screen​Stack</a></li><li class="function"><a href="#renderer.beginframe()">begin​Frame()</a></li><li class="function"><a href="#renderer.endframe()">end​Frame()</a></li><li class="function"><a href="#renderer.clear(_:)">clear(_:​)</a></li><li class="function"><a href="#renderer.makevirtualscreen(size:)">make​Virtual​Screen(size:​)</a></li><li class="function"><a href="#renderer.resizevirtualscreen(_:_:)">resize​Virtual​Screen(_:​_:​)</a></li><li class="function"><a href="#renderer.pushvirtualscreen(_:)">push​Virtual​Screen(_:​)</a></li><li class="function"><a href="#renderer.popvirtualscreen()">pop​Virtual​Screen()</a></li><li class="function"><a href="#renderer.drawvirtualscreens(_:at:)">draw​Virtual​Screens(_:​at:​)</a></li><li class="function"><a href="#renderer.beginpath()">begin​Path()</a></li><li class="function"><a href="#renderer.move(to:)">move(to:​)</a></li><li class="function"><a href="#renderer.line(to:)">line(to:​)</a></li><li class="function"><a href="#renderer.arc(center:radius:startangle:endangle:direction:)">arc(center:​radius:​start​Angle:​end​Angle:​direction:​)</a></li><li class="function"><a href="#renderer.pathsegment(_:)">path​Segment(_:​)</a></li><li class="function"><a href="#renderer.path(_:)">path(_:​)</a></li><li class="function"><a href="#renderer.closepath()">close​Path()</a></li><li class="function"><a href="#renderer.loadfill(_:)">load​Fill(_:​)</a></li><li class="function"><a href="#renderer.setfill(_:)">set​Fill(_:​)</a></li><li class="function"><a href="#renderer.setfill(_:)">set​Fill(_:​)</a></li><li class="function"><a href="#renderer.fill()">fill()</a></li><li class="function"><a href="#renderer.strokewidth(_:)">stroke​Width(_:​)</a></li><li class="function"><a href="#renderer.strokecolor(_:)">stroke​Color(_:​)</a></li><li class="function"><a href="#renderer.stroke()">stroke()</a></li><li class="function"><a href="#renderer.rectangle(_:)">rectangle(_:​)</a></li><li class="function"><a href="#renderer.roundedrectangle(_:cornerradii:)">rounded​Rectangle(_:​corner​Radii:​)</a></li><li class="function"><a href="#renderer.circle(center:radius:)">circle(center:​radius:​)</a></li><li class="function"><a href="#renderer.ellipse(_:)">ellipse(_:​)</a></li><li class="function"><a href="#renderer.linesegment(from:to:)">line​Segment(from:​to:​)</a></li><li class="function"><a href="#renderer.text(_:fontconfig:color:topleft:maxwidth:)">text(_:​font​Config:​color:​top​Left:​max​Width:​)</a></li><li class="function"><a href="#renderer.gettextboundssize(_:fontconfig:maxwidth:)">get​Text​Bounds​Size(_:​font​Config:​max​Width:​)</a></li><li class="function"><a href="#renderer.globalopacity(_:)">global​Opacity(_:​)</a></li><li class="function"><a href="#renderer.cliparea(bounds:)">clip​Area(bounds:​)</a></li><li class="function"><a href="#renderer.releasecliparea()">release​Clip​Area()</a></li><li class="function"><a href="#renderer.translate(_:)">translate(_:​)</a></li><li class="function"><a href="#renderer.scale(_:)">scale(_:​)</a></li><li class="function"><a href="#renderer.resettransform()">reset​Transform()</a></li><li class="function"><a href="#renderer.destroy()">destroy()</a></li></ul></li></ol>
+        </div>
+    </nav>
+
+    <main>
+        <article>
+            <h1>
+    <small>Protocol</small>
+    <code class="name">Renderer</code>
+</h1>
+
+<div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">protocol</span> <span class="type">Renderer</span> </code></pre>
+</div>
+<div class="summary" role="doc-abstract">
+    <p>Rendering is relative to topLeft of whatever area the renderer is rendering in.</p>
+
+</div>
+
+
+
+
+    <section id="requirements">
+        <h2>Requirements</h2>
+
+        <div role="article" class="variable" id="renderer.virtualscreenstack">
+    <h3>
+        <code>virtual​Screen​Stack</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">var</span> <span class="variable">virtualScreenStack</span>: [<span class="type">VirtualScreen</span>] </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="renderer.beginframe()">
+    <h3>
+        <code>begin​Frame()</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">func</span> <span class="function">beginFrame</span>()</code></pre>
+</div>
+</div>
+<div role="article" class="function" id="renderer.endframe()">
+    <h3>
+        <code>end​Frame()</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">func</span> <span class="function">endFrame</span>()</code></pre>
+</div>
+</div>
+<div role="article" class="function" id="renderer.clear(_:)">
+    <h3>
+        <code>clear(_:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">func</span> <span class="function">clear</span>(<span class="keyword">_</span> <span class="variable">color</span>: <span class="type">Color</span>)</code></pre>
+</div>
+</div>
+<div role="article" class="function" id="renderer.makevirtualscreen(size:)">
+    <h3>
+        <code>make​Virtual​Screen(size:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">func</span> <span class="function">makeVirtualScreen</span>(<span class="variable">size</span>: <span class="type">DSize2</span>)  -&gt; <span class="type">VirtualScreen</span></code></pre>
+</div>
+</div>
+<div role="article" class="function" id="renderer.resizevirtualscreen(_:_:)">
+    <h3>
+        <code>resize​Virtual​Screen(_:​_:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">func</span> <span class="function">resizeVirtualScreen</span>(<span class="keyword">_</span> <span class="variable">screen</span>: <span class="keyword">inout</span> <span class="type">VirtualScreen</span>, <span class="keyword">_</span> <span class="variable">size</span>: <span class="type">DSize2</span>)</code></pre>
+</div>
+</div>
+<div role="article" class="function" id="renderer.pushvirtualscreen(_:)">
+    <h3>
+        <code>push​Virtual​Screen(_:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">func</span> <span class="function">pushVirtualScreen</span>(<span class="keyword">_</span> <span class="variable">screen</span>: <span class="type">VirtualScreen</span>)</code></pre>
+</div>
+</div>
+<div role="article" class="function" id="renderer.popvirtualscreen()">
+    <h3>
+        <code>pop​Virtual​Screen()</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">@</span><span class="attribute">discardableResult</span> <span class="keyword">func</span> <span class="function">popVirtualScreen</span>()  -&gt; <span class="type">VirtualScreen</span>?</code></pre>
+</div>
+</div>
+<div role="article" class="function" id="renderer.drawvirtualscreens(_:at:)">
+    <h3>
+        <code>draw​Virtual​Screens(_:​at:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">func</span> <span class="function">drawVirtualScreens</span>(<span class="keyword">_</span> <span class="variable">screens</span>: [<span class="type">VirtualScreen</span>], <span class="variable">at</span> <span class="variable">positions</span>: [<span class="type">DVec2</span>]?)</code></pre>
+</div>
+</div>
+<div role="article" class="function" id="renderer.beginpath()">
+    <h3>
+        <code>begin​Path()</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">func</span> <span class="function">beginPath</span>()</code></pre>
+</div>
+</div>
+<div role="article" class="function" id="renderer.move(to:)">
+    <h3>
+        <code>move(to:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">func</span> <span class="function">move</span>(<span class="variable">to</span> <span class="variable">position</span>: <span class="type">DPoint2</span>)</code></pre>
+</div>
+</div>
+<div role="article" class="function" id="renderer.line(to:)">
+    <h3>
+        <code>line(to:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">func</span> <span class="function">line</span>(<span class="variable">to</span> <span class="variable">position</span>: <span class="type">DPoint2</span>)</code></pre>
+</div>
+</div>
+<div role="article" class="function" id="renderer.arc(center:radius:startangle:endangle:direction:)">
+    <h3>
+        <code>arc(center:​radius:​start​Angle:​end​Angle:​direction:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">func</span> <span class="function">arc</span>(<span class="variable">center</span>: <span class="type">DPoint2</span>, <span class="variable">radius</span>: <span class="type">Double</span>, <span class="variable">startAngle</span>: <span class="type">Double</span>, <span class="variable">endAngle</span>: <span class="type">Double</span>, <span class="variable">direction</span>: <span class="type">Path</span>.<span class="type">Segment</span>.<span class="type">ArcDirection</span>)</code></pre>
+</div>
+</div>
+<div role="article" class="function" id="renderer.pathsegment(_:)">
+    <h3>
+        <code>path​Segment(_:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">func</span> <span class="function">pathSegment</span>(<span class="keyword">_</span> <span class="variable">segment</span>: <span class="type">Path</span>.<span class="type">Segment</span>)</code></pre>
+</div>
+</div>
+<div role="article" class="function" id="renderer.path(_:)">
+    <h3>
+        <code>path(_:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">func</span> <span class="function">path</span>(<span class="keyword">_</span> <span class="variable">path</span>: <span class="type">Path</span>)</code></pre>
+</div>
+</div>
+<div role="article" class="function" id="renderer.closepath()">
+    <h3>
+        <code>close​Path()</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">func</span> <span class="function">closePath</span>()</code></pre>
+</div>
+</div>
+<div role="article" class="function" id="renderer.loadfill(_:)">
+    <h3>
+        <code>load​Fill(_:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">func</span> <span class="function">loadFill</span>(<span class="keyword">_</span> <span class="variable">fill</span>: <span class="type">Fill</span>) -&gt; <span class="type">LoadedFill</span></code></pre>
+</div>
+<div class="summary" role="doc-abstract">
+    <p>Load a fill for being used later. Does not apply the fill to the current graphics.</p>
+
+</div>
+</div>
+<div role="article" class="function" id="renderer.setfill(_:)">
+    <h3>
+        <code>set​Fill(_:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">func</span> <span class="function">setFill</span>(<span class="keyword">_</span> <span class="variable">fill</span>: <span class="type">LoadedFill</span>)</code></pre>
+</div>
+<div class="summary" role="doc-abstract">
+    <p>Set the fill of the current graphics to a previously loaded fill.</p>
+
+</div>
+</div>
+<div role="article" class="function" id="renderer.setfill(_:)">
+    <h3>
+        <code>set​Fill(_:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">@</span><span class="attribute">discardableResult</span>
+    <span class="keyword">func</span> <span class="function">setFill</span>(<span class="keyword">_</span> <span class="variable">fill</span>: <span class="type">Fill</span>) -&gt; <span class="type">LoadedFill</span></code></pre>
+</div>
+<div class="summary" role="doc-abstract">
+    <p>Set the fill to a not pre loaded fill.
+Essentialy loadFill(:) and setFill(:) combined in one function for convenience.</p>
+
+</div>
+</div>
+<div role="article" class="function" id="renderer.fill()">
+    <h3>
+        <code>fill()</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">func</span> <span class="function">fill</span>()</code></pre>
+</div>
+<div class="summary" role="doc-abstract">
+    <p>Perform filling of the current graphics with the previously set fill.</p>
+
+</div>
+</div>
+<div role="article" class="function" id="renderer.strokewidth(_:)">
+    <h3>
+        <code>stroke​Width(_:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">func</span> <span class="function">strokeWidth</span>(<span class="keyword">_</span> <span class="variable">width</span>: <span class="type">Double</span>)</code></pre>
+</div>
+</div>
+<div role="article" class="function" id="renderer.strokecolor(_:)">
+    <h3>
+        <code>stroke​Color(_:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">func</span> <span class="function">strokeColor</span>(<span class="keyword">_</span> <span class="variable">color</span>: <span class="type">Color</span>)</code></pre>
+</div>
+</div>
+<div role="article" class="function" id="renderer.stroke()">
+    <h3>
+        <code>stroke()</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">func</span> <span class="function">stroke</span>()</code></pre>
+</div>
+</div>
+<div role="article" class="function" id="renderer.rectangle(_:)">
+    <h3>
+        <code>rectangle(_:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">func</span> <span class="function">rectangle</span>(<span class="keyword">_</span> <span class="variable">rect</span>: <span class="type">DRect</span>)</code></pre>
+</div>
+</div>
+<div role="article" class="function" id="renderer.roundedrectangle(_:cornerradii:)">
+    <h3>
+        <code>rounded​Rectangle(_:​corner​Radii:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">func</span> <span class="function">roundedRectangle</span>(<span class="keyword">_</span> <span class="variable">rect</span>: <span class="type">DRect</span>, <span class="variable">cornerRadii</span>: <span class="type">CornerRadii</span>)</code></pre>
+</div>
+</div>
+<div role="article" class="function" id="renderer.circle(center:radius:)">
+    <h3>
+        <code>circle(center:​radius:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">func</span> <span class="function">circle</span>(<span class="variable">center</span>: <span class="type">DPoint2</span>, <span class="variable">radius</span>: <span class="type">Double</span>)</code></pre>
+</div>
+</div>
+<div role="article" class="function" id="renderer.ellipse(_:)">
+    <h3>
+        <code>ellipse(_:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">func</span> <span class="function">ellipse</span>(<span class="keyword">_</span> <span class="variable">bounds</span>: <span class="type">DRect</span>)</code></pre>
+</div>
+</div>
+<div role="article" class="function" id="renderer.linesegment(from:to:)">
+    <h3>
+        <code>line​Segment(from:​to:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">func</span> <span class="function">lineSegment</span>(<span class="variable">from</span>: <span class="type">DPoint2</span>, <span class="variable">to</span>: <span class="type">DPoint2</span>)</code></pre>
+</div>
+</div>
+<div role="article" class="function" id="renderer.text(_:fontconfig:color:topleft:maxwidth:)">
+    <h3>
+        <code>text(_:​font​Config:​color:​top​Left:​max​Width:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">func</span> <span class="function">text</span>(<span class="keyword">_</span> <span class="variable">text</span>: <span class="type">String</span>, <span class="variable">fontConfig</span>: <span class="type">FontConfig</span>, <span class="variable">color</span>: <span class="type">Color</span>, <span class="variable">topLeft</span>: <span class="type">DPoint2</span>, <span class="variable">maxWidth</span>: <span class="type">Double</span>?)</code></pre>
+</div>
+</div>
+<div role="article" class="function" id="renderer.gettextboundssize(_:fontconfig:maxwidth:)">
+    <h3>
+        <code>get​Text​Bounds​Size(_:​font​Config:​max​Width:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">func</span> <span class="function">getTextBoundsSize</span>(<span class="keyword">_</span> <span class="variable">text</span>: <span class="type">String</span>, <span class="variable">fontConfig</span>: <span class="type">FontConfig</span>, <span class="variable">maxWidth</span>: <span class="type">Double</span>?)  -&gt; <span class="type">DSize2</span></code></pre>
+</div>
+</div>
+<div role="article" class="function" id="renderer.globalopacity(_:)">
+    <h3>
+        <code>global​Opacity(_:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">func</span> <span class="function">globalOpacity</span>(<span class="keyword">_</span> <span class="variable">opacity</span>: <span class="type">Float</span>)</code></pre>
+</div>
+</div>
+<div role="article" class="function" id="renderer.cliparea(bounds:)">
+    <h3>
+        <code>clip​Area(bounds:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">func</span> <span class="function">clipArea</span>(<span class="variable">bounds</span>: <span class="type">DRect</span>)</code></pre>
+</div>
+</div>
+<div role="article" class="function" id="renderer.releasecliparea()">
+    <h3>
+        <code>release​Clip​Area()</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">func</span> <span class="function">releaseClipArea</span>()</code></pre>
+</div>
+</div>
+<div role="article" class="function" id="renderer.translate(_:)">
+    <h3>
+        <code>translate(_:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">func</span> <span class="function">translate</span>(<span class="keyword">_</span> <span class="variable">translation</span>: <span class="type">DVec2</span>)</code></pre>
+</div>
+</div>
+<div role="article" class="function" id="renderer.scale(_:)">
+    <h3>
+        <code>scale(_:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">func</span> <span class="function">scale</span>(<span class="keyword">_</span> <span class="variable">amount</span>: <span class="type">DVec2</span>)</code></pre>
+</div>
+</div>
+<div role="article" class="function" id="renderer.resettransform()">
+    <h3>
+        <code>reset​Transform()</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">func</span> <span class="function">resetTransform</span>()</code></pre>
+</div>
+</div>
+<div role="article" class="function" id="renderer.destroy()">
+    <h3>
+        <code>destroy()</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">func</span> <span class="function">destroy</span>()</code></pre>
+</div>
+<div class="summary" role="doc-abstract">
+    <p>use to clean up caches etc.</p>
+
+</div>
+</div>
+    </section>
+        </article>
+    </main>
+
+    <footer>
+        <p>
+    Generated on <time datetime="2021-03-22T08:34:04+0100">March 22, 2021</time> using <a href="https://github.com/SwiftDocOrg/swift-doc">swift-doc</a> <span class="version">1.0.0-beta.5</span>.
+</p>
+    </footer>
+</body>
+</html>

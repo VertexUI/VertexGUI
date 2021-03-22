@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SwiftGUI - StylePropertyValueDefinitionsBuilder</title>
+    <link rel="stylesheet" type="text/css" href="http://ungast.github.io/swift-gui/generated-doc/all.css" media="all" />
+</head>
+<body>
+    <header>
+        <a href="http://ungast.github.io/swift-gui/generated-doc">
+            <strong>
+                SwiftGUI
+            </strong>
+            <span>Documentation</span>
+        </a>
+        <sup>Beta</sup>
+    </header>
+
+    <!--
+    <form class="search">
+        <input type="search" placeholder="Search" />
+    </form>
+    -->
+
+    <nav>
+        <div class="wrapper">
+            <h2>On This Page</h2>
+            <ol><li><a href="#methods">Methods</a><ul><li class="function"><a href="#stylepropertyvaluedefinitionsbuilder.buildexpression(_:)">build​Expression(_:​)</a></li><li class="function"><a href="#stylepropertyvaluedefinitionsbuilder.buildexpression(_:)">build​Expression(_:​)</a></li><li class="function"><a href="#stylepropertyvaluedefinitionsbuilder.buildexpression(_:)">build​Expression(_:​)</a></li><li class="function"><a href="#stylepropertyvaluedefinitionsbuilder.buildexpression(_:)">build​Expression(_:​)</a></li><li class="function"><a href="#stylepropertyvaluedefinitionsbuilder.buildexpression(_:)">build​Expression(_:​)</a></li><li class="function"><a href="#stylepropertyvaluedefinitionsbuilder.buildexpression(_:)">build​Expression(_:​)</a></li><li class="function"><a href="#stylepropertyvaluedefinitionsbuilder.buildblock(_:)">build​Block(_:​)</a></li><li class="function"><a href="#stylepropertyvaluedefinitionsbuilder.buildblock(_:)">build​Block(_:​)</a></li></ul></li></ol>
+        </div>
+    </nav>
+
+    <main>
+        <article>
+            <h1>
+    <small>Structure</small>
+    <code class="name">Style​Property​Value​Definitions​Builder</code>
+</h1>
+
+<div class="declaration">
+<pre class="highlight"><code><span class="attribute">@</span><span class="attribute">_functionBuilder</span>
+<span class="keyword">public</span> <span class="keyword">struct</span> <span class="type">StylePropertyValueDefinitionsBuilder</span>&lt;<span class="variable">W</span>: <span class="type">Widget</span>&gt; </code></pre>
+</div>
+
+    <section id="methods">
+        <h2>Methods</h2>
+
+        <div role="article" class="function" id="stylepropertyvaluedefinitionsbuilder.buildexpression(_:)">
+    <h3>
+        <code>build​Expression(_:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">func</span> <span class="function">buildExpression</span>&lt;<span class="variable">V</span>&gt;(<span class="keyword">_</span> <span class="variable">expression</span>: (<span class="type">KeyPath</span>&lt;<span class="type">Widget</span>, <span class="type">DefaultStyleProperty</span>&lt;<span class="type">V</span>&gt;&gt;, <span class="type">StylePropertyValue</span>&lt;<span class="type">V</span>&gt;)) -&gt; [<span class="type">StylePropertyValueDefinition</span>] </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="stylepropertyvaluedefinitionsbuilder.buildexpression(_:)">
+    <h3>
+        <code>build​Expression(_:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">func</span> <span class="function">buildExpression</span>&lt;<span class="variable">V</span>&gt;(<span class="keyword">_</span> <span class="variable">expression</span>: (<span class="type">KeyPath</span>&lt;<span class="type">W</span>, <span class="type">AnySpecialStyleProperty</span>&lt;<span class="type">W</span>, <span class="type">V</span>&gt;&gt;, <span class="type">StylePropertyValue</span>&lt;<span class="type">V</span>&gt;)) -&gt; [<span class="type">StylePropertyValueDefinition</span>] </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="stylepropertyvaluedefinitionsbuilder.buildexpression(_:)">
+    <h3>
+        <code>build​Expression(_:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">func</span> <span class="function">buildExpression</span>&lt;<span class="variable">V</span>&gt;(<span class="keyword">_</span> <span class="variable">expression</span>: (<span class="type">KeyPath</span>&lt;<span class="type">Widget</span>, <span class="type">DefaultStyleProperty</span>&lt;<span class="type">V</span>&gt;&gt;, <span class="type">V</span>)) -&gt; [<span class="type">StylePropertyValueDefinition</span>] </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="stylepropertyvaluedefinitionsbuilder.buildexpression(_:)">
+    <h3>
+        <code>build​Expression(_:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">func</span> <span class="function">buildExpression</span>&lt;<span class="variable">V</span>&gt;(<span class="keyword">_</span> <span class="variable">expression</span>: (<span class="type">KeyPath</span>&lt;<span class="type">W</span>, <span class="type">AnySpecialStyleProperty</span>&lt;<span class="type">W</span>, <span class="type">V</span>&gt;&gt;, <span class="type">V</span>)) -&gt; [<span class="type">StylePropertyValueDefinition</span>] </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="stylepropertyvaluedefinitionsbuilder.buildexpression(_:)">
+    <h3>
+        <code>build​Expression(_:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">func</span> <span class="function">buildExpression</span>&lt;<span class="variable">V</span>, <span class="variable">P</span>: <span class="type">ReactiveProperty</span>&gt;(<span class="keyword">_</span> <span class="variable">expression</span>: (<span class="type">KeyPath</span>&lt;<span class="type">Widget</span>, <span class="type">DefaultStyleProperty</span>&lt;<span class="type">V</span>&gt;&gt;, <span class="type">P</span>)) -&gt; [<span class="type">StylePropertyValueDefinition</span>] <span class="keyword">where</span> <span class="type">P</span>.<span class="type">Value</span> == <span class="type">V</span> </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="stylepropertyvaluedefinitionsbuilder.buildexpression(_:)">
+    <h3>
+        <code>build​Expression(_:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">func</span> <span class="function">buildExpression</span>&lt;<span class="variable">V</span>, <span class="variable">P</span>: <span class="type">ReactiveProperty</span>&gt;(<span class="keyword">_</span> <span class="variable">expression</span>: (<span class="type">KeyPath</span>&lt;<span class="type">W</span>, <span class="type">AnySpecialStyleProperty</span>&lt;<span class="type">W</span>, <span class="type">V</span>&gt;&gt;, <span class="type">P</span>)) -&gt; [<span class="type">StylePropertyValueDefinition</span>] <span class="keyword">where</span> <span class="type">P</span>.<span class="type">Value</span> == <span class="type">V</span> </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="stylepropertyvaluedefinitionsbuilder.buildblock(_:)">
+    <h3>
+        <code>build​Block(_:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">func</span> <span class="function">buildBlock</span>(<span class="keyword">_</span> <span class="variable">partials</span>: [[<span class="type">StylePropertyValueDefinition</span>]]) -&gt; [<span class="type">StylePropertyValueDefinition</span>] </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="stylepropertyvaluedefinitionsbuilder.buildblock(_:)">
+    <h3>
+        <code>build​Block(_:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">func</span> <span class="function">buildBlock</span>(<span class="keyword">_</span> <span class="variable">partials</span>: [<span class="type">StylePropertyValueDefinition</span>]...) -&gt; [<span class="type">StylePropertyValueDefinition</span>] </code></pre>
+</div>
+</div>
+    </section>
+
+
+
+        </article>
+    </main>
+
+    <footer>
+        <p>
+    Generated on <time datetime="2021-03-22T08:34:03+0100">March 22, 2021</time> using <a href="https://github.com/SwiftDocOrg/swift-doc">swift-doc</a> <span class="version">1.0.0-beta.5</span>.
+</p>
+    </footer>
+</body>
+</html>

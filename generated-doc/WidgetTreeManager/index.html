@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SwiftGUI - WidgetTreeManager</title>
+    <link rel="stylesheet" type="text/css" href="http://ungast.github.io/swift-gui/generated-doc/all.css" media="all" />
+</head>
+<body>
+    <header>
+        <a href="http://ungast.github.io/swift-gui/generated-doc">
+            <strong>
+                SwiftGUI
+            </strong>
+            <span>Documentation</span>
+        </a>
+        <sup>Beta</sup>
+    </header>
+
+    <!--
+    <form class="search">
+        <input type="search" placeholder="Search" />
+    </form>
+    -->
+
+    <nav>
+        <div class="wrapper">
+            <h2>On This Page</h2>
+            <ol><li><a href="#initializers">Initializers</a><ul><li class="initializer"><a href="#widgettreemanager.init(widgetcontext:widgetlifecyclebus:)">init(widget​Context:​widget​Lifecycle​Bus:​)</a></li></ul></li><li><a href="#properties">Properties</a><ul><li class="variable"><a href="#widgettreemanager.widgetcontext">widget​Context</a></li><li class="variable"><a href="#widgettreemanager.widgetlifecyclebus">widget​Lifecycle​Bus</a></li></ul></li><li><a href="#methods">Methods</a><ul><li class="function"><a href="#widgettreemanager.mountasroot(widget:root:)">mount​AsRoot(widget:​root:​)</a></li><li class="function"><a href="#widgettreemanager.buildsubtree(rootwidget:)">build​Sub​Tree(root​Widget:​)</a></li><li class="function"><a href="#widgettreemanager.updatechildren(of:)">update​Children(of:​)</a></li><li class="function"><a href="#widgettreemanager.mount(widget:parent:treepath:)">mount(widget:​parent:​tree​Path:​)</a></li><li class="function"><a href="#widgettreemanager.buildchildren(of:)">build​Children(of:​)</a></li><li class="function"><a href="#widgettreemanager.mountchildren(of:)">mount​Children(of:​)</a></li></ul></li></ol>
+        </div>
+    </nav>
+
+    <main>
+        <article>
+            <h1>
+    <small>Class</small>
+    <code class="name">Widget​Tree​Manager</code>
+</h1>
+
+<div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">class</span> <span class="type">WidgetTreeManager</span> </code></pre>
+</div>
+
+    <section id="initializers">
+        <h2>Initializers</h2>
+
+        <div role="article" class="initializer" id="widgettreemanager.init(widgetcontext:widgetlifecyclebus:)">
+    <h3>
+        <code>init(widget​Context:​widget​Lifecycle​Bus:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">init</span>(<span class="variable">widgetContext</span>: <span class="type">WidgetContext</span>, <span class="variable">widgetLifecycleBus</span>: <span class="type">WidgetBus</span>&lt;<span class="type">WidgetLifecycleMessage</span>&gt;) </code></pre>
+</div>
+</div>
+    </section>
+    <section id="properties">
+        <h2>Properties</h2>
+
+        <div role="article" class="variable" id="widgettreemanager.widgetcontext">
+    <h3>
+        <code>widget​Context</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">var</span> <span class="variable">widgetContext</span>: <span class="type">WidgetContext</span></code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widgettreemanager.widgetlifecyclebus">
+    <h3>
+        <code>widget​Lifecycle​Bus</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">var</span> <span class="variable">widgetLifecycleBus</span>: <span class="type">WidgetBus</span>&lt;<span class="type">WidgetLifecycleMessage</span>&gt;</code></pre>
+</div>
+</div>
+    </section>
+    <section id="methods">
+        <h2>Methods</h2>
+
+        <div role="article" class="function" id="widgettreemanager.mountasroot(widget:root:)">
+    <h3>
+        <code>mount​AsRoot(widget:​root:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">func</span> <span class="function">mountAsRoot</span>(<span class="variable">widget</span>: <span class="type">Widget</span>, <span class="variable">root</span>: <span class="type">Root</span>) </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="widgettreemanager.buildsubtree(rootwidget:)">
+    <h3>
+        <code>build​Sub​Tree(root​Widget:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">func</span> <span class="function">buildSubTree</span>(<span class="variable">rootWidget</span>: <span class="type">Widget</span>) </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="widgettreemanager.updatechildren(of:)">
+    <h3>
+        <code>update​Children(of:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">func</span> <span class="function">updateChildren</span>(<span class="variable">of</span> <span class="variable">widget</span>: <span class="type">Widget</span>) </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="widgettreemanager.mount(widget:parent:treepath:)">
+    <h3>
+        <code>mount(widget:​parent:​tree​Path:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">func</span> <span class="function">mount</span>(<span class="variable">widget</span>: <span class="type">Widget</span>, <span class="variable">parent</span>: <span class="type">Parent</span>, <span class="variable">treePath</span>: <span class="type">TreePath</span>) </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="widgettreemanager.buildchildren(of:)">
+    <h3>
+        <code>build​Children(of:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">func</span> <span class="function">buildChildren</span>(<span class="variable">of</span> <span class="variable">widget</span>: <span class="type">Widget</span>) </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="widgettreemanager.mountchildren(of:)">
+    <h3>
+        <code>mount​Children(of:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">func</span> <span class="function">mountChildren</span>(<span class="variable">of</span> <span class="variable">widget</span>: <span class="type">Widget</span>) </code></pre>
+</div>
+</div>
+    </section>
+
+
+
+        </article>
+    </main>
+
+    <footer>
+        <p>
+    Generated on <time datetime="2021-03-22T08:34:04+0100">March 22, 2021</time> using <a href="https://github.com/SwiftDocOrg/swift-doc">swift-doc</a> <span class="version">1.0.0-beta.5</span>.
+</p>
+    </footer>
+</body>
+</html>

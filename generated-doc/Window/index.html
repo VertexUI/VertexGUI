@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SwiftGUI - Window</title>
+    <link rel="stylesheet" type="text/css" href="http://ungast.github.io/swift-gui/generated-doc/all.css" media="all" />
+</head>
+<body>
+    <header>
+        <a href="http://ungast.github.io/swift-gui/generated-doc">
+            <strong>
+                SwiftGUI
+            </strong>
+            <span>Documentation</span>
+        </a>
+        <sup>Beta</sup>
+    </header>
+
+    <!--
+    <form class="search">
+        <input type="search" placeholder="Search" />
+    </form>
+    -->
+
+    <nav>
+        <div class="wrapper">
+            <h2>On This Page</h2>
+            <ol><li><a href="#relationships">Relationships</a><ul><li><a href="#relationships">Nested Types</a></li></ul></li><li><a href="#initializers">Initializers</a><ul><li class="initializer"><a href="#window.init(options:)">init(options:​)</a></li></ul></li><li><a href="#properties">Properties</a><ul><li class="variable"><a href="#window.id">id</a></li><li class="variable"><a href="#window.options">options</a></li><li class="variable"><a href="#window.size">size</a></li><li class="variable"><a href="#window.sizeinvalid">size​Invalid</a></li><li class="variable"><a href="#window.drawablesize">drawable​Size</a></li><li class="variable"><a href="#window.drawablesizeinvalid">drawable​Size​Invalid</a></li><li class="variable"><a href="#window.resolution">resolution</a></li><li class="variable"><a href="#window.position">position</a></li><li class="variable"><a href="#window.positioninvalid">position​Invalid</a></li><li class="variable"><a href="#window.visibility">visibility</a></li><li class="variable"><a href="#window.inputfocus">input​Focus</a></li><li class="variable"><a href="#window.frameneeded">frame​Needed</a></li><li class="variable"><a href="#window.destroyed">destroyed</a></li><li class="variable"><a href="#window.onbeforeframe">on​Before​Frame</a></li><li class="variable"><a href="#window.onframe">on​Frame</a></li><li class="variable"><a href="#window.onmouse">on​Mouse</a></li><li class="variable"><a href="#window.onkey">on​Key</a></li><li class="variable"><a href="#window.ontext">on​Text</a></li><li class="variable"><a href="#window.onsizechanged">on​Size​Changed</a></li><li class="variable"><a href="#window.onpositionchanged">on​Position​Changed</a></li><li class="variable"><a href="#window.onvisibilitychanged">on​Visibility​Changed</a></li><li class="variable"><a href="#window.oninputfocuschanged">on​Input​Focus​Changed</a></li><li class="variable"><a href="#window.onbeforeclose">on​Before​Close</a></li></ul></li><li><a href="#methods">Methods</a><ul><li class="function"><a href="#window.invalidatesize()">invalidate​Size()</a></li><li class="function"><a href="#window.invalidateposition()">invalidate​Position()</a></li><li class="function"><a href="#window.invalidatevisibility()">invalidate​Visibility()</a></li><li class="function"><a href="#window.invalidateinputfocus()">invalidate​Input​Focus()</a></li><li class="function"><a href="#window.readsize()">read​Size()</a></li><li class="function"><a href="#window.readdrawablesize()">read​Drawable​Size()</a></li><li class="function"><a href="#window.readposition()">read​Position()</a></li><li class="function"><a href="#window.readvisibility()">read​Visibility()</a></li><li class="function"><a href="#window.readinputfocus()">read​Input​Focus()</a></li><li class="function"><a href="#window.readmousefocus()">read​Mouse​Focus()</a></li><li class="function"><a href="#window.applysize(_:)">apply​Size(_:​)</a></li><li class="function"><a href="#window.applyposition(_:)">apply​Position(_:​)</a></li><li class="function"><a href="#window.applyvisibility(_:)">apply​Visibility(_:​)</a></li><li class="function"><a href="#window.applyinputfocus(_:)">apply​Input​Focus(_:​)</a></li><li class="function"><a href="#window.getdrawingcontext()">get​Drawing​Context()</a></li><li class="function"><a href="#window.performframe(_:)">perform​Frame(_:​)</a></li><li class="function"><a href="#window.makecurrent()">make​Current()</a></li><li class="function"><a href="#window.clear()">clear()</a></li><li class="function"><a href="#window.updatecontent()">update​Content()</a></li><li class="function"><a href="#window.close()">close()</a></li><li class="function"><a href="#window.destroy()">destroy()</a></li><li class="function"><a href="#window.destroyself()">destroy​Self()</a></li></ul></li></ol>
+        </div>
+    </nav>
+
+    <main>
+        <article>
+            <h1>
+    <small>Class</small>
+    <code class="name">Window</code>
+</h1>
+
+<div class="declaration">
+<pre class="highlight"><code><span class="attribute">open</span> <span class="keyword">class</span> <span class="type">Window</span> </code></pre>
+</div>
+<section id="relationships">
+    <h2 hidden>Relationships</h2>
+        
+        <h3>Nested Types</h3>
+<dl>
+    <dt class="enumeration"><code><a href="http://ungast.github.io/swift-gui/generated-doc/Window_Visibility">Window.Visibility</a></code></dt>
+<dd></dd>
+<dt class="enumeration"><code><a href="http://ungast.github.io/swift-gui/generated-doc/Window_InitialPosition">Window.InitialPosition</a></code></dt>
+<dd></dd>
+<dt class="structure"><code><a href="http://ungast.github.io/swift-gui/generated-doc/Window_Options">Window.Options</a></code></dt>
+<dd></dd>
+</dl>
+</section>
+    <section id="initializers">
+        <h2>Initializers</h2>
+
+        <div role="article" class="initializer" id="window.init(options:)">
+    <h3>
+        <code>init(options:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="attribute">required</span> <span class="keyword">init</span>(<span class="variable">options</span>: <span class="type">Options</span>) <span class="keyword">throws</span> </code></pre>
+</div>
+</div>
+    </section>
+    <section id="properties">
+        <h2>Properties</h2>
+
+        <div role="article" class="variable" id="window.id">
+    <h3>
+        <code>id</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">open</span> <span class="keyword">var</span> <span class="variable">id</span>: <span class="type">Int</span> </code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="window.options">
+    <h3>
+        <code>options</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">let</span> <span class="variable">options</span>: <span class="type">Options</span></code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="window.size">
+    <h3>
+        <code>size</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">open</span> <span class="keyword">var</span> <span class="variable">size</span>: <span class="type">DSize2</span> </code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="window.sizeinvalid">
+    <h3>
+        <code>size​Invalid</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">private</span>(<span class="variable">set</span>) <span class="keyword">var</span> <span class="variable">sizeInvalid</span> = <span class="keyword">false</span></code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="window.drawablesize">
+    <h3>
+        <code>drawable​Size</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">var</span> <span class="variable">drawableSize</span>: <span class="type">DSize2</span> </code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="window.drawablesizeinvalid">
+    <h3>
+        <code>drawable​Size​Invalid</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">private</span>(<span class="variable">set</span>) <span class="keyword">var</span> <span class="variable">drawableSizeInvalid</span> = <span class="keyword">false</span></code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="window.resolution">
+    <h3>
+        <code>resolution</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">var</span> <span class="variable">resolution</span>: <span class="type">Double</span> </code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="window.position">
+    <h3>
+        <code>position</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">open</span> <span class="keyword">var</span> <span class="variable">position</span>: <span class="type">DPoint2</span> </code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="window.positioninvalid">
+    <h3>
+        <code>position​Invalid</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">private</span>(<span class="variable">set</span>) <span class="keyword">var</span> <span class="variable">positionInvalid</span> = <span class="keyword">false</span></code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="window.visibility">
+    <h3>
+        <code>visibility</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">open</span> <span class="keyword">var</span> <span class="variable">visibility</span>: <span class="type">Visibility</span> </code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="window.inputfocus">
+    <h3>
+        <code>input​Focus</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">open</span> <span class="keyword">var</span> <span class="variable">inputFocus</span>: <span class="type">Bool</span> </code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="window.frameneeded">
+    <h3>
+        <code>frame​Needed</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">var</span> <span class="variable">frameNeeded</span> = <span class="keyword">true</span></code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="window.destroyed">
+    <h3>
+        <code>destroyed</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">private</span>(<span class="variable">set</span>) <span class="keyword">var</span> <span class="variable">destroyed</span> = <span class="keyword">false</span></code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="window.onbeforeframe">
+    <h3>
+        <code>on​Before​Frame</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">let</span> <span class="variable">onBeforeFrame</span> </code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="window.onframe">
+    <h3>
+        <code>on​Frame</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">let</span> <span class="variable">onFrame</span> </code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="window.onmouse">
+    <h3>
+        <code>on​Mouse</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">let</span> <span class="variable">onMouse</span> </code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="window.onkey">
+    <h3>
+        <code>on​Key</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">let</span> <span class="variable">onKey</span> </code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="window.ontext">
+    <h3>
+        <code>on​Text</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">let</span> <span class="variable">onText</span> </code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="window.onsizechanged">
+    <h3>
+        <code>on​Size​Changed</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">let</span> <span class="variable">onSizeChanged</span> </code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="window.onpositionchanged">
+    <h3>
+        <code>on​Position​Changed</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">let</span> <span class="variable">onPositionChanged</span> </code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="window.onvisibilitychanged">
+    <h3>
+        <code>on​Visibility​Changed</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">let</span> <span class="variable">onVisibilityChanged</span> </code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="window.oninputfocuschanged">
+    <h3>
+        <code>on​Input​Focus​Changed</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">let</span> <span class="variable">onInputFocusChanged</span> </code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="window.onbeforeclose">
+    <h3>
+        <code>on​Before​Close</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">let</span> <span class="variable">onBeforeClose</span> </code></pre>
+</div>
+</div>
+    </section>
+    <section id="methods">
+        <h2>Methods</h2>
+
+        <div role="article" class="function" id="window.invalidatesize()">
+    <h3>
+        <code>invalidate​Size()</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">func</span> <span class="function">invalidateSize</span>() </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="window.invalidateposition()">
+    <h3>
+        <code>invalidate​Position()</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">func</span> <span class="function">invalidatePosition</span>() </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="window.invalidatevisibility()">
+    <h3>
+        <code>invalidate​Visibility()</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">func</span> <span class="function">invalidateVisibility</span>() </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="window.invalidateinputfocus()">
+    <h3>
+        <code>invalidate​Input​Focus()</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">func</span> <span class="function">invalidateInputFocus</span>() </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="window.readsize()">
+    <h3>
+        <code>read​Size()</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">open</span> <span class="keyword">func</span> <span class="function">readSize</span>() -&gt; <span class="type">DSize2</span> </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="window.readdrawablesize()">
+    <h3>
+        <code>read​Drawable​Size()</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">open</span> <span class="keyword">func</span> <span class="function">readDrawableSize</span>() -&gt; <span class="type">DSize2</span> </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="window.readposition()">
+    <h3>
+        <code>read​Position()</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">open</span> <span class="keyword">func</span> <span class="function">readPosition</span>() -&gt; <span class="type">DPoint2</span> </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="window.readvisibility()">
+    <h3>
+        <code>read​Visibility()</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">open</span> <span class="keyword">func</span> <span class="function">readVisibility</span>() -&gt; <span class="type">Visibility</span> </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="window.readinputfocus()">
+    <h3>
+        <code>read​Input​Focus()</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">open</span> <span class="keyword">func</span> <span class="function">readInputFocus</span>() -&gt; <span class="type">Bool</span> </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="window.readmousefocus()">
+    <h3>
+        <code>read​Mouse​Focus()</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">open</span> <span class="keyword">func</span> <span class="function">readMouseFocus</span>() -&gt; <span class="type">Bool</span> </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="window.applysize(_:)">
+    <h3>
+        <code>apply​Size(_:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">open</span> <span class="keyword">func</span> <span class="function">applySize</span>(<span class="keyword">_</span> <span class="variable">newSize</span>: <span class="type">DSize2</span>) </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="window.applyposition(_:)">
+    <h3>
+        <code>apply​Position(_:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">open</span> <span class="keyword">func</span> <span class="function">applyPosition</span>(<span class="keyword">_</span> <span class="variable">newPosition</span>: <span class="type">DPoint2</span>) </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="window.applyvisibility(_:)">
+    <h3>
+        <code>apply​Visibility(_:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">open</span> <span class="keyword">func</span> <span class="function">applyVisibility</span>(<span class="keyword">_</span> <span class="variable">newVisibility</span>: <span class="type">Visibility</span>) </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="window.applyinputfocus(_:)">
+    <h3>
+        <code>apply​Input​Focus(_:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">open</span> <span class="keyword">func</span> <span class="function">applyInputFocus</span>(<span class="keyword">_</span> <span class="variable">newFocus</span>: <span class="type">Bool</span>) </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="window.getdrawingcontext()">
+    <h3>
+        <code>get​Drawing​Context()</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">open</span> <span class="keyword">func</span> <span class="function">getDrawingContext</span>() -&gt; <span class="type">DrawingContext</span> </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="window.performframe(_:)">
+    <h3>
+        <code>perform​Frame(_:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">open</span> <span class="keyword">func</span> <span class="function">performFrame</span>(<span class="keyword">_</span> <span class="variable">deltaTime</span>: <span class="type">Double</span>) </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="window.makecurrent()">
+    <h3>
+        <code>make​Current()</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">open</span> <span class="keyword">func</span> <span class="function">makeCurrent</span>() </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="window.clear()">
+    <h3>
+        <code>clear()</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">open</span> <span class="keyword">func</span> <span class="function">clear</span>() </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="window.updatecontent()">
+    <h3>
+        <code>update​Content()</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">open</span> <span class="keyword">func</span> <span class="function">updateContent</span>() </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="window.close()">
+    <h3>
+        <code>close()</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">open</span> <span class="keyword">func</span> <span class="function">close</span>() </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="window.destroy()">
+    <h3>
+        <code>destroy()</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="attribute">final</span> <span class="keyword">func</span> <span class="function">destroy</span>() </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="window.destroyself()">
+    <h3>
+        <code>destroy​Self()</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">open</span> <span class="keyword">func</span> <span class="function">destroySelf</span>() </code></pre>
+</div>
+</div>
+    </section>
+
+
+
+        </article>
+    </main>
+
+    <footer>
+        <p>
+    Generated on <time datetime="2021-03-22T08:34:03+0100">March 22, 2021</time> using <a href="https://github.com/SwiftDocOrg/swift-doc">swift-doc</a> <span class="version">1.0.0-beta.5</span>.
+</p>
+    </footer>
+</body>
+</html>

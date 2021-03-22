@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SwiftGUI - WidgetContext</title>
+    <link rel="stylesheet" type="text/css" href="http://ungast.github.io/swift-gui/generated-doc/all.css" media="all" />
+</head>
+<body>
+    <header>
+        <a href="http://ungast.github.io/swift-gui/generated-doc">
+            <strong>
+                SwiftGUI
+            </strong>
+            <span>Documentation</span>
+        </a>
+        <sup>Beta</sup>
+    </header>
+
+    <!--
+    <form class="search">
+        <input type="search" placeholder="Search" />
+    </form>
+    -->
+
+    <nav>
+        <div class="wrapper">
+            <h2>On This Page</h2>
+            <ol><li><a href="#initializers">Initializers</a><ul><li class="initializer"><a href="#widgetcontext.init(window:measuretext:getkeystates:getapplicationtime:getrealfps:createwindow:requestcursor:queuelifecyclemethodinvocation:focusmanager:)">init(window:​measure​Text:​get​Key​States:​get​Application​Time:​get​Real​Fps:​create​Window:​request​Cursor:​queue​Lifecycle​Method​Invocation:​focus​Manager:​)</a></li></ul></li><li><a href="#properties">Properties</a><ul><li class="variable"><a href="#widgetcontext.window">window</a></li><li class="variable"><a href="#widgetcontext.debuglayout">debug​Layout</a></li><li class="variable"><a href="#widgetcontext.applicationtime">application​Time</a></li><li class="variable"><a href="#widgetcontext.realfps">real​Fps</a></li><li class="variable"><a href="#widgetcontext.inspectionbus">inspection​Bus</a></li><li class="variable"><a href="#widgetcontext.ontick">on​Tick</a></li><li class="variable"><a href="#widgetcontext.keystates">key​States</a></li><li class="variable"><a href="#widgetcontext.focusmanager">focus​Manager</a></li></ul></li><li><a href="#methods">Methods</a><ul><li class="function"><a href="#widgetcontext.measuretext(text:paint:)">measure​Text(text:​paint:​)</a></li><li class="function"><a href="#widgetcontext.requestcursor(_:)">request​Cursor(_:​)</a></li><li class="function"><a href="#widgetcontext.createwindow(guiroot:options:)">create​Window(gui​Root:​options:​)</a></li><li class="function"><a href="#widgetcontext.queuelifecyclemethodinvocation(_:target:sender:reason:)">queue​Lifecycle​Method​Invocation(_:​target:​sender:​reason:​)</a></li></ul></li></ol>
+        </div>
+    </nav>
+
+    <main>
+        <article>
+            <h1>
+    <small>Class</small>
+    <code class="name">Widget​Context</code>
+</h1>
+
+<div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">class</span> <span class="type">WidgetContext</span> </code></pre>
+</div>
+
+    <section id="initializers">
+        <h2>Initializers</h2>
+
+        <div role="article" class="initializer" id="widgetcontext.init(window:measuretext:getkeystates:getapplicationtime:getrealfps:createwindow:requestcursor:queuelifecyclemethodinvocation:focusmanager:)">
+    <h3>
+        <code>init(window:​measure​Text:​get​Key​States:​get​Application​Time:​get​Real​Fps:​create​Window:​request​Cursor:​queue​Lifecycle​Method​Invocation:​focus​Manager:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">init</span>(
+        <span class="variable">window</span>: <span class="type">Window</span>,
+        <span class="variable">measureText</span>: <span class="attribute">@</span><span class="attribute">escaping</span> (<span class="keyword">_</span> <span class="variable">text</span>: <span class="type">String</span>, <span class="keyword">_</span> <span class="variable">paint</span>: <span class="type">TextPaint</span>) -&gt; <span class="type">DSize2</span>,
+        <span class="variable">getKeyStates</span>: <span class="attribute">@</span><span class="attribute">escaping</span> () -&gt; <span class="type">KeyStatesContainer</span>,
+        <span class="variable">getApplicationTime</span>: <span class="attribute">@</span><span class="attribute">escaping</span> () -&gt; <span class="type">Double</span>,
+        <span class="variable">getRealFps</span>: <span class="attribute">@</span><span class="attribute">escaping</span> () -&gt; <span class="type">Double</span>,
+        <span class="variable">createWindow</span>: <span class="attribute">@</span><span class="attribute">escaping</span> (<span class="keyword">_</span> <span class="variable">guiRootBuilder</span>: <span class="attribute">@</span><span class="attribute">autoclosure</span> () -&gt; <span class="type">Root</span>, <span class="keyword">_</span> <span class="variable">options</span>: <span class="type">Window</span>.<span class="type">Options</span>) -&gt; <span class="type">Window</span>,
+        <span class="variable">requestCursor</span>: <span class="attribute">@</span><span class="attribute">escaping</span> (<span class="keyword">_</span> <span class="variable">cursor</span>: <span class="type">Cursor</span>) -&gt; () -&gt; <span class="type">Void</span>,
+        <span class="variable">queueLifecycleMethodInvocation</span>: <span class="attribute">@</span><span class="attribute">escaping</span> (<span class="type">Widget</span>.<span class="type">LifecycleMethod</span>, <span class="type">Widget</span>, <span class="type">Widget</span>, <span class="type">Widget</span>.<span class="type">LifecycleMethodInvocationReason</span>) -&gt; (),
+        <span class="variable">focusManager</span>: <span class="type">FocusManager</span>) </code></pre>
+</div>
+</div>
+    </section>
+    <section id="properties">
+        <h2>Properties</h2>
+
+        <div role="article" class="variable" id="widgetcontext.window">
+    <h3>
+        <code>window</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">internal</span>(<span class="variable">set</span>) <span class="keyword">var</span> <span class="variable">window</span>: <span class="type">Window</span></code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widgetcontext.debuglayout">
+    <h3>
+        <code>debug​Layout</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">internal</span>(<span class="variable">set</span>) <span class="keyword">var</span> <span class="variable">debugLayout</span>: <span class="type">Bool</span> = <span class="keyword">false</span></code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widgetcontext.applicationtime">
+    <h3>
+        <code>application​Time</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">var</span> <span class="variable">applicationTime</span>: <span class="type">Double</span> </code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widgetcontext.realfps">
+    <h3>
+        <code>real​Fps</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">var</span> <span class="variable">realFps</span>: <span class="type">Double</span> </code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widgetcontext.inspectionbus">
+    <h3>
+        <code>inspection​Bus</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">let</span> <span class="variable">inspectionBus</span> </code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widgetcontext.ontick">
+    <h3>
+        <code>on​Tick</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">private</span>(<span class="variable">set</span>) <span class="keyword">var</span> <span class="variable">onTick</span> </code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widgetcontext.keystates">
+    <h3>
+        <code>key​States</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">var</span> <span class="variable">keyStates</span>: <span class="type">KeyStatesContainer</span> </code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="widgetcontext.focusmanager">
+    <h3>
+        <code>focus​Manager</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">let</span> <span class="variable">focusManager</span>: <span class="type">FocusManager</span></code></pre>
+</div>
+</div>
+    </section>
+    <section id="methods">
+        <h2>Methods</h2>
+
+        <div role="article" class="function" id="widgetcontext.measuretext(text:paint:)">
+    <h3>
+        <code>measure​Text(text:​paint:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">func</span> <span class="function">measureText</span>(<span class="variable">text</span>: <span class="type">String</span>, <span class="variable">paint</span>: <span class="type">TextPaint</span>) -&gt; <span class="type">DSize2</span> </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="widgetcontext.requestcursor(_:)">
+    <h3>
+        <code>request​Cursor(_:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">func</span> <span class="function">requestCursor</span>(<span class="keyword">_</span> <span class="variable">cursor</span>: <span class="type">Cursor</span>) -&gt; () -&gt; <span class="type">Void</span> </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="widgetcontext.createwindow(guiroot:options:)">
+    <h3>
+        <code>create​Window(gui​Root:​options:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">func</span> <span class="function">createWindow</span>(<span class="variable">guiRoot</span> <span class="variable">guiRootBuilder</span>: <span class="attribute">@</span><span class="attribute">autoclosure</span> () -&gt; <span class="type">Root</span>, <span class="variable">options</span>: <span class="type">Window</span>.<span class="type">Options</span>) -&gt; <span class="type">Window</span> </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="widgetcontext.queuelifecyclemethodinvocation(_:target:sender:reason:)">
+    <h3>
+        <code>queue​Lifecycle​Method​Invocation(_:​target:​sender:​reason:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">func</span> <span class="function">queueLifecycleMethodInvocation</span>(<span class="keyword">_</span> <span class="variable">method</span>: <span class="type">Widget</span>.<span class="type">LifecycleMethod</span>, <span class="variable">target</span>: <span class="type">Widget</span>, <span class="variable">sender</span>: <span class="type">Widget</span>, <span class="variable">reason</span>: <span class="type">Widget</span>.<span class="type">LifecycleMethodInvocationReason</span>) </code></pre>
+</div>
+</div>
+    </section>
+
+
+
+        </article>
+    </main>
+
+    <footer>
+        <p>
+    Generated on <time datetime="2021-03-22T08:34:03+0100">March 22, 2021</time> using <a href="https://github.com/SwiftDocOrg/swift-doc">swift-doc</a> <span class="version">1.0.0-beta.5</span>.
+</p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SwiftGUI - Logger</title>
+    <link rel="stylesheet" type="text/css" href="http://ungast.github.io/swift-gui/generated-doc/all.css" media="all" />
+</head>
+<body>
+    <header>
+        <a href="http://ungast.github.io/swift-gui/generated-doc">
+            <strong>
+                SwiftGUI
+            </strong>
+            <span>Documentation</span>
+        </a>
+        <sup>Beta</sup>
+    </header>
+
+    <!--
+    <form class="search">
+        <input type="search" placeholder="Search" />
+    </form>
+    -->
+
+    <nav>
+        <div class="wrapper">
+            <h2>On This Page</h2>
+            <ol><li><a href="#relationships">Relationships</a><ul><li><a href="#relationships">Nested Types</a></li></ul></li><li><a href="#properties">Properties</a><ul><li class="variable"><a href="#logger.enabled">enabled</a></li><li class="variable"><a href="#logger.activelevels">active​Levels</a></li><li class="variable"><a href="#logger.activecontexts">active​Contexts</a></li><li class="variable"><a href="#logger.renderer">renderer</a></li></ul></li><li><a href="#methods">Methods</a><ul><li class="function"><a href="#logger.log(_:level:context:)">log(_:​level:​context:​)</a></li><li class="function"><a href="#logger.log(_:level:context:)">log(_:​level:​context:​)</a></li><li class="function"><a href="#logger.log(_:_:level:context:)">log(_:​_:​level:​context:​)</a></li><li class="function"><a href="#logger.debug(_:context:)">debug(_:​context:​)</a></li><li class="function"><a href="#logger.warn(_:context:)">warn(_:​context:​)</a></li></ul></li></ol>
+        </div>
+    </nav>
+
+    <main>
+        <article>
+            <h1>
+    <small>Class</small>
+    <code class="name">Logger</code>
+</h1>
+
+<div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">class</span> <span class="type">Logger</span> </code></pre>
+</div>
+<section id="relationships">
+    <h2 hidden>Relationships</h2>
+        
+        <h3>Nested Types</h3>
+<dl>
+    <dt class="enumeration"><code><a href="http://ungast.github.io/swift-gui/generated-doc/Logger_Level">Logger.Level</a></code></dt>
+<dd></dd>
+<dt class="enumeration"><code><a href="http://ungast.github.io/swift-gui/generated-doc/Logger_Context">Logger.Context</a></code></dt>
+<dd></dd>
+</dl>
+</section>
+    <section id="properties">
+        <h2>Properties</h2>
+
+        <div role="article" class="variable" id="logger.enabled">
+    <h3>
+        <code>enabled</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">var</span> <span class="variable">enabled</span> = <span class="keyword">false</span></code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="logger.activelevels">
+    <h3>
+        <code>active​Levels</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">var</span> <span class="variable">activeLevels</span>: <span class="type">Set</span>&lt;<span class="type">Level</span>&gt; = [
+        .<span class="variable">Message</span><span class="comment">//, .Debug, .Warning, .Error</span>
+    ]</code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="logger.activecontexts">
+    <h3>
+        <code>active​Contexts</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">var</span> <span class="variable">activeContexts</span>: <span class="type">Set</span>&lt;<span class="type">Context</span>&gt; = [
+        .<span class="variable">Performance</span><span class="comment">//, .Default, .WidgetLayouting, .WidgetRendering</span>
+    ]</code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="logger.renderer">
+    <h3>
+        <code>renderer</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">var</span> <span class="variable">renderer</span>: <span class="type">LogRenderer</span> </code></pre>
+</div>
+</div>
+    </section>
+    <section id="methods">
+        <h2>Methods</h2>
+
+        <div role="article" class="function" id="logger.log(_:level:context:)">
+    <h3>
+        <code>log(_:​level:​context:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">func</span> <span class="function">log</span>(<span class="keyword">_</span> <span class="variable">outputs</span>: <span class="attribute">@</span><span class="attribute">autoclosure</span> () -&gt; [<span class="type">LogText</span>], <span class="variable">level</span>: <span class="type">Level</span>, <span class="variable">context</span>: <span class="type">Context</span>) </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="logger.log(_:level:context:)">
+    <h3>
+        <code>log(_:​level:​context:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">func</span> <span class="function">log</span>(<span class="keyword">_</span> <span class="variable">output</span>: <span class="attribute">@</span><span class="attribute">autoclosure</span> () -&gt; <span class="type">LogText</span>, <span class="variable">level</span>: <span class="type">Level</span>, <span class="variable">context</span>: <span class="type">Context</span>) </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="logger.log(_:_:level:context:)">
+    <h3>
+        <code>log(_:​_:​level:​context:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">func</span> <span class="function">log</span>(<span class="keyword">_</span> <span class="variable">output1</span>: <span class="attribute">@</span><span class="attribute">autoclosure</span> () -&gt; <span class="type">LogText</span>, <span class="keyword">_</span> <span class="variable">output2</span>: <span class="attribute">@</span><span class="attribute">autoclosure</span> () -&gt; <span class="type">LogText</span>, <span class="variable">level</span>: <span class="type">Level</span>, <span class="variable">context</span>: <span class="type">Context</span>) </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="logger.debug(_:context:)">
+    <h3>
+        <code>debug(_:​context:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">func</span> <span class="function">debug</span>(<span class="keyword">_</span> <span class="variable">output</span>: <span class="attribute">@</span><span class="attribute">autoclosure</span> () -&gt; <span class="type">LogText</span>, <span class="variable">context</span>: <span class="type">Context</span> = .<span class="variable">Default</span>) </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="logger.warn(_:context:)">
+    <h3>
+        <code>warn(_:​context:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">func</span> <span class="function">warn</span>(<span class="keyword">_</span> <span class="variable">output</span>: <span class="attribute">@</span><span class="attribute">autoclosure</span> () -&gt; <span class="type">LogText</span>, <span class="variable">context</span>: <span class="type">Context</span> = .<span class="variable">Default</span>) </code></pre>
+</div>
+</div>
+    </section>
+
+
+
+        </article>
+    </main>
+
+    <footer>
+        <p>
+    Generated on <time datetime="2021-03-22T08:34:03+0100">March 22, 2021</time> using <a href="https://github.com/SwiftDocOrg/swift-doc">swift-doc</a> <span class="version">1.0.0-beta.5</span>.
+</p>
+    </footer>
+</body>
+</html>

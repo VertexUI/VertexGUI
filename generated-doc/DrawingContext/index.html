@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SwiftGUI - DrawingContext</title>
+    <link rel="stylesheet" type="text/css" href="http://ungast.github.io/swift-gui/generated-doc/all.css" media="all" />
+</head>
+<body>
+    <header>
+        <a href="http://ungast.github.io/swift-gui/generated-doc">
+            <strong>
+                SwiftGUI
+            </strong>
+            <span>Documentation</span>
+        </a>
+        <sup>Beta</sup>
+    </header>
+
+    <!--
+    <form class="search">
+        <input type="search" placeholder="Search" />
+    </form>
+    -->
+
+    <nav>
+        <div class="wrapper">
+            <h2>On This Page</h2>
+            <ol><li><a href="#initializers">Initializers</a><ul><li class="initializer"><a href="#drawingcontext.init(backend:)">init(backend:​)</a></li></ul></li><li><a href="#properties">Properties</a><ul><li class="variable"><a href="#drawingcontext.backend">backend</a></li><li class="variable"><a href="#drawingcontext.inherenttransforms">inherent​Transforms</a></li><li class="variable"><a href="#drawingcontext.inherentopacity">inherent​Opacity</a></li><li class="variable"><a href="#drawingcontext.inherentclip">inherent​Clip</a></li><li class="variable"><a href="#drawingcontext.opacity">opacity</a></li><li class="variable"><a href="#drawingcontext.mergedtransforms">merged​Transforms</a></li><li class="variable"><a href="#drawingcontext.mergedopacity">merged​Opacity</a></li><li class="variable"><a href="#drawingcontext.mergedclip">merged​Clip</a></li></ul></li><li><a href="#methods">Methods</a><ul><li class="function"><a href="#drawingcontext.clone()">clone()</a></li><li class="function"><a href="#drawingcontext.lock()">lock()</a></li><li class="function"><a href="#drawingcontext.begindrawing()">begin​Drawing()</a></li><li class="function"><a href="#drawingcontext.preprocess(_:)">preprocess(_:​)</a></li><li class="function"><a href="#drawingcontext.transform(_:)">transform(_:​)</a></li><li class="function"><a href="#drawingcontext.transform(_:)">transform(_:​)</a></li><li class="function"><a href="#drawingcontext.clip(rect:)">clip(rect:​)</a></li><li class="function"><a href="#drawingcontext.resetclip()">reset​Clip()</a></li><li class="function"><a href="#drawingcontext.drawline(from:to:paint:)">draw​Line(from:​to:​paint:​)</a></li><li class="function"><a href="#drawingcontext.drawrect(rect:paint:)">draw​Rect(rect:​paint:​)</a></li><li class="function"><a href="#drawingcontext.drawcircle(center:radius:paint:)">draw​Circle(center:​radius:​paint:​)</a></li><li class="function"><a href="#drawingcontext.drawroundedrect()">draw​Rounded​Rect()</a></li><li class="function"><a href="#drawingcontext.drawpath()">draw​Path()</a></li><li class="function"><a href="#drawingcontext.measuretext(text:paint:)">measure​Text(text:​paint:​)</a></li><li class="function"><a href="#drawingcontext.drawtext(text:position:paint:)">draw​Text(text:​position:​paint:​)</a></li><li class="function"><a href="#drawingcontext.enddrawing()">end​Drawing()</a></li></ul></li></ol>
+        </div>
+    </nav>
+
+    <main>
+        <article>
+            <h1>
+    <small>Class</small>
+    <code class="name">Drawing​Context</code>
+</h1>
+
+<div class="declaration">
+<pre class="highlight"><code><span class="attribute">open</span> <span class="keyword">class</span> <span class="type">DrawingContext</span> </code></pre>
+</div>
+
+    <section id="initializers">
+        <h2>Initializers</h2>
+
+        <div role="article" class="initializer" id="drawingcontext.init(backend:)">
+    <h3>
+        <code>init(backend:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">init</span>(<span class="variable">backend</span>: <span class="type">DrawingBackend</span>) </code></pre>
+</div>
+</div>
+    </section>
+    <section id="properties">
+        <h2>Properties</h2>
+
+        <div role="article" class="variable" id="drawingcontext.backend">
+    <h3>
+        <code>backend</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">let</span> <span class="variable">backend</span>: <span class="type">DrawingBackend</span> </code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="drawingcontext.inherenttransforms">
+    <h3>
+        <code>inherent​Transforms</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">private</span>(<span class="variable">set</span>) <span class="keyword">var</span> <span class="variable">inherentTransforms</span>: [<span class="type">DTransform2</span>] = []</code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="drawingcontext.inherentopacity">
+    <h3>
+        <code>inherent​Opacity</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">private</span>(<span class="variable">set</span>) <span class="keyword">var</span> <span class="variable">inherentOpacity</span>: <span class="type">Double</span> = <span class="number literal">1</span></code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="drawingcontext.inherentclip">
+    <h3>
+        <code>inherent​Clip</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">private</span>(<span class="variable">set</span>) <span class="keyword">var</span> <span class="variable">inherentClip</span>: <span class="type">DRect</span>?</code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="drawingcontext.opacity">
+    <h3>
+        <code>opacity</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">var</span> <span class="variable">opacity</span>: <span class="type">Double</span> = <span class="number literal">1</span> </code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="drawingcontext.mergedtransforms">
+    <h3>
+        <code>merged​Transforms</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">var</span> <span class="variable">mergedTransforms</span>: [<span class="type">DTransform2</span>] </code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="drawingcontext.mergedopacity">
+    <h3>
+        <code>merged​Opacity</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">var</span> <span class="variable">mergedOpacity</span>: <span class="type">Double</span> </code></pre>
+</div>
+</div>
+<div role="article" class="variable" id="drawingcontext.mergedclip">
+    <h3>
+        <code>merged​Clip</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">var</span> <span class="variable">mergedClip</span>: <span class="type">DRect</span>? </code></pre>
+</div>
+</div>
+    </section>
+    <section id="methods">
+        <h2>Methods</h2>
+
+        <div role="article" class="function" id="drawingcontext.clone()">
+    <h3>
+        <code>clone()</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">func</span> <span class="function">clone</span>() -&gt; <span class="type">DrawingContext</span> </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="drawingcontext.lock()">
+    <h3>
+        <code>lock()</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">open</span> <span class="keyword">func</span> <span class="function">lock</span>() </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="drawingcontext.begindrawing()">
+    <h3>
+        <code>begin​Drawing()</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">open</span> <span class="keyword">func</span> <span class="function">beginDrawing</span>() </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="drawingcontext.preprocess(_:)">
+    <h3>
+        <code>preprocess(_:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">func</span> <span class="function">preprocess</span>(<span class="keyword">_</span> <span class="variable">rect</span>: <span class="type">DRect</span>) -&gt; <span class="type">DRect</span> </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="drawingcontext.transform(_:)">
+    <h3>
+        <code>transform(_:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">func</span> <span class="function">transform</span>(<span class="keyword">_</span> <span class="variable">transform</span>: <span class="type">DTransform2</span>) </code></pre>
+</div>
+<div class="summary" role="doc-abstract">
+    <p>appends transform to the list of transforms, it will be the first transform to be applied</p>
+
+</div>
+</div>
+<div role="article" class="function" id="drawingcontext.transform(_:)">
+    <h3>
+        <code>transform(_:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">func</span> <span class="function">transform</span>(<span class="keyword">_</span> <span class="variable">transforms</span>: [<span class="type">DTransform2</span>]) </code></pre>
+</div>
+<div class="summary" role="doc-abstract">
+    <p>appends transforms to the list of transforms, the last transform in the list will be the first one to be applied</p>
+
+</div>
+</div>
+<div role="article" class="function" id="drawingcontext.clip(rect:)">
+    <h3>
+        <code>clip(rect:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">func</span> <span class="function">clip</span>(<span class="variable">rect</span>: <span class="type">DRect</span>) </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="drawingcontext.resetclip()">
+    <h3>
+        <code>reset​Clip()</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">func</span> <span class="function">resetClip</span>() </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="drawingcontext.drawline(from:to:paint:)">
+    <h3>
+        <code>draw​Line(from:​to:​paint:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">func</span> <span class="function">drawLine</span>(<span class="variable">from</span> <span class="variable">start</span>: <span class="type">DVec2</span>, <span class="variable">to</span> <span class="variable">end</span>: <span class="type">DVec2</span>, <span class="variable">paint</span>: <span class="type">Paint</span>) </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="drawingcontext.drawrect(rect:paint:)">
+    <h3>
+        <code>draw​Rect(rect:​paint:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">func</span> <span class="function">drawRect</span>(<span class="variable">rect</span>: <span class="type">DRect</span>, <span class="variable">paint</span>: <span class="type">Paint</span>) </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="drawingcontext.drawcircle(center:radius:paint:)">
+    <h3>
+        <code>draw​Circle(center:​radius:​paint:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">func</span> <span class="function">drawCircle</span>(<span class="variable">center</span>: <span class="type">DVec2</span>, <span class="variable">radius</span>: <span class="type">Double</span>, <span class="variable">paint</span>: <span class="type">Paint</span>) </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="drawingcontext.drawroundedrect()">
+    <h3>
+        <code>draw​Rounded​Rect()</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">open</span> <span class="keyword">func</span> <span class="function">drawRoundedRect</span>() </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="drawingcontext.drawpath()">
+    <h3>
+        <code>draw​Path()</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">open</span> <span class="keyword">func</span> <span class="function">drawPath</span>() </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="drawingcontext.measuretext(text:paint:)">
+    <h3>
+        <code>measure​Text(text:​paint:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">func</span> <span class="function">measureText</span>(<span class="variable">text</span>: <span class="type">String</span>, <span class="variable">paint</span>: <span class="type">TextPaint</span>) -&gt; <span class="type">DSize2</span> </code></pre>
+</div>
+<div class="summary" role="doc-abstract">
+    <p>// TODO: maybe the result should be a rect to also have access to the position</p>
+
+</div>
+</div>
+<div role="article" class="function" id="drawingcontext.drawtext(text:position:paint:)">
+    <h3>
+        <code>draw​Text(text:​position:​paint:​)</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">func</span> <span class="function">drawText</span>(<span class="variable">text</span>: <span class="type">String</span>, <span class="variable">position</span>: <span class="type">DVec2</span>, <span class="variable">paint</span>: <span class="type">TextPaint</span>) </code></pre>
+</div>
+</div>
+<div role="article" class="function" id="drawingcontext.enddrawing()">
+    <h3>
+        <code>end​Drawing()</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="attribute">open</span> <span class="keyword">func</span> <span class="function">endDrawing</span>() </code></pre>
+</div>
+</div>
+    </section>
+
+
+
+        </article>
+    </main>
+
+    <footer>
+        <p>
+    Generated on <time datetime="2021-03-22T08:34:05+0100">March 22, 2021</time> using <a href="https://github.com/SwiftDocOrg/swift-doc">swift-doc</a> <span class="version">1.0.0-beta.5</span>.
+</p>
+    </footer>
+</body>
+</html>
