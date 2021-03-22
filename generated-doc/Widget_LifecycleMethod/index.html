@@ -26,7 +26,7 @@
     <nav>
         <div class="wrapper">
             <h2>On This Page</h2>
-            <ol><li><a href="#relationships">Relationships</a><ul><li><a href="#relationships">Member Of</a></li><li><a href="#relationships">Conforms To</a></li></ul></li><li><a href="#enumeration cases">Enumeration Cases</a><ul><li class="case"><a href="#widget.lifecyclemethod.layout">layout</a></li><li class="case"><a href="#widget.lifecyclemethod.unmount">unmount</a></li><li class="case"><a href="#widget.lifecyclemethod.resolvestyleproperties">resolve​Style​Properties</a></li><li class="case"><a href="#widget.lifecyclemethod.updatechildren">update​Children</a></li><li class="case"><a href="#widget.lifecyclemethod.resolvecumulatedvalues">resolve​Cumulated​Values</a></li><li class="case"><a href="#widget.lifecyclemethod.build">build</a></li><li class="case"><a href="#widget.lifecyclemethod.mount">mount</a></li><li class="case"><a href="#widget.lifecyclemethod.updatematchedstyles">update​Matched​Styles</a></li><li class="case"><a href="#widget.lifecyclemethod.destroy">destroy</a></li><li class="case"><a href="#widget.lifecyclemethod.draw">draw</a></li></ul></li></ol>
+            <ol><li><a href="#relationships">Relationships</a><ul><li><a href="#relationships">Member Of</a></li><li><a href="#relationships">Conforms To</a></li></ul></li><li><a href="#enumeration cases">Enumeration Cases</a><ul><li class="case"><a href="#widget.lifecyclemethod.updatematchedstyles">update​Matched​Styles</a></li><li class="case"><a href="#widget.lifecyclemethod.draw">draw</a></li><li class="case"><a href="#widget.lifecyclemethod.layout">layout</a></li><li class="case"><a href="#widget.lifecyclemethod.unmount">unmount</a></li><li class="case"><a href="#widget.lifecyclemethod.resolvecumulatedvalues">resolve​Cumulated​Values</a></li><li class="case"><a href="#widget.lifecyclemethod.resolvestyleproperties">resolve​Style​Properties</a></li><li class="case"><a href="#widget.lifecyclemethod.destroy">destroy</a></li><li class="case"><a href="#widget.lifecyclemethod.build">build</a></li><li class="case"><a href="#widget.lifecyclemethod.updatechildren">update​Children</a></li><li class="case"><a href="#widget.lifecyclemethod.mount">mount</a></li></ul></li></ol>
         </div>
     </nav>
 
@@ -94,7 +94,23 @@
     <section id="enumeration cases">
         <h2>Enumeration Cases</h2>
 
-        <div role="article" class="case" id="widget.lifecyclemethod.layout">
+        <div role="article" class="case" id="widget.lifecyclemethod.updatematchedstyles">
+    <h3>
+        <code>update​Matched​Styles</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">case</span> <span class="variable">mount</span>, <span class="variable">build</span>, <span class="variable">updateChildren</span>, <span class="variable">updateMatchedStyles</span>, <span class="variable">resolveStyleProperties</span>, <span class="variable">layout</span>, <span class="variable">resolveCumulatedValues</span>, <span class="variable">draw</span>, <span class="variable">unmount</span>, <span class="variable">destroy</span></code></pre>
+</div>
+</div>
+<div role="article" class="case" id="widget.lifecyclemethod.draw">
+    <h3>
+        <code>draw</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">case</span> <span class="variable">mount</span>, <span class="variable">build</span>, <span class="variable">updateChildren</span>, <span class="variable">updateMatchedStyles</span>, <span class="variable">resolveStyleProperties</span>, <span class="variable">layout</span>, <span class="variable">resolveCumulatedValues</span>, <span class="variable">draw</span>, <span class="variable">unmount</span>, <span class="variable">destroy</span></code></pre>
+</div>
+</div>
+<div role="article" class="case" id="widget.lifecyclemethod.layout">
     <h3>
         <code>layout</code>
     </h3>
@@ -110,22 +126,6 @@
 <pre class="highlight"><code><span class="keyword">case</span> <span class="variable">mount</span>, <span class="variable">build</span>, <span class="variable">updateChildren</span>, <span class="variable">updateMatchedStyles</span>, <span class="variable">resolveStyleProperties</span>, <span class="variable">layout</span>, <span class="variable">resolveCumulatedValues</span>, <span class="variable">draw</span>, <span class="variable">unmount</span>, <span class="variable">destroy</span></code></pre>
 </div>
 </div>
-<div role="article" class="case" id="widget.lifecyclemethod.resolvestyleproperties">
-    <h3>
-        <code>resolve​Style​Properties</code>
-    </h3>
-    <div class="declaration">
-<pre class="highlight"><code><span class="keyword">case</span> <span class="variable">mount</span>, <span class="variable">build</span>, <span class="variable">updateChildren</span>, <span class="variable">updateMatchedStyles</span>, <span class="variable">resolveStyleProperties</span>, <span class="variable">layout</span>, <span class="variable">resolveCumulatedValues</span>, <span class="variable">draw</span>, <span class="variable">unmount</span>, <span class="variable">destroy</span></code></pre>
-</div>
-</div>
-<div role="article" class="case" id="widget.lifecyclemethod.updatechildren">
-    <h3>
-        <code>update​Children</code>
-    </h3>
-    <div class="declaration">
-<pre class="highlight"><code><span class="keyword">case</span> <span class="variable">mount</span>, <span class="variable">build</span>, <span class="variable">updateChildren</span>, <span class="variable">updateMatchedStyles</span>, <span class="variable">resolveStyleProperties</span>, <span class="variable">layout</span>, <span class="variable">resolveCumulatedValues</span>, <span class="variable">draw</span>, <span class="variable">unmount</span>, <span class="variable">destroy</span></code></pre>
-</div>
-</div>
 <div role="article" class="case" id="widget.lifecyclemethod.resolvecumulatedvalues">
     <h3>
         <code>resolve​Cumulated​Values</code>
@@ -134,25 +134,9 @@
 <pre class="highlight"><code><span class="keyword">case</span> <span class="variable">mount</span>, <span class="variable">build</span>, <span class="variable">updateChildren</span>, <span class="variable">updateMatchedStyles</span>, <span class="variable">resolveStyleProperties</span>, <span class="variable">layout</span>, <span class="variable">resolveCumulatedValues</span>, <span class="variable">draw</span>, <span class="variable">unmount</span>, <span class="variable">destroy</span></code></pre>
 </div>
 </div>
-<div role="article" class="case" id="widget.lifecyclemethod.build">
+<div role="article" class="case" id="widget.lifecyclemethod.resolvestyleproperties">
     <h3>
-        <code>build</code>
-    </h3>
-    <div class="declaration">
-<pre class="highlight"><code><span class="keyword">case</span> <span class="variable">mount</span>, <span class="variable">build</span>, <span class="variable">updateChildren</span>, <span class="variable">updateMatchedStyles</span>, <span class="variable">resolveStyleProperties</span>, <span class="variable">layout</span>, <span class="variable">resolveCumulatedValues</span>, <span class="variable">draw</span>, <span class="variable">unmount</span>, <span class="variable">destroy</span></code></pre>
-</div>
-</div>
-<div role="article" class="case" id="widget.lifecyclemethod.mount">
-    <h3>
-        <code>mount</code>
-    </h3>
-    <div class="declaration">
-<pre class="highlight"><code><span class="keyword">case</span> <span class="variable">mount</span>, <span class="variable">build</span>, <span class="variable">updateChildren</span>, <span class="variable">updateMatchedStyles</span>, <span class="variable">resolveStyleProperties</span>, <span class="variable">layout</span>, <span class="variable">resolveCumulatedValues</span>, <span class="variable">draw</span>, <span class="variable">unmount</span>, <span class="variable">destroy</span></code></pre>
-</div>
-</div>
-<div role="article" class="case" id="widget.lifecyclemethod.updatematchedstyles">
-    <h3>
-        <code>update​Matched​Styles</code>
+        <code>resolve​Style​Properties</code>
     </h3>
     <div class="declaration">
 <pre class="highlight"><code><span class="keyword">case</span> <span class="variable">mount</span>, <span class="variable">build</span>, <span class="variable">updateChildren</span>, <span class="variable">updateMatchedStyles</span>, <span class="variable">resolveStyleProperties</span>, <span class="variable">layout</span>, <span class="variable">resolveCumulatedValues</span>, <span class="variable">draw</span>, <span class="variable">unmount</span>, <span class="variable">destroy</span></code></pre>
@@ -166,9 +150,25 @@
 <pre class="highlight"><code><span class="keyword">case</span> <span class="variable">mount</span>, <span class="variable">build</span>, <span class="variable">updateChildren</span>, <span class="variable">updateMatchedStyles</span>, <span class="variable">resolveStyleProperties</span>, <span class="variable">layout</span>, <span class="variable">resolveCumulatedValues</span>, <span class="variable">draw</span>, <span class="variable">unmount</span>, <span class="variable">destroy</span></code></pre>
 </div>
 </div>
-<div role="article" class="case" id="widget.lifecyclemethod.draw">
+<div role="article" class="case" id="widget.lifecyclemethod.build">
     <h3>
-        <code>draw</code>
+        <code>build</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">case</span> <span class="variable">mount</span>, <span class="variable">build</span>, <span class="variable">updateChildren</span>, <span class="variable">updateMatchedStyles</span>, <span class="variable">resolveStyleProperties</span>, <span class="variable">layout</span>, <span class="variable">resolveCumulatedValues</span>, <span class="variable">draw</span>, <span class="variable">unmount</span>, <span class="variable">destroy</span></code></pre>
+</div>
+</div>
+<div role="article" class="case" id="widget.lifecyclemethod.updatechildren">
+    <h3>
+        <code>update​Children</code>
+    </h3>
+    <div class="declaration">
+<pre class="highlight"><code><span class="keyword">case</span> <span class="variable">mount</span>, <span class="variable">build</span>, <span class="variable">updateChildren</span>, <span class="variable">updateMatchedStyles</span>, <span class="variable">resolveStyleProperties</span>, <span class="variable">layout</span>, <span class="variable">resolveCumulatedValues</span>, <span class="variable">draw</span>, <span class="variable">unmount</span>, <span class="variable">destroy</span></code></pre>
+</div>
+</div>
+<div role="article" class="case" id="widget.lifecyclemethod.mount">
+    <h3>
+        <code>mount</code>
     </h3>
     <div class="declaration">
 <pre class="highlight"><code><span class="keyword">case</span> <span class="variable">mount</span>, <span class="variable">build</span>, <span class="variable">updateChildren</span>, <span class="variable">updateMatchedStyles</span>, <span class="variable">resolveStyleProperties</span>, <span class="variable">layout</span>, <span class="variable">resolveCumulatedValues</span>, <span class="variable">draw</span>, <span class="variable">unmount</span>, <span class="variable">destroy</span></code></pre>
@@ -183,7 +183,7 @@
 
     <footer>
         <p>
-    Generated on <time datetime="2021-03-22T08:36:48+0100">March 22, 2021</time> using <a href="https://github.com/SwiftDocOrg/swift-doc">swift-doc</a> <span class="version">1.0.0-beta.5</span>.
+    Generated on <time datetime="2021-03-22T09:22:43+0100">March 22, 2021</time> using <a href="https://github.com/SwiftDocOrg/swift-doc">swift-doc</a> <span class="version">1.0.0-beta.5</span>.
 </p>
     </footer>
 </body>

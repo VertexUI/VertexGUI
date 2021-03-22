@@ -40,6 +40,40 @@
 <div class="declaration">
 <pre class="highlight"><code><span class="attribute">open</span> <span class="keyword">class</span> <span class="type">DrawingContext</span> </code></pre>
 </div>
+<div class="summary" role="doc-abstract">
+    <p>A DrawingContext provides functions to draw graphics primitves.
+It forwards draw calls to a platform-specific rendering
+backend.</p>
+
+</div>
+<div class="discussion">
+    <p>The currently supported primitives are:</p>
+
+<ul>
+<li>
+<p>line</p>
+</li>
+<li>
+<p>rectangle</p>
+</li>
+<li>
+<p>circle</p>
+</li>
+</ul>
+
+<p>Furthermore operations such as clipping everything outside
+a certain area, measuring rendered text size and transformations
+are supported.</p>
+
+<p>Before you start to perform drawing operations,
+call <code>.beginDrawing()</code> which runs some backend
+specific setup code.
+After you finished drawing, call <code>.endDrawing()</code>.
+<strong>Note:</strong> <code>.beginDrawing()</code> and <code>.endDrawing()</code> are automatically
+called on the context that is passed to a LeafWidget's <code>.draw()</code> method.
+You should not call these methods in your <code>.draw()</code> implementation.</p>
+
+</div>
 
     <section id="initializers">
         <h2>Initializers</h2>
@@ -131,6 +165,10 @@
     <div class="declaration">
 <pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">func</span> <span class="function">clone</span>() -&gt; <span class="type">DrawingContext</span> </code></pre>
 </div>
+<div class="summary" role="doc-abstract">
+    <p>TEST</p>
+
+</div>
 </div>
 <div role="article" class="function" id="drawingcontext.lock()">
     <h3>
@@ -203,6 +241,16 @@
     <div class="declaration">
 <pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">func</span> <span class="function">drawLine</span>(<span class="variable">from</span> <span class="variable">start</span>: <span class="type">DVec2</span>, <span class="variable">to</span> <span class="variable">end</span>: <span class="type">DVec2</span>, <span class="variable">paint</span>: <span class="type">Paint</span>) </code></pre>
 </div>
+<div class="summary" role="doc-abstract">
+    <p>Draw a straight 2D line.</p>
+
+</div>
+<div class="discussion">
+    <p>Only <code>paint.strokeWidth</code> and <code>paint.strokeColor</code> apply.</p>
+
+<p>The <code>paint.strokeWidth</code> must be &gt; 0 otherwise, nothing will be drawn.</p>
+
+</div>
 </div>
 <div role="article" class="function" id="drawingcontext.drawrect(rect:paint:)">
     <h3>
@@ -211,6 +259,19 @@
     <div class="declaration">
 <pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">func</span> <span class="function">drawRect</span>(<span class="variable">rect</span>: <span class="type">DRect</span>, <span class="variable">paint</span>: <span class="type">Paint</span>) </code></pre>
 </div>
+<div class="summary" role="doc-abstract">
+    <p>Draw a 2D rectangle.</p>
+
+</div>
+<div class="discussion">
+    <p>You can provide a <code>paint.color</code> to fill the rectangle.</p>
+
+<p>Additionally a <code>paint.strokeWidth</code> and <code>paint.strokeColor</code> can be provided
+to draw a border.</p>
+
+<p><code>paint.color</code> can be omitted in order to draw only the border.</p>
+
+</div>
 </div>
 <div role="article" class="function" id="drawingcontext.drawcircle(center:radius:paint:)">
     <h3>
@@ -218,6 +279,14 @@
     </h3>
     <div class="declaration">
 <pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">func</span> <span class="function">drawCircle</span>(<span class="variable">center</span>: <span class="type">DVec2</span>, <span class="variable">radius</span>: <span class="type">Double</span>, <span class="variable">paint</span>: <span class="type">Paint</span>) </code></pre>
+</div>
+<div class="summary" role="doc-abstract">
+    <p>Draw a 2D circle.</p>
+
+</div>
+<div class="discussion">
+    <p>See <code>drawRect</code> for the effect which the different <code>paint</code> properties have.</p>
+
 </div>
 </div>
 <div role="article" class="function" id="drawingcontext.drawroundedrect()">
@@ -244,7 +313,12 @@
 <pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">func</span> <span class="function">measureText</span>(<span class="variable">text</span>: <span class="type">String</span>, <span class="variable">paint</span>: <span class="type">TextPaint</span>) -&gt; <span class="type">DSize2</span> </code></pre>
 </div>
 <div class="summary" role="doc-abstract">
-    <p>// TODO: maybe the result should be a rect to also have access to the position</p>
+    <p>Measure the width and height a certain text would have if drawn with
+the given paint. Used for calculating Widget layouts.</p>
+
+</div>
+<div class="discussion">
+    <p><code>paint.color</code> may be ommited as it does not influence the size of text.</p>
 
 </div>
 </div>
@@ -255,6 +329,29 @@
     <div class="declaration">
 <pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">func</span> <span class="function">drawText</span>(<span class="variable">text</span>: <span class="type">String</span>, <span class="variable">position</span>: <span class="type">DVec2</span>, <span class="variable">paint</span>: <span class="type">TextPaint</span>) </code></pre>
 </div>
+<div class="summary" role="doc-abstract">
+    <p>Draw a text.</p>
+
+</div>
+<h4>Parameters</h4>
+
+<table class="parameters">
+  <thead hidden>
+  <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+  </tr>
+  </thead>
+  <tbody>
+    <tr>
+    <th>position</th>
+    <td><code class="type">DVec2</code></td>
+    <td><p>top left corner of the drawn text</p>
+</td>
+</tr>
+  </tbody>
+</table>
 </div>
 <div role="article" class="function" id="drawingcontext.enddrawing()">
     <h3>
@@ -273,7 +370,7 @@
 
     <footer>
         <p>
-    Generated on <time datetime="2021-03-22T08:36:46+0100">March 22, 2021</time> using <a href="https://github.com/SwiftDocOrg/swift-doc">swift-doc</a> <span class="version">1.0.0-beta.5</span>.
+    Generated on <time datetime="2021-03-22T09:22:45+0100">March 22, 2021</time> using <a href="https://github.com/SwiftDocOrg/swift-doc">swift-doc</a> <span class="version">1.0.0-beta.5</span>.
 </p>
     </footer>
 </body>
