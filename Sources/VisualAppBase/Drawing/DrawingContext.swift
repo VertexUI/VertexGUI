@@ -30,6 +30,7 @@ open class DrawingContext {
     self.backend = backend 
   }
 
+  /** TEST */
   public func clone() -> DrawingContext {
     let result = DrawingContext(backend: backend)
     result.inherentTransforms = inherentTransforms

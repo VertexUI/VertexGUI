@@ -39,7 +39,9 @@ Nothing prevents you from drawing outside the bounds of the Widget. However when
 
 *details*
 
-[**DrawingContext**](DrawingContext.md)
+[**Overview of the Widget class**](WidgetClassOverview.md)
+
+[**DrawingContext** - documentation](ungast.github.io/swift-gui/generated-doc/DrawingContext/)
 
 <br><br>
 
