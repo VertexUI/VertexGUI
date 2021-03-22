@@ -68,8 +68,9 @@ are supported.</p>
 <p>Before you start to perform drawing operations,
 call <code>.beginDrawing()</code> which runs some backend
 specific setup code.
-After you finished drawing, call <code>.endDrawing()</code>.
-<strong>Note:</strong> <code>.beginDrawing()</code> and <code>.endDrawing()</code> are automatically
+After you finished drawing, call <code>.endDrawing()</code>.</p>
+
+<p><strong>Note:</strong> <code>.beginDrawing()</code> and <code>.endDrawing()</code> are automatically
 called on the context that is passed to a LeafWidget's <code>.draw()</code> method.
 You should not call these methods in your <code>.draw()</code> implementation.</p>
 
@@ -165,10 +166,6 @@ You should not call these methods in your <code>.draw()</code> implementation.</
     <div class="declaration">
 <pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">func</span> <span class="function">clone</span>() -&gt; <span class="type">DrawingContext</span> </code></pre>
 </div>
-<div class="summary" role="doc-abstract">
-    <p>TEST</p>
-
-</div>
 </div>
 <div role="article" class="function" id="drawingcontext.lock()">
     <h3>
@@ -202,7 +199,11 @@ You should not call these methods in your <code>.draw()</code> implementation.</
 <pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">func</span> <span class="function">transform</span>(<span class="keyword">_</span> <span class="variable">transform</span>: <span class="type">DTransform2</span>) </code></pre>
 </div>
 <div class="summary" role="doc-abstract">
-    <p>appends transform to the list of transforms, it will be the first transform to be applied</p>
+    <p>Appends a transform to the list of transforms.</p>
+
+</div>
+<div class="discussion">
+    <p>The new transform will be the first to be applied to any position.</p>
 
 </div>
 </div>
@@ -214,7 +215,11 @@ You should not call these methods in your <code>.draw()</code> implementation.</
 <pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">func</span> <span class="function">transform</span>(<span class="keyword">_</span> <span class="variable">transforms</span>: [<span class="type">DTransform2</span>]) </code></pre>
 </div>
 <div class="summary" role="doc-abstract">
-    <p>appends transforms to the list of transforms, the last transform in the list will be the first one to be applied</p>
+    <p>Appends transforms to the list of transforms.</p>
+
+</div>
+<div class="discussion">
+    <p>The last transform in the list will be the first one to be applied to any position.</p>
 
 </div>
 </div>
@@ -225,6 +230,17 @@ You should not call these methods in your <code>.draw()</code> implementation.</
     <div class="declaration">
 <pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">func</span> <span class="function">clip</span>(<span class="variable">rect</span>: <span class="type">DRect</span>) </code></pre>
 </div>
+<div class="summary" role="doc-abstract">
+    <p>Limit the area in which graphics primitives are drawn.</p>
+
+</div>
+<div class="discussion">
+    <p>Everything outside of the given rectangle will be clipped.</p>
+
+<p>Multiple <code>.clip()</code> calls can be made. The result clip mask
+will be the intersection of the previous clip mask with the new one.</p>
+
+</div>
 </div>
 <div role="article" class="function" id="drawingcontext.resetclip()">
     <h3>
@@ -232,6 +248,10 @@ You should not call these methods in your <code>.draw()</code> implementation.</
     </h3>
     <div class="declaration">
 <pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">func</span> <span class="function">resetClip</span>() </code></pre>
+</div>
+<div class="summary" role="doc-abstract">
+    <p>Reset the clip state to the state the DrawingContext was created with.</p>
+
 </div>
 </div>
 <div role="article" class="function" id="drawingcontext.drawline(from:to:paint:)">
@@ -370,7 +390,7 @@ the given paint. Used for calculating Widget layouts.</p>
 
     <footer>
         <p>
-    Generated on <time datetime="2021-03-22T09:22:45+0100">March 22, 2021</time> using <a href="https://github.com/SwiftDocOrg/swift-doc">swift-doc</a> <span class="version">1.0.0-beta.5</span>.
+    Generated on <time datetime="2021-03-22T09:30:24+0100">March 22, 2021</time> using <a href="https://github.com/SwiftDocOrg/swift-doc">swift-doc</a> <span class="version">1.0.0-beta.5</span>.
 </p>
     </footer>
 </body>
