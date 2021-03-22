@@ -1,5 +1,13 @@
-*see*
+*API*
 
-[**Widget** - documentation](https://ungast.github.io/swift-gui/generated-doc/Widget)
+[**Widget** - generated documentation](https://ungast.github.io/swift-gui/generated-doc/Widget)
 
-*more to be added here*
+<br>
+
+# Lifecycle
+
+Every Widget goes through a chain of lifecycle events.
+
+<img src="Assets/WidgetLifecycle.svg"/>
+
+*more to be added*
