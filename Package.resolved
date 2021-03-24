@@ -24,7 +24,16 @@
         "repositoryURL": "https://github.com/cx-org/CombineX.git",
         "state": {
           "branch": "master",
-          "revision": "d351c155d4cfb311b459e06f5b824b1721950f1f",
+          "revision": "e881b00d84b3151ec755788e2a6f2d2fceb362c1",
+          "version": null
+        }
+      },
+      {
+        "package": "CSDL2",
+        "repositoryURL": "https://github.com/UnGast/CSDL2.git",
+        "state": {
+          "branch": "master",
+          "revision": "4721763511cd8b8aee0612790df579cf5b163148",
           "version": null
         }
       },
@@ -42,7 +51,7 @@
         "repositoryURL": "https://github.com/UnGast/swift-gfx-math.git",
         "state": {
           "branch": "master",
-          "revision": "b810cea09fdcd0bd288e232dd95ca4d8ec126844",
+          "revision": "19f3b2ae59534a45b719358fecbe9633cfc8c0ad",
           "version": null
         }
       },

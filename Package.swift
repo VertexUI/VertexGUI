@@ -26,6 +26,7 @@ let package = Package(
     ],
 
     dependencies: [
+        .package(url: "https://github.com/UnGast/CSDL2.git", .branch("master")),
         .package(url: "https://github.com/mxcl/Path.swift.git", .branch("master")),
         .package(name: "GL", url: "https://github.com/UnGast/swift-opengl.git", .branch("master")),
         .package(name: "Swim", url: "https://github.com/t-ae/swim.git", .branch("master")),
@@ -37,14 +38,6 @@ let package = Package(
     ],
 
     targets: [
-        .systemLibrary(
-            name: "CSDL2",
-            pkgConfig: "sdl2",
-            providers: [
-                .brew(["sdl2"]),
-                .apt(["libsdl2-dev"])
-        ]),
-
         .target(
             name: "VisualAppBase", dependencies: ["CSDL2", "GfxMath", "Swim", .product(name: "Path", package: "Path.swift")]
         ),
