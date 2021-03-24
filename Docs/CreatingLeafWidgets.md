@@ -9,7 +9,7 @@ import SwiftGUI
 
 // when creating a core Widget you probably need to
 // import the specific dependencies instead of the above one
-import WidgetGUI // Widget core, don't import this when creating a core Widget
+import WidgetGUI // only import when not creating the Widget in the WidgetGUI target
 import GfxMath // defines DSize2, DVec2, ...
 import VisualAppBase // defiens DrawingContext, ...
 
@@ -35,7 +35,7 @@ The preferred size should be calculated based on the content, so that the conten
 The size your Widget will have when you choose to respect the constraints passed in depends on the available space and sizes of other Widgets.
 
 In the `draw` method you have access to the final size through the Widget's `self.layoutedSize.width` and `self.layoutedSize.height` properties. Use these values to calculate sizes of the graphics primitives you want to draw.<br>
-Nothing prevents you from drawing outside the bounds of the Widget. However when the Widget's `overflow` property is set to `.cut` any pixels outside of the Widgets bounds will not be displayed.
+Nothing prevents you from drawing outside the bounds of the Widget. However when the Widget's `overflow` property is set to `.cut` any pixels outside of the Widget's bounding box will not be displayed.
 
 *details*
 
