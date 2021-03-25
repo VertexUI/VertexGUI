@@ -13,7 +13,7 @@ let package = Package(
     products: [
         .library(
             name: "SwiftGUI",
-            targets: ["SwiftGUI"]
+            targets: ["SwiftGUI", "ApplicationBackendSDL2"]
         ),
 
         .executable(name: "MinimalDemo", targets: ["MinimalDemo"]),
@@ -40,7 +40,7 @@ let package = Package(
     targets: [
         .target(name: "Drawing", dependencies: ["GfxMath"]),
         .target(name: "Application", dependencies: ["Drawing"]),
-        .target(name: "ApplicationBackendSDL2", dependencies: ["Application", "Drawing"]),
+        .target(name: "ApplicationBackendSDL2", dependencies: ["Application", "Drawing", "CSDL2", "GfxMath"]),
 
         .target(
             name: "VisualAppBase", dependencies: ["CSDL2", "GfxMath", "Swim", .product(name: "Path", package: "Path.swift"), "Drawing"]

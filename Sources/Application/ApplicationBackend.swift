@@ -1,7 +1,9 @@
-public class ApplicationBackend {
-  public init() {}
+import GfxMath
 
-  public func setup() {}
+public protocol ApplicationBackend {
+  func setup()
 
-  public func processEvents() {}
+  func createWindow(initialSize: DSize2) -> Window
+
+  func processEvents()
 }
