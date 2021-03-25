@@ -2,6 +2,7 @@ import GfxMath
 import Foundation
 import VisualAppBase
 import CXShim
+import Drawing
 
 public final class TextInput: ContentfulWidget
 {

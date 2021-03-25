@@ -16,5 +16,5 @@ let app = MinimalDemoApp()
 do {
   try app.start()
 } catch {
-  print("Error while running the app", error)
+  print("an error occurred while running the app:", error)
 }

@@ -1,5 +1,6 @@
 import GfxMath
 import VisualAppBase
+import Drawing
 
 extension Widget {
   public class ScrollBar: LeafWidget {

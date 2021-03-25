@@ -1,6 +1,7 @@
 import VisualAppBase
 import GfxMath
 import Events
+import Drawing
 
 public class WidgetContext {
     public internal(set) var window: Window

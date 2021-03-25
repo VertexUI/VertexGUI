@@ -1,5 +1,6 @@
 import GfxMath
 import VisualAppBase
+import Drawing
 
 extension DeveloperTools {
   public class WidgetPropertiesView: ContentfulWidget {

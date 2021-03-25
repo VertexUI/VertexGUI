@@ -1,5 +1,6 @@
 import Foundation
 import GfxMath
+import Drawing
 
 // TODO: maybe put this into another file
 // TODO: maybe rename to VirtualRenderTarget

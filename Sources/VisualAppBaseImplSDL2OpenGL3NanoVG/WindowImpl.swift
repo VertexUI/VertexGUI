@@ -7,6 +7,7 @@ import GL
 import Path
 import VisualAppBase
 import WidgetGUI
+import Drawing
 
 open class SDL2OpenGL3NanoVGWindow: Window {
   public var sdlWindow: OpaquePointer

@@ -1,5 +1,6 @@
 import Foundation
 import GfxMath
+import Drawing
 import Dispatch
 import VisualAppBase
 import Events

@@ -1,5 +1,6 @@
 import GfxMath
 import CXShim
+import Drawing
 
 public class Container: ContentfulWidget, SlotAcceptingWidgetProtocol {
   public static let defaultSlot = Slot(key: "default", data: Void.self)

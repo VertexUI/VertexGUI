@@ -1,5 +1,6 @@
 import GfxMath
 import VisualAppBase
+import Drawing
 
 public class BarChart: LeafWidget {
   public typealias Data = [(label: String, value: Double)]

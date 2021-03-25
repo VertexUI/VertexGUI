@@ -1,5 +1,6 @@
 import VisualAppBase
 import GfxMath
+import Drawing
 
 public class DrawingManager {
   var rootWidget: Widget

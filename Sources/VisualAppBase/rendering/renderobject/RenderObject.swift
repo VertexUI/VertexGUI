@@ -3,6 +3,7 @@ import Dispatch
 import VisualAppBase
 import GfxMath
 import Events
+import Drawing
 
 // TODO: implement the RenderObjects in a way similar to SVG --> like defining an SVG graphic
 // TODO: might split into SubTreeRenderObject and LeafRenderObject!!!

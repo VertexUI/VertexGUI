@@ -1,6 +1,7 @@
 import VisualAppBase
 import GfxMath
 import CnanovgGL3
+import Drawing
 
 open class SDL2OpenGL3NanoVGDrawingBackend: DrawingBackend {
   private let surface: SDL2OpenGL3NanoVGDrawingSurface

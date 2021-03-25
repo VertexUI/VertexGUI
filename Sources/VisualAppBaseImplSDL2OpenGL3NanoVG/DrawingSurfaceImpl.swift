@@ -2,6 +2,7 @@ import VisualAppBase
 import CSDL2
 import CnanovgGL3
 import GfxMath
+import Drawing
 
 public class SDL2OpenGL3NanoVGDrawingSurface: DrawingSurface {
   public var size: DSize2 = .zero

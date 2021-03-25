@@ -1,6 +1,7 @@
 import VisualAppBase
 import Path
 import Foundation
+import Drawing
 
 public let defaultFontFamily = FontFamily(
     name: "Roboto",

@@ -1,6 +1,7 @@
 import VisualAppBase
 import GfxMath
 import CXShim
+import Drawing
 
 public class Text: LeafWidget {
   private var fontConfig: FontConfig {

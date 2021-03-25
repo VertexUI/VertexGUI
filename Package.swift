@@ -38,8 +38,12 @@ let package = Package(
     ],
 
     targets: [
+        .target(name: "Drawing", dependencies: ["GfxMath"]),
+        .target(name: "Application", dependencies: ["Drawing"]),
+        .target(name: "ApplicationBackendSDL2", dependencies: ["Application", "Drawing"]),
+
         .target(
-            name: "VisualAppBase", dependencies: ["CSDL2", "GfxMath", "Swim", .product(name: "Path", package: "Path.swift")]
+            name: "VisualAppBase", dependencies: ["CSDL2", "GfxMath", "Swim", .product(name: "Path", package: "Path.swift"), "Drawing"]
         ),
 
         .target(
@@ -54,7 +58,7 @@ let package = Package(
 
         .target(
             name: "VisualAppBaseImplSDL2OpenGL3NanoVG",
-            dependencies: ["WidgetGUI", "CSDL2", "GL", "GLUtils", "Events", "Swim", .product(name: "CnanovgGL3", package: "Cnanovg"), "GfxMath", .product(name: "Path", package: "Path.swift")],
+            dependencies: ["WidgetGUI", "CSDL2", "GL", "GLUtils", "Drawing", "Events", "Swim", .product(name: "CnanovgGL3", package: "Cnanovg"), "GfxMath", .product(name: "Path", package: "Path.swift")],
             resources: [.process("Resources")]),
        
         .target(
@@ -74,7 +78,7 @@ let package = Package(
 
         .target(
             name: "SwiftGUI",
-            dependencies: ["VisualAppBase", "VisualAppBaseImplSDL2OpenGL3NanoVG", "WidgetGUI", "Events", "GfxMath"],
+            dependencies: ["VisualAppBase", "VisualAppBaseImplSDL2OpenGL3NanoVG", "WidgetGUI", "Events", "GfxMath", "Drawing"],
             resources: [.process("Resources")]
         ),
 

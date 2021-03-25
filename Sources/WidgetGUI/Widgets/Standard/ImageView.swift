@@ -4,6 +4,7 @@ import Foundation
 import Dispatch
 import ColorizeSwift
 import Events
+import Drawing
 
 public class ImageView: Widget {
     private var image: Image

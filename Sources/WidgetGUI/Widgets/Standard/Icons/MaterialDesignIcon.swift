@@ -1,6 +1,7 @@
 import GfxMath
 import Foundation
 import VisualAppBase
+import Drawing
 
 // TODO: actually these are MaterialDESIGNIcons (not from google) --> use the google ones
 public class MaterialDesignIcon: ContentfulWidget {

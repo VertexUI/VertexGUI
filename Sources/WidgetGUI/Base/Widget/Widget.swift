@@ -1,4 +1,5 @@
 import Foundation
+import Drawing
 import GfxMath
 import VisualAppBase
 import ColorizeSwift
