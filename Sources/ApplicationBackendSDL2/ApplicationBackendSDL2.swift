@@ -8,8 +8,8 @@ public class ApplicationBackendSDL2: ApplicationBackend {
   private static var instance: ApplicationBackendSDL2? = nil
   public static var windows: [Int: SDL2Window] = [:]
 
-  /*public static var isRunning = true
-  public var targetFps = 60
+  public static var isRunning = true
+  /*public var targetFps = 60
   private var _realFps: Double = 0
   override public var realFps: Double {
     _realFps
@@ -66,8 +66,6 @@ public class ApplicationBackendSDL2: ApplicationBackend {
     return window
   }
 
-  public func processEvents() {}
-
   /*override open func updateCursor() {
     if cursorRequests.count > 0 {
       print("HAVE CURSOR REQUEST")
@@ -108,12 +106,14 @@ public class ApplicationBackendSDL2: ApplicationBackend {
       window.onText.invokeHandlers(event)
     }
   }
+  */
+  open func processEvents(timeout: Double) throws {
+    let timeoutMs = Int(timeout * 1000)
 
-  open func processEvents(timeout: Int) throws {
     var event = SDL_Event()
     var startTime = Int(SDL_GetTicks())
 
-    if SDL2OpenGL3NanoVGSystem.isRunning && SDL_WaitEventTimeout(&event, Int32(timeout)) != 0
+    if ApplicationBackendSDL2.isRunning && SDL_WaitEventTimeout(&event, Int32(timeoutMs)) != 0
     {
       repeat {
         let eventType = SDL_EventType(rawValue: event.type)
@@ -127,35 +127,35 @@ public class ApplicationBackendSDL2: ApplicationBackend {
             // TODO: implement focus change
             switch event.window.event {
             case UInt8(SDL_WINDOWEVENT_SIZE_CHANGED.rawValue):
-              if let window = SDL2OpenGL3NanoVGSystem.windows[Int(event.window.windowID)] {
-                window.invalidateSize()
+              if let window = Self.windows[Int(event.window.windowID)] {
+                window.notifySizeChanged()
               }
             
             case UInt8(SDL_WINDOWEVENT_MOVED.rawValue):
-              if let window = SDL2OpenGL3NanoVGSystem.windows[Int(event.window.windowID)] {
-                window.invalidatePosition()
+              if let window = Self.windows[Int(event.window.windowID)] {
+                //window.invalidatePosition()
               }
 
             case UInt8(SDL_WINDOWEVENT_CLOSE.rawValue):
-              if let window = SDL2OpenGL3NanoVGSystem.windows[Int(event.window.windowID)] {
+              if let window = Self.windows[Int(event.window.windowID)] {
                 window.close()
               }
 
             case UInt8(SDL_WINDOWEVENT_FOCUS_GAINED.rawValue):
-              if let window = SDL2OpenGL3NanoVGSystem.windows[Int(event.window.windowID)] {
-                window.invalidateInputFocus()
+              if let window = Self.windows[Int(event.window.windowID)] {
+                //window.invalidateInputFocus()
               }
             
             case UInt8(SDL_WINDOWEVENT_FOCUS_LOST.rawValue):
-              if let window = SDL2OpenGL3NanoVGSystem.windows[Int(event.window.windowID)] {
-                window.invalidateInputFocus()
+              if let window = Self.windows[Int(event.window.windowID)] {
+                //window.invalidateInputFocus()
               }
 
             default:
               break
             }
 
-          case SDL_KEYDOWN:
+          /*case SDL_KEYDOWN:
             if let key = Key(sdlKeycode: event.key.keysym.sym) {
               keyStates[key] = true
               forward(
@@ -234,7 +234,7 @@ public class ApplicationBackendSDL2: ApplicationBackend {
                 previousPosition: DPoint2(
                   Double(event.motion.x - event.motion.xrel),
                   Double(event.motion.y - event.motion.yrel))),
-              windowId: Int(event.motion.windowID))
+              windowId: Int(event.motion.windowID))*/
 
           default:
             break
@@ -245,11 +245,11 @@ public class ApplicationBackendSDL2: ApplicationBackend {
         }
 
         event.type = 0
-      } while SDL2OpenGL3NanoVGSystem.isRunning && (Int(SDL_GetTicks()) - startTime < timeout)
+      } while Self.isRunning && (Int(SDL_GetTicks()) - startTime < timeoutMs)
         && SDL_PollEvent(&event) != 0
     }
   }
-
+  /*
   override open func mainLoop() throws {
     DispatchQueue.main.async { [unowned self] in
       if SDL2OpenGL3NanoVGSystem.isRunning {
@@ -299,9 +299,9 @@ public class ApplicationBackendSDL2: ApplicationBackend {
         $0 + $1
       } / Double(SDL2OpenGL3NanoVGSystem.fpsBufferCount)
   }
-
-  override open func exit() {
-    SDL2OpenGL3NanoVGSystem.isRunning = false
+  */
+  public func exit() {
+    ApplicationBackendSDL2.isRunning = false
     Foundation.exit(0)
-  }*/
+  }
 }

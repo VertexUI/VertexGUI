@@ -5,5 +5,7 @@ public protocol ApplicationBackend {
 
   func createWindow(initialSize: DSize2) -> Window
 
-  func processEvents()
+  func processEvents(timeout: Double) throws
+
+  func exit()
 }
