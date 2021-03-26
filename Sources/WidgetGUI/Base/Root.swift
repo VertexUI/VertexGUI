@@ -82,21 +82,17 @@ open class Root: Parent {
   }
   
   open func setup(
-    window: Window,
     measureText: @escaping (_ text: String, _ paint: TextPaint) -> DSize2,
     getKeyStates: @escaping () -> KeyStatesContainer,
     getApplicationTime: @escaping () -> Double,
     getRealFps: @escaping () -> Double,
-    createWindow: @escaping (_ guiRootBuilder: @autoclosure () -> Root, _ options: Window.Options) -> Window,
     requestCursor: @escaping (_ cursor: Cursor) -> () -> Void
   ) {
     self.widgetContext = WidgetContext(
-      window: window,
       measureText: measureText,
       getKeyStates: getKeyStates,
       getApplicationTime: getApplicationTime,
       getRealFps: getRealFps,
-      createWindow: createWindow,
       requestCursor: requestCursor,
       queueLifecycleMethodInvocation: { [unowned self] in widgetLifecycleManager.queue($0, target: $1, sender: $2, reason: $3) },
       focusManager: focusManager
