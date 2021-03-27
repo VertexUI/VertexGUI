@@ -1,4 +1,4 @@
-#if USE_VULKAN
+#if ENABLE_VULKAN
 import GfxMath
 import Vulkan
 

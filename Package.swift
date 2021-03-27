@@ -1,9 +1,19 @@
 // swift-tools-version:5.3
-
+import Foundation
 import PackageDescription
 
+var conditionalVulkanImports = [PackageDescription.Target.Dependency]()
+var conditionalVulkanDefines = [PackageDescription.SwiftSetting]()
+conditionalVulkanDefines.append(.unsafeFlags([])) // need to add this, because can't pass empty array to swiftSettings
+
+if let backends = ProcessInfo.processInfo.environment["SWIFT_GUI_ENABLE_BACKENDS"] {
+    if backends.contains("vulkan") {
+        conditionalVulkanImports.append(contentsOf: ["Vulkan", .product(name: "CSDL2Vulkan", package: "CSDL2")])
+        conditionalVulkanDefines.append(.define("ENABLE_VULKAN"))
+    }
+}
+
 let package = Package(
-    
     name: "SwiftGUI",
     
     platforms: [
@@ -16,11 +26,8 @@ let package = Package(
             targets: ["SwiftGUI", "ApplicationBackendSDL2"]
         ),
         .library(name: "ApplicationBackendSDL2", targets: ["ApplicationBackendSDL2"]),
-
         .executable(name: "MinimalDemo", targets: ["MinimalDemo"]),
-
         .executable(name: "DevApp", targets: ["DevApp"]),
-
         .executable(
             name: "TaskOrganizerDemo",
             targets: ["TaskOrganizerDemo"]),
@@ -40,9 +47,9 @@ let package = Package(
     ],
 
     targets: [
-        .target(name: "Drawing", dependencies: ["GfxMath", "Vulkan"]),
+        .target(name: "Drawing", dependencies: ["GfxMath"] + conditionalVulkanImports, swiftSettings: conditionalVulkanDefines),
         .target(name: "Application", dependencies: ["Drawing", "GfxMath", "CombineX"]),
-        .target(name: "ApplicationBackendSDL2", dependencies: ["Application", "Drawing", "CSDL2", .product(name: "CSDL2Vulkan", package: "CSDL2"), "GfxMath", "CombineX", "Vulkan"]),
+        .target(name: "ApplicationBackendSDL2", dependencies: ["Application", "Drawing", "CSDL2", "GfxMath", "CombineX"] + conditionalVulkanImports, swiftSettings: conditionalVulkanDefines),
 
         .target(
             name: "VisualAppBase", dependencies: ["CSDL2", "GfxMath", "Swim", .product(name: "Path", package: "Path.swift"), "Drawing"]

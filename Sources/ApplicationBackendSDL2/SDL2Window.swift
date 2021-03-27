@@ -4,7 +4,7 @@ import Application
 import GfxMath
 import Events
 import CXShim
-#if USE_VULKAN
+#if ENABLE_VULKAN
 import Vulkan
 import CSDL2Vulkan
 #endif
@@ -74,7 +74,7 @@ public class SDL2Window: Window {
     SDL_UpdateWindowSurface(sdlWindow)
   }
 
-  #if USE_VULKAN
+  #if ENABLE_VULKAN
   public func getVulkanDrawingSurface(instance: Vulkan.Instance) -> VulkanDrawingSurface {
     if self.surface != nil {
       fatalError("can only use one surface per window")
