@@ -5,7 +5,7 @@ import GfxMath
 import Drawing
 
 public class SDL2OpenGL3NanoVGDrawingSurface: DrawingSurface {
-  public var size: DSize2 = .zero
+  public var size: ISize2 = .zero
   public var resolution: Double = 0
   public let glContext: SDL_GLContext
   public let nvg: UnsafeMutablePointer<NVGcontext>

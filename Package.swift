@@ -15,6 +15,7 @@ let package = Package(
             name: "SwiftGUI",
             targets: ["SwiftGUI", "ApplicationBackendSDL2"]
         ),
+        .library(name: "ApplicationBackendSDL2", targets: ["ApplicationBackendSDL2"]),
 
         .executable(name: "MinimalDemo", targets: ["MinimalDemo"]),
 
@@ -27,6 +28,7 @@ let package = Package(
 
     dependencies: [
         .package(url: "https://github.com/UnGast/CSDL2.git", .branch("master")),
+        .package(name: "Vulkan", url: "https://github.com/UnGast/SwiftVulkan.git", .branch("master")),
         .package(url: "https://github.com/mxcl/Path.swift.git", .branch("master")),
         .package(name: "GL", url: "https://github.com/UnGast/swift-opengl.git", .branch("master")),
         .package(name: "Swim", url: "https://github.com/t-ae/swim.git", .branch("master")),
@@ -38,9 +40,9 @@ let package = Package(
     ],
 
     targets: [
-        .target(name: "Drawing", dependencies: ["GfxMath"]),
+        .target(name: "Drawing", dependencies: ["GfxMath", "Vulkan"]),
         .target(name: "Application", dependencies: ["Drawing", "GfxMath", "CombineX"]),
-        .target(name: "ApplicationBackendSDL2", dependencies: ["Application", "Drawing", "CSDL2", "GfxMath", "CombineX"]),
+        .target(name: "ApplicationBackendSDL2", dependencies: ["Application", "Drawing", "CSDL2", .product(name: "CSDL2Vulkan", package: "CSDL2"), "GfxMath", "CombineX", "Vulkan"]),
 
         .target(
             name: "VisualAppBase", dependencies: ["CSDL2", "GfxMath", "Swim", .product(name: "Path", package: "Path.swift"), "Drawing"]
@@ -78,7 +80,7 @@ let package = Package(
 
         .target(
             name: "SwiftGUI",
-            dependencies: ["VisualAppBase", "VisualAppBaseImplSDL2OpenGL3NanoVG", "WidgetGUI", "Events", "GfxMath", "Drawing"],
+            dependencies: ["VisualAppBase", "VisualAppBaseImplSDL2OpenGL3NanoVG", "WidgetGUI", "Events", "GfxMath", "Drawing", "Application"],
             resources: [.process("Resources")]
         ),
 

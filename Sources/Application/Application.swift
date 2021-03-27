@@ -1,4 +1,4 @@
-public class Application {
+open class Application {
   let backend: ApplicationBackend
 
   public init(backend: ApplicationBackend) {

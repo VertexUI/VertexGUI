@@ -33,7 +33,16 @@
         "repositoryURL": "https://github.com/UnGast/CSDL2.git",
         "state": {
           "branch": "master",
-          "revision": "4721763511cd8b8aee0612790df579cf5b163148",
+          "revision": "d69ef23b8e2ca88df97da1f5d7ef167bad92bbf7",
+          "version": null
+        }
+      },
+      {
+        "package": "CVulkan",
+        "repositoryURL": "https://github.com/UnGast/CVulkan.git",
+        "state": {
+          "branch": "master",
+          "revision": "85baa86d58b602191f40b01103bd24dafba642e3",
           "version": null
         }
       },
@@ -44,6 +53,24 @@
           "branch": "master",
           "revision": "891d70ec7cb448829acb8a2d73970b088fd9e5a7",
           "version": null
+        }
+      },
+      {
+        "package": "Regex",
+        "repositoryURL": "https://github.com/sharplet/Regex.git",
+        "state": {
+          "branch": null,
+          "revision": "76c2b73d4281d77fc3118391877efd1bf972f515",
+          "version": "2.1.1"
+        }
+      },
+      {
+        "package": "swift-argument-parser",
+        "repositoryURL": "https://github.com/apple/swift-argument-parser",
+        "state": {
+          "branch": null,
+          "revision": "831ed5e860a70e745bc1337830af4786b2576881",
+          "version": "0.4.1"
         }
       },
       {
@@ -74,11 +101,29 @@
         }
       },
       {
+        "package": "Vulkan",
+        "repositoryURL": "https://github.com/UnGast/SwiftVulkan.git",
+        "state": {
+          "branch": "master",
+          "revision": "ef02ea72c153e5cf00ce956e03d3ea2b87c3c2a2",
+          "version": null
+        }
+      },
+      {
         "package": "XML",
         "repositoryURL": "https://github.com/kelvin13/swiftxml",
         "state": {
           "branch": "master",
           "revision": "91ae89c58e5a478191c27d44c31bd9bae281fefd",
+          "version": null
+        }
+      },
+      {
+        "package": "SwiftyXMLParser",
+        "repositoryURL": "https://github.com/yahoojapan/SwiftyXMLParser.git",
+        "state": {
+          "branch": "master",
+          "revision": "ec7f183642adf429babd867d1a38c5c6912408ba",
           "version": null
         }
       },

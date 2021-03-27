@@ -13,7 +13,7 @@ open class SDL2OpenGL3NanoVGDrawingBackend: DrawingBackend {
   }
 
   override public func activate() {
-    nvgBeginFrame(surface.nvg, Float(surface.size.width / surface.resolution), Float(surface.size.height / surface.resolution), Float(surface.resolution))
+    nvgBeginFrame(surface.nvg, Float(Double(surface.size.width) / surface.resolution), Float(Double(surface.size.height) / surface.resolution), Float(surface.resolution))
   }
 
   override open func clip(rect: DRect) {

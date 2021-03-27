@@ -87,7 +87,7 @@ open class SDL2OpenGL3NanoVGWindow: Window {
     try super.init(options: options)
 
     _ = self.onSizeChanged { [unowned self] _ in
-      drawingSurface.size = drawableSize
+      drawingSurface.size = ISize2(drawableSize)
       drawingSurface.resolution = resolution
     }
 
