@@ -19,5 +19,5 @@ jobs:
         sudo apt-get update -y -qq
         sudo apt-get install libsdl2-dev
     - name: Build
-      run: swift build --product SwiftGUI
+      run: swift build --target SwiftGUI
 
