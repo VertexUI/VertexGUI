@@ -3,12 +3,15 @@ import CSDL2
 import GfxMath
 import Dispatch
 import Foundation
+import CXShim
 
 public class ApplicationBackendSDL2: ApplicationBackend {
   private static var instance: ApplicationBackendSDL2? = nil
   public static var windows: [Int: SDL2BaseWindow] = [:]
 
   public static var isRunning = true
+
+  public let eventPublisher = PassthroughSubject<ApplicationEvent, Never>()
   /*public var targetFps = 60
   private var _realFps: Double = 0
   override public var realFps: Double {
@@ -102,13 +105,20 @@ public class ApplicationBackendSDL2: ApplicationBackend {
     }
   }
   */
+  open func processEvents() throws {
+    try processEvents(timeout: 0)
+  }
+
   open func processEvents(timeout: Double) throws {
     let timeoutMs = Int(timeout * 1000)
 
     var event = SDL_Event()
     var startTime = Int(SDL_GetTicks())
 
-    if ApplicationBackendSDL2.isRunning && SDL_WaitEventTimeout(&event, Int32(timeoutMs)) != 0
+    if ApplicationBackendSDL2.isRunning &&
+      (timeout != 0 
+      ? SDL_WaitEventTimeout(&event, Int32(timeoutMs)) != 0
+      : SDL_PollEvent(&event) != 0)
     {
       repeat {
         let eventType = SDL_EventType(rawValue: event.type)
@@ -116,6 +126,7 @@ public class ApplicationBackendSDL2: ApplicationBackend {
         do {
           switch eventType {
           case SDL_QUIT, SDL_APP_TERMINATING:
+            eventPublisher.send(.quit)
             try self.exit()
 
           case SDL_WINDOWEVENT:
@@ -219,11 +230,17 @@ public class ApplicationBackendSDL2: ApplicationBackend {
               RawMouseWheelEvent(
                 scrollAmount: DVec2(Double(event.wheel.x), Double(event.wheel.y)),
                 position: self.mousePosition),
-              windowId: Int(event.wheel.windowID))
+              windowId: Int(event.wheel.windowID))*/
 
           case SDL_MOUSEMOTION:
-            mousePosition = DPoint2(Double(event.motion.x), Double(event.motion.y))
-            forward(
+            if let window = Self.windows[Int(event.motion.windowID)] {
+              let position = DPoint2(Double(event.motion.x), Double(event.motion.y))
+              let positionDelta = DPoint2(Double(event.motion.xrel), Double(event.motion.yrel))
+              window.inputEventPublisher.send(
+                WindowMouseMoveEvent(position: position, positionDelta: positionDelta)
+              )
+            }
+            /*forward(
               RawMouseMoveEvent(
                 position: mousePosition,
                 previousPosition: DPoint2(
@@ -240,7 +257,7 @@ public class ApplicationBackendSDL2: ApplicationBackend {
         }
 
         event.type = 0
-      } while Self.isRunning && (Int(SDL_GetTicks()) - startTime < timeoutMs)
+      } while Self.isRunning && (timeoutMs > 0 ? (Int(SDL_GetTicks()) - startTime < timeoutMs) : true)
         && SDL_PollEvent(&event) != 0
     }
   }

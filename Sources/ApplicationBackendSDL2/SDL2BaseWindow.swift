@@ -19,17 +19,16 @@ open class SDL2BaseWindow: Window {
 
   // TODO: instead use property wrapper on size so that can do: $size.sink
   public let sizeChanged = PassthroughSubject<ISize2, Never>()
+  public let inputEventPublisher = PassthroughSubject<WindowInputEvent, Never>()
 
   public init(initialSize: ISize2, graphicsMode: GraphicsMode = .cpu) {
     SDL_Init(SDL_INIT_VIDEO)
     self.graphicsMode = graphicsMode
 
     var flags = SDL_WINDOW_RESIZABLE.rawValue
-    #if ENABLE_VULKAN
     if graphicsMode == .vulkan {
       flags = flags | SDL_WINDOW_VULKAN.rawValue
     }
-    #endif
 
     sdlWindow = SDL_CreateWindow(
       "",
