@@ -6,7 +6,7 @@ import Foundation
 
 public class ApplicationBackendSDL2: ApplicationBackend {
   private static var instance: ApplicationBackendSDL2? = nil
-  public static var windows: [Int: SDL2Window] = [:]
+  public static var windows: [Int: SDL2BaseWindow] = [:]
 
   public static var isRunning = true
   /*public var targetFps = 60
@@ -60,11 +60,6 @@ public class ApplicationBackendSDL2: ApplicationBackend {
   }
 
   public func setup() {}
-
-  public func createWindow(initialSize: DSize2) -> Window {
-    let window = SDL2Window(initialSize: initialSize)
-    return window
-  }
 
   /*override open func updateCursor() {
     if cursorRequests.count > 0 {

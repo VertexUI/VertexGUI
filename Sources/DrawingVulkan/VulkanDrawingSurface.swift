@@ -1,4 +1,4 @@
-#if ENABLE_VULKAN
+import Drawing
 import GfxMath
 import Vulkan
 
@@ -17,4 +17,3 @@ public class VulkanDrawingSurface: DrawingSurface {
     fatalError("don't use, change api")
   }
 }
-#endif
