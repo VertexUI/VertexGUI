@@ -10,6 +10,7 @@ public class ApplicationBackendSDL2: ApplicationBackend {
   public static var windows: [Int: SDL2BaseWindow] = [:]
 
   public static var isRunning = true
+  public static var keyStates = KeyStatesContainer()
 
   public let eventPublisher = PassthroughSubject<ApplicationEvent, Never>()
   /*public var targetFps = 60
@@ -63,6 +64,15 @@ public class ApplicationBackendSDL2: ApplicationBackend {
   }
 
   public func setup() {}
+
+  public var relativeMouseModeEnabled: Bool {
+    get {
+      SDL_GetRelativeMouseMode() == SDL_TRUE
+    }
+    set {
+      SDL_SetRelativeMouseMode(newValue ? SDL_TRUE : SDL_FALSE)
+    }
+  }
 
   /*override open func updateCursor() {
     if cursorRequests.count > 0 {
@@ -161,13 +171,11 @@ public class ApplicationBackendSDL2: ApplicationBackend {
               break
             }
 
-          /*case SDL_KEYDOWN:
-            if let key = Key(sdlKeycode: event.key.keysym.sym) {
-              keyStates[key] = true
-              forward(
-                KeyDownEvent(
-                  key: key, keyStates: self.keyStates, repetition: event.key.repeat != 0),
-                windowId: Int(event.key.windowID))
+          case SDL_KEYDOWN:
+            if let window = Self.windows[Int(event.key.windowID)], let key = Key(sdlKeycode: event.key.keysym.sym) {
+              Self.keyStates[key] = true
+                window.inputEventPublisher.send(WindowKeyDownEvent(
+                  key: key, keyStates: Self.keyStates, repetition: event.key.repeat != 0))
             } else {
               print(
                 "Key not mapped from sdl", event.key.keysym.sym, event.key.keysym.scancode,
@@ -175,56 +183,36 @@ public class ApplicationBackendSDL2: ApplicationBackend {
             }
 
           case SDL_TEXTINPUT:
-            let text = String(cString: &event.text.text.0)
-            forward(TextInputEvent(text), windowId: Int(event.text.windowID))
+            if let window = Self.windows[Int(event.text.windowID)] {
+              let text = String(cString: &event.text.text.0)
+              window.inputEventPublisher.send(WindowTextInputEvent(text: text))
+            }
 
           case SDL_KEYUP:
-            if let key = Key(sdlKeycode: event.key.keysym.sym) {
-              keyStates[key] = false
-              forward(
-                KeyUpEvent(key: key, keyStates: keyStates, repetition: event.key.repeat != 0),
-                windowId: Int(event.key.windowID))
+            if let window = Self.windows[Int(event.key.windowID)], let key = Key(sdlKeycode: event.key.keysym.sym) {
+              Self.keyStates[key] = false
+              window.inputEventPublisher.send(WindowKeyUpEvent(key: key, keyStates: Self.keyStates))
             } else {
               print("Key not mapped from sdl", event.key.keysym.sym)
             }
 
           case SDL_MOUSEBUTTONDOWN:
-            let pressedButton: MouseButton
-            
-            if event.button.button == UInt8(SDL_BUTTON_LEFT) {
-              pressedButton = .Left
-            } else if event.button.button == UInt8(SDL_BUTTON_RIGHT) {
-              pressedButton = .Right
-            } else {
-              print("sdl mouse button not mapped", event.button.button)
-              break
+            if let window = Self.windows[Int(event.button.windowID)] {
+              window.inputEventPublisher.send(WindowMouseButtonDownEvent(
+                button: MouseButton(fromSDL: event.button.button)))
             }
-            
-            pressedMouseButtons[pressedButton] = true
-
-            forward(
-              RawMouseButtonDownEvent(
-                button: pressedButton, position: DPoint2(Double(event.button.x), Double(event.button.y))),
-              windowId: Int(event.button.windowID))
 
           case SDL_MOUSEBUTTONUP:
-            let pressedButton: MouseButton
-            
-            if event.button.button == UInt8(SDL_BUTTON_LEFT) {
-              pressedButton = .Left
-            } else if event.button.button == UInt8(SDL_BUTTON_RIGHT) {
-              pressedButton = .Right
-            } else {
-              print("sdl mouse button not mapped", event.button.button)
-              break
+            //pressedMouseButtons[pressedButton] = false
+            if let window = Self.windows[Int(event.button.windowID)] {
+              window.inputEventPublisher.send(WindowMouseButtonUpEvent(
+                button: MouseButton(fromSDL: event.button.button)))
             }
-
-            pressedMouseButtons[pressedButton] = false
-            forward(
+            /*forward(
               RawMouseButtonUpEvent(
                 button: pressedButton, position: DPoint2(Double(event.button.x), Double(event.button.y))),
-              windowId: Int(event.button.windowID))
-
+              windowId: Int(event.button.windowID))*/
+          /*
           case SDL_MOUSEWHEEL:
             forward(
               RawMouseWheelEvent(
