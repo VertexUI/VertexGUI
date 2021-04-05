@@ -5,11 +5,11 @@ open class CpuBufferDrawingSurface: DrawingSurface {
   public var resolution: Double {
     fatalError("not implemented")
   } // implement?
-  public var buffer: UnsafeMutablePointer<Int8>
+  public var buffer: UnsafeMutableBufferPointer<UInt8>
 
   public init(size: ISize2) {
     self.size = size
-    self.buffer = UnsafeMutablePointer.allocate(capacity: size.width * size.height * 4)
+    self.buffer = UnsafeMutableBufferPointer.allocate(capacity: size.width * size.height * 4)
   }
 
   public func getDrawingContext() -> DrawingContext {
