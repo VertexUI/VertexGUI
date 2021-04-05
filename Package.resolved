@@ -24,7 +24,7 @@
         "repositoryURL": "https://github.com/cx-org/CombineX.git",
         "state": {
           "branch": "master",
-          "revision": "e881b00d84b3151ec755788e2a6f2d2fceb362c1",
+          "revision": "b9afefe14653f02a80a9f5aa546859e99073d0c8",
           "version": null
         }
       },
@@ -78,16 +78,7 @@
         "repositoryURL": "https://github.com/UnGast/swift-gfx-math.git",
         "state": {
           "branch": "master",
-          "revision": "19f3b2ae59534a45b719358fecbe9633cfc8c0ad",
-          "version": null
-        }
-      },
-      {
-        "package": "GLUtils",
-        "repositoryURL": "https://github.com/UnGast/swift-gl-utils",
-        "state": {
-          "branch": "master",
-          "revision": "b04851b2c252c72c5bf50a69dde5514c9f386897",
+          "revision": "ea745bc0fbe2fb7fac5d6d62c82e46d109f4c809",
           "version": null
         }
       },
@@ -105,7 +96,7 @@
         "repositoryURL": "https://github.com/UnGast/SwiftVulkan.git",
         "state": {
           "branch": "master",
-          "revision": "ef02ea72c153e5cf00ce956e03d3ea2b87c3c2a2",
+          "revision": "c9af46ce85dc6eba783914f07735792f971b14ee",
           "version": null
         }
       },

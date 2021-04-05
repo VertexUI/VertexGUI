@@ -1,7 +1,6 @@
 import CSDL2
 import CnanovgGL3
 import GfxMath
-import GLUtils
 import Foundation
 import GL
 import Path
@@ -173,7 +172,7 @@ open class SDL2OpenGL3NanoVGWindow: Window {
 
   override open func clear() {
     GL.glViewport(0, 0, GLMap.Size(drawableSize.width), GLMap.Size(drawableSize.height))
-    GL.glClearColor(options.background.glR, options.background.glG, options.background.glB, options.background.glA)
+    GL.glClearColor(options.background.fpRgbaZeroOne().r, options.background.fpRgbaZeroOne().g, options.background.fpRgbaZeroOne().b, options.background.fpRgbaZeroOne().a)
     GL.glClear(GLMap.COLOR_BUFFER_BIT)
   }
 

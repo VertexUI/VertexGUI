@@ -32,8 +32,7 @@ let package = Package(
         .package(url: "https://github.com/UnGast/Cnanovg.git", .branch("master")),
         .package(name: "GfxMath", url: "https://github.com/UnGast/swift-gfx-math.git", .branch("master")),
         .package(url: "https://github.com/cx-org/CombineX.git", .branch("master")),
-        .package(url: "https://github.com/mtynior/ColorizeSwift.git", from: "1.6.0"),
-        .package(name: "GLUtils", url: "https://github.com/UnGast/swift-gl-utils", .branch("master"))
+        .package(url: "https://github.com/mtynior/ColorizeSwift.git", from: "1.6.0")
     ],
 
     targets: [
@@ -64,7 +63,7 @@ let package = Package(
 
         .target(
             name: "VisualAppBaseImplSDL2OpenGL3NanoVG",
-            dependencies: ["WidgetGUI", "CSDL2", "GL", "GLUtils", "Drawing", "Events", "Swim", .product(name: "CnanovgGL3", package: "Cnanovg"), "GfxMath", .product(name: "Path", package: "Path.swift")],
+            dependencies: ["WidgetGUI", "CSDL2", "GL", "Drawing", "Events", "Swim", .product(name: "CnanovgGL3", package: "Cnanovg"), "GfxMath", .product(name: "Path", package: "Path.swift")],
             resources: [.process("Resources")]),
        
         .target(
