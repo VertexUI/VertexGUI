@@ -1,4 +1,4 @@
-import SwiftGUI
+import VertexGUI
 import CXShim
 
 public class TodoListView: ContentfulWidget {

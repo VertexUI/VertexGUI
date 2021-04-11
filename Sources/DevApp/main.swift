@@ -1,4 +1,4 @@
-import SwiftGUI
+import VertexGUI
 
 public class DevApp: WidgetsApp {
   var myValue = "my first reactive wow"

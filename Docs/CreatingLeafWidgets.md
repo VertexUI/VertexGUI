@@ -5,7 +5,7 @@
 **1\. subclass LeafWidget**
 
 ```swift
-import SwiftGUI
+import VertexGUI
 
 // when creating a core Widget you probably need to
 // import the specific dependencies instead of the above one

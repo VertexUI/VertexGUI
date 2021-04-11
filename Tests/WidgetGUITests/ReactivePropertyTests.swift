@@ -1,5 +1,5 @@
 import XCTest
-@testable import SwiftGUI
+@testable import VertexGUI
 @testable 
 final class ReactivePropertyTests: XCTestCase {
   class UniDirectionalBindingSourceWidget: Widget {

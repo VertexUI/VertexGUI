@@ -1,9 +1,9 @@
-# SwiftGUI
+# VertexGUI
 
-![build-ubuntu](https://github.com/ungast/swift-gui/workflows/build-ubuntu/badge.svg)
-![build-macos](https://github.com/ungast/swift-gui/workflows/build-macos/badge.svg)
+![build-ubuntu](https://github.com/VertexUI/VertexGUI/workflows/build-ubuntu/badge.svg)
+![build-macos](https://github.com/VertexUI/VertexGUI/workflows/build-macos/badge.svg)
 
-SwiftGUI is a Swift framework for writing cross-platform GUI applications.
+VertexGUI is a Swift framework for writing cross-platform GUI applications.
 
 <br>
 
@@ -52,7 +52,7 @@ for other platforms see: [Installing SDL](https://wiki.libsdl.org/Installation).
 
 <br>
 
-### SwiftGUI
+### VertexGUI
 
 This project is under heavy development. I will not create releases until there is some API stability.
 
@@ -61,11 +61,11 @@ Just use the master branch:
 ```swift
 dependencies: [
   ...,
-  .package(name: "SwiftGUI", url: "https://github.com/UnGast/swift-gui", .branch("master")),
+  .package(name: "VertexGUI", url: "https://github.com/VertexUI/VertexGUI", .branch("master")),
 ],
 targets: [
   ...,
-  .target(name: "SomeTarget", dependencies: ["SwiftGUI", ...])
+  .target(name: "SomeTarget", dependencies: ["VertexGUI", ...])
 ]
 ```
 
@@ -80,7 +80,7 @@ Result:
 <img alt="screenshot of minimal demo app" src="Docs/minimal_demo.png?raw=true" width="300"/>
 
 ```swift
-import SwiftGUI 
+import VertexGUI 
 
 public class MainView: ContentfulWidget {
   @State

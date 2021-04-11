@@ -3,7 +3,7 @@ import Foundation
 import PackageDescription
 
 let package = Package(
-    name: "SwiftGUI",
+    name: "VertexGUI",
     
     platforms: [
         .macOS(.v10_15)
@@ -11,8 +11,8 @@ let package = Package(
     
     products: [
         .library(
-            name: "SwiftGUI",
-            targets: ["SwiftGUI"]
+            name: "VertexGUI",
+            targets: ["VertexGUI"]
         ),
         .library(name: "ApplicationBackendSDL2", targets: ["ApplicationBackendSDL2"]),
         .library(name: "ApplicationBackendSDL2Vulkan", targets: ["ApplicationBackendSDL2Vulkan"]),
@@ -67,25 +67,25 @@ let package = Package(
        
         .target(
             name: "TaskOrganizerDemo",
-            dependencies: ["SwiftGUI", "Swim", .product(name: "CXShim", package: "CombineX")],
+            dependencies: ["VertexGUI", "Swim", .product(name: "CXShim", package: "CombineX")],
             resources: [.copy("Resources")]),
 
         .target(
             name: "MinimalDemo",
-            dependencies: ["SwiftGUI"]
+            dependencies: ["VertexGUI"]
         ),
 
         .target(
             name: "DevApp",
-            dependencies: ["SwiftGUI"]
+            dependencies: ["VertexGUI"]
         ),
 
         .target(
-            name: "SwiftGUI",
+            name: "VertexGUI",
             dependencies: ["VisualAppBase", "VisualAppBaseImplSDL2OpenGL3NanoVG", "WidgetGUI", "Events", "GfxMath", "Drawing", "Application"],
             resources: [.process("Resources")]
         ),
 
-        //.testTarget(name: "WidgetGUITests", dependencies: ["SwiftGUI"])
+        //.testTarget(name: "WidgetGUITests", dependencies: ["VertexGUI"])
     ]
 )

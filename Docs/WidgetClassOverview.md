@@ -38,8 +38,8 @@ You can choose to receive event data as the first parameter in your handler or o
 
 Handler registration is internally forwarded to a corresponding `onSomeEventNameHandlerManager` which is an instance property of every Widget. You can also use this to register handlers directly by calling `onSomeEventNameHandlerManager.addHandler(yourHandler)`. This will return an unregister callback, which can be discarded or saved in order to remove the registered handler manually later.
 
-All `onSomeEventNameHandlerManager`s are defined in the [Widget](https://github.com/UnGast/swift-gui/blob/master/Sources/WidgetGUI/Base/Widget/Widget.swift) class, look for the "input events" section.
-The mappings from `onSomeEventName` to `onSomeEventNameHandlerManager` are defined in [Widget+inputEventHandlerRegistration.swift](https://github.com/UnGast/swift-gui/blob/master/Sources/WidgetGUI/Base/Widget/Widget%2BinputEventHandlerRegistration.swift).
+All `onSomeEventNameHandlerManager`s are defined in the [Widget](https://github.com/VertexUI/VertexGUI/blob/master/Sources/WidgetGUI/Base/Widget/Widget.swift) class, look for the "input events" section.
+The mappings from `onSomeEventName` to `onSomeEventNameHandlerManager` are defined in [Widget+inputEventHandlerRegistration.swift](https://github.com/VertexUI/VertexGUI/blob/master/Sources/WidgetGUI/Base/Widget/Widget%2BinputEventHandlerRegistration.swift).
 
 Direct use of `addHandler` on the corresponding `EventHandlerManager` can be useful when you want to handle events generated on a custom Widget inside your custom implementation. For example:
 

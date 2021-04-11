@@ -1,4 +1,4 @@
-import SwiftGUI
+import VertexGUI
 
 public class MockLeafWidget: Widget {
   

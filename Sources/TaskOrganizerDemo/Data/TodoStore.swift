@@ -1,4 +1,4 @@
-import SwiftGUI
+import VertexGUI
 import CXShim
 
 public class TodoStore: Store<TodoStore.State, TodoStore.Mutation, TodoStore.Action> {

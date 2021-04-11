@@ -1,4 +1,4 @@
-import SwiftGUI
+import VertexGUI
 
 public class SearchResultsView: ContentfulWidget {
   @Inject
