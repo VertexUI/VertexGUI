@@ -50,9 +50,9 @@
         "package": "Path.swift",
         "repositoryURL": "https://github.com/mxcl/Path.swift.git",
         "state": {
-          "branch": "master",
-          "revision": "891d70ec7cb448829acb8a2d73970b088fd9e5a7",
-          "version": null
+          "branch": null,
+          "revision": "142d4bc1118602f3679c777d2e0da89c227cd918",
+          "version": "1.2.0"
         }
       },
       {
@@ -78,7 +78,7 @@
         "repositoryURL": "https://github.com/UnGast/swift-gfx-math.git",
         "state": {
           "branch": "master",
-          "revision": "ea745bc0fbe2fb7fac5d6d62c82e46d109f4c809",
+          "revision": "74c4b6cc6eb804bd2e188db6af82bac9bf0defaa",
           "version": null
         }
       },

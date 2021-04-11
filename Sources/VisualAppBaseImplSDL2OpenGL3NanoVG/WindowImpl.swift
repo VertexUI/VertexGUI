@@ -3,7 +3,6 @@ import CnanovgGL3
 import GfxMath
 import Foundation
 import GL
-import Path
 import VisualAppBase
 import WidgetGUI
 import Drawing

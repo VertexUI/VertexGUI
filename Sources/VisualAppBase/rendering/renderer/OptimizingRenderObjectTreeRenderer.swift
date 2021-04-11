@@ -1,6 +1,5 @@
 import VisualAppBase
 import GfxMath
-import Path
 import Foundation
 import Events
 

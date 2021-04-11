@@ -26,7 +26,6 @@ let package = Package(
     dependencies: [
         .package(url: "https://github.com/UnGast/CSDL2.git", .branch("master")),
         .package(name: "Vulkan", url: "https://github.com/UnGast/SwiftVulkan.git", .branch("master")),
-        .package(url: "https://github.com/mxcl/Path.swift.git", .branch("master")),
         .package(name: "GL", url: "https://github.com/UnGast/swift-opengl.git", .branch("master")),
         .package(name: "Swim", url: "https://github.com/t-ae/swim.git", .branch("master")),
         .package(url: "https://github.com/UnGast/Cnanovg.git", .branch("master")),
@@ -48,7 +47,7 @@ let package = Package(
             name: "ApplicationBackendSDL2Vulkan", 
             dependencies: ["ApplicationBackendSDL2", "DrawingVulkan", "Vulkan", .product(name: "CSDL2Vulkan", package: "CSDL2")]),
         .target(
-            name: "VisualAppBase", dependencies: ["CSDL2", "GfxMath", "Swim", .product(name: "Path", package: "Path.swift"), "Drawing"]
+            name: "VisualAppBase", dependencies: ["CSDL2", "GfxMath", "Swim", "Drawing"]
         ),
 
         .target(
@@ -63,7 +62,7 @@ let package = Package(
 
         .target(
             name: "VisualAppBaseImplSDL2OpenGL3NanoVG",
-            dependencies: ["WidgetGUI", "CSDL2", "GL", "Drawing", "Events", "Swim", .product(name: "CnanovgGL3", package: "Cnanovg"), "GfxMath", .product(name: "Path", package: "Path.swift")],
+            dependencies: ["WidgetGUI", "CSDL2", "GL", "Drawing", "Events", "Swim", .product(name: "CnanovgGL3", package: "Cnanovg"), "GfxMath"],
             resources: [.process("Resources")]),
        
         .target(

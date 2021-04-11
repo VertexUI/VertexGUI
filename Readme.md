@@ -506,8 +506,6 @@ This package depends on:
 
 [CombineX (open source implementation of Apple's Combine framework)](https://github.com/cx-org/CombineX.git)
 
-[Path](https://github.com/mxcl/Path.swift.git)
-
 [Swim (Image handling): github.com/t-ae/swim.git](https://github.com/t-ae/swim.git)
 
 [Cnanovg (NanoVG wrapper for Swift): github.com/UnGast/Cnanovg.git](https://github.com/UnGast/Cnanovg.git)
