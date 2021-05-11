@@ -1,4 +1,4 @@
-import Foundation
+/*import Foundation
 import VisualAppBase
 import Events
 import GfxMath
@@ -130,4 +130,4 @@ open class OldApplication: EventfulObject {
     deinit {
         destroy()
     }
-}
+}*/

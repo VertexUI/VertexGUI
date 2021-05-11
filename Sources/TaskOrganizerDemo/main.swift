@@ -9,9 +9,6 @@ import ColorizeSwift
 
 // TODO: create a subclass of App, DesktopApp which supports windows/screens which can support different resolutions --> renderContexts --> different text boundsSize
 open class TodoApp: VertexGUI.Application {    
-    public init() {
-        super(backend: )
-    }
     /*let guiRoot: WidgetGUI.Root
     let store: TodoStore = TodoStore()
 
