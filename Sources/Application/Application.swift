@@ -1,7 +1,9 @@
 import WidgetGUI
 import HID
+import VisualAppBase
 import Drawing
 import DrawingImplGL3NanoVG
+import GfxMath
 
 open class Application {
   private var windowBunches: [WindowBunch] = []
@@ -28,6 +30,14 @@ open class Application {
     let drawingBackend = GL3NanoVGDrawingBackend(surface: surface)
 
     let windowBunch = WindowBunch(window: window, widgetRoot: widgetRoot, drawingContext: DrawingContext(backend: drawingBackend))
+
+    widgetRoot.setup(
+      measureText: { _, _ in .zero },
+      getKeyStates:  { KeyStatesContainer() },
+      getApplicationTime: { 0 },
+      getRealFps: { 0 },
+      requestCursor: { _ in { () } }
+    )
 
     self.windowBunches.append(windowBunch)
   }
@@ -58,6 +68,18 @@ open class Application {
                 break
             }
         }
+
+        for bunch in windowBunches {
+          bunch.widgetRoot.tick(Tick(deltaTime: 0, totalTime: 0))
+          let windowSize = bunch.window.surface!.getDrawableSize()
+          bunch.drawingContext.drawRect(rect: DRect(min: DVec2(0, 0), max: DVec2(Double(windowSize.width), Double(windowSize.height))), paint: Paint(color: .black))
+          bunch.drawingContext.backend.activate()
+          bunch.widgetRoot.draw(bunch.drawingContext)
+          bunch.drawingContext.backend.deactivate()
+          if let surface = bunch.window.surface as? SDLOpenGLWindowSurface {
+            surface.swap()
+          }
+        }
     }
 
     Platform.quit()
@@ -66,11 +88,11 @@ open class Application {
 
 extension Application {
   public class WindowBunch {
-    public var window: Window
+    public var window: HID.Window
     public var widgetRoot: Root
     public var drawingContext: DrawingContext
 
-    public init(window: Window, widgetRoot: Root, drawingContext: DrawingContext) {
+    public init(window: HID.Window, widgetRoot: Root, drawingContext: DrawingContext) {
       self.window = window
       self.widgetRoot = widgetRoot
       self.drawingContext = drawingContext

@@ -1,13 +1,6 @@
 import VertexGUI
 import ApplicationBackendSDL2
 
-import Dispatch
-import GfxMath
-import GL
-import CSDL2
-import ColorizeSwift
-
-// TODO: create a subclass of App, DesktopApp which supports windows/screens which can support different resolutions --> renderContexts --> different text boundsSize
 open class TodoApp: VertexGUI.Application {    
     /*let guiRoot: WidgetGUI.Root
     let store: TodoStore = TodoStore()
@@ -31,6 +24,8 @@ open class TodoApp: VertexGUI.Application {
 }
 
 let app = try TodoApp()
+
+try app.createWindow(widgetRoot: Root(rootWidget: Text("WOW")))
 
 do {
     try app.start()
