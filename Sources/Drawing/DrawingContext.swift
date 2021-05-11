@@ -210,6 +210,10 @@ open class DrawingContext {
     
   }
 
+  open func drawImage(image: Image2, topLeft: DVec2) {
+    backend.drawImage(image: image, topLeft: topLeft)
+  }
+
   /**
   Measure the width and height a certain text would have if drawn with
   the given paint. Used for calculating Widget layouts.

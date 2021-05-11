@@ -38,7 +38,7 @@ let package = Package(
     targets: [
         .target(
             name: "Drawing",
-            dependencies: ["GfxMath", .product(name: "FirebladeHID", package: "Fireblade")]),
+            dependencies: ["GfxMath", .product(name: "FirebladeHID", package: "Fireblade"), "Swim"]),
         .target(
             name: "DrawingImplGL3NanoVG",
             dependencies: ["Drawing", "GfxMath", .product(name: "FirebladeHID", package: "Fireblade"), .product(name: "CnanovgGL3", package: "Cnanovg"), "GL"]),/*
@@ -60,7 +60,7 @@ let package = Package(
 
         .target(
             name: "WidgetGUI",
-            dependencies: ["VisualAppBase", "Events", .product(name: "CXShim", package: "CombineX"), "GfxMath", "ColorizeSwift"],
+            dependencies: ["VisualAppBase", "Events", .product(name: "CXShim", package: "CombineX"), "GfxMath", "ColorizeSwift", "Drawing"],
             resources: [.process("Resources")]
         ),
 
@@ -81,12 +81,12 @@ let package = Package(
 
         .target(
             name: "DevApp",
-            dependencies: ["VertexGUI"]
+            dependencies: ["VertexGUI", "Swim"]
         ),
 
         .target(
             name: "VertexGUI",
-            dependencies: ["VisualAppBase", "WidgetGUI", "Events", "GfxMath", "Application"],
+            dependencies: ["VisualAppBase", "WidgetGUI", "Events", "GfxMath", "Application", "Drawing"],
             resources: [.process("Resources")]
         ),
 

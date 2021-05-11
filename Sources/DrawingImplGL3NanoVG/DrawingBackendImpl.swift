@@ -8,6 +8,7 @@ open class GL3NanoVGDrawingBackend: DrawingBackend {
   private let nvg: UnsafeMutablePointer<NVGcontext>
 
   private var fontIds = [String: Int32]()
+  private var imageIds = [Image2: Int32]()
 
   public init(surface: OpenGLWindowSurface) {
     self.surface = surface
@@ -138,6 +139,39 @@ open class GL3NanoVGDrawingBackend: DrawingBackend {
     } else {
         nvgText(nvg, Float(position.x), Float(position.y), text, nil)
     }
+  }
+
+  override public func drawImage(image: Image2, topLeft: DVec2) {
+    let imageId = loadImageOrUpdate(image)
+
+    let pattern = nvgImagePattern(nvg, Float(topLeft.x), Float(topLeft.y), Float(image.data.width), Float(image.data.height), 0, imageId, 1)
+    nvgFillPaint(nvg, pattern)
+
+    nvgBeginPath(nvg)
+    nvgRect(
+      nvg,
+      Float(topLeft.x),
+      Float(topLeft.y),
+      Float(image.data.width),
+      Float(image.data.height))
+
+    nvgFill(nvg)
+  }
+
+  /// returns the id of the loaded image in NanoVG
+  private func loadImageOrUpdate(_ image: Image2) -> Int32 {
+    if let imageId = imageIds[image] {
+      if image.invalid {
+        nvgUpdateImage(nvg, imageId, image.data.getData())
+      }
+      return imageId
+    }
+
+    let imageId = nvgCreateImageRGBA(nvg, Int32(image.data.width), Int32(image.data.height), 0, image.data.getData())
+    imageIds[image] = imageId
+    image.invalid = false
+
+    return imageId
   }
 
   private func applyFontConfig(_ config: FontConfig) {
