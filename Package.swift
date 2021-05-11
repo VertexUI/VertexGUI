@@ -41,7 +41,7 @@ let package = Package(
             dependencies: ["GfxMath", .product(name: "FirebladeHID", package: "Fireblade")]),
         .target(
             name: "DrawingImplGL3NanoVG",
-            dependencies: ["Drawing", "GfxMath", .product(name: "FirebladeHID", package: "Fireblade"), .product(name: "CnanovgGL3", package: "Cnanovg")]),/*
+            dependencies: ["Drawing", "GfxMath", .product(name: "FirebladeHID", package: "Fireblade"), .product(name: "CnanovgGL3", package: "Cnanovg"), "GL"]),/*
         .target(
             name: "DrawingVulkan",
             dependencies: ["Drawing", "Vulkan", .product(name: "CSDL2Vulkan", package: "CSDL2")]),*/

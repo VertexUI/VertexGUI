@@ -4,6 +4,7 @@ import VisualAppBase
 import Drawing
 import DrawingImplGL3NanoVG
 import GfxMath
+import GL
 
 open class Application {
   private var windowBunches: [WindowBunch] = []
@@ -32,12 +33,14 @@ open class Application {
     let windowBunch = WindowBunch(window: window, widgetRoot: widgetRoot, drawingContext: DrawingContext(backend: drawingBackend))
 
     widgetRoot.setup(
-      measureText: { _, _ in .zero },
+      measureText: { [unowned drawingBackend] text, paint in drawingBackend.measureText(text: text, paint: paint) },
       getKeyStates:  { KeyStatesContainer() },
       getApplicationTime: { 0 },
       getRealFps: { 0 },
       requestCursor: { _ in { () } }
     )
+
+    updateWindowBunchSize(windowBunch)
 
     self.windowBunches.append(windowBunch)
   }
@@ -61,7 +64,9 @@ open class Application {
 
             case .window:
                 if case let .resizedTo(newSize) = event.window.action {
-
+                  if let windowBunch = findWindowBunch(windowId: event.window.windowID) {
+                    updateWindowBunchSize(windowBunch)
+                  }
                 }
 
             default:
@@ -70,12 +75,21 @@ open class Application {
         }
 
         for bunch in windowBunches {
+          if let surface = bunch.window.surface as? SDLOpenGLWindowSurface {
+            surface.glContext.makeCurrent()
+          }
+
+          let drawableSize = bunch.window.surface!.getDrawableSize()
+          glViewport(0, 0, GLMap.Size(drawableSize.width), GLMap.Size(drawableSize.height))
+          glClearColor(1, 1, 1, 1)
+          glClear(GLMap.COLOR_BUFFER_BIT)
+
           bunch.widgetRoot.tick(Tick(deltaTime: 0, totalTime: 0))
-          let windowSize = bunch.window.surface!.getDrawableSize()
-          bunch.drawingContext.drawRect(rect: DRect(min: DVec2(0, 0), max: DVec2(Double(windowSize.width), Double(windowSize.height))), paint: Paint(color: .black))
+
           bunch.drawingContext.backend.activate()
           bunch.widgetRoot.draw(bunch.drawingContext)
           bunch.drawingContext.backend.deactivate()
+
           if let surface = bunch.window.surface as? SDLOpenGLWindowSurface {
             surface.swap()
           }
@@ -83,6 +97,18 @@ open class Application {
     }
 
     Platform.quit()
+  }
+
+  private func updateWindowBunchSize(_ windowBunch: WindowBunch) {
+    guard let surface = windowBunch.window.surface else {
+      fatalError("window must have a surface")
+    }
+    let drawableSize = surface.getDrawableSize()
+    windowBunch.widgetRoot.bounds.size = DSize2(Double(drawableSize.width), Double(drawableSize.height))
+  }
+
+  private func findWindowBunch(windowId: Int) -> WindowBunch? {
+    windowBunches.first { $0.window.windowID == windowId }
   }
 }
 

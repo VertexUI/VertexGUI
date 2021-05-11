@@ -16,9 +16,8 @@ open class GL3NanoVGDrawingBackend: DrawingBackend {
   }
 
   override public func activate() {
-    let size = surface.getDrawableSize()
-    let resolution = Float(size.width) / Float(size.height)
-    nvgBeginFrame(nvg, Float(size.width) / resolution, Float(size.height) / resolution, resolution)
+    let drawableSize = surface.getDrawableSize()
+    nvgBeginFrame(nvg, Float(drawableSize.width), Float(drawableSize.height), 1.0)
   }
 
   override open func clip(rect: DRect) {

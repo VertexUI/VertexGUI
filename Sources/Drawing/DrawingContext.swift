@@ -151,9 +151,9 @@ open class DrawingContext {
     if let currentClip = currentClip {
       self.currentClip = currentClip.intersection(with: preprocessedRect)
     } else {
-      currentClip = preprocessedRect
+      self.currentClip = preprocessedRect
     }
-    backend.clip(rect: mergedClip!)
+    backend.clip(rect: mergedClip ?? DRect(min: .zero, size: .zero))
   }
 
   /**
