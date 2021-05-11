@@ -6,11 +6,6 @@ public protocol ReactiveProperty: AnyObject, Publisher {
   var value: Value { get }
 }
 
-extension ReactiveProperty {
-  public typealias Output = Value
-  public typealias Failure = Never
-}
-
 internal protocol ErasedInternalReactiveProperty {
   func notifyChange()
 }
@@ -43,7 +38,7 @@ extension InternalReactiveProperty {
     }
   }
 
-  public func receive<S: Subscriber>(subscriber: S) where Failure == S.Failure, Output == S.Input {
+  public func receive<S: Subscriber>(subscriber: S) where S.Input == Value, S.Failure == Never {
     let subscription = ReactivePropertySubscription(subscriber: AnySubscriber(subscriber))
     subscriptions.append(subscription)
     subscriber.receive(subscription: subscription)
@@ -72,6 +67,9 @@ internal class ReactivePropertySubscription<V>: Subscription {
 public class AnyReactiveProperty<V>: InternalReactiveProperty {
   public typealias Value = V
 
+  public typealias Output = Value
+  public typealias Failure = Never
+
   public var value: Value {
     didSet {
       notifyChange()
@@ -83,7 +81,7 @@ public class AnyReactiveProperty<V>: InternalReactiveProperty {
 
   var subscriptions: AnyReactiveProperty<V>.Subscriptions = []
 
-  public init<P: ReactiveProperty>(_ wrapped: P) where P.Value == V {
+  public init<P: ReactiveProperty>(_ wrapped: P) where P.Value == V, P.Output == V, P.Failure == Never {
     self.value = wrapped.value
     self.ownedWrapped = wrapped
     wrappedSubscription = wrapped.sink(receiveValue: { [unowned self] in

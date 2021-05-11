@@ -3,6 +3,8 @@ import CXShim
 @propertyWrapper
 public class MutableBinding<V>: InternalMutableReactiveProperty  {
   public typealias Value = V
+  public typealias Output = Value
+  public typealias Failure = Never
 
   public var value: Value {
     get {
@@ -42,7 +44,7 @@ public class MutableBinding<V>: InternalMutableReactiveProperty  {
   public init<Dependency: MutableReactiveProperty>(
     _ dependency: Dependency,
     get _get: @escaping (Dependency.Value) -> Value,
-    set _set: @escaping (Value) -> Dependency.Value) {
+    set _set: @escaping (Value) -> Dependency.Value) where Dependency.Failure == Never {
       self._get = { [dependency] in
         _get(dependency.value)
       }

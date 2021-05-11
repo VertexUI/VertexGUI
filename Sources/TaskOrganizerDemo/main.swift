@@ -1,5 +1,4 @@
 import VertexGUI
-import ApplicationBackendSDL2
 
 let app = try VertexGUI.Application()
 

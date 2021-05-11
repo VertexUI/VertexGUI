@@ -2,6 +2,8 @@ extension Widget {
   @propertyWrapper
   public class State<V>: InternalMutableReactiveProperty {
     public typealias Value = V
+    public typealias Output = Value
+    public typealias Failure = Never
 
     public var value: Value {
       get { wrappedValue }

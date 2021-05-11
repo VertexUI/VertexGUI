@@ -3,6 +3,8 @@ import CXShim
 @propertyWrapper
 public class ImmutableBinding<O>: InternalReactiveProperty {
   public typealias Value = O
+  public typealias Output = Value
+  public typealias Failure = Never
 
   public var value: Value {
     wrappedValue
@@ -25,7 +27,7 @@ public class ImmutableBinding<O>: InternalReactiveProperty {
 
   public init<DependencyValue, Dependency: ReactiveProperty>(
     _ dependency: Dependency,
-    get _get: @escaping (DependencyValue) -> Value) where Dependency.Value == DependencyValue {
+    get _get: @escaping (DependencyValue) -> Value) where Dependency.Value == DependencyValue, Dependency.Failure == Never {
       self._get = { [dependency] in
         _get(dependency.value)
       }

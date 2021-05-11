@@ -72,6 +72,8 @@ extension StylePropertyProtocol {
 public class AnyStyleProperty<V>: StylePropertyProtocol, InternalReactiveProperty {
   public typealias Container = Widget
   public typealias Value = V
+  public typealias Output = Value
+  public typealias Failure = Never
 
   weak var container: Container? {
     didSet {

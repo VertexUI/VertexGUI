@@ -86,7 +86,7 @@ let package = Package(
 
         .target(
             name: "VertexGUI",
-            dependencies: ["VisualAppBase", "WidgetGUI", "Events", "GfxMath", "Application", "Drawing"],
+            dependencies: ["VisualAppBase", "WidgetGUI", "Events", "GfxMath", "Application", "Drawing", "DrawingImplGL3NanoVG"],
             resources: [.process("Resources")]
         ),
 
