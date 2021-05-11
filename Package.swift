@@ -32,17 +32,20 @@ let package = Package(
         .package(name: "GfxMath", url: "https://github.com/UnGast/swift-gfx-math.git", .branch("master")),
         .package(url: "https://github.com/cx-org/CombineX.git", .branch("master")),
         .package(url: "https://github.com/mtynior/ColorizeSwift.git", from: "1.6.0"),
-        .package(name: "Fireblade", url: "https://github.com/fireblade-engine/engine.git", .branch("master"))
+        .package(name: "Fireblade", path: "../FirebladeEngine")
     ],
 
     targets: [
         .target(
             name: "Drawing",
-            dependencies: ["GfxMath", .product(name: "FirebladeHID", package: "Fireblade")]),/*
+            dependencies: ["GfxMath", .product(name: "FirebladeHID", package: "Fireblade")]),
+        .target(
+            name: "DrawingImplGL3NanoVG",
+            dependencies: ["Drawing", "GfxMath", .product(name: "FirebladeHID", package: "Fireblade"), .product(name: "CnanovgGL3", package: "Cnanovg")]),/*
         .target(
             name: "DrawingVulkan",
             dependencies: ["Drawing", "Vulkan", .product(name: "CSDL2Vulkan", package: "CSDL2")]),*/
-        .target(name: "Application", dependencies: ["WidgetGUI", .product(name: "FirebladeHID", package: "Fireblade")]),
+        .target(name: "Application", dependencies: ["WidgetGUI", .product(name: "FirebladeHID", package: "Fireblade"), "Drawing", "DrawingImplGL3NanoVG"]),
         /*.target(name: "ApplicationBackendSDL2", dependencies: ["Application", "Drawing", "CSDL2", "GfxMath", "CombineX"]),
         .target(
             name: "ApplicationBackendSDL2Vulkan", 

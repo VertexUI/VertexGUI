@@ -30,7 +30,7 @@ open class TodoApp: VertexGUI.Application {
     }*/
 }
 
-let app = TodoApp()
+let app = try TodoApp()
 
 do {
     try app.start()

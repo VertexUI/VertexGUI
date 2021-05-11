@@ -38,15 +38,6 @@
         }
       },
       {
-        "package": "Fireblade",
-        "repositoryURL": "https://github.com/fireblade-engine/engine.git",
-        "state": {
-          "branch": "master",
-          "revision": "496abb404d5141bfc19d0240d511972bff04352b",
-          "version": null
-        }
-      },
-      {
         "package": "FirebladeIO",
         "repositoryURL": "https://github.com/fireblade-engine/io.git",
         "state": {
