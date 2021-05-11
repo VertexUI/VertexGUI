@@ -3,7 +3,7 @@ import VisualAppBase
 import Events
 import GfxMath
 
-open class WidgetsApp: EventfulObject {
+open class OldApplication: EventfulObject {
     public private(set) var baseApp: VisualApp
     
     public private(set) var guiRoots: [Int: Root] = [:]
@@ -23,7 +23,7 @@ open class WidgetsApp: EventfulObject {
 
     /// - Parameter guiRoot: is an autoclosure. This ensures, that the window
     /// has already been created when the guiRoot is evaluated and e.g. the OpenGL context was created.
-    public func createWindow(
+    /*public func createWindow(
         guiRoot guiRootBuilder: @autoclosure () -> Root,
         options: Window.Options,
         immediate: Bool = false) -> Window {
@@ -117,7 +117,7 @@ open class WidgetsApp: EventfulObject {
 
     open func setup() {
 
-    }
+    }*/
 
     public func start() throws {
         try baseApp.start()

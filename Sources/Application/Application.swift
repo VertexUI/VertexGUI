@@ -1,7 +1,2 @@
-open class Application {
-  public let backend: ApplicationBackend
+import WidgetGUI
 
-  public init(backend: ApplicationBackend) {
-    self.backend = backend
-  }
-}
