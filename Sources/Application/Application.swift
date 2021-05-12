@@ -1,3 +1,5 @@
+import Foundation
+import CoreFoundation
 import WidgetGUI
 import HID
 import VisualAppBase
@@ -8,6 +10,8 @@ import GL
 
 open class Application {
   private var windowBunches: [WindowBunch] = []
+
+  private var event = Event()
 
   public init() throws {
     Platform.initialize()
@@ -46,36 +50,41 @@ open class Application {
   }
 
   public func start() throws {
-    mainLoop()
+    DispatchQueue.main.async { [unowned self] in
+      mainLoop()
+    }
+    dispatchMain()
   }
 
   private func mainLoop() {
-    var event = Event()
-
     var quit = false
 
-    while !quit {
-      Events.pumpEvents()
+    Events.pumpEvents()
 
-      while Events.pollEvent(&event) {
-        switch event.variant {
-          case .userQuit:
-            quit = true
-          case .window:
-            if case let .resizedTo(newSize) = event.window.action {
-              if let windowBunch = findWindowBunch(windowId: event.window.windowID) {
-                updateWindowBunchSize(windowBunch)
-              }
+    while Events.pollEvent(&event) {
+      switch event.variant {
+        case .userQuit:
+          quit = true
+        case .window:
+          if case let .resizedTo(newSize) = event.window.action {
+            if let windowBunch = findWindowBunch(windowId: event.window.windowID) {
+              updateWindowBunchSize(windowBunch)
             }
-          default:
-            forwardEvent(event: event)
-        }
+          }
+        default:
+          forwardEvent(event: event)
       }
-        
-      performNextTickAndFrame()
     }
+      
+    performNextTickAndFrame()
 
-    Platform.quit()
+    if quit {
+      Platform.quit()
+    } else {
+      DispatchQueue.main.async { [unowned self] in
+        mainLoop()
+      }
+    }
   }
 
   private func forwardEvent(event: Event) {
