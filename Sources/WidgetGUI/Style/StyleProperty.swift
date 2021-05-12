@@ -63,7 +63,7 @@ extension StylePropertyProtocol {
 
       resolvedValue = concreteDefaultValue
 
-    case let .some(value):
+    case let .value(value):
       resolvedValue = value
     }
   }
@@ -114,7 +114,7 @@ public class AnyStyleProperty<V>: StylePropertyProtocol, InternalReactivePropert
 
   public init(wrappedValue: Value, default defaultValue: StylePropertyValue<Value>? = nil) {
     self.concreteDefaultValue = wrappedValue
-    self.defaultValue = defaultValue ?? .some(wrappedValue)
+    self.defaultValue = defaultValue ?? .value(wrappedValue)
     self.styleValue = self.defaultValue
     self.resolvedValue = self.concreteDefaultValue
     self.updateResolvedValue()
