@@ -30,17 +30,17 @@ public struct StylePropertyValueDefinitionsBuilder<W: Widget> {
     )]
   }
 
-  public static func buildExpression<V, P: ReactiveProperty>(_ expression: (KeyPath<Widget, DefaultStyleProperty<V>>, P)) -> [StylePropertyValueDefinition] where P.Value == V, P.Output == V, P.Failure == Never {
+  public static func buildExpression<V, P: ReactiveProperty>(_ expression: (KeyPath<Widget, DefaultStyleProperty<V>>, P)) -> [StylePropertyValueDefinition] where P.Value == V {
     [StylePropertyValueDefinition(
       keyPath: expression.0,
-      value: .reactive(expression.1.map { AnyStylePropertyValue.some($0) }.eraseToAnyPublisher())
+      value: .reactive(expression.1.publisher.map { AnyStylePropertyValue.some($0) }.eraseToAnyPublisher())
     )]
   }
 
-  public static func buildExpression<V, P: ReactiveProperty>(_ expression: (KeyPath<W, AnySpecialStyleProperty<W, V>>, P)) -> [StylePropertyValueDefinition] where P.Value == V, P.Output == V, P.Failure == Never {
+  public static func buildExpression<V, P: ReactiveProperty>(_ expression: (KeyPath<W, AnySpecialStyleProperty<W, V>>, P)) -> [StylePropertyValueDefinition] where P.Value == V {
     [StylePropertyValueDefinition(
       keyPath: expression.0,
-      value: .reactive(expression.1.map { AnyStylePropertyValue.some($0) }.eraseToAnyPublisher())
+      value: .reactive(expression.1.publisher.map { AnyStylePropertyValue.some($0) }.eraseToAnyPublisher())
     )]
   }
 

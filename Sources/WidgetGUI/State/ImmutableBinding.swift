@@ -3,8 +3,6 @@ import CXShim
 @propertyWrapper
 public class ImmutableBinding<O>: InternalReactiveProperty {
   public typealias Value = O
-  public typealias Output = Value
-  public typealias Failure = Never
 
   public var value: Value {
     wrappedValue
@@ -14,25 +12,24 @@ public class ImmutableBinding<O>: InternalReactiveProperty {
   }
   private let _get: () ->Value 
 
+  lazy public private(set) var publisher = PropertyPublisher<Value>(getCurrentValue: { [weak self] in self?.value })
+
   lazy public var projectedValue = ReactivePropertyProjection<Value>(getImmutable: { [unowned self] in
     return ImmutableBinding(self, get: {
       $0
     })
-  }, receiveSubscriber: { [unowned self] in
-    self.receive(subscriber: $0)
-  })
-  var subscriptions: ImmutableBinding<Value>.Subscriptions = []
+  }, publisher: AnyPublisher(publisher))
 
   private var dependencySubscription: AnyCancellable?
 
   public init<DependencyValue, Dependency: ReactiveProperty>(
     _ dependency: Dependency,
-    get _get: @escaping (DependencyValue) -> Value) where Dependency.Value == DependencyValue, Dependency.Failure == Never {
+    get _get: @escaping (DependencyValue) -> Value) where Dependency.Value == DependencyValue {
       self._get = { [dependency] in
         _get(dependency.value)
       }
 
-      dependencySubscription = dependency.sink { [unowned self] _ in
+      dependencySubscription = dependency.publisher.sink { [unowned self] _ in
         notifyChange()
       }
   }

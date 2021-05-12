@@ -27,7 +27,7 @@ let package = Package(
         //.package(url: "https://github.com/UnGast/CSDL2.git", .branch("master")),
         //.package(name: "Vulkan", url: "https://github.com/UnGast/SwiftVulkan.git", .branch("master")),
         .package(name: "GL", url: "https://github.com/UnGast/swift-opengl.git", .branch("master")),
-        .package(name: "Swim", url: "https://github.com/t-ae/swim.git", .branch("master")),
+        .package(name: "Swim", url: "https://github.com/t-ae/swim.git", from: "3.9.0"),
         .package(url: "https://github.com/UnGast/Cnanovg.git", .branch("master")),
         .package(name: "GfxMath", url: "https://github.com/UnGast/swift-gfx-math.git", .branch("master")),
         .package(url: "https://github.com/cx-org/CombineX.git", .branch("master")),

@@ -18,7 +18,7 @@ public class ImageView: LeafWidget {
         super.init()
         
         var oldImageSize = (image.width, image.height)
-        self.imageSubscription = $image.sink { [unowned self] newImage in
+        self.imageSubscription = $image.publisher.sink { [unowned self] newImage in
             let newImageSize = (newImage.width, newImage.height)
             if oldImageSize != newImageSize {
                 oldImageSize = newImageSize

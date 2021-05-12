@@ -1,9 +1,9 @@
+import CXShim
+
 extension Widget {
   @propertyWrapper
   public class State<V>: InternalMutableReactiveProperty {
     public typealias Value = V
-    public typealias Output = Value
-    public typealias Failure = Never
 
     public var value: Value {
       get { wrappedValue }
@@ -15,6 +15,8 @@ extension Widget {
       }
     }
 
+    lazy public private(set) var publisher = PropertyPublisher<Value>(getCurrentValue: { [weak self] in self?.value })
+
     lazy public var projectedValue = MutableReactivePropertyProjection<Value>(getImmutable: { [unowned self] in
       ImmutableBinding(self, get: {
         $0
@@ -25,11 +27,7 @@ extension Widget {
       }, set: {
         $0
       })
-    }, receiveSubscriber: { [unowned self] in
-      self.receive(subscriber: $0)
-    })
-
-    var subscriptions: State<V>.Subscriptions = []
+    }, publisher: AnyPublisher(publisher))
 
     public init(wrappedValue: Value) {
       self.wrappedValue = wrappedValue

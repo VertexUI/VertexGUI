@@ -53,7 +53,7 @@ extension StylePropertyProtocol {
         for child in mirror.allChildren {
           if child.label == name, let property = child.value as? AnyStyleProperty<Value> {
             resolvedValue = property.resolvedValue
-            parentValueSubscription = property.sink { [unowned self] in
+            parentValueSubscription = property.publisher.sink { [unowned self] in
               resolvedValue = $0
             }
             break outerSwitch
@@ -72,8 +72,6 @@ extension StylePropertyProtocol {
 public class AnyStyleProperty<V>: StylePropertyProtocol, InternalReactiveProperty {
   public typealias Container = Widget
   public typealias Value = V
-  public typealias Output = Value
-  public typealias Failure = Never
 
   weak var container: Container? {
     didSet {
@@ -86,6 +84,8 @@ public class AnyStyleProperty<V>: StylePropertyProtocol, InternalReactivePropert
 
   var concreteDefaultValue: Value
   var defaultValue: StylePropertyValue<Value>
+
+  lazy public private(set) var publisher = PropertyPublisher<Value>(getCurrentValue: { [weak self] in self?.value })
 
   var definitionValue: StylePropertyValueDefinition.Value? = nil {
     didSet {
@@ -111,8 +111,6 @@ public class AnyStyleProperty<V>: StylePropertyProtocol, InternalReactivePropert
   public var value: Value {
     resolvedValue
   }
-
-  var subscriptions: AnyStyleProperty<V>.Subscriptions = []
 
   public init(wrappedValue: Value, default defaultValue: StylePropertyValue<Value>? = nil) {
     self.concreteDefaultValue = wrappedValue

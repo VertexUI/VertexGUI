@@ -140,9 +140,9 @@
         "package": "Swim",
         "repositoryURL": "https://github.com/t-ae/swim.git",
         "state": {
-          "branch": "master",
+          "branch": null,
           "revision": "e8e3dc5f6a6f58af40a5c341cb7fbf0d7324dc74",
-          "version": null
+          "version": "3.9.0"
         }
       },
       {
