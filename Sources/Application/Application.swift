@@ -7,6 +7,8 @@ import Drawing
 import DrawingImplGL3NanoVG
 import GfxMath
 import GL
+import SkiaKit
+import CSkia
 
 open class Application {
   private var windowBunches: [WindowBunch] = []
@@ -32,9 +34,18 @@ open class Application {
         fatalError("no window surface")
     }
 
-    let drawingBackend = GL3NanoVGDrawingBackend(surface: surface)
+    let surfaceSize = surface.getDrawableSize()
 
-    let windowBunch = WindowBunch(window: window, widgetRoot: widgetRoot, drawingContext: DrawingContext(backend: drawingBackend))
+    var buffer: GLMap.Int = 0
+    glGetIntegerv(GLMap.DRAW_FRAMEBUFFER_BINDING, &buffer);
+
+    let skiaSurface = SkiaKit.Surface(handle: makeSurface(Int32(surfaceSize.width), Int32(surfaceSize.height), buffer))
+
+    let canvas = skiaSurface.canvas
+
+    let drawingBackend = MockDrawingBackend() //GL3NanoVGDrawingBackend(surface: surface)
+
+    let windowBunch = WindowBunch(window: window, widgetRoot: widgetRoot, drawingContext: DrawingContext(backend: drawingBackend), canvas: canvas)
 
     widgetRoot.setup(
       measureText: { [unowned drawingBackend] text, paint in drawingBackend.measureText(text: text, paint: paint) },
@@ -149,8 +160,10 @@ open class Application {
       bunch.widgetRoot.tick(Tick(deltaTime: 0, totalTime: 0))
 
       bunch.drawingContext.backend.activate()
-      bunch.widgetRoot.draw(bunch.drawingContext)
+      bunch.widgetRoot.draw(bunch.drawingContext, canvas: bunch.canvas)
       bunch.drawingContext.backend.deactivate()
+
+      bunch.canvas.flush()
 
       if let surface = bunch.window.surface as? SDLOpenGLWindowSurface {
         surface.swap()
@@ -176,11 +189,13 @@ extension Application {
     public var window: HID.Window
     public var widgetRoot: Root
     public var drawingContext: DrawingContext
+    public var canvas: SkiaKit.Canvas
 
-    public init(window: HID.Window, widgetRoot: Root, drawingContext: DrawingContext) {
+    public init(window: HID.Window, widgetRoot: Root, drawingContext: DrawingContext, canvas: SkiaKit.Canvas) {
       self.window = window
       self.widgetRoot = widgetRoot
       self.drawingContext = drawingContext
+      self.canvas = canvas
     }
   }
 }

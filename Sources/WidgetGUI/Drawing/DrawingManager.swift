@@ -1,5 +1,6 @@
 import VisualAppBase
 import GfxMath
+import SkiaKit
 import Drawing
 
 public class DrawingManager {
@@ -9,7 +10,7 @@ public class DrawingManager {
     self.rootWidget = rootWidget
   }
 
-  public func processQueue(_ queue: Widget.LifecycleMethodInvocationQueue, drawingContext: DrawingContext) {
+  public func processQueue(_ queue: Widget.LifecycleMethodInvocationQueue, drawingContext: DrawingContext, canvas: SkiaKit.Canvas) {
     var iterationStates = [(Parent?, DrawingContext, Array<Widget>.Iterator)]()
     iterationStates.append((nil, drawingContext, [rootWidget].makeIterator()))
 
@@ -48,6 +49,12 @@ public class DrawingManager {
 
           if widget.background != .transparent {
             childDrawingContext.drawRect(rect: DRect(min: .zero, size: widget.layoutedSize), paint: Paint(color: widget.background))
+
+            let paint = Paint()
+            paint.color = Colors.yellow
+            paint.style = .fill
+            paint.isAntialias = true
+            canvas.drawRect(Rect(x: 0, y: 0, width: 200, height: 200), paint)
           }
 
           // TODO: probably the border should be drawn after all children have been drawn, to avoid the border being overlpassed

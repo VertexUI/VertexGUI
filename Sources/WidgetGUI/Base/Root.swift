@@ -1,5 +1,6 @@
 import Foundation
 import GfxMath
+import SkiaKit
 import Drawing
 import Dispatch
 import VisualAppBase
@@ -244,7 +245,7 @@ open class Root: Parent {
     return stepData
   }
 
-  open func draw(_ drawingContext: DrawingContext) {
+  open func draw(_ drawingContext: DrawingContext, canvas: SkiaKit.Canvas) {
     var operation = DrawOperationDebugData()
     operation.recordStart()
 
@@ -253,7 +254,7 @@ open class Root: Parent {
     rootDrawingContext.transform(.scale(DVec2(scale, scale)))
     rootDrawingContext.lock()
 
-    drawingManager.processQueue(widgetLifecycleManager.queues[.draw]!, drawingContext: rootDrawingContext)
+    drawingManager.processQueue(widgetLifecycleManager.queues[.draw]!, drawingContext: rootDrawingContext, canvas: canvas)
     widgetLifecycleManager.queues[.draw]?.clear()
 
     operation.recordEnd()

@@ -32,7 +32,8 @@ let package = Package(
         .package(name: "GfxMath", url: "https://github.com/UnGast/swift-gfx-math.git", .branch("master")),
         .package(url: "https://github.com/cx-org/CombineX.git", .branch("master")),
         .package(url: "https://github.com/mtynior/ColorizeSwift.git", from: "1.6.0"),
-        .package(name: "Fireblade", path: "../FirebladeEngine")
+        .package(name: "Fireblade", path: "../FirebladeEngine"),
+        .package(path: "../SkiaKit")
     ],
 
     targets: [
@@ -60,7 +61,7 @@ let package = Package(
 
         .target(
             name: "WidgetGUI",
-            dependencies: ["VisualAppBase", "Events", .product(name: "CXShim", package: "CombineX"), "GfxMath", "ColorizeSwift", "Drawing"],
+            dependencies: ["VisualAppBase", "Events", .product(name: "CXShim", package: "CombineX"), "GfxMath", "ColorizeSwift", "Drawing", "SkiaKit"],
             resources: [.process("Resources")]
         ),
 
