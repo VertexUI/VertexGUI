@@ -159,9 +159,11 @@ open class Application {
 
       bunch.widgetRoot.tick(Tick(deltaTime: 0, totalTime: 0))
 
-      bunch.drawingContext.backend.activate()
+      bunch.canvas.clear()
+      
+     // bunch.drawingContext.backend.activate()
       bunch.widgetRoot.draw(bunch.drawingContext, canvas: bunch.canvas)
-      bunch.drawingContext.backend.deactivate()
+      //bunch.drawingContext.backend.deactivate()
 
       bunch.canvas.flush()
 

@@ -11,25 +11,32 @@ public class DrawingManager {
   }
 
   public func processQueue(_ queue: Widget.LifecycleMethodInvocationQueue, drawingContext: DrawingContext, canvas: SkiaKit.Canvas) {
-    var iterationStates = [(Parent?, DrawingContext, Array<Widget>.Iterator)]()
-    iterationStates.append((nil, drawingContext, [rootWidget].makeIterator()))
+    /*var iterationStates = [(Parent?, DrawingContext, CanvasState, Array<Widget>.Iterator)]()
+    iterationStates.append((nil, drawingContext, CanvasState(), [rootWidget].makeIterator()))*/
 
-    outer: while var (parent, parentDrawingContext, iterator) = iterationStates.last {
-      while let widget = iterator.next() {
-        iterationStates[iterationStates.count - 1].2 = iterator
+    var drawStack = [DrawingStackItem]()
+    drawStack.append(DrawingStackItem(
+      parent: nil,
+      parentCanvasState: CanvasState(),
+      childrenIterator: [rootWidget].makeIterator()))
+
+    outer: while var stackItem = drawStack.last {
+      while let widget = stackItem.childrenIterator.next() {
+        //(parent, parentDrawingContext, iterator)
+        //iterationStates[iterationStates.count - 1].2 = iterator
 
         if widget.visibility == .visible && widget.opacity > 0 {
-          let childDrawingContext: DrawingContext = parentDrawingContext.clone()
+         // let childDrawingContext: DrawingContext = parentDrawingContext.clone()
           
-          childDrawingContext.opacity = widget.opacity
-          childDrawingContext.transform(.translate(widget.layoutedPosition))
-          childDrawingContext.transform(widget.transform)
+          //childDrawingContext.opacity = widget.opacity
+          //childDrawingContext.transform(.translate(widget.layoutedPosition))
+          //childDrawingContext.transform(widget.transform)
           // TODO: maybe the scrolling translation should be added to the parent widget context before adding the iterator to the list?
           if !widget.unaffectedByParentScroll, let parent = widget.parent as? Widget, parent.overflowX == .scroll || parent.overflowY == .scroll {
-            childDrawingContext.transform(.translate(-parent.currentScrollOffset))
+            //childDrawingContext.transform(.translate(-parent.currentScrollOffset))
           }
           if widget.overflowX == .cut || widget.overflowX == .scroll || widget.overflowY == .cut || widget.overflowY == .scroll {
-            let translationTestRect = drawingContext.preprocess(DRect(min: .zero, size: widget.layoutedSize))
+            /*let translationTestRect = drawingContext.preprocess(DRect(min: .zero, size: widget.layoutedSize))
             var clipRect = translationTestRect
 
             if widget.overflowX == .cut || widget.overflowX == .scroll {
@@ -41,48 +48,47 @@ public class DrawingManager {
               clipRect.size.y = widget.layoutedSize.height
             }
 
-            childDrawingContext.clip(rect: clipRect)
+            childDrawingContext.clip(rect: clipRect)*/
           }
-          childDrawingContext.lock()
+          //childDrawingContext.lock()
 
-          childDrawingContext.beginDrawing()
+          //childDrawingContext.beginDrawing()
 
           if widget.background != .transparent {
-            childDrawingContext.drawRect(rect: DRect(min: .zero, size: widget.layoutedSize), paint: Paint(color: widget.background))
+            //childDrawingContext.drawRect(rect: DRect(min: .zero, size: widget.layoutedSize), paint: Paint(color: widget.background))
 
-            let paint = Paint()
-            paint.color = Colors.yellow
-            paint.style = .fill
-            paint.isAntialias = true
-            canvas.drawRect(Rect(x: 0, y: 0, width: 200, height: 200), paint)
+            let paint = Paint(color: widget.background, style: .fill, isAntialias: true)
+            canvas.drawRect(DRect(min: .zero, size: widget.layoutedSize), paint)
+            print("DRAW BACKGORUND", widget)
           }
 
           // TODO: probably the border should be drawn after all children have been drawn, to avoid the border being overlpassed
           if widget.borderColor != .transparent && widget.borderWidth != .zero {
-            drawBorders(childDrawingContext, widget: widget)
+            //drawBorders(childDrawingContext, widget: widget)
           }
 
           if widget.padding.left != 0 || widget.padding.top != 0 {
-            childDrawingContext.transform(.translate(DVec2(widget.padding.left, widget.padding.top)))
+            //childDrawingContext.transform(.translate(DVec2(widget.padding.left, widget.padding.top)))
           }
 
-          childDrawingContext.lock()
+          //childDrawingContext.lock()
 
           if let leafWidget = widget as? LeafWidget {
-            leafWidget.draw(childDrawingContext)
+            //leafWidget.draw(childDrawingContext)
           }
 
-          childDrawingContext.endDrawing()
+          //childDrawingContext.endDrawing()
 
           if !(widget is LeafWidget) {
-            iterationStates.append((widget, childDrawingContext, widget.children.makeIterator()))
+            //iterationStates.append((widget, childDrawingContext, widget.children.makeIterator()))
+            drawStack.append(DrawingStackItem(parent: widget, parentCanvasState: CanvasState(), childrenIterator: widget.children.makeIterator()))
             continue outer
           }
         }
       }
 
-      if let parent = parent as? Widget, parent.debugLayout {
-        drawingContext.drawRect(rect: parent.globalBounds, paint: Paint(strokeWidth: 2.0, strokeColor: .red))
+      if let parent = stackItem.parent, parent.debugLayout {
+        //drawingContext.drawRect(rect: parent.globalBounds, paint: Paint(strokeWidth: 2.0, strokeColor: .red))
       }
 
       /*if let parent = parent as? Widget, parent.scrollingEnabled.x || parent.scrollingEnabled.y {
@@ -91,7 +97,8 @@ public class DrawingManager {
         parentDrawingContext.endDrawing()
       }*/
 
-      iterationStates.removeLast()
+      //iterationStates.removeLast()
+      drawStack.removeLast()
     }
   }
 
@@ -121,6 +128,23 @@ public class DrawingManager {
       drawingContext.drawLine(
         from: DVec2(widget.borderWidth.left / 2, 0), to: DVec2(widget.borderWidth.left / 2, widget.layoutedSize.height),
         paint: Paint(strokeWidth: widget.borderWidth.left, strokeColor: widget.borderColor))
+    }
+  }
+
+  private struct CanvasState {
+    var transforms: [DTransform2] = []
+    var clipRect: DRect?
+  }
+
+  private class DrawingStackItem {
+    var parent: Widget?
+    var parentCanvasState: CanvasState
+    var childrenIterator: Array<Widget>.Iterator
+
+    init(parent: Widget?, parentCanvasState: CanvasState, childrenIterator: Array<Widget>.Iterator) {
+      self.parent = parent
+      self.parentCanvasState = parentCanvasState
+      self.childrenIterator = childrenIterator
     }
   }
 }
