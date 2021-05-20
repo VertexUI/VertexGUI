@@ -34,14 +34,9 @@ open class Application {
         fatalError("no window surface")
     }
 
-    let surfaceSize = surface.getDrawableSize()
+    surface.glContext.makeCurrent()
 
-    var buffer: GLMap.Int = 0
-    glGetIntegerv(GLMap.DRAW_FRAMEBUFFER_BINDING, &buffer);
-
-    let skiaSurface = SkiaKit.Surface(handle: makeSurface(Int32(surfaceSize.width), Int32(surfaceSize.height), buffer))
-
-    let canvas = skiaSurface.canvas
+    let canvas = getCanvas(for: surface)
 
     let drawingBackend = MockDrawingBackend() //GL3NanoVGDrawingBackend(surface: surface)
 
@@ -174,11 +169,24 @@ open class Application {
   }
 
   private func updateWindowBunchSize(_ windowBunch: WindowBunch) {
-    guard let surface = windowBunch.window.surface else {
+    guard let surface = windowBunch.window.surface as? SDLOpenGLWindowSurface else {
       fatalError("window must have a surface")
     }
+    surface.glContext.makeCurrent()
+    windowBunch.canvas = getCanvas(for: surface)
     let drawableSize = surface.getDrawableSize()
     windowBunch.widgetRoot.bounds.size = DSize2(Double(drawableSize.width), Double(drawableSize.height))
+  }
+
+  private func getCanvas(for surface: OpenGLWindowSurface) -> Canvas {
+    let surfaceSize = surface.getDrawableSize()
+
+    var buffer: GLMap.Int = 0
+    glGetIntegerv(GLMap.DRAW_FRAMEBUFFER_BINDING, &buffer);
+
+    let skiaSurface = SkiaKit.Surface(handle: makeSurface(Int32(surfaceSize.width), Int32(surfaceSize.height), buffer))
+
+    return skiaSurface.canvas
   }
 
   private func findWindowBunch(windowId: Int) -> WindowBunch? {

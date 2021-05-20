@@ -26,11 +26,14 @@ public class DrawingManager {
         //iterationStates[iterationStates.count - 1].2 = iterator
 
         if widget.visibility == .visible && widget.opacity > 0 {
+          var canvasState = stackItem.parentCanvasState
+
          // let childDrawingContext: DrawingContext = parentDrawingContext.clone()
           
           //childDrawingContext.opacity = widget.opacity
           //childDrawingContext.transform(.translate(widget.layoutedPosition))
           //childDrawingContext.transform(widget.transform)
+          canvasState.transforms.append(.translate(widget.layoutedPosition))
           // TODO: maybe the scrolling translation should be added to the parent widget context before adding the iterator to the list?
           if !widget.unaffectedByParentScroll, let parent = widget.parent as? Widget, parent.overflowX == .scroll || parent.overflowY == .scroll {
             //childDrawingContext.transform(.translate(-parent.currentScrollOffset))
@@ -54,34 +57,40 @@ public class DrawingManager {
 
           //childDrawingContext.beginDrawing()
 
+          apply(canvasState: canvasState, to: canvas)
+
           if widget.background != .transparent {
             //childDrawingContext.drawRect(rect: DRect(min: .zero, size: widget.layoutedSize), paint: Paint(color: widget.background))
 
             let paint = Paint(color: widget.background, style: .fill, isAntialias: true)
             canvas.drawRect(DRect(min: .zero, size: widget.layoutedSize), paint)
-            print("DRAW BACKGORUND", widget)
+            canvas.flush()
           }
 
           // TODO: probably the border should be drawn after all children have been drawn, to avoid the border being overlpassed
           if widget.borderColor != .transparent && widget.borderWidth != .zero {
-            //drawBorders(childDrawingContext, widget: widget)
+            drawBorders(widget: widget, canvas: canvas)
+            canvas.flush()
           }
 
           if widget.padding.left != 0 || widget.padding.top != 0 {
             //childDrawingContext.transform(.translate(DVec2(widget.padding.left, widget.padding.top)))
+            canvasState.transforms.append(.translate(DVec2(widget.padding.left, widget.padding.top)))
+            apply(canvasState: canvasState, to: canvas)
           }
 
           //childDrawingContext.lock()
 
           if let leafWidget = widget as? LeafWidget {
-            //leafWidget.draw(childDrawingContext)
+            leafWidget.draw(drawingContext, canvas: canvas)
           }
+          canvas.flush()
 
           //childDrawingContext.endDrawing()
 
           if !(widget is LeafWidget) {
             //iterationStates.append((widget, childDrawingContext, widget.children.makeIterator()))
-            drawStack.append(DrawingStackItem(parent: widget, parentCanvasState: CanvasState(), childrenIterator: widget.children.makeIterator()))
+            drawStack.append(DrawingStackItem(parent: widget, parentCanvasState: canvasState, childrenIterator: widget.children.makeIterator()))
             continue outer
           }
         }
@@ -100,34 +109,51 @@ public class DrawingManager {
       //iterationStates.removeLast()
       drawStack.removeLast()
     }
+
+    /*canvas.clear(color: Colors.yellow)
+    canvas.translate(dx: 100, dy: 100)
+    canvas.drawRect(DRect(min: DVec2(20,20), max: DVec2(1000, 1000)), Paint(color: .black, style: .fill, isAntialias: true))*/
   }
 
-  private func drawBorders(_ drawingContext: DrawingContext, widget: Widget) {
+  private func drawBorders(widget: Widget, canvas: Canvas) {
     if widget.borderWidth.top > 0 {
-      drawingContext.drawLine(
-        from: DVec2(0, widget.borderWidth.top / 2),
-        to: DVec2(widget.layoutedSize.width, widget.borderWidth.top / 2),
-        paint: Paint(strokeWidth: widget.borderWidth.top, strokeColor: widget.borderColor))
+      canvas.drawLine(
+        DVec2(0, widget.borderWidth.top / 2),
+        DVec2(widget.layoutedSize.width, widget.borderWidth.top / 2),
+        paint: Paint(stroke: widget.borderColor, width: widget.borderWidth.top))
     }
 
     if widget.borderWidth.right > 0 {
-      drawingContext.drawLine(
-        from: DVec2(widget.layoutedSize.width - widget.borderWidth.right / 2, 0),
-        to: DVec2(widget.layoutedSize.width - widget.borderWidth.right / 2, widget.layoutedSize.height),
-        paint: Paint(strokeWidth: widget.borderWidth.right, strokeColor: widget.borderColor))
+      canvas.drawLine(
+        DVec2(widget.layoutedSize.width - widget.borderWidth.right / 2, 0),
+        DVec2(widget.layoutedSize.width - widget.borderWidth.right / 2, widget.layoutedSize.height),
+        paint: Paint(stroke: widget.borderColor, width: widget.borderWidth.right))
     }
 
     if widget.borderWidth.bottom > 0 {
-      drawingContext.drawLine(
-        from: DVec2(0, widget.layoutedSize.height - widget.borderWidth.bottom / 2),
-        to: DVec2(widget.layoutedSize.width, widget.layoutedSize.height - widget.borderWidth.bottom / 2),
-        paint: Paint(strokeWidth: widget.borderWidth.bottom, strokeColor: widget.borderColor))
+      canvas.drawLine(
+        DVec2(0, widget.layoutedSize.height - widget.borderWidth.bottom / 2),
+        DVec2(widget.layoutedSize.width, widget.layoutedSize.height - widget.borderWidth.bottom / 2),
+        paint: Paint(stroke: widget.borderColor, width: widget.borderWidth.bottom))
     }
 
     if widget.borderWidth.left > 0 {
-      drawingContext.drawLine(
-        from: DVec2(widget.borderWidth.left / 2, 0), to: DVec2(widget.borderWidth.left / 2, widget.layoutedSize.height),
-        paint: Paint(strokeWidth: widget.borderWidth.left, strokeColor: widget.borderColor))
+      canvas.drawLine(
+        DVec2(widget.borderWidth.left / 2, 0),
+        DVec2(widget.borderWidth.left / 2, widget.layoutedSize.height),
+        paint: Paint(stroke: widget.borderColor, width: widget.borderWidth.left))
+    }
+  }
+
+  private func apply(canvasState: CanvasState, to canvas: Canvas) {
+    canvas.resetMatrix()
+    for transform in canvasState.transforms.reversed() {
+      switch transform {
+        case let .translate(translation):
+          canvas.translate(dx: Float(translation.x), dy: Float(translation.y))
+        default:
+          break
+      }
     }
   }
 
