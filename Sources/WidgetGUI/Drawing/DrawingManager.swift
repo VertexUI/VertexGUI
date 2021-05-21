@@ -63,7 +63,7 @@ public class DrawingManager {
             //childDrawingContext.drawRect(rect: DRect(min: .zero, size: widget.layoutedSize), paint: Paint(color: widget.background))
 
             let paint = Paint(color: widget.background, style: .fill, isAntialias: true)
-            canvas.drawRect(DRect(min: .zero, size: widget.layoutedSize), paint)
+            canvas.drawRect(DRect(min: .zero, size: widget.layoutedSize), paint: paint)
             canvas.flush()
           }
 
