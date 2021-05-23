@@ -77,6 +77,10 @@ open class Application {
               updateWindowBunchSize(windowBunch)
             }
           }
+        case .textInput:
+          print("text input", event.textInput)
+        case .textEditing:
+          print("text editing", event.textEditing)
         default:
           forwardEvent(event: event)
       }

@@ -212,7 +212,6 @@ public final class TextInput: ContentfulWidget
   }
 
   public func drawCaret(_ canvas: Canvas) {
-    print("TODO implement draw caret with canvas")
     /*let timestamp = context.applicationTime
     caretBlinkTime += timestamp - lastDrawTimestamp
     lastDrawTimestamp = timestamp
