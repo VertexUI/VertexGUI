@@ -42,17 +42,8 @@
         "repositoryURL": "https://github.com/UnGast/CVulkan.git",
         "state": {
           "branch": "master",
-          "revision": "85baa86d58b602191f40b01103bd24dafba642e3",
+          "revision": "d7b422f0f5ef93b41bc1199e306ac74e6950eb10",
           "version": null
-        }
-      },
-      {
-        "package": "Path.swift",
-        "repositoryURL": "https://github.com/mxcl/Path.swift.git",
-        "state": {
-          "branch": null,
-          "revision": "142d4bc1118602f3679c777d2e0da89c227cd918",
-          "version": "1.2.0"
         }
       },
       {
@@ -69,17 +60,17 @@
         "repositoryURL": "https://github.com/apple/swift-argument-parser",
         "state": {
           "branch": null,
-          "revision": "831ed5e860a70e745bc1337830af4786b2576881",
-          "version": "0.4.1"
+          "revision": "986d191f94cec88f6350056da59c2e59e83d1229",
+          "version": "0.4.3"
         }
       },
       {
         "package": "GfxMath",
         "repositoryURL": "https://github.com/UnGast/swift-gfx-math.git",
         "state": {
-          "branch": "master",
-          "revision": "74c4b6cc6eb804bd2e188db6af82bac9bf0defaa",
-          "version": null
+          "branch": null,
+          "revision": "af8affa142ac61ff2b95857a145aabcc7dd9a7bc",
+          "version": "1.0.0"
         }
       },
       {
@@ -96,7 +87,7 @@
         "repositoryURL": "https://github.com/UnGast/SwiftVulkan.git",
         "state": {
           "branch": "master",
-          "revision": "c9af46ce85dc6eba783914f07735792f971b14ee",
+          "revision": "fc87e607bf2a80fbcc7c54d692aa3c9b2fbc79fc",
           "version": null
         }
       },
@@ -114,7 +105,7 @@
         "repositoryURL": "https://github.com/yahoojapan/SwiftyXMLParser.git",
         "state": {
           "branch": "master",
-          "revision": "ec7f183642adf429babd867d1a38c5c6912408ba",
+          "revision": "b7beef45ecba2df71ac831245f71141ec0efb1fb",
           "version": null
         }
       },

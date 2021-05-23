@@ -29,7 +29,7 @@ let package = Package(
         .package(name: "GL", url: "https://github.com/UnGast/swift-opengl.git", .branch("master")),
         .package(name: "Swim", url: "https://github.com/t-ae/swim.git", .branch("master")),
         .package(url: "https://github.com/UnGast/Cnanovg.git", .branch("master")),
-        .package(name: "GfxMath", url: "https://github.com/UnGast/swift-gfx-math.git", .branch("master")),
+        .package(name: "GfxMath", url: "https://github.com/UnGast/swift-gfx-math.git", .exact("1.0.0")),
         .package(url: "https://github.com/cx-org/CombineX.git", .branch("master")),
         .package(url: "https://github.com/mtynior/ColorizeSwift.git", from: "1.6.0")
     ],
