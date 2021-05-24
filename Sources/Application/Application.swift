@@ -69,25 +69,8 @@ open class Application {
       }
 
       let canvas = skiaSurface.canvas
-      canvas.clear(color: Colors.white)
 
-      let font = Font()
-      font.size = 64
-      var paint = Paint()
-      paint.isAntialias = true
-      paint.color = Color (0xff4281a4)
-      paint.isStroke = false
-      
-      canvas.draw (text: "SkiaKit", x: 20, y: 64, font: font, paint: paint)
-
-      canvas.flush()
-
-      guard let pixmap = skiaSurface.peekPixels() else {
-        fatalError("could not peek")
-      }
-
-      let writeStream = SKFileWStream(path: "testout.png")!
-      Pixmap.encode(dest: writeStream, src: pixmap, encoder: .png, quality: 100)
+      fatalError("cpu backend not fully implemented yet")
 
     } else {
       fatalError("graphics mode \(graphicsMode) not implemented")

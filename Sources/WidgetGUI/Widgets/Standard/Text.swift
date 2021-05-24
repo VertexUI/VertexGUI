@@ -31,10 +31,11 @@ public class Text: LeafWidget {
   }
   
   override public func performLayout(constraints: BoxConstraints) -> DSize2 {
-    let boundedText = transformedText.isEmpty ? " " : transformedText
+    let nonEmptyTransformedText = transformedText.isEmpty ? " " : transformedText
 
-    var textSizeMeasurement = DSize2.zero//context.measureText(text: boundedText, paint: TextPaint(fontConfig: fontConfig, color: foreground))
-    
+    var textSizeMeasurement = measureText(nonEmptyTransformedText)//context.measureText(text: boundedText, paint: TextPaint(fontConfig: fontConfig, color: foreground))
+
+    // keep height, so that there is no layout position update when text changes to non empty
     if transformedText.isEmpty {
       textSizeMeasurement.width = 0
     }
@@ -48,15 +49,27 @@ public class Text: LeafWidget {
 
   override public func draw(_ drawingContext: DrawingContext, canvas: Canvas) {
     if self.transformedText.count > 0 {
-      let font = Font()
-      font.size = Float(fontSize)
-      canvas.draw(text: self.transformedText, x: 0, y: 0, font: font, paint: Paint(fill: foreground))
+      let font = createFont()
+      let paint = createPaint()
+      canvas.draw(text: self.transformedText, x: 0, y: 0, font: font, paint: paint)
     }
     //drawingContext.drawText(text: self.transformedText, position: .zero, paint: TextPaint(fontConfig: fontConfig, color: foreground))
   }
 
   public func measureText(_ text: String) -> DSize2 {
     //context.measureText(text: text, paint: TextPaint(fontConfig: fontConfig, color: foreground))
-    .zero
+    let font = createFont()
+    let paint = createPaint()
+    return font.measureText(self.transformedText, paint: paint).size
+  }
+
+  private func createPaint() -> SkiaKit.Paint {
+    Paint(fill: foreground)
+  }
+
+  private func createFont() -> SkiaKit.Font {
+    let font = Font()
+    font.size = Float(fontSize)
+    return font
   }
 }
