@@ -145,7 +145,7 @@ public final class TextInput: ContentfulWidget
     var previousSubstringSize = DSize2.zero
 
     for i in 0..<text.count {
-      let currentSubstringSize = textWidget.measureText(String(text.prefix(i + 1)))
+      let currentSubstringSize = textWidget.measureText(String(text.prefix(i + 1))).size
       let currentLetterMiddleX = previousSubstringSize.x + (currentSubstringSize.x - previousSubstringSize.x) / 2
 
       if localX > currentLetterMiddleX {
