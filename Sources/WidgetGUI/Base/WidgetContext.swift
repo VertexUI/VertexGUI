@@ -6,7 +6,6 @@ import Drawing
 public class WidgetContext {
     private var _requestCursor: (_ cursor: Cursor) -> () -> Void
     private let _getKeyStates: () -> KeyStatesContainer
-    public internal(set) var debugLayout: Bool = false
     private let _getApplicationTime: () -> Double
     public var applicationTime: Double {
         _getApplicationTime()

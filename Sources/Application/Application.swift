@@ -181,10 +181,9 @@ open class Application {
 
       bunch.canvas.clear()
       bunch.canvas.resetMatrix()
+      bunch.canvas.flush()
 
-      bunch.drawingContext.backend.activate()
       bunch.widgetRoot.draw(bunch.drawingContext, canvas: bunch.canvas)
-      bunch.drawingContext.backend.deactivate()
 
       bunch.canvas.flush()
 

@@ -83,20 +83,29 @@ public class DrawingManager {
 
           if let leafWidget = widget as? LeafWidget {
             leafWidget.draw(drawingContext, canvas: canvas)
+            canvas.flush()
           }
-          canvas.flush()
-
-          //childDrawingContext.endDrawing()
-
+          
           if !(widget is LeafWidget) {
             //iterationStates.append((widget, childDrawingContext, widget.children.makeIterator()))
             drawStack.append(DrawingStackItem(parent: widget, parentCanvasState: canvasState, childrenIterator: widget.children.makeIterator()))
             continue outer
           }
+
+          // this debug border will only be drawn for leaf widgets (after it's contents have been drawn)
+          if widget.debugLayout {
+            canvas.drawRect(DRect(min: .zero, size: widget.globalBounds.size), paint: Paint(stroke: .red, width: 2.0))
+            canvas.flush()
+            //drawingContext.drawRect(rect: parent.globalBounds, paint: Paint(strokeWidth: 2.0, strokeColor: .red))
+          }
         }
       }
 
+      // this debug border will only be drawn for non-leaf widgets (after it's sub widgets have been drawn)
       if let parent = stackItem.parent, parent.debugLayout {
+        apply(canvasState: stackItem.parentCanvasState, to: canvas)
+        canvas.drawRect(DRect(min: .zero, size: parent.globalBounds.size), paint: Paint(stroke: .red, width: 2.0))
+        canvas.flush()
         //drawingContext.drawRect(rect: parent.globalBounds, paint: Paint(strokeWidth: 2.0, strokeColor: .red))
       }
 

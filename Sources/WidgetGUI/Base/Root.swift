@@ -29,9 +29,6 @@ open class Root: Parent {
 
   var widgetContext: WidgetContext? {
     didSet {
-      if let widgetContext = widgetContext {
-        widgetContext.debugLayout = debugLayout
-      }
       rootWidget.context = widgetContext!
     }
   }
@@ -65,14 +62,6 @@ open class Root: Parent {
   --------------------------
   */
   public let debugManager = DebugManager()
-
-  public var debugLayout = false {
-    didSet {
-      if let widgetContext = widgetContext {
-        widgetContext.debugLayout = debugLayout
-      }
-    }
-  }
   /* end debugging */
 
   public private(set) var destroyed = false

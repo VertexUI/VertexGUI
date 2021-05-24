@@ -57,7 +57,9 @@ public class TodoAppView: ContentfulWidget {
 
       Container().with(classes: ["padded-container"]).withContent {
         Button().with(classes: ["button"]).withContent {
-          Text("New List")
+          Text("New List").with(styleProperties: {
+            (\.$debugLayout, true)
+          })
         }.onClick { [unowned self] in
           store.commit(.addTodoList)
         }

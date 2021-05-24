@@ -310,6 +310,9 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     @DefaultStyleProperty
     public var margin: Insets = Insets(all: 0)
     // end flex
+
+    @DefaultStyleProperty
+    public var debugLayout: Bool = false
     /* end style */
 
     /* scrolling
@@ -347,9 +350,6 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
             }
         }
     }
-
-    @State
-    public var debugLayout: Bool = false
 
     public internal(set) var onParentChanged = EventHandlerManager<Parent?>()
     public let onDependenciesInjected = WidgetEventHandlerManager<Void>()
