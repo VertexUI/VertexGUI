@@ -148,11 +148,6 @@ open class RenderObjectTreeSliceRenderer {
       backendRenderer.fill()
       backendRenderer.stroke()
 
-    case let node as TextRenderObject:
-      backendRenderer.text(
-        node.text, fontConfig: node.fontConfig, color: node.color, topLeft: node.topLeft,
-        maxWidth: node.maxWidth)
-
     default:
       print("unsupported render object could not be rendered: \(node)")
     }

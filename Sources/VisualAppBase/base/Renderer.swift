@@ -90,10 +90,6 @@ public protocol Renderer {
 
     func lineSegment(from: DPoint2, to: DPoint2)
     
-    func text(_ text: String, fontConfig: FontConfig, color: Color, topLeft: DPoint2, maxWidth: Double?) 
-    
-    func getTextBoundsSize(_ text: String, fontConfig: FontConfig, maxWidth: Double?)  -> DSize2
-    
     func globalOpacity(_ opacity: Float) 
     
     func clipArea(bounds: DRect) 

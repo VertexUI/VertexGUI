@@ -116,7 +116,7 @@ open class DrawingContext {
     if let color = paint.color {
       processed.color = color.adjusted(alpha: UInt8(mergedOpacity * color.aFrac * 255))
     }
-    processed.fontConfig.size = preprocess(DSize2(0, processed.fontConfig.size)).height
+    //processed.fontConfig.size = preprocess(DSize2(0, processed.fontConfig.size)).height
     return processed
   }
 

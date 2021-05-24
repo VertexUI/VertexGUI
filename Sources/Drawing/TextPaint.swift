@@ -2,11 +2,9 @@ import GfxMath
 
 public struct TextPaint {
   public var color: Color? = nil
-  public var fontConfig: FontConfig
   public var breakWidth: Double? = nil
 
-  public init(fontConfig: FontConfig, color: Color? = nil, breakWidth: Double? = nil) {
-    self.fontConfig = fontConfig
+  public init(color: Color? = nil, breakWidth: Double? = nil) {
     self.color = color
     self.breakWidth = breakWidth
   }

@@ -4,7 +4,6 @@ import WidgetGUI
 import HID
 import VisualAppBase
 import Drawing
-import DrawingImplGL3NanoVG
 import GfxMath
 import GL
 import SkiaKit

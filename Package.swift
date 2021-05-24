@@ -40,13 +40,16 @@ let package = Package(
         .target(
             name: "Drawing",
             dependencies: ["GfxMath", .product(name: "FirebladeHID", package: "Fireblade"), "Swim"]),
+
         .target(
-            name: "DrawingImplGL3NanoVG",
-            dependencies: ["Drawing", "GfxMath", .product(name: "FirebladeHID", package: "Fireblade"), .product(name: "CnanovgGL3", package: "Cnanovg"), "GL"]),/*
-        .target(
-            name: "DrawingVulkan",
-            dependencies: ["Drawing", "Vulkan", .product(name: "CSDL2Vulkan", package: "CSDL2")]),*/
-        .target(name: "Application", dependencies: ["WidgetGUI", .product(name: "FirebladeHID", package: "Fireblade"), "Drawing", "DrawingImplGL3NanoVG", "VisualAppBase", "GfxMath"]),
+            name: "Application",
+            dependencies: [
+                "WidgetGUI",
+                .product(name: "FirebladeHID", package: "Fireblade"),
+                "Drawing",
+                "VisualAppBase",
+                "GfxMath",
+                "GL"]),
         /*.target(name: "ApplicationBackendSDL2", dependencies: ["Application", "Drawing", "CSDL2", "GfxMath", "CombineX"]),
         .target(
             name: "ApplicationBackendSDL2Vulkan", 
@@ -87,7 +90,7 @@ let package = Package(
 
         .target(
             name: "VertexGUI",
-            dependencies: ["VisualAppBase", "WidgetGUI", "Events", "GfxMath", "Application", "Drawing", "DrawingImplGL3NanoVG"],
+            dependencies: ["VisualAppBase", "WidgetGUI", "Events", "GfxMath", "Application", "Drawing"],
             resources: [.process("Resources")]
         ),
 

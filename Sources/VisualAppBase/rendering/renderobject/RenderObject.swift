@@ -863,7 +863,6 @@ open class CustomRenderObject: RenderObject {
 
 open class TextRenderObject: RenderObject {
     public var text: String
-    public var fontConfig: FontConfig
     public var color: Color
     public var topLeft: DVec2
     public var maxWidth: Double?
@@ -879,26 +878,20 @@ open class TextRenderObject: RenderObject {
     override open var individualHash: Int {
         var hasher = Hasher()
         hasher.combine(text)
-        hasher.combine(fontConfig)
         hasher.combine(color)
         hasher.combine(topLeft)
         hasher.combine(maxWidth)
         return hasher.finalize()
     }
 
-    public init(_ text: String, fontConfig: FontConfig, color: Color, topLeft: DVec2, maxWidth: Double? = nil) {
+    public init(_ text: String, color: Color, topLeft: DVec2, maxWidth: Double? = nil) {
         self.text = text
-        self.fontConfig = fontConfig
         self.color = color
         self.topLeft = topLeft
         self.maxWidth = maxWidth
     }
 
     override public func objectsAt(point: DPoint2) -> [ObjectAtPointResult] {
-        let size = context.getTextBoundsSize(text, fontConfig: fontConfig, maxWidth: maxWidth)
-        if DRect(min: topLeft, size: size).contains(point: point) {
-            return [ObjectAtPointResult(object: self, transformedPoint: point)]
-        }
         return []
     }
 }
