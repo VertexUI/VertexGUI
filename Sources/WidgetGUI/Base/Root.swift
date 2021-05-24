@@ -83,14 +83,12 @@ open class Root: Parent {
   }
   
   open func setup(
-    measureText: @escaping (_ text: String, _ paint: TextPaint) -> DSize2,
     getKeyStates: @escaping () -> KeyStatesContainer,
     getApplicationTime: @escaping () -> Double,
     getRealFps: @escaping () -> Double,
     requestCursor: @escaping (_ cursor: Cursor) -> () -> Void
   ) {
     self.widgetContext = WidgetContext(
-      measureText: measureText,
       getKeyStates: getKeyStates,
       getApplicationTime: getApplicationTime,
       getRealFps: getRealFps,

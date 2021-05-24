@@ -43,7 +43,6 @@ open class Application {
       let windowBunch = WindowBunch(window: window, graphicsMode: graphicsMode, widgetRoot: widgetRoot, drawingContext: DrawingContext(backend: drawingBackend), canvas: canvas)
 
       widgetRoot.setup(
-        measureText: { [unowned drawingBackend] text, paint in drawingBackend.measureText(text: text, paint: paint) },
         getKeyStates:  { KeyStatesContainer() },
         getApplicationTime: { 0 },
         getRealFps: { 0 },
