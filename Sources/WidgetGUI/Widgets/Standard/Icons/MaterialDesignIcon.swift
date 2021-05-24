@@ -23,8 +23,8 @@ public class MaterialDesignIcon: ContentfulWidget {
   }
 
   @DirectContentBuilder override public var content: DirectContent {
-    Text(String(Unicode.Scalar(identifier.code)!)).with(styleProperties: {
-      (\.$fontFamily, MaterialDesignIcon.materialFontFamily)
-    })
+    Text(String(Unicode.Scalar(identifier.code)!))/*.with(styleProperties: {
+      //(\.$fontFamily, MaterialDesignIcon.materialFontFamily)
+    })*/
   }
 }

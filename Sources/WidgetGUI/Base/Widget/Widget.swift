@@ -2,6 +2,9 @@ import Foundation
 import Drawing
 import GfxMath
 import VisualAppBase
+import enum SkiaKit.FontStyleWeight
+import enum SkiaKit.FontStyleWidth
+import enum SkiaKit.FontStyleSlant
 import ColorizeSwift
 import Events
 import CXShim
@@ -285,13 +288,16 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     public var fontSize: Double = 16
 
     @DefaultStyleProperty(default: .inherit)
-    public var fontFamily: FontFamily = defaultFontFamily
+    public var fontFamily: String? = nil 
 
     @DefaultStyleProperty(default: .inherit)
-    public var fontWeight: FontWeight = .regular
+    public var fontWeight: FontStyleWeight = .normal
 
     @DefaultStyleProperty(default: .inherit)
-    public var fontStyle: FontStyle = .normal
+    public var fontWidth: FontStyleWidth = .normal
+
+    @DefaultStyleProperty(default: .inherit)
+    public var fontSlant: FontStyleSlant = .upright
 
     @DefaultStyleProperty(default: .inherit)
     public var textTransform: TextTransform = .none

@@ -106,7 +106,7 @@ extension DeveloperTools {
 
         Style(".section-heading") {
           (\.$fontSize, 16.0)
-          (\.$fontWeight, FontWeight.bold)
+          (\.$fontWeight, .bold)
           (\.$margin, Insets(bottom: 8))
         }
 

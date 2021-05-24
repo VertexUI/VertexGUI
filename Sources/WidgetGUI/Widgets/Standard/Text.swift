@@ -5,15 +5,6 @@ import CXShim
 import Drawing
 
 public class Text: LeafWidget {
-  /*private var fontConfig: FontConfig {
-    FontConfig(
-      family: fontFamily,
-      size: fontSize,
-      weight: fontWeight,
-      style: fontStyle
-    )
-  }*/
-
   private var transformedText: String {
     textTransform.apply(to: text)
   }
@@ -69,8 +60,13 @@ public class Text: LeafWidget {
   }
 
   private func createFont() -> SkiaKit.Font {
+    guard let typeface = Typeface(familyName: fontFamily, weight: fontWeight, width: fontWidth, slant: fontSlant) else {
+      fatalError("could not create typeface for text widget")
+    }
+
     let font = Font()
     font.size = Float(fontSize)
+    font.typeface = typeface
     return font
   }
 }
