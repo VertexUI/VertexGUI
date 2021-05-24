@@ -51,15 +51,6 @@ public class Text: LeafWidget {
       let font = Font()
       font.size = Float(fontSize)
       canvas.draw(text: self.transformedText, x: 0, y: 0, font: font, paint: Paint(fill: foreground))
-    } else {
-      let font = Font()
-      font.size = Float(64)//Float(fontSize)
-      let paint = Paint()
-      paint.color = Colors.white
-      paint.isStroke = false
-      paint.isAntialias = true
-      canvas.draw(text: "WOOOOOOOOOOW", x: 100, y: 100, font: font, paint: paint)
- 
     }
     //drawingContext.drawText(text: self.transformedText, position: .zero, paint: TextPaint(fontConfig: fontConfig, color: foreground))
   }

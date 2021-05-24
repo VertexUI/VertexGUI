@@ -20,7 +20,7 @@ open class Application {
     print("Platform version: \(Platform.version)")
   }
 
-  public func createWindow(widgetRoot: Root, graphicsMode: GraphicsMode = .cpu) throws {
+  public func createWindow(widgetRoot: Root, graphicsMode: GraphicsMode = .openGl) throws {
     if graphicsMode == .openGl {
     
       let window = try Window(properties: WindowProperties(title: "Title", frame: .init(0, 0, 800, 600)),
@@ -69,9 +69,17 @@ open class Application {
       }
 
       let canvas = skiaSurface.canvas
-
       canvas.clear(color: Colors.white)
-      drawText(canvas.handle)
+
+      let font = Font()
+      font.size = 64
+      var paint = Paint()
+      paint.isAntialias = true
+      paint.color = Color (0xff4281a4)
+      paint.isStroke = false
+      
+      canvas.draw (text: "SkiaKit", x: 20, y: 64, font: font, paint: paint)
+
       canvas.flush()
 
       guard let pixmap = skiaSurface.peekPixels() else {
@@ -191,11 +199,10 @@ open class Application {
 
       bunch.canvas.clear()
       bunch.canvas.resetMatrix()
-      drawText(bunch.canvas.handle)
 
-     // bunch.drawingContext.backend.activate()
-     // bunch.widgetRoot.draw(bunch.drawingContext, canvas: bunch.canvas)
-      //bunch.drawingContext.backend.deactivate()
+      bunch.drawingContext.backend.activate()
+      bunch.widgetRoot.draw(bunch.drawingContext, canvas: bunch.canvas)
+      bunch.drawingContext.backend.deactivate()
 
       bunch.canvas.flush()
 
