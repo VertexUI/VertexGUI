@@ -1,7 +1,6 @@
 import Foundation
 import Drawing
 import GfxMath
-import VisualAppBase
 import enum SkiaKit.FontStyleWeight
 import enum SkiaKit.FontStyleWidth
 import enum SkiaKit.FontStyleSlant

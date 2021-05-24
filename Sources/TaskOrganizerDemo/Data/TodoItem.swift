@@ -1,4 +1,4 @@
-import VisualAppBase
+import Swim
 
 public struct TodoItem: Equatable {
     public static var nextTodoItemId = 0
@@ -6,7 +6,7 @@ public struct TodoItem: Equatable {
     public var id: Int
     public var listId: Int
     public var description: String
-    public var images: [Image] = []
+    public var images: [Image<RGBA, UInt8>] = []
     public var completed = false
 
     public init(listId: Int, description: String) {

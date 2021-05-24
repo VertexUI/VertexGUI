@@ -1,4 +1,3 @@
-import VisualAppBase
 
 public protocol GUIKeyEvent {
     /// true if key is down, false if not

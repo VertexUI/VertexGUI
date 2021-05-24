@@ -1,4 +1,3 @@
-import VisualAppBase
 import GfxMath
 import Events
 import Drawing

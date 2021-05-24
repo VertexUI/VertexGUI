@@ -2,7 +2,6 @@ import Foundation
 import CoreFoundation
 import WidgetGUI
 import HID
-import VisualAppBase
 import Drawing
 import GfxMath
 import GL

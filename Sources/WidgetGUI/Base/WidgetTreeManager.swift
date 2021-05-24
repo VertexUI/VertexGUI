@@ -1,5 +1,4 @@
 import Foundation
-import VisualAppBase
 
 public class WidgetTreeManager {
   public var widgetContext: WidgetContext

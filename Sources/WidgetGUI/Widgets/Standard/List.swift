@@ -1,5 +1,4 @@
 import Foundation
-import VisualAppBase
 import GfxMath
 import CXShim
 import Drawing

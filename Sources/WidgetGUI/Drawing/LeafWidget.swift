@@ -1,4 +1,3 @@
-import VisualAppBase
 import Drawing
 import SkiaKit
 

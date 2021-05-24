@@ -3,7 +3,6 @@ import GfxMath
 import SkiaKit
 import Drawing
 import Dispatch
-import VisualAppBase
 import Events
 
 open class Root: Parent {

@@ -1,4 +1,3 @@
-import VisualAppBase
 
 extension DeveloperTools {
   /*public class PerformanceView: ContentfulWidget {

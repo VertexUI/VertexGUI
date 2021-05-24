@@ -1,6 +1,5 @@
 import WidgetGUI
 import GfxMath
-import VisualAppBase
 import Drawing
 
 public class TaskCompletionButton: LeafWidget {

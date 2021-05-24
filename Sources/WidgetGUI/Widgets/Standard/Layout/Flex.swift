@@ -1,5 +1,4 @@
 import GfxMath
-import VisualAppBase
 
 public class Flex: Widget {
   private let orientation: Orientation

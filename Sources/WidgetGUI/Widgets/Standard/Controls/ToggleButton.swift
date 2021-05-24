@@ -1,5 +1,4 @@
 import GfxMath
-import VisualAppBase
 /*
 public class ToggleButton<Value: Equatable>: SingleChildWidget, GUIMouseEventConsumer {
   private let leftValue: Value

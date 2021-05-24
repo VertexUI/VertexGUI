@@ -1,5 +1,4 @@
 import WidgetGUI
-import VisualAppBase
 import GfxMath
 
 class MockRoot: Root {

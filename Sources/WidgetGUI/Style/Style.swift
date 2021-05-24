@@ -1,4 +1,3 @@
-import VisualAppBase
 
 public class Style {
   let selector: StyleSelector

@@ -1,6 +1,5 @@
 import Foundation
 import GfxMath
-import VisualAppBase
 
 public protocol TodoListProtocol {
     var id: Int { get }

@@ -1,4 +1,3 @@
-import VisualAppBase
 import Events
 
 public protocol Child: class {

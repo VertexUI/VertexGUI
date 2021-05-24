@@ -1,4 +1,3 @@
-import VisualAppBase
 
 extension Widget {
   public enum LifecycleMethodInvocationSignal: Equatable {

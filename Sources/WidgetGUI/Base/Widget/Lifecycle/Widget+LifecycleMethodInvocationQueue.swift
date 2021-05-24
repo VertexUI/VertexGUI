@@ -1,4 +1,3 @@
-import VisualAppBase
 import Events
 
 extension Widget {

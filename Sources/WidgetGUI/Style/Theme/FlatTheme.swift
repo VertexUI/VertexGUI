@@ -1,5 +1,4 @@
 import GfxMath
-import VisualAppBase
 
 public class FlatTheme {
   public let primaryColor: Color

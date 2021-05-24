@@ -1,5 +1,4 @@
 import GfxMath
-import VisualAppBase
 
 // TODO: mabye rename to WidgetParent and add children: [Widget]
 public protocol Parent: class {

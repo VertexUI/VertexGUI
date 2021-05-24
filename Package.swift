@@ -47,16 +47,8 @@ let package = Package(
                 "WidgetGUI",
                 .product(name: "FirebladeHID", package: "Fireblade"),
                 "Drawing",
-                "VisualAppBase",
                 "GfxMath",
                 "GL"]),
-        /*.target(name: "ApplicationBackendSDL2", dependencies: ["Application", "Drawing", "CSDL2", "GfxMath", "CombineX"]),
-        .target(
-            name: "ApplicationBackendSDL2Vulkan", 
-            dependencies: ["ApplicationBackendSDL2", "DrawingVulkan", "Vulkan", .product(name: "CSDL2Vulkan", package: "CSDL2")]),*/
-        .target(
-            name: "VisualAppBase", dependencies: ["GfxMath", "Swim", "Drawing"]
-        ),
 
         .target(
             name: "Events"
@@ -64,15 +56,10 @@ let package = Package(
 
         .target(
             name: "WidgetGUI",
-            dependencies: ["VisualAppBase", "Events", .product(name: "CXShim", package: "CombineX"), "GfxMath", "ColorizeSwift", "Drawing", "SkiaKit"],
+            dependencies: ["Events", .product(name: "CXShim", package: "CombineX"), "GfxMath", "ColorizeSwift", "Drawing", "SkiaKit"],
             resources: [.process("Resources")]
         ),
 
-        /*.target(
-            name: "VisualAppBaseImplSDL2OpenGL3NanoVG",
-            dependencies: ["WidgetGUI", "CSDL2", "GL", "Drawing", "Events", "Swim", .product(name: "CnanovgGL3", package: "Cnanovg"), "GfxMath"],
-            resources: [.process("Resources")]),*/
-       
         .target(
             name: "TaskOrganizerDemo",
             dependencies: ["VertexGUI", "Swim", .product(name: "CXShim", package: "CombineX")],
@@ -90,7 +77,7 @@ let package = Package(
 
         .target(
             name: "VertexGUI",
-            dependencies: ["VisualAppBase", "WidgetGUI", "Events", "GfxMath", "Application", "Drawing"],
+            dependencies: ["WidgetGUI", "Events", "GfxMath", "Application", "Drawing"],
             resources: [.process("Resources")]
         ),
 
