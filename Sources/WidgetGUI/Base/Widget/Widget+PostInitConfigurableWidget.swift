@@ -10,4 +10,9 @@ extension Widget: PostInitConfigurableWidget {
     block(castedSelf)
     return self
   }
+
+  public func classes(_ classes: String...) -> Self {
+    self.classes.append(contentsOf: classes)
+    return self
+  }
 }
