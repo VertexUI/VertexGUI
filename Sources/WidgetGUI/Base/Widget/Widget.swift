@@ -493,12 +493,6 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         return self
     }
 
-    @inlinable
-    public final func with(block: (Self) -> ()) -> Self {
-        block(self)
-        return self
-    }
-
     final func setupContext() {
         contextOnTickHandlerRemover = context.onTick({ [weak self] in
           if let self = self {
