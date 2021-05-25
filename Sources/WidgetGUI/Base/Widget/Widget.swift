@@ -134,9 +134,9 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
             if oldValue != layoutedSize {
                 if mounted {
                     invalidateCumulatedValues()
-                    if layouted && !layouting && !destroyed {
+                    /*if layouted && !layouting && !destroyed {
                         onSizeChanged.invokeHandlers(layoutedSize)
-                    }
+                    }*/
                 }
             }
         }
@@ -362,7 +362,7 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     public let onBuilt = WidgetEventHandlerManager<Void>()
     public let onBuildInvalidated = WidgetEventHandlerManager<Void>()
     public internal(set) var onTick = WidgetEventHandlerManager<Tick>()
-    public internal(set) var onSizeChanged = EventHandlerManager<DSize2>()
+    public internal(set) var onSizeChanged = EventHandlerManager<(newSize: DSize2, firstLayoutPass: Bool)>()
     public internal(set) var onLayoutInvalidated = EventHandlerManager<Void>()
     public internal(set) var onLayoutingStarted = EventHandlerManager<BoxConstraints>()
     public internal(set) var onLayoutingFinished = EventHandlerManager<DSize2>()
@@ -658,7 +658,7 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         }
 
         let previousSize = layoutedSize
-        let isFirstRound = !layouted
+        let isFirstLayoutPass = !layouted
         
         let explicitConstraintsConstraints = BoxConstraints(minSize: explicitConstraints.minSize, maxSize: explicitConstraints.maxSize)
         let constrainedParentConstraints = BoxConstraints(
@@ -737,8 +737,8 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         // TODO: where to call this? after setting bounds or before?
         onLayoutingFinished.invokeHandlers(bounds.size)
 
-        if previousSize != layoutedSize && !isFirstRound {
-            onSizeChanged.invokeHandlers(layoutedSize)
+        if previousSize != layoutedSize {
+            onSizeChanged.invokeHandlers((layoutedSize, isFirstLayoutPass))
         }
 
         /*for child in children {
