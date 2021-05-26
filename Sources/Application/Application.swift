@@ -22,11 +22,11 @@ open class Application {
     if graphicsMode == .openGl {
     
       let window = try Window(properties: WindowProperties(title: "Title", frame: .init(0, 0, 800, 600)),
-                              surface: { try OpenGLWindowSurface(in: $0, with: ()) })
+                              surface: { try SDLOpenGLWindowSurface(in: $0, with: ()) })
 
       try window.setupSurface()
 
-      guard let surface = window.surface as? OpenGLWindowSurface else {
+      guard let surface = window.surface as? SDLOpenGLWindowSurface else {
         fatalError("no or wrong window surface")
       }
 
@@ -207,7 +207,7 @@ open class Application {
     windowBunch.widgetRoot.bounds.size = DSize2(Double(drawableSize.width), Double(drawableSize.height))
   }
 
-  private func getCanvas(for surface: OpenGLWindowSurface) -> Canvas? {
+  private func getCanvas(for surface: SDLOpenGLWindowSurface) -> Canvas? {
     let surfaceSize = surface.getDrawableSize()
 
     var buffer: GLMap.Int = 0
