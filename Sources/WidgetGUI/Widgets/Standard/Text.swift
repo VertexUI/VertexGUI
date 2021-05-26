@@ -10,10 +10,16 @@ public class Text: LeafWidget {
 
   @ImmutableBinding
   private var text: String
-  private var expTextSubscription: AnyCancellable?
+  private var textSubscription: AnyCancellable?
 
   public init(_ text: ImmutableBinding<String>) {
     self._text = text
+    super.init()
+    textSubscription = $text.publisher
+    .map { [weak self] _ in self?.transformedText }
+    .removeDuplicates().sink { [weak self] _ in
+      self?.invalidateLayout()
+    }
   }
 
   public init(_ text: String) {
