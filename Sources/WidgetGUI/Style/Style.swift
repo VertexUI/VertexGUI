@@ -35,7 +35,7 @@ public class Style {
 }
 
 extension Style {
-  @_functionBuilder
+  @resultBuilder
   public struct NestedStylesBuilder {
     public static func buildExpression(_ style: Style) -> [Style] {
       [style]

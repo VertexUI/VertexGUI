@@ -11,7 +11,7 @@ extension Widget: PostInitConfigurableWidget {
     return self
   }
 
-  public func classes(_ classes: String...) -> Self {
+  public func with(classes: String...) -> Self {
     self.classes.append(contentsOf: classes)
     return self
   }

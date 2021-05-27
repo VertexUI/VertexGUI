@@ -1,6 +1,6 @@
 import OpenCombine
 
-@_functionBuilder
+@resultBuilder
 public struct StylePropertyValueDefinitionsBuilder<W: Widget> {
   public static func buildExpression<V>(_ expression: (KeyPath<Widget, DefaultStyleProperty<V>>, StylePropertyValue<V>)) -> [StylePropertyValueDefinition] {
     [StylePropertyValueDefinition(

@@ -175,7 +175,7 @@ extension Flex {
     }
   }
 
-  @_functionBuilder
+  @resultBuilder
   public struct ItemBuilder {
     public static func buildExpression(_ widget: Widget) -> [Flex.Item] {
       [Flex.Item { widget }]

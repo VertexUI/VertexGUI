@@ -1,7 +1,7 @@
 import GfxMath
 import Events
 
-extension DeveloperTools {
+/*extension DeveloperTools {
   public class WidgetNestingView: ContentfulWidget {
     @Inject var store: DeveloperTools.Store
 
@@ -74,4 +74,4 @@ extension DeveloperTools {
       }
     }
   }
-}
+}*/

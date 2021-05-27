@@ -80,7 +80,7 @@ public final class TextInput: ContentfulWidget
   }
 
   @DirectContentBuilder override public var content: DirectContent {
-    Container().withContent { [unowned self] _ in
+    Container().withContent {
       Text($text.immutable).with(classes: ["text"]).with(styleProperties: {
         (\.$transform, ImmutableBinding($textTranslation.immutable, get: {
           [DTransform2.translate($0)]

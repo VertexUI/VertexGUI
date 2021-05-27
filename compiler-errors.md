@@ -25,3 +25,10 @@ public enum AnyStylePropertyValue {
 ```
 
 compile in release mode crashes when return statement after self.init is not present, but passes when compiling in debug mode
+
+
+## 5.4.1 RELEASE
+
+unnecessary [unowned self] causes compiler crash without appropriate error message
+
+[unowned weak] does not
