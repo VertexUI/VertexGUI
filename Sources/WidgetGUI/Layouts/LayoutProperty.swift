@@ -1,4 +1,4 @@
-import CXShim
+import OpenCombine
 
 @propertyWrapper
 public class LayoutProperty<T>: AnyLayoutProperty {

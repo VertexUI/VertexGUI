@@ -3,7 +3,7 @@ import Drawing
 import Application
 import GfxMath
 import Events
-import CXShim
+import OpenCombine
 
 open class SDL2BaseWindow: Window {
   public var sdlWindow: OpaquePointer

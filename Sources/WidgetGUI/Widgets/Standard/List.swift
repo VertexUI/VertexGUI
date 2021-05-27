@@ -1,6 +1,6 @@
 import Foundation
 import GfxMath
-import CXShim
+import OpenCombine
 import Drawing
 
 fileprivate var itemSlots = [ObjectIdentifier: AnySlot]()

@@ -1,4 +1,4 @@
-import CXShim
+import OpenCombine
 
 public protocol ReactiveProperty: AnyObject {
   associatedtype Value

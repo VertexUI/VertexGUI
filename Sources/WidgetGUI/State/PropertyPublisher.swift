@@ -1,4 +1,4 @@
-import CXShim
+import OpenCombine
 
 public class PropertyPublisher<O>: Publisher {
   public typealias Output = O

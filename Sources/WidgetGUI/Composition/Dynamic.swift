@@ -1,5 +1,5 @@
 import Events
-import CXShim
+import OpenCombine
 
 public class Dynamic<C: ContentProtocol> {
   var associatedStyleScope: UInt

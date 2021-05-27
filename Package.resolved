@@ -20,15 +20,6 @@
         }
       },
       {
-        "package": "CombineX",
-        "repositoryURL": "https://github.com/cx-org/CombineX.git",
-        "state": {
-          "branch": "master",
-          "revision": "b9afefe14653f02a80a9f5aa546859e99073d0c8",
-          "version": null
-        }
-      },
-      {
         "package": "FirebladeECS",
         "repositoryURL": "https://github.com/fireblade-engine/ecs.git",
         "state": {
@@ -53,6 +44,15 @@
           "branch": null,
           "revision": "b6700cf9ddfe00423f789f88f2c3a79132cb2eba",
           "version": "0.10.0"
+        }
+      },
+      {
+        "package": "OpenCombine",
+        "repositoryURL": "https://github.com/OpenCombine/OpenCombine.git",
+        "state": {
+          "branch": null,
+          "revision": "28993ae57de5a4ea7e164787636cafad442d568c",
+          "version": "0.12.0"
         }
       },
       {

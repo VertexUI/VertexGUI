@@ -1,4 +1,4 @@
-import CXShim
+import OpenCombine
 
 public class ReactivePropertyProjection<V> {
   public typealias Value = V

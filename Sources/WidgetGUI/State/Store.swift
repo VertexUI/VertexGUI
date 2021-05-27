@@ -1,4 +1,4 @@
-import CXShim
+import OpenCombine
 
 open class Store<S, M, A> {
   public typealias State = S

@@ -1,5 +1,5 @@
 import VertexGUI
-import CXShim
+import OpenCombine
 
 public class TodoListView: ContentfulWidget {
   @Inject private var store: TodoStore

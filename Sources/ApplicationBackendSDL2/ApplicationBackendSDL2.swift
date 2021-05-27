@@ -3,7 +3,7 @@ import CSDL2
 import GfxMath
 import Dispatch
 import Foundation
-import CXShim
+import OpenCombine
 
 public class ApplicationBackendSDL2: ApplicationBackend {
   private static var instance: ApplicationBackendSDL2? = nil

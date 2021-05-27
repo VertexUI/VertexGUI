@@ -1,5 +1,5 @@
 import VertexGUI
-import CXShim
+import OpenCombine
 
 public class TodoStore: Store<TodoStore.State, TodoStore.Mutation, TodoStore.Action> {
   var listsSubscription: AnyCancellable?

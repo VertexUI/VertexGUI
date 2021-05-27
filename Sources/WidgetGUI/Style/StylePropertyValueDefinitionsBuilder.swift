@@ -1,4 +1,4 @@
-import CXShim
+import OpenCombine
 
 @_functionBuilder
 public struct StylePropertyValueDefinitionsBuilder<W: Widget> {

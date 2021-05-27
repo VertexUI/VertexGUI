@@ -1,6 +1,7 @@
 import VertexGUI
 import Dispatch
-import CXShim
+import OpenCombine
+import OpenCombineDispatch
 
 public class TodoAppView: ContentfulWidget {
   public enum Mode {
@@ -22,7 +23,7 @@ public class TodoAppView: ContentfulWidget {
       }
 
       searchQuerySubscription = $searchQuery.publisher
-        .debounce(for: .seconds(0.5), scheduler: CXWrappers.DispatchQueue(wrapping: DispatchQueue.main))
+        .debounce(for: .seconds(0.5), scheduler: DispatchQueue.OCombine(DispatchQueue.main))
         .removeDuplicates().sink {
           store.dispatch(.updateSearchResult(query: $0))
           if $0.isEmpty {

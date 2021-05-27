@@ -1,5 +1,5 @@
 import GfxMath
-import CXShim
+import OpenCombine
 import Drawing
 
 public class Container: ContentfulWidget, SlotAcceptingWidgetProtocol {

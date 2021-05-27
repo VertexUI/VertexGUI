@@ -1,4 +1,4 @@
-import CXShim
+import OpenCombine
 
 extension Widget {
   @propertyWrapper

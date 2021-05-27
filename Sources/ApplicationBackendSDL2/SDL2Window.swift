@@ -3,7 +3,7 @@ import Drawing
 import Application
 import GfxMath
 import Events
-import CXShim
+import OpenCombine
 
 public class SDL2Window: SDL2BaseWindow {
   public init(initialSize: ISize2) {

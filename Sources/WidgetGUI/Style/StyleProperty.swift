@@ -1,4 +1,4 @@
-import CXShim
+import OpenCombine
 
 protocol AnyStylePropertyProtocol: class {
   var definitionValue: StylePropertyValueDefinition.Value? { get set }

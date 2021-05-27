@@ -1,6 +1,6 @@
 import VertexGUI
 import Swim
-import CXShim
+import OpenCombine
 
 public class MainView: ContentfulWidget, SlotAcceptingWidgetProtocol {
   @Inject

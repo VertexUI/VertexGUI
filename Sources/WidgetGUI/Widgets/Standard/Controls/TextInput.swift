@@ -1,7 +1,7 @@
 import GfxMath
 import Foundation
 import SkiaKit
-import CXShim
+import OpenCombine
 import Drawing
 
 public final class TextInput: ContentfulWidget

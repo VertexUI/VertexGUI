@@ -30,7 +30,7 @@ let package = Package(
         .package(name: "Swim", url: "https://github.com/t-ae/swim.git", from: "3.9.0"),
         .package(url: "https://github.com/UnGast/Cnanovg.git", .branch("master")),
         .package(name: "GfxMath", url: "https://github.com/UnGast/swift-gfx-math.git", .branch("master")),
-        .package(url: "https://github.com/cx-org/CombineX.git", .branch("master")),
+        .package(url: "https://github.com/OpenCombine/OpenCombine.git", from: "0.12.0"),
         .package(url: "https://github.com/mtynior/ColorizeSwift.git", from: "1.6.0"),
         .package(name: "Fireblade", path: "../FirebladeEngine"),
         .package(path: "../SkiaKit")
@@ -56,13 +56,13 @@ let package = Package(
 
         .target(
             name: "WidgetGUI",
-            dependencies: ["Events", .product(name: "CXShim", package: "CombineX"), "GfxMath", "ColorizeSwift", "Drawing", "SkiaKit"],
+            dependencies: ["Events", "OpenCombine", .product(name: "OpenCombineDispatch", package: "OpenCombine"), "GfxMath", "ColorizeSwift", "Drawing", "SkiaKit"],
             resources: [.process("Resources")]
         ),
 
         .target(
             name: "TaskOrganizerDemo",
-            dependencies: ["VertexGUI", "Swim", .product(name: "CXShim", package: "CombineX")],
+            dependencies: ["VertexGUI", "Swim", "OpenCombine"],
             resources: [.copy("Resources")]),
 
         .target(

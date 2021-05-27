@@ -6,7 +6,7 @@ import enum SkiaKit.FontStyleWidth
 import enum SkiaKit.FontStyleSlant
 import ColorizeSwift
 import Events
-import CXShim
+import OpenCombine
 
 open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     /* identification
@@ -117,7 +117,7 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     public internal(set) var previousConstraints: BoxConstraints?
 
     lazy public internal(set) var explicitConstraints = calculateExplicitConstraints()
-    var explicitConstraintsUpdateTriggersSubscription: AnyCancellable?
+    var explicitConstraintsUpdateTriggersSubscriptions: [AnyCancellable]?
     /// bridge explicitConstraints for use in @inlinable functions
     @usableFromInline internal var _explicitConstraints: BoxConstraints {
         get {
@@ -332,7 +332,7 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
             }
         }
     }
-    var scrollingEnabledUpdateSubscription: AnyCancellable?
+    var scrollingEnabledUpdateSubscriptions: [AnyCancellable]?
     /** removers for event handlers that are registered to manage scrolling */
     private var scrollingSpeed = 20.0
     @State
@@ -419,18 +419,20 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     }
 
     private func setupExplicitConstraintsUpdateTriggers() {
-        explicitConstraintsUpdateTriggersSubscription = Publishers.MergeMany([
+        explicitConstraintsUpdateTriggersSubscriptions = [
             $width.publisher, $height.publisher, $minWidth.publisher, $minHeight.publisher, $maxWidth.publisher, $maxHeight.publisher
-        ]).sink { [unowned self] _ in
-            updateExplicitConstraints()
+        ].map{ [unowned self] in
+            $0.sink { _ in
+                updateExplicitConstraints()
+            }
         }
     }
 
     private func setupScrollingEnabled() {
-        scrollingEnabledUpdateSubscription = Publishers.MergeMany([
-            $overflowX.publisher, $overflowY.publisher
-        ]).sink { [unowned self] _ in
-            scrollingEnabled = (overflowX == .scroll, overflowY == .scroll)
+        scrollingEnabledUpdateSubscriptions = [$overflowX.publisher, $overflowY.publisher].map { [unowned self] in
+            $0.sink { _ in
+                scrollingEnabled = (overflowX == .scroll, overflowY == .scroll)
+            }
         }
     }
 
