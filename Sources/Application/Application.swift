@@ -213,7 +213,9 @@ open class Application {
     var buffer: GLMap.Int = 0
     glGetIntegerv(GLMap.DRAW_FRAMEBUFFER_BINDING, &buffer);
 
-    let skiaSurface = SkiaKit.Surface(handle: makeSurface(Int32(surfaceSize.width), Int32(surfaceSize.height), buffer))
+    let grContext = GrContext.makeGL(interface: GLInterface.makeNative())
+
+    let skiaSurface = SkiaKit.Surface(handle: makeSurface(Int32(surfaceSize.width), Int32(surfaceSize.height), buffer, grContext.handle))
 
     return skiaSurface.canvas
   }
