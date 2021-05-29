@@ -28,6 +28,10 @@ public struct DirectContentBuilder {
     return second
   }
 
+  public static func buildArray(_ components: [[DirectContent.Partial]]) -> [DirectContent.Partial] {
+    components.flatMap { $0 }
+  }
+
   public static func buildBlock(_ partials: [DirectContent.Partial]...) -> [DirectContent.Partial] {
     partials.flatMap { $0 }
   }
@@ -75,6 +79,10 @@ public struct SlottingContentBuilder {
 
   public static func buildEither(second: [SlottingContent.Partial]) -> [SlottingContent.Partial] {
     return second
+  }
+
+  public static func buildArray(_ components: [[SlottingContent.Partial]]) -> [SlottingContent.Partial] {
+    components.flatMap { $0 }
   }
 
   public static func buildBlock(_ partials: [SlottingContent.Partial]...) -> [SlottingContent.Partial] {
