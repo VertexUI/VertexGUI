@@ -59,6 +59,21 @@ public class FlatTheme: Theme {
           (\.$foreground, primaryColor.darkened(30))
         }
       }
+
+      Style("Select") {
+        (\.$background, .yellow)
+        (\.$debugLayout, true)
+      } nested: {
+        Style(".value-field") {
+          (\.$borderWidth, Insets(all: 1))
+          (\.$borderColor, .yellow)
+        }
+
+        Style(".options-field") {
+          (\.$borderWidth, Insets(all: 1))
+          (\.$borderColor, .yellow)
+        }
+      }
     }
   }
 }

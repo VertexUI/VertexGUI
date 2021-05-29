@@ -3,7 +3,7 @@ import GfxMath
 import OpenCombine
 import Drawing
 
-fileprivate var itemSlots = [ObjectIdentifier: AnySlot]()
+private var itemSlots = [ObjectIdentifier: AnySlot]()
 
 public class List<Item: Equatable>: ContentfulWidget, SlotAcceptingWidgetProtocol {
   @ImmutableBinding
@@ -11,12 +11,13 @@ public class List<Item: Equatable>: ContentfulWidget, SlotAcceptingWidgetProtoco
   private var previousItems: [Item] = []
 
   public static var itemSlot: Slot<Item> {
-    if itemSlots[ObjectIdentifier(Item.self)] == nil {
-      itemSlots[ObjectIdentifier(Item.self)] = Slot(key: "default", data: Item.self)
+    let itemTypeId = ObjectIdentifier(Item.self)
+    if itemSlots[itemTypeId] == nil {
+      itemSlots[itemTypeId] = Slot(key: "default", data: Item.self)
     }
-    return itemSlots[ObjectIdentifier(Item.self)]! as! Slot<Item>
+    return itemSlots[itemTypeId] as! Slot<Item>
   }
-  var itemSlotManager = SlotContentManager(List.itemSlot)
+  let itemSlotManager = SlotContentManager(List.itemSlot)
 
   var storedContent = DirectContent(partials: [])
   override public var content: DirectContent {
