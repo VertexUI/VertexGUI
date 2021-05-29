@@ -1,6 +1,6 @@
 import GfxMath
 
-public class FlatTheme {
+public class FlatTheme: Theme {
   public let primaryColor: Color
   public let textColorOnPrimary: Color
   public let secondaryColor: Color
