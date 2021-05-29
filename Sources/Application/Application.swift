@@ -97,7 +97,8 @@ open class Application {
             }
           }
         case .textInput:
-          print("text input", event.textInput)
+          print("TEXT INPUT", event)
+          forwardEvent(event: event)
         case .textEditing:
           print("text editing", event.textEditing)
         default:
@@ -146,6 +147,13 @@ open class Application {
         if let windowBunch = findWindowBunch(windowId: eventData.windowID) {
           let currentPosition = DVec2(Double(eventData.x), Double(eventData.y))
           windowBunch.widgetRoot.receive(rawPointerEvent: RawMouseWheelEvent(scrollAmount: DVec2(Double(eventData.horizontal), Double(eventData.vertical)), position: currentPosition))
+        }
+      
+      case .textInput:
+        let eventData = event.textInput
+
+        if let windowBunch = findWindowBunch(windowId: eventData.windowID) {
+          windowBunch.widgetRoot.receive(textInputEvent: RawTextInputEvent(eventData.text))
         }
 
       default:

@@ -54,6 +54,7 @@ open class Root: Parent {
   ----------------------------
   */
   lazy private var mouseEventManager = WidgetTreeMouseEventManager(root: self)
+  lazy private var textInputEventManager = TextInputEventManager(root: self)
   private var mouseMoveEventBurstLimiter = BurstLimiter(minDelay: 0.015)
   /* end event propagation */
 
@@ -95,6 +96,11 @@ open class Root: Parent {
     cumulatedValuesProcessor.resolveSubTree(rootWidget: rootWidget)
   }
 
+  /**
+  EVENTS
+  -----------------------
+  */
+
   /** - Returns: whether the event was consumed (true) or fell through (false) */
   final public func receive(rawPointerEvent: RawMouseEvent) -> Bool {
    if let event = rawPointerEvent as? RawMouseMoveEvent {
@@ -124,6 +130,10 @@ open class Root: Parent {
     return false
   }
 
+  public func receive(textInputEvent: RawTextInputEvent) {
+    textInputEventManager.process(event: textInputEvent)
+  }
+
   @discardableResult
   open func consume(_ rawKeyEvent: KeyEvent) -> Bool {
     var operation = ProcessKeyEventOperationDebugData()
@@ -133,16 +143,10 @@ open class Root: Parent {
     debugManager.data.storeOperation(operation)
     return false
   }
-
-  @discardableResult
-  open func consume(_ rawTextEvent: TextEvent) -> Bool {
-    var operation = ProcessTextEventOperationDebugData()
-    operation.recordStart()
-    propagate(rawTextEvent)
-    operation.recordEnd()
-    debugManager.data.storeOperation(operation)
-    return false
-  }
+  /**
+  END EVENTS
+  -----------
+  */
 
   open func tick(_ tick: Tick) {
     var operation = TickOperationDebugData()
@@ -270,23 +274,6 @@ open class Root: Parent {
         fatalError("Unsupported event type: \(rawKeyEvent)")
       }
       
-      next = nil
-      for child in current.children {
-        if child.focused {
-          next = child
-          break
-        }
-      }
-    }
-  }
-
-  internal func propagate(_ event: TextEvent) {
-    var next = Optional(rootWidget)
-    while let current = next {
-      if let event = event as? TextInputEvent {
-        current.processTextEvent(GUITextInputEvent(event.text))
-      }
-
       next = nil
       for child in current.children {
         if child.focused {
