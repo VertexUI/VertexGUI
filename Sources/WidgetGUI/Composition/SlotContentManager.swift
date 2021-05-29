@@ -23,7 +23,7 @@ public class SlotContentManager<D>: AnySlotContentManager, EventfulObject {
     self.slot = slot
   }
 
-  public func callAsFunction(_ data: D) -> DirectContent {
+  public func buildContent(for data: D) -> DirectContent {
     let content = DirectContent(partials: [])
     if let definition = definition {
       content.partials = definition.build(data)
@@ -38,6 +38,16 @@ public class SlotContentManager<D>: AnySlotContentManager, EventfulObject {
     return content
   }
 
+  public func buildContent() -> DirectContent where D == Void {
+    buildContent(for: ())
+  }
+
+  @available(*, deprecated, message: "use .buildContent() instead")
+  public func callAsFunction(_ data: D) -> DirectContent {
+    buildContent(for: data)
+  }
+
+  @available(*, deprecated, message: "use .buildContent() instead")
   public func callAsFunction() -> DirectContent where D == Void {
     callAsFunction(Void())
   }
