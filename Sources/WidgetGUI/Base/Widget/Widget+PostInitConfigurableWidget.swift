@@ -15,4 +15,9 @@ extension Widget: PostInitConfigurableWidget {
     self.classes.append(contentsOf: classes)
     return self
   }
+
+  public func with(classes: [String]) -> Self {
+    self.classes.append(contentsOf: classes)
+    return self
+  }
 }

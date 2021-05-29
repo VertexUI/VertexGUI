@@ -73,6 +73,14 @@ public class FlatTheme: Theme {
           (\.$borderWidth, Insets(all: 1))
           (\.$borderColor, .yellow)
         }
+
+        Style(".option") {
+          (\.$padding, Insets(all: 8))
+        } nested: {
+          Style("&.selected") {
+            (\.$background, primaryColor)
+          }
+        }
       }
     }
   }

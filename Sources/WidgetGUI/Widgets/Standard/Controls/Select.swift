@@ -53,8 +53,14 @@ public class Select<O: Equatable>: ContentfulWidget, SlotAcceptingWidgetProtocol
       (\.$visibility, $optionsVisibility.immutable)
     }).withContent {
       Dynamic($options.immutable) { [unowned self] in
-        for option in options {
-          optionSlotManager.buildContent(for: option)
+        Dynamic($selectedOption.immutable) {
+          for option in options {
+            Container().with(classes: option == selectedOption ? ["option", "selected"] : ["option"]).withContent {
+              optionSlotManager.buildContent(for: option)
+            }.onClick {
+              selectedOption = option
+            }
+          }
         }
       }
     }.connect(ref: $optionsContainer)
@@ -64,6 +70,6 @@ public class Select<O: Equatable>: ContentfulWidget, SlotAcceptingWidgetProtocol
     valueContainer.layout(constraints: constraints)
     optionsContainer.layout(constraints: .unconstrained)
     optionsContainer.layoutedPosition.y = valueContainer.layoutedSize.height
-    return valueContainer.layoutedSize
+    return valueContainer.layoutedSize + optionsContainer.layoutedSize.y
   }
 }
