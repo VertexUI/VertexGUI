@@ -267,7 +267,7 @@ open class Application {
     let surfaceImageInfo = ImageInfo(
       width: Int32(surfaceSize.width),
       height: Int32(surfaceSize.height),
-      colorType: .rgba8888,
+      colorType: .bgra8888,
       alphaType: .unpremul
     )
 
