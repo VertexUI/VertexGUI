@@ -42,18 +42,18 @@ public class TodoListView: ContentfulWidget {
   @DirectContentBuilder override public var content: DirectContent {
     Container().with(styleProperties: {
       (\.$direction, .column)
-    }).withContent { [unowned self] in
+    }).withContent {
 
       Container().with(classes: ["header"]).withContent {
         
-        Dynamic($editingName.publisher) {
+        Dynamic($editingName.publisher) { [unowned self] in
           if editingName {
             TextInput(text: $updatedNameBuffer.mutable, placeholder: "list name").with(classes: ["list-name", "list-name-input"]).with { widget in
-              _ = widget.onMounted {
+              _ = widget.onMounted { [unowned self] in
                 widget.requestFocus()
               }
 
-              widget.onKeyUp {
+              widget.onKeyUp { [unowned self] in
                 if $0.key == .Return {
                   store.commit(.updateTodoListName(listId: list?.id ?? -1, name: updatedNameBuffer))
                   editingName = false
@@ -61,7 +61,7 @@ public class TodoListView: ContentfulWidget {
               }
             }
           } else {
-            Text(list?.name ?? "").with(classes: ["list-name"]).onClick {
+            Text(list?.name ?? "").with(classes: ["list-name"]).onClick { [unowned self] in
               if editable {
                 editingName = true
                 updatedNameBuffer = list?.name ?? ""
@@ -70,11 +70,11 @@ public class TodoListView: ContentfulWidget {
           }
         }
 
-        Dynamic($editable.publisher) {
+        Dynamic($editable.publisher) { [unowned self] in
           if editable {
             Button().withContent {
               Text("add todo")
-            }.onClick {
+            }.onClick { [unowned self] in
               store.commit(.addTodoItem(listId: list!.id))
             }
           }
@@ -82,7 +82,7 @@ public class TodoListView: ContentfulWidget {
       }
 
       List(items: ImmutableBinding($list.immutable, get: { $0?.items ?? [] })).with(classes: ["todo-item-list"]).withContent {
-        $0.itemSlot {
+        $0.itemSlot { [unowned self] in
           build(todo: $0)
         }
       }

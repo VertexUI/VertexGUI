@@ -46,7 +46,7 @@ public class TodoAppView: ContentfulWidget {
   }
 
   @DirectContentBuilder override public var content: DirectContent {
-    Container().withContent { [unowned self] in
+    Container().withContent {
       buildMenu()
       buildActiveView()
     }
@@ -73,10 +73,10 @@ public class TodoAppView: ContentfulWidget {
   }
 
   private func buildSearch() -> Widget {
-    Container().with(classes: ["padded-container", "search-container"]).withContent { [unowned self] in
-      TextInput(text: $searchQuery.mutable, placeholder: "search").with(classes: ["search-input"])
+    Container().with(classes: "padded-container", "search-container").withContent {
+      TextInput(text: $searchQuery.mutable, placeholder: "search").with(classes: "search-input")
 
-      Button().onClick {
+      Button().onClick { [unowned self] in
         store.commit(.setMainViewRoute(store.state.previousMainViewRoute))
       }.withContent {
         MaterialDesignIcon(.close)
@@ -104,10 +104,10 @@ public class TodoAppView: ContentfulWidget {
   }
 
   private func buildActiveView() -> Widget {
-    return Container().with(classes: ["active-view-container"]).withContent { [unowned self] in
+    return Container().with(classes: "active-view-container").withContent {
       Space(DSize2(0, 0)).connect(ref: $activeViewTopSpace)
 
-      Dynamic(store.$state.mainViewRoute.publisher) {
+      Dynamic(store.$state.mainViewRoute.publisher) { [unowned self] in
         switch store.state.mainViewRoute {
         case .none:
           Text("no list selected").with(classes: ["no-active-view-label"])

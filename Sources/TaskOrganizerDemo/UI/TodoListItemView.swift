@@ -18,8 +18,8 @@ public class TodoListItemView: ContentfulWidget {
   }
 
   @DirectContentBuilder override public var content: DirectContent {
-    Container().with(classes: ["root-container"]).withContent { [unowned self] in
-      TaskCompletionButton(item.completed).with(classes: ["completion-button"]).onClick {
+    Container().with(classes: ["root-container"]).withContent {
+      TaskCompletionButton(item.completed).with(classes: ["completion-button"]).onClick { [unowned self] in
         if checkable {
           var updatedItem = item
           updatedItem.completed = !updatedItem.completed
@@ -27,7 +27,7 @@ public class TodoListItemView: ContentfulWidget {
         }
       }
 
-      Dynamic($editing.publisher) {
+      Dynamic($editing.publisher) { [unowned self] in
         if editing {
 
           TextInput(text: $updatedDescriptionBuffer.mutable).with(classes: ["description"]).with { instance in
@@ -51,7 +51,7 @@ public class TodoListItemView: ContentfulWidget {
           }
         } else {
 
-          Text(item.description).with(classes: ["description"]).with { instance in
+          Text(item.description).with(classes: ["description"]).with { [unowned self] instance in
             if editable {
               instance.onClick {
                 editing = true
