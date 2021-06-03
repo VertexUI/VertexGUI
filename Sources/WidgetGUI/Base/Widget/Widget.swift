@@ -496,13 +496,16 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     }
 
     final func setupContext() {
-        contextOnTickHandlerRemover = context.onTick({ [weak self] in
+        var localOnTickHandlerRemover: (() -> ())? = nil
+        localOnTickHandlerRemover = context.onTick({ [weak self] in
           if let self = self {
             self.onTick.invokeHandlers($0)
           } else {
             print("THERE IS NO SELF IN ON TICK!")
+            localOnTickHandlerRemover?()
           }
         })
+        self.contextOnTickHandlerRemover = localOnTickHandlerRemover
     }
     
     private final func undoContextSetup() {
