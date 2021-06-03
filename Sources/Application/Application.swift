@@ -18,10 +18,13 @@ open class Application {
     print("Platform version: \(Platform.version)")
   }
 
-  public func createWindow(widgetRoot: Root, graphicsMode: GraphicsMode = .openGl) throws {
+  public func createWindow(widgetRoot: Root, graphicsMode: GraphicsMode = .cpu) throws {
+    let window: Window
+    let canvas: SkiaKit.Canvas
+
     if graphicsMode == .openGl {
     
-      let window = try Window(properties: WindowProperties(title: "Title", frame: .init(0, 0, 800, 600)),
+      window = try Window(properties: WindowProperties(title: "Title", frame: .init(0, 0, 800, 600)),
                               surface: { try SDLOpenGLWindowSurface(in: $0, with: ()) })
 
       try window.setupSurface()
@@ -32,27 +35,14 @@ open class Application {
 
       surface.glContext.makeCurrent()
 
-      guard let canvas = getCanvas(for: surface) else {
-        fatalError("could not create canvas")
+      guard let skiaSurface = getSkiaSurface(for: surface) else {
+        fatalError("could not create skia surface")
       }
 
-      let drawingBackend = MockDrawingBackend() //GL3NanoVGDrawingBackend(surface: surface)
-
-      let windowBunch = WindowBunch(window: window, graphicsMode: graphicsMode, widgetRoot: widgetRoot, drawingContext: DrawingContext(backend: drawingBackend), canvas: canvas)
-
-      widgetRoot.setup(
-        getKeyStates:  { KeyStatesContainer() },
-        getApplicationTime: { 0 },
-        getRealFps: { 0 },
-        requestCursor: { _ in { () } }
-      )
-
-      updateWindowBunchSize(windowBunch)
-
-      self.windowBunches.append(windowBunch)
+      canvas = skiaSurface.canvas
 
     } else if graphicsMode == .cpu {
-      let window = try Window(properties: WindowProperties(title: "Title", frame: .init(0, 0, 800, 600)),
+      window = try Window(properties: WindowProperties(title: "Title", frame: .init(0, 0, 800, 600)),
                               surface: { try CPUWindowSurface(in: $0) })
 
       try window.setupSurface()
@@ -65,13 +55,25 @@ open class Application {
         fatalError("could not create skia surface")
       }
 
-      let canvas = skiaSurface.canvas
-
-      fatalError("cpu backend not fully implemented yet")
-
+      canvas = skiaSurface.canvas
     } else {
       fatalError("graphics mode \(graphicsMode) not implemented")
     }
+
+    let drawingBackend = MockDrawingBackend()
+
+    let windowBunch = WindowBunch(window: window, graphicsMode: graphicsMode, widgetRoot: widgetRoot, drawingContext: DrawingContext(backend: drawingBackend), canvas: canvas)
+
+    widgetRoot.setup(
+      getKeyStates:  { KeyStatesContainer() },
+      getApplicationTime: { 0 },
+      getRealFps: { 0 },
+      requestCursor: { _ in { () } }
+    )
+
+    try updateWindowBunchSize(windowBunch)
+
+    self.windowBunches.append(windowBunch)
   }
 
   public func start() throws {
@@ -93,7 +95,7 @@ open class Application {
         case .window:
           if case let .resizedTo(newSize) = event.window.action {
             if let windowBunch = findWindowBunch(windowId: event.window.windowID) {
-              updateWindowBunchSize(windowBunch)
+              try! updateWindowBunchSize(windowBunch)
             }
           }
         case .textInput:
@@ -174,14 +176,13 @@ open class Application {
 
   private func performNextTickAndFrame() {
     for bunch in windowBunches {
+      let drawableSize = bunch.window.surface!.getDrawableSize()
       if let surface = bunch.window.surface as? SDLOpenGLWindowSurface {
         surface.glContext.makeCurrent()
+        glViewport(0, 0, GLMap.Size(drawableSize.width), GLMap.Size(drawableSize.height))
+        glClearColor(1, 1, 1, 1)
+        glClear(GLMap.COLOR_BUFFER_BIT)
       }
-
-      let drawableSize = bunch.window.surface!.getDrawableSize()
-      glViewport(0, 0, GLMap.Size(drawableSize.width), GLMap.Size(drawableSize.height))
-      glClearColor(1, 1, 1, 1)
-      glClear(GLMap.COLOR_BUFFER_BIT)
 
       bunch.widgetRoot.tick(Tick(deltaTime: 0, totalTime: 0))
 
@@ -195,27 +196,44 @@ open class Application {
 
       if let surface = bunch.window.surface as? SDLOpenGLWindowSurface {
         surface.swap()
+      } else if let surface = bunch.window.surface as? SDLCPUWindowSurface {
+        surface.flush()
       }
     }
   }
 
-  private func updateWindowBunchSize(_ windowBunch: WindowBunch) {
-    guard let surface = windowBunch.window.surface as? SDLOpenGLWindowSurface else {
-      fatalError("window must have a surface")
+  private func updateWindowBunchSize(_ windowBunch: WindowBunch) throws {   
+    var skiaSurface: SkiaKit.Surface? = nil
+    switch windowBunch.graphicsMode {
+    case .cpu:
+      guard let windowSurface = windowBunch.window.surface as? SDLCPUWindowSurface else {
+        fatalError("incorrect window surface")
+      } 
+
+      try windowSurface.handleWindowResize()
+
+      skiaSurface = getSkiaSurface(for: windowSurface)
+
+    case .openGl:
+      guard let windowSurface = windowBunch.window.surface as? SDLOpenGLWindowSurface else {
+        fatalError("incorrect window surface")
+      }
+
+      skiaSurface = getSkiaSurface(for: windowSurface)
     }
 
-    surface.glContext.makeCurrent()
-
-    guard let canvas = getCanvas(for: surface) else { 
-      fatalError("could not create updated canvas")
+    guard let unwrappedSkiaSurface = skiaSurface else {
+      fatalError("could not create skia surface")
     }
-    windowBunch.canvas = canvas
+    windowBunch.canvas = unwrappedSkiaSurface.canvas
 
-    let drawableSize = surface.getDrawableSize()
+    let drawableSize = windowBunch.window.surface!.getDrawableSize()
     windowBunch.widgetRoot.bounds.size = DSize2(Double(drawableSize.width), Double(drawableSize.height))
   }
 
-  private func getCanvas(for surface: SDLOpenGLWindowSurface) -> Canvas? {
+  private func getSkiaSurface(for surface: SDLOpenGLWindowSurface) -> SkiaKit.Surface? {
+    surface.glContext.makeCurrent()
+
     let surfaceSize = surface.getDrawableSize()
 
     var buffer: GLMap.Int = 0
@@ -240,7 +258,7 @@ open class Application {
       colorSpace: nil,
       props: SurfaceProperties(.rgbHorizontal))
 
-    return skiaSurface.canvas
+    return skiaSurface
   }
 
   private func getSkiaSurface(for surface: CPUWindowSurface) -> SkiaKit.Surface? {
