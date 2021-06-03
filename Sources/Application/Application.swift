@@ -223,7 +223,22 @@ open class Application {
 
     let grContext = GrContext.makeGL(interface: GLInterface.makeNative())
 
-    let skiaSurface = SkiaKit.Surface(handle: makeSurface(Int32(surfaceSize.width), Int32(surfaceSize.height), buffer, grContext.handle))
+    let glInfo = GrGLFramebufferInfo(fFBOID: UInt32(buffer), fFormat: UInt32(0x8058) /* GR_GL_RGBA8 */)
+
+    let renderTarget = GrBackendRenderTarget(
+      width: surfaceSize.width,
+      height: surfaceSize.height,
+      samples: 0,
+      stencils: 8,
+      glInfo: glInfo)
+
+    let skiaSurface = SkiaKit.Surface.makeFromBackendRenderTarget(
+      context: grContext,
+      target: renderTarget,
+      origin: .bottomLeft,
+      colorType: .rgba8888,
+      colorSpace: nil,
+      props: SurfaceProperties(.rgbHorizontal))
 
     return skiaSurface.canvas
   }
