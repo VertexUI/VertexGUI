@@ -27,8 +27,6 @@ open class Application {
       window = try Window(properties: WindowProperties(title: "Title", frame: .init(0, 0, 800, 600)),
                               surface: { try SDLOpenGLWindowSurface(in: $0, with: ()) })
 
-      try window.setupSurface()
-
       guard let surface = window.surface as? SDLOpenGLWindowSurface else {
         fatalError("no or wrong window surface")
       }
