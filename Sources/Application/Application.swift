@@ -43,8 +43,6 @@ open class Application {
       window = try Window(properties: WindowProperties(title: "Title", frame: .init(0, 0, 800, 600)),
                               surface: { try CPUWindowSurface(in: $0) })
 
-      try window.setupSurface()
-
       guard let surface = window.surface as? CPUWindowSurface else {
         fatalError("no or wrong window surface")
       }
