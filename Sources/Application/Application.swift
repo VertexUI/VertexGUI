@@ -76,7 +76,11 @@ open class Application {
     DispatchQueue.main.async { [unowned self] in
       mainLoop()
     }
+    #if os(macOS)
+    RunLoop.main.run()
+    #else
     dispatchMain()
+    #endif
   }
 
   private func mainLoop() {

@@ -1,10 +1,11 @@
 import VertexGUI
 import SkiaKit
+import Dispatch
 let app = try VertexGUI.Application()
 
 let store: TodoStore = TodoStore()
 
-try app.createWindow(widgetRoot: Root(rootWidget: Container().withContent {
+try! app.createWindow(widgetRoot: Root(rootWidget: Container().withContent {
     TodoAppView().with(styleProperties: {
         (\.$grow, 1)
         (\.$alignSelf, .stretch)
