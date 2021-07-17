@@ -32,20 +32,20 @@ let package = Package(
         .package(name: "GfxMath", url: "https://github.com/UnGast/swift-gfx-math.git", .branch("master")),
         .package(url: "https://github.com/OpenCombine/OpenCombine.git", from: "0.12.0"),
         .package(url: "https://github.com/mtynior/ColorizeSwift.git", from: "1.6.0"),
-        .package(name: "Fireblade", path: "../FirebladeEngine"),
+        .package(name: "FirebladeHID", path: "../FirebladeHID"),
         .package(path: "../SkiaKit")
     ],
 
     targets: [
         .target(
             name: "Drawing",
-            dependencies: ["GfxMath", .product(name: "FirebladeHID", package: "Fireblade"), "Swim"]),
+            dependencies: ["GfxMath", .product(name: "FirebladeHID", package: "FirebladeHID"), "Swim"]),
 
         .target(
             name: "Application",
             dependencies: [
                 "WidgetGUI",
-                .product(name: "FirebladeHID", package: "Fireblade"),
+                .product(name: "FirebladeHID", package: "FirebladeHID"),
                 "Drawing",
                 "GfxMath",
                 "GL"]),

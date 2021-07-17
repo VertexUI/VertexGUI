@@ -20,24 +20,6 @@
         }
       },
       {
-        "package": "FirebladeECS",
-        "repositoryURL": "https://github.com/fireblade-engine/ecs.git",
-        "state": {
-          "branch": null,
-          "revision": "c997e078178113ff20e733942b81dea341c84f3d",
-          "version": "0.17.4"
-        }
-      },
-      {
-        "package": "FirebladeIO",
-        "repositoryURL": "https://github.com/fireblade-engine/io.git",
-        "state": {
-          "branch": null,
-          "revision": "8ffd6456030f0c13f1c2454e8c518ad52f8e8a64",
-          "version": "0.4.0"
-        }
-      },
-      {
         "package": "FirebladeMath",
         "repositoryURL": "https://github.com/fireblade-engine/math.git",
         "state": {
@@ -56,48 +38,12 @@
         }
       },
       {
-        "package": "Path.swift",
-        "repositoryURL": "https://github.com/mxcl/Path.swift.git",
-        "state": {
-          "branch": null,
-          "revision": "142d4bc1118602f3679c777d2e0da89c227cd918",
-          "version": "1.2.0"
-        }
-      },
-      {
-        "package": "FirebladeResource",
-        "repositoryURL": "https://github.com/fireblade-engine/resource.git",
-        "state": {
-          "branch": null,
-          "revision": "90e456b18116479721b28c900819f53d9bff66c9",
-          "version": "0.2.1"
-        }
-      },
-      {
-        "package": "swift-crypto",
-        "repositoryURL": "https://github.com/apple/swift-crypto.git",
-        "state": {
-          "branch": null,
-          "revision": "3bea268b223651c4ab7b7b9ad62ef9b2d4143eb6",
-          "version": "1.1.6"
-        }
-      },
-      {
         "package": "GfxMath",
         "repositoryURL": "https://github.com/UnGast/swift-gfx-math.git",
         "state": {
           "branch": "master",
           "revision": "9541dfccc8d2e074eb36c07e5b54b22cc252c2d5",
           "version": null
-        }
-      },
-      {
-        "package": "swift-log",
-        "repositoryURL": "https://github.com/apple/swift-log.git",
-        "state": {
-          "branch": null,
-          "revision": "5d66f7ba25daf4f94100e7022febf3c75e37a6c7",
-          "version": "1.4.2"
         }
       },
       {
@@ -152,15 +98,6 @@
           "branch": null,
           "revision": "cf1bd291364f57e7583bbf49e77b7d5f8fb5927e",
           "version": "0.1.1"
-        }
-      },
-      {
-        "package": "FirebladeUUID",
-        "repositoryURL": "https://github.com/fireblade-engine/uuid.git",
-        "state": {
-          "branch": null,
-          "revision": "52752aed44110a1e6b8b518d22d2b59a8e42d8b3",
-          "version": "1.1.0"
         }
       }
     ]
