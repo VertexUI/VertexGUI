@@ -21,7 +21,7 @@ public class MainView: ContentfulWidget, SlotAcceptingWidgetProtocol {
   override public init() {
     self.testImage = Swim.Image(width: 800, height: 600, color: Swim.Color(r: 0, g: 0, b: 0, a: 255))
     super.init()
-    stateSubscription = self.$myState.sink {
+    stateSubscription = self.$myState.publisher.sink {
       print("MY STATEA CHANGED", $0)
     }
   }
@@ -30,12 +30,12 @@ public class MainView: ContentfulWidget, SlotAcceptingWidgetProtocol {
     Container().with(styleProperties: {
       (\.$background, .red)
       (\.$overflowY, .scroll)
-    }).withContent { [unowned self] in
+    }).withContent {
    
       Container().withContent {
         ImageView(image: $testImage.immutable).with(styleProperties: {
           (\.$width, 200)
-        }).onClick {
+        }).onClick { [unowned self] in
           testImage = Swim.Image(width: 800, height: 600, color: Swim.Color(r: 100, g: 0, b: 0, a: 255))
         }
 
