@@ -56,7 +56,7 @@ for other platforms see: [Installing SDL](https://wiki.libsdl.org/Installation).
 
 Skia is the 2D graphics library used to draw VertexGUI widgets. It needs to be present as a binary as well.
 
-To install it please follow the instructions written for [SkiaKit](https://github.com/ungast/SkiaKit) (SkiaKit is a wrapper library for the Skia c++ API).
+To either download a prebuilt binary or built skia yourself, please follow the instructions written for [SkiaKit](https://github.com/ungast/SkiaKit) (SkiaKit is a wrapper library for the Skia c++ API).
 
 <br>
 
