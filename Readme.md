@@ -38,7 +38,7 @@ The code for the demo app can be found in [Sources/TaskOrganizerDemo](Sources/Ta
 
 ### SDL2
 
-VertexGUi depends on the Fireblade engine which inturn uses SDL2 to manage windows and receive events. SDL2 is a library written in C. The most convenient way of setting up SDL2 is to use your platforms package manager:
+VertexGUI depends on SDL2 to create windows and receive keyboard and mouse events. SDL2 needs to be present on your system as a binary file. The most convenient way of setting up SDL2 is to use your platform's package manager:
 
 On Ubuntu install it with:
 
@@ -54,9 +54,9 @@ for other platforms see: [Installing SDL](https://wiki.libsdl.org/Installation).
 
 ### Skia
 
-Skia provides a rich drawing API which is used to draw the widgets and can be used by you directly as well, for example when creating custom widgets or drawing custom charts.
+Skia is the 2D graphics library used to draw VertexGUI widgets. It needs to be present as a binary as well.
 
-To install it please follow the instructions written for [SkiaKit](https://github.com/ungast/SkiaKit). SkiaKit is a Swift wrapper library for the Skia c++ API.
+To install it please follow the instructions written for [SkiaKit](https://github.com/ungast/SkiaKit) (SkiaKit is a wrapper library for the Skia c++ API).
 
 <br>
 
@@ -77,7 +77,7 @@ targets: [
 ]
 ```
 
-A [Swift 5.3 toolchain](https://swift.org/download/#releases) is required.
+A [Swift 5.4 toolchain](https://swift.org/download/#releases) is required.
 
 <br><br>
 
