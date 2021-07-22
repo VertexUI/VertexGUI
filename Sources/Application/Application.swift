@@ -1,7 +1,7 @@
 import Foundation
 import CoreFoundation
 import WidgetGUI
-import FirebladeHID
+import FirebladePAL
 import Drawing
 import GfxMath
 import GL
@@ -163,7 +163,7 @@ open class Application {
     }
   }
 
-  private func mapPointerButton(_ button: FirebladeHID.PointerButton) -> MouseButton? {
+  private func mapPointerButton(_ button: FirebladePAL.PointerButton) -> MouseButton? {
     switch button {
     case .left:
       return .Left
@@ -289,13 +289,13 @@ open class Application {
 
 extension Application {
   public class WindowBunch {
-    public var window: FirebladeHID.Window
+    public var window: FirebladePAL.Window
     public var graphicsMode: GraphicsMode
     public var widgetRoot: Root
     public var drawingContext: DrawingContext
     public var canvas: SkiaKit.Canvas
 
-    public init(window: FirebladeHID.Window, graphicsMode: GraphicsMode, widgetRoot: Root, drawingContext: DrawingContext, canvas: SkiaKit.Canvas) {
+    public init(window: FirebladePAL.Window, graphicsMode: GraphicsMode, widgetRoot: Root, drawingContext: DrawingContext, canvas: SkiaKit.Canvas) {
       self.window = window
       self.graphicsMode = graphicsMode
       self.widgetRoot = widgetRoot
