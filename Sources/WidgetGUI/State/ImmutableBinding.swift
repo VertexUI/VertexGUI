@@ -34,6 +34,22 @@ public class ImmutableBinding<O>: InternalReactiveProperty {
       }
   }
 
+  /// initialize with a plain Publisher from Combine
+  public init<P: Publisher>(publisher: P) where P.Output == O, P.Failure == Never {
+    fatalError("untested")
+
+    var value: P.Output? = nil
+
+    self._get = { [publisher] in
+      value!
+    }
+
+    dependencySubscription = publisher.sink { [unowned self] in
+      value = $0
+      notifyChange()
+    }
+  }
+
   public init(get _get: @escaping () -> Value) {
     self._get = _get
   }
