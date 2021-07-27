@@ -62,7 +62,7 @@ public class DrawingManager {
             //childDrawingContext.drawRect(rect: DRect(min: .zero, size: widget.layoutedSize), paint: Paint(color: widget.background))
 
             let paint = Paint(color: widget.background, style: .fill, isAntialias: true)
-            canvas.drawRect(DRect(min: .zero, size: widget.layoutedSize), paint: paint)
+            canvas.drawRect(DRect(min: .zero, size: widget.layoutedSize), paint)
             canvas.flush()
           }
 
@@ -93,7 +93,7 @@ public class DrawingManager {
 
           // this debug border will only be drawn for leaf widgets (after it's contents have been drawn)
           if widget.debugLayout {
-            canvas.drawRect(DRect(min: .zero, size: widget.globalBounds.size), paint: Paint(stroke: .red, width: 2.0))
+            canvas.drawRect(DRect(min: .zero, size: widget.globalBounds.size), Paint(stroke: .red, width: 2.0))
             canvas.flush()
             //drawingContext.drawRect(rect: parent.globalBounds, paint: Paint(strokeWidth: 2.0, strokeColor: .red))
           }
@@ -103,7 +103,7 @@ public class DrawingManager {
       // this debug border will only be drawn for non-leaf widgets (after it's sub widgets have been drawn)
       if let parent = stackItem.parent, parent.debugLayout {
         apply(canvasState: stackItem.parentCanvasState, to: canvas)
-        canvas.drawRect(DRect(min: .zero, size: parent.globalBounds.size), paint: Paint(stroke: .red, width: 2.0))
+        canvas.drawRect(DRect(min: .zero, size: parent.globalBounds.size), Paint(stroke: .red, width: 2.0))
         canvas.flush()
         //drawingContext.drawRect(rect: parent.globalBounds, paint: Paint(strokeWidth: 2.0, strokeColor: .red))
       }
@@ -128,28 +128,28 @@ public class DrawingManager {
       canvas.drawLine(
         DVec2(0, widget.borderWidth.top / 2),
         DVec2(widget.layoutedSize.width, widget.borderWidth.top / 2),
-        paint: Paint(stroke: widget.borderColor, width: widget.borderWidth.top))
+        Paint(stroke: widget.borderColor, width: widget.borderWidth.top))
     }
 
     if widget.borderWidth.right > 0 {
       canvas.drawLine(
         DVec2(widget.layoutedSize.width - widget.borderWidth.right / 2, 0),
         DVec2(widget.layoutedSize.width - widget.borderWidth.right / 2, widget.layoutedSize.height),
-        paint: Paint(stroke: widget.borderColor, width: widget.borderWidth.right))
+        Paint(stroke: widget.borderColor, width: widget.borderWidth.right))
     }
 
     if widget.borderWidth.bottom > 0 {
       canvas.drawLine(
         DVec2(0, widget.layoutedSize.height - widget.borderWidth.bottom / 2),
         DVec2(widget.layoutedSize.width, widget.layoutedSize.height - widget.borderWidth.bottom / 2),
-        paint: Paint(stroke: widget.borderColor, width: widget.borderWidth.bottom))
+        Paint(stroke: widget.borderColor, width: widget.borderWidth.bottom))
     }
 
     if widget.borderWidth.left > 0 {
       canvas.drawLine(
         DVec2(widget.borderWidth.left / 2, 0),
         DVec2(widget.borderWidth.left / 2, widget.layoutedSize.height),
-        paint: Paint(stroke: widget.borderColor, width: widget.borderWidth.left))
+        Paint(stroke: widget.borderColor, width: widget.borderWidth.left))
     }
   }
 
