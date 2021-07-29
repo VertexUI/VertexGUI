@@ -155,7 +155,18 @@ open class Application {
         let eventData = event.textInput
 
         if let windowBunch = findWindowBunch(windowId: eventData.windowID) {
-          windowBunch.widgetRoot.receive(textInputEvent: RawTextInputEvent(eventData.text))
+          windowBunch.widgetRoot.receive(rawTextInputEvent: RawTextInputEvent(eventData.text))
+        }
+
+      case .keyboard:
+        let eventData = event.keyboard
+
+        if let windowBunch = findWindowBunch(windowId: eventData.windowID) {
+          windowBunch.widgetRoot.receive(rawKeyboardEvent: KeyDownEvent(
+            key: .ArrowLeft,
+            keyStates: KeyStatesContainer(),
+            repetition: false
+          ))
         }
 
       default:

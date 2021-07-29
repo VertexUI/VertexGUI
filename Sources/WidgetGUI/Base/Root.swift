@@ -130,18 +130,16 @@ open class Root: Parent {
     return false
   }
 
-  public func receive(textInputEvent: RawTextInputEvent) {
-    textInputEventManager.process(event: textInputEvent)
+  public func receive(rawTextInputEvent: RawTextInputEvent) {
+    textInputEventManager.process(event: rawTextInputEvent)
   }
 
-  @discardableResult
-  open func consume(_ rawKeyEvent: KeyEvent) -> Bool {
+  public func receive(rawKeyboardEvent: KeyEvent) {
     var operation = ProcessKeyEventOperationDebugData()
     operation.recordStart()
-    propagate(rawKeyEvent)
+    propagate(rawKeyboardEvent)
     operation.recordEnd()
     debugManager.data.storeOperation(operation)
-    return false
   }
   /**
   END EVENTS
