@@ -162,11 +162,26 @@ open class Application {
         let eventData = event.keyboard
 
         if let windowBunch = findWindowBunch(windowId: eventData.windowID) {
-          windowBunch.widgetRoot.receive(rawKeyboardEvent: RawKeyDownEvent(
-            key: .ArrowLeft,
-            keyStates: KeyStatesContainer(),
-            repetition: false
-          ))
+          guard let firebladeKey = eventData.virtualKey, let mappedKey = Self.firebladeToVertexKeyMap[firebladeKey] else {
+            #if DEBUG
+            print("warning: could not map key: \(eventData.virtualKey)")
+            #endif
+            break
+          }
+
+          if eventData.state == .pressed {
+            windowBunch.widgetRoot.receive(rawKeyboardEvent: RawKeyDownEvent(
+              key: mappedKey,
+              keyStates: KeyStatesContainer(),
+              repetition: eventData.isRepeat
+            ))
+          } else if eventData.state == .released {
+            windowBunch.widgetRoot.receive(rawKeyboardEvent: RawKeyUpEvent(
+              key: mappedKey,
+              keyStates: KeyStatesContainer(),
+              repetition: eventData.isRepeat
+            ))
+          }
         }
 
       default:
@@ -318,4 +333,10 @@ extension Application {
   public enum GraphicsMode {
     case openGl, cpu
   }
+}
+
+extension Application {
+  static let firebladeToVertexKeyMap: [FirebladePAL.KeyCode: Key] = [:
+
+  ]
 }
