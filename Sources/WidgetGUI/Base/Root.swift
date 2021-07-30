@@ -55,6 +55,7 @@ open class Root: Parent {
   */
   lazy private var mouseEventManager = WidgetTreeMouseEventManager(root: self)
   lazy private var textInputEventManager = TextInputEventManager(root: self)
+  lazy private var keyboardEventManager = KeyboardEventManager(root: self)
   private var mouseMoveEventBurstLimiter = BurstLimiter(minDelay: 0.015)
   /* end event propagation */
 
@@ -134,12 +135,8 @@ open class Root: Parent {
     textInputEventManager.process(event: rawTextInputEvent)
   }
 
-  public func receive(rawKeyboardEvent: KeyEvent) {
-    var operation = ProcessKeyEventOperationDebugData()
-    operation.recordStart()
-    propagate(rawKeyboardEvent)
-    operation.recordEnd()
-    debugManager.data.storeOperation(operation)
+  public func receive(rawKeyboardEvent: RawKeyboardEvent) {
+    keyboardEventManager.process(event: rawKeyboardEvent)
   }
   /**
   END EVENTS
@@ -248,43 +245,6 @@ open class Root: Parent {
     operation.recordEnd()
     debugManager.data.storeOperation(operation)
   }
-
-  /*
-    Event Propagation
-    --------------------
-    */
-  internal func propagate(_ rawKeyEvent: KeyEvent) {
-    var next = Optional(rootWidget)
-    while let current = next {
-      if let keyDownEvent = rawKeyEvent as? KeyDownEvent {
-        current.processKeyEvent(
-          GUIKeyDownEvent(
-            key: keyDownEvent.key,
-            keyStates: keyDownEvent.keyStates,
-            repetition: keyDownEvent.repetition))
-      } else if let keyUpEvent = rawKeyEvent as? KeyUpEvent {
-        current.processKeyEvent(
-          GUIKeyUpEvent(
-            key: keyUpEvent.key,
-            keyStates: keyUpEvent.keyStates,
-            repetition: keyUpEvent.repetition))
-      } else {
-        fatalError("Unsupported event type: \(rawKeyEvent)")
-      }
-      
-      next = nil
-      for child in current.children {
-        if child.focused {
-          next = child
-          break
-        }
-      }
-    }
-  }
-  /*
-  End Event Propagation
-  ----------------------
-  */
 
   open func destroy() {
     if destroyed {

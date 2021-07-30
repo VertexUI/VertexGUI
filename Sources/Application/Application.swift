@@ -162,7 +162,7 @@ open class Application {
         let eventData = event.keyboard
 
         if let windowBunch = findWindowBunch(windowId: eventData.windowID) {
-          windowBunch.widgetRoot.receive(rawKeyboardEvent: KeyDownEvent(
+          windowBunch.widgetRoot.receive(rawKeyboardEvent: RawKeyDownEvent(
             key: .ArrowLeft,
             keyStates: KeyStatesContainer(),
             repetition: false

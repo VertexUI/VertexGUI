@@ -1,11 +1,12 @@
-public protocol KeyEvent {
+
+public protocol GUIKeyboardEvent {
     /// true if key is down, false if not
     var keyStates: KeyStatesContainer { get }
     var key: Key { get }
     var repetition: Bool { get }
 }
 
-public struct KeyDownEvent: KeyEvent {
+public struct GUIKeyDownEvent: GUIKeyboardEvent {
     public var keyStates: KeyStatesContainer
     public var key: Key
     public var repetition: Bool
@@ -17,7 +18,7 @@ public struct KeyDownEvent: KeyEvent {
     }
 }
 
-public struct KeyUpEvent: KeyEvent {
+public struct GUIKeyUpEvent: GUIKeyboardEvent {
     public var keyStates: KeyStatesContainer
     public var key: Key
     public var repetition: Bool
