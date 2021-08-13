@@ -1,5 +1,4 @@
 import XCTest
-import VisualAppBase
 import GfxMath
 @testable import WidgetGUI
 

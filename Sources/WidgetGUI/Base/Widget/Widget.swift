@@ -1,10 +1,12 @@
 import Foundation
 import Drawing
 import GfxMath
-import VisualAppBase
+import enum SkiaKit.FontStyleWeight
+import enum SkiaKit.FontStyleWidth
+import enum SkiaKit.FontStyleSlant
 import ColorizeSwift
 import Events
-import CXShim
+import OpenCombine
 
 open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     /* identification
@@ -115,7 +117,7 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     public internal(set) var previousConstraints: BoxConstraints?
 
     lazy public internal(set) var explicitConstraints = calculateExplicitConstraints()
-    var explicitConstraintsUpdateTriggersSubscription: AnyCancellable?
+    var explicitConstraintsUpdateTriggersSubscriptions: [AnyCancellable]?
     /// bridge explicitConstraints for use in @inlinable functions
     @usableFromInline internal var _explicitConstraints: BoxConstraints {
         get {
@@ -132,9 +134,9 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
             if oldValue != layoutedSize {
                 if mounted {
                     invalidateCumulatedValues()
-                    if layouted && !layouting && !destroyed {
+                    /*if layouted && !layouting && !destroyed {
                         onSizeChanged.invokeHandlers(layoutedSize)
-                    }
+                    }*/
                 }
             }
         }
@@ -285,13 +287,16 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     public var fontSize: Double = 16
 
     @DefaultStyleProperty(default: .inherit)
-    public var fontFamily: FontFamily = defaultFontFamily
+    public var fontFamily: String? = nil 
 
     @DefaultStyleProperty(default: .inherit)
-    public var fontWeight: FontWeight = .regular
+    public var fontWeight: FontStyleWeight = .normal
 
     @DefaultStyleProperty(default: .inherit)
-    public var fontStyle: FontStyle = .normal
+    public var fontWidth: FontStyleWidth = .normal
+
+    @DefaultStyleProperty(default: .inherit)
+    public var fontSlant: FontStyleSlant = .upright
 
     @DefaultStyleProperty(default: .inherit)
     public var textTransform: TextTransform = .none
@@ -310,6 +315,9 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     @DefaultStyleProperty
     public var margin: Insets = Insets(all: 0)
     // end flex
+
+    @DefaultStyleProperty
+    public var debugLayout: Bool = false
     /* end style */
 
     /* scrolling
@@ -324,7 +332,7 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
             }
         }
     }
-    var scrollingEnabledUpdateSubscription: AnyCancellable?
+    var scrollingEnabledUpdateSubscriptions: [AnyCancellable]?
     /** removers for event handlers that are registered to manage scrolling */
     private var scrollingSpeed = 20.0
     @State
@@ -348,16 +356,13 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         }
     }
 
-    @State
-    public var debugLayout: Bool = false
-
     public internal(set) var onParentChanged = EventHandlerManager<Parent?>()
     public let onDependenciesInjected = WidgetEventHandlerManager<Void>()
     public internal(set) var onMounted = EventHandlerManager<Void>()
     public let onBuilt = WidgetEventHandlerManager<Void>()
     public let onBuildInvalidated = WidgetEventHandlerManager<Void>()
     public internal(set) var onTick = WidgetEventHandlerManager<Tick>()
-    public internal(set) var onSizeChanged = EventHandlerManager<DSize2>()
+    public internal(set) var onSizeChanged = EventHandlerManager<(newSize: DSize2, firstLayoutPass: Bool)>()
     public internal(set) var onLayoutInvalidated = EventHandlerManager<Void>()
     public internal(set) var onLayoutingStarted = EventHandlerManager<BoxConstraints>()
     public internal(set) var onLayoutingFinished = EventHandlerManager<DSize2>()
@@ -414,18 +419,20 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     }
 
     private func setupExplicitConstraintsUpdateTriggers() {
-        explicitConstraintsUpdateTriggersSubscription = Publishers.MergeMany([
-            $width, $height, $minWidth, $minHeight, $maxWidth, $maxHeight
-        ]).sink { [unowned self] _ in
-            updateExplicitConstraints()
+        explicitConstraintsUpdateTriggersSubscriptions = [
+            $width.publisher, $height.publisher, $minWidth.publisher, $minHeight.publisher, $maxWidth.publisher, $maxHeight.publisher
+        ].map{ [unowned self] in
+            $0.sink { _ in
+                updateExplicitConstraints()
+            }
         }
     }
 
     private func setupScrollingEnabled() {
-        scrollingEnabledUpdateSubscription = Publishers.MergeMany([
-            $overflowX, $overflowY
-        ]).sink { [unowned self] _ in
-            scrollingEnabled = (overflowX == .scroll, overflowY == .scroll)
+        scrollingEnabledUpdateSubscriptions = [$overflowX.publisher, $overflowY.publisher].map { [unowned self] in
+            $0.sink { _ in
+                scrollingEnabled = (overflowX == .scroll, overflowY == .scroll)
+            }
         }
     }
 
@@ -434,7 +441,7 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         scrollMouseWheelHandlerRemover?()
 
         if scrollingEnabled.x || scrollingEnabled.y {
-            $currentScrollOffset.removeDuplicates().sink { [unowned self] in
+            $currentScrollOffset.publisher.removeDuplicates().sink { [unowned self] in
                 let updatedXProgress = $0.x / layoutedSize.width
                 if !updatedXProgress.isNaN && updatedXProgress != pseudoScrollBarX.scrollProgress {
                     pseudoScrollBarX.scrollProgress = updatedXProgress
@@ -446,14 +453,14 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
                 }
             }.store(in: &scrollSubscriptions)
 
-            pseudoScrollBarX.$scrollProgress.removeDuplicates().sink { [unowned self] in
+            pseudoScrollBarX.$scrollProgress.publisher.removeDuplicates().sink { [unowned self] in
                 let updated = $0 * layoutedSize.width
                 if updated != currentScrollOffset.x {
                     currentScrollOffset.x = updated
                 }
             }.store(in: &scrollSubscriptions)
 
-            pseudoScrollBarY.$scrollProgress.removeDuplicates().sink { [unowned self] in
+            pseudoScrollBarY.$scrollProgress.publisher.removeDuplicates().sink { [unowned self] in
                 let updated = $0 * layoutedSize.height
                 if updated != currentScrollOffset.y {
                     currentScrollOffset.y = updated
@@ -488,20 +495,17 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         return self
     }
 
-    @inlinable
-    public final func with(block: (Self) -> ()) -> Self {
-        block(self)
-        return self
-    }
-
     final func setupContext() {
-        contextOnTickHandlerRemover = context.onTick({ [weak self] in
+        var localOnTickHandlerRemover: (() -> ())? = nil
+        localOnTickHandlerRemover = context.onTick({ [weak self] in
           if let self = self {
             self.onTick.invokeHandlers($0)
           } else {
             print("THERE IS NO SELF IN ON TICK!")
+            localOnTickHandlerRemover?()
           }
         })
+        self.contextOnTickHandlerRemover = localOnTickHandlerRemover
     }
     
     private final func undoContextSetup() {
@@ -653,7 +657,7 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         }
 
         let previousSize = layoutedSize
-        let isFirstRound = !layouted
+        let isFirstLayoutPass = !layouted
         
         let explicitConstraintsConstraints = BoxConstraints(minSize: explicitConstraints.minSize, maxSize: explicitConstraints.maxSize)
         let constrainedParentConstraints = BoxConstraints(
@@ -732,8 +736,8 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         // TODO: where to call this? after setting bounds or before?
         onLayoutingFinished.invokeHandlers(bounds.size)
 
-        if previousSize != layoutedSize && !isFirstRound {
-            onSizeChanged.invokeHandlers(layoutedSize)
+        if previousSize != layoutedSize {
+            onSizeChanged.invokeHandlers((layoutedSize, isFirstLayoutPass))
         }
 
         /*for child in children {

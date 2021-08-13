@@ -1,5 +1,4 @@
 import GfxMath
-import VisualAppBase
 
 public class Space: Widget {
     public var preferredSize: DSize2 {

@@ -1,5 +1,4 @@
 import GfxMath
-import VisualAppBase
 
 public class Button: ContentfulWidget, SlotAcceptingWidgetProtocol {
   public static let defaultSlot = Slot(key: "default", data: Void.self)

@@ -1,8 +1,7 @@
 import GfxMath
 import Foundation
 import Events
-@testable import VisualAppBase
-import XCTest
+@testable import XCTest
 
 final class RenderObjectTreeTests: XCTestCase {
     private func makeTestTree() -> RenderObjectTree {

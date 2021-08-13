@@ -14,8 +14,6 @@ let package = Package(
             name: "VertexGUI",
             targets: ["VertexGUI"]
         ),
-        .library(name: "ApplicationBackendSDL2", targets: ["ApplicationBackendSDL2"]),
-        .library(name: "ApplicationBackendSDL2Vulkan", targets: ["ApplicationBackendSDL2Vulkan"]),
         .executable(name: "MinimalDemo", targets: ["MinimalDemo"]),
         .executable(name: "DevApp", targets: ["DevApp"]),
         .executable(
@@ -24,31 +22,29 @@ let package = Package(
     ],
 
     dependencies: [
-        .package(url: "https://github.com/UnGast/CSDL2.git", .branch("master")),
-        .package(name: "Vulkan", url: "https://github.com/UnGast/SwiftVulkan.git", .branch("master")),
         .package(name: "GL", url: "https://github.com/UnGast/swift-opengl.git", .branch("master")),
-        .package(name: "Swim", url: "https://github.com/t-ae/swim.git", .branch("master")),
+        .package(name: "Swim", url: "https://github.com/t-ae/swim.git", from: "3.9.0"),
         .package(url: "https://github.com/UnGast/Cnanovg.git", .branch("master")),
-        .package(name: "GfxMath", url: "https://github.com/UnGast/swift-gfx-math.git", .exact("1.0.0")),
-        .package(url: "https://github.com/cx-org/CombineX.git", .branch("master")),
-        .package(url: "https://github.com/mtynior/ColorizeSwift.git", from: "1.6.0")
+        .package(name: "GfxMath", url: "https://github.com/UnGast/swift-gfx-math.git", .branch("master")),
+        .package(url: "https://github.com/OpenCombine/OpenCombine.git", from: "0.12.0"),
+        .package(url: "https://github.com/mtynior/ColorizeSwift.git", from: "1.6.0"),
+        .package(name: "FirebladePAL", url: "https://github.com/fireblade-engine/pal", .branch("main")),
+        .package(url: "https://github.com/UnGast/SkiaKit", .branch("main"))
     ],
 
     targets: [
         .target(
             name: "Drawing",
-            dependencies: ["GfxMath"]),
+            dependencies: ["GfxMath", .product(name: "FirebladePAL", package: "FirebladePAL"), "Swim"]),
+
         .target(
-            name: "DrawingVulkan",
-            dependencies: ["Drawing", "Vulkan", .product(name: "CSDL2Vulkan", package: "CSDL2")]),
-        .target(name: "Application", dependencies: ["Drawing", "GfxMath", "CombineX"]),
-        .target(name: "ApplicationBackendSDL2", dependencies: ["Application", "Drawing", "CSDL2", "GfxMath", "CombineX"]),
-        .target(
-            name: "ApplicationBackendSDL2Vulkan", 
-            dependencies: ["ApplicationBackendSDL2", "DrawingVulkan", "Vulkan", .product(name: "CSDL2Vulkan", package: "CSDL2")]),
-        .target(
-            name: "VisualAppBase", dependencies: ["CSDL2", "GfxMath", "Swim", "Drawing"]
-        ),
+            name: "Application",
+            dependencies: [
+                "WidgetGUI",
+                .product(name: "FirebladePAL", package: "FirebladePAL"),
+                "Drawing",
+                "GfxMath",
+                "GL"]),
 
         .target(
             name: "Events"
@@ -56,18 +52,13 @@ let package = Package(
 
         .target(
             name: "WidgetGUI",
-            dependencies: ["VisualAppBase", "Events", .product(name: "CXShim", package: "CombineX"), "GfxMath", "ColorizeSwift"],
+            dependencies: ["Events", "OpenCombine", .product(name: "OpenCombineDispatch", package: "OpenCombine"), "GfxMath", "ColorizeSwift", "Drawing", "SkiaKit"],
             resources: [.process("Resources")]
         ),
 
         .target(
-            name: "VisualAppBaseImplSDL2OpenGL3NanoVG",
-            dependencies: ["WidgetGUI", "CSDL2", "GL", "Drawing", "Events", "Swim", .product(name: "CnanovgGL3", package: "Cnanovg"), "GfxMath"],
-            resources: [.process("Resources")]),
-       
-        .target(
             name: "TaskOrganizerDemo",
-            dependencies: ["VertexGUI", "Swim", .product(name: "CXShim", package: "CombineX")],
+            dependencies: ["VertexGUI", "Swim", "OpenCombine"],
             resources: [.copy("Resources")]),
 
         .target(
@@ -77,12 +68,12 @@ let package = Package(
 
         .target(
             name: "DevApp",
-            dependencies: ["VertexGUI"]
+            dependencies: ["VertexGUI", "Swim"]
         ),
 
         .target(
             name: "VertexGUI",
-            dependencies: ["VisualAppBase", "VisualAppBaseImplSDL2OpenGL3NanoVG", "WidgetGUI", "Events", "GfxMath", "Drawing", "Application"],
+            dependencies: ["WidgetGUI", "Events", "GfxMath", "Application", "Drawing"],
             resources: [.process("Resources")]
         ),
 

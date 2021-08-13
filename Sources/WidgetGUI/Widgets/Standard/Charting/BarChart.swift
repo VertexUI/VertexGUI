@@ -1,5 +1,4 @@
 import GfxMath
-import VisualAppBase
 import Drawing
 
 public class BarChart: LeafWidget {
@@ -9,15 +8,6 @@ public class BarChart: LeafWidget {
   private var data: Data
 
   private var drawingData = DrawingData()
-
-  private var tickFontConfig: FontConfig {
-    FontConfig(
-      family: fontFamily,
-      size: fontSize,
-      weight: fontWeight,
-      style: fontStyle
-    )
-  }
 
   public init(_ data: ImmutableBinding<Data>) {
     self._data = data
@@ -63,7 +53,7 @@ public class BarChart: LeafWidget {
     drawingData.yTicks = []
     drawingData.widestYTickWidth = 0
 
-    let tickTextSize = drawingContext.measureText(
+    /*let tickTextSize = drawingContext.measureText(
         text: "012345869.1232094",
         paint: TextPaint(fontConfig: tickFontConfig, color: foreground)
     )
@@ -84,15 +74,15 @@ public class BarChart: LeafWidget {
       if size.width > drawingData.widestYTickWidth {
         drawingData.widestYTickWidth = size.width
       }
-    }
+    }*/
   }
 
   func drawYTicks(_ drawingContext: DrawingContext) {
     for tick in drawingData.yTicks {
-      drawingContext.drawText(
+      /*drawingContext.drawText(
         text: tick.label,
         position: DVec2(drawingData.barAreaWidth, tick.yPosition),
-        paint: TextPaint(fontConfig: tickFontConfig, color: foreground))
+        paint: TextPaint(fontConfig: tickFontConfig, color: foreground))*/
     }
   }
 

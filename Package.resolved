@@ -20,57 +20,48 @@
         }
       },
       {
-        "package": "CombineX",
-        "repositoryURL": "https://github.com/cx-org/CombineX.git",
-        "state": {
-          "branch": "master",
-          "revision": "b9afefe14653f02a80a9f5aa546859e99073d0c8",
-          "version": null
-        }
-      },
-      {
-        "package": "CSDL2",
-        "repositoryURL": "https://github.com/UnGast/CSDL2.git",
-        "state": {
-          "branch": "master",
-          "revision": "d69ef23b8e2ca88df97da1f5d7ef167bad92bbf7",
-          "version": null
-        }
-      },
-      {
-        "package": "CVulkan",
-        "repositoryURL": "https://github.com/UnGast/CVulkan.git",
-        "state": {
-          "branch": "master",
-          "revision": "d7b422f0f5ef93b41bc1199e306ac74e6950eb10",
-          "version": null
-        }
-      },
-      {
-        "package": "Regex",
-        "repositoryURL": "https://github.com/sharplet/Regex.git",
+        "package": "FirebladeMath",
+        "repositoryURL": "https://github.com/fireblade-engine/math.git",
         "state": {
           "branch": null,
-          "revision": "76c2b73d4281d77fc3118391877efd1bf972f515",
-          "version": "2.1.1"
+          "revision": "b6700cf9ddfe00423f789f88f2c3a79132cb2eba",
+          "version": "0.10.0"
         }
       },
       {
-        "package": "swift-argument-parser",
-        "repositoryURL": "https://github.com/apple/swift-argument-parser",
+        "package": "OpenCombine",
+        "repositoryURL": "https://github.com/OpenCombine/OpenCombine.git",
         "state": {
           "branch": null,
-          "revision": "986d191f94cec88f6350056da59c2e59e83d1229",
-          "version": "0.4.3"
+          "revision": "28993ae57de5a4ea7e164787636cafad442d568c",
+          "version": "0.12.0"
+        }
+      },
+      {
+        "package": "FirebladePAL",
+        "repositoryURL": "https://github.com/fireblade-engine/pal",
+        "state": {
+          "branch": "main",
+          "revision": "0976fe971cce4d5d0bf856b2d74f97e07d89c233",
+          "version": null
+        }
+      },
+      {
+        "package": "SkiaKit",
+        "repositoryURL": "https://github.com/UnGast/SkiaKit",
+        "state": {
+          "branch": "main",
+          "revision": "c5aec0f36c0f708015a3eea006d32d8f1bdf538d",
+          "version": null
         }
       },
       {
         "package": "GfxMath",
         "repositoryURL": "https://github.com/UnGast/swift-gfx-math.git",
         "state": {
-          "branch": null,
-          "revision": "af8affa142ac61ff2b95857a145aabcc7dd9a7bc",
-          "version": "1.0.0"
+          "branch": "master",
+          "revision": "714bdbd4818c24e161767cc465feecef98afbf4b",
+          "version": null
         }
       },
       {
@@ -83,12 +74,21 @@
         }
       },
       {
-        "package": "Vulkan",
-        "repositoryURL": "https://github.com/UnGast/SwiftVulkan.git",
+        "package": "SDL2",
+        "repositoryURL": "https://github.com/ctreffs/SwiftSDL2.git",
         "state": {
-          "branch": "master",
-          "revision": "fc87e607bf2a80fbcc7c54d692aa3c9b2fbc79fc",
-          "version": null
+          "branch": null,
+          "revision": "886e6552f18240c2403fea2e66435e3bf82d3ef5",
+          "version": "1.2.0"
+        }
+      },
+      {
+        "package": "Vulkan",
+        "repositoryURL": "https://github.com/ctreffs/SwiftVulkan",
+        "state": {
+          "branch": null,
+          "revision": "1e5bf055439e6f90382e88242ed14f57809a5228",
+          "version": "0.1.2"
         }
       },
       {
@@ -101,21 +101,21 @@
         }
       },
       {
-        "package": "SwiftyXMLParser",
-        "repositoryURL": "https://github.com/yahoojapan/SwiftyXMLParser.git",
-        "state": {
-          "branch": "master",
-          "revision": "b7beef45ecba2df71ac831245f71141ec0efb1fb",
-          "version": null
-        }
-      },
-      {
         "package": "Swim",
         "repositoryURL": "https://github.com/t-ae/swim.git",
         "state": {
-          "branch": "master",
+          "branch": null,
           "revision": "e8e3dc5f6a6f58af40a5c341cb7fbf0d7324dc74",
-          "version": null
+          "version": "3.9.0"
+        }
+      },
+      {
+        "package": "FirebladeTime",
+        "repositoryURL": "https://github.com/fireblade-engine/time.git",
+        "state": {
+          "branch": null,
+          "revision": "cf1bd291364f57e7583bbf49e77b7d5f8fb5927e",
+          "version": "0.1.1"
         }
       }
     ]

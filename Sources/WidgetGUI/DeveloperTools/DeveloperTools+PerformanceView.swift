@@ -1,7 +1,6 @@
-import VisualAppBase
 
 extension DeveloperTools {
-  public class PerformanceView: ContentfulWidget {
+  /*public class PerformanceView: ContentfulWidget {
     @Inject
     var inspectedRoot: Root
 
@@ -117,5 +116,5 @@ extension DeveloperTools {
     enum ChartContent: String, CaseIterable {
       case processMouseEvent, processKeyEvent, processTextEvent, tick, build, updateChildren, resolveMatchedStyles, resolveStyleProperties, layout, updateCumulatedValues, draw
     }
-  }
+  }*/
 }

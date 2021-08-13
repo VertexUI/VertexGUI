@@ -1,5 +1,4 @@
 import GfxMath
-import VisualAppBase
 import Drawing
 
 extension DeveloperTools {
@@ -10,7 +9,7 @@ extension DeveloperTools {
     @DirectContentBuilder override public var content: DirectContent {
       Container().withContent { [unowned self] in
 
-        Dynamic(store.$state.inspectedWidget) {
+        Dynamic(store.$state.inspectedWidget.publisher) {
 
           if let inspectedWidget = store.state.inspectedWidget {
 
@@ -106,7 +105,7 @@ extension DeveloperTools {
 
         Style(".section-heading") {
           (\.$fontSize, 16.0)
-          (\.$fontWeight, FontWeight.bold)
+          (\.$fontWeight, .bold)
           (\.$margin, Insets(bottom: 8))
         }
 

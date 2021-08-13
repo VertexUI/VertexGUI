@@ -1,5 +1,4 @@
 import GfxMath
-import VisualAppBase
 /*
 public class ColorPicker: ComposedWidget { 
   @MutableProperty

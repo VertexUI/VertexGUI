@@ -1,8 +1,8 @@
 import Foundation
 import GfxMath
+import SkiaKit
 import Drawing
 import Dispatch
-import VisualAppBase
 import Events
 
 open class Root: Parent {
@@ -28,9 +28,6 @@ open class Root: Parent {
 
   var widgetContext: WidgetContext? {
     didSet {
-      if let widgetContext = widgetContext {
-        widgetContext.debugLayout = debugLayout
-      }
       rootWidget.context = widgetContext!
     }
   }
@@ -57,6 +54,8 @@ open class Root: Parent {
   ----------------------------
   */
   lazy private var mouseEventManager = WidgetTreeMouseEventManager(root: self)
+  lazy private var textInputEventManager = TextInputEventManager(root: self)
+  lazy private var keyboardEventManager = KeyboardEventManager(root: self)
   private var mouseMoveEventBurstLimiter = BurstLimiter(minDelay: 0.015)
   /* end event propagation */
 
@@ -64,14 +63,6 @@ open class Root: Parent {
   --------------------------
   */
   public let debugManager = DebugManager()
-
-  public var debugLayout = false {
-    didSet {
-      if let widgetContext = widgetContext {
-        widgetContext.debugLayout = debugLayout
-      }
-    }
-  }
   /* end debugging */
 
   public private(set) var destroyed = false
@@ -82,14 +73,12 @@ open class Root: Parent {
   }
   
   open func setup(
-    measureText: @escaping (_ text: String, _ paint: TextPaint) -> DSize2,
     getKeyStates: @escaping () -> KeyStatesContainer,
     getApplicationTime: @escaping () -> Double,
     getRealFps: @escaping () -> Double,
     requestCursor: @escaping (_ cursor: Cursor) -> () -> Void
   ) {
     self.widgetContext = WidgetContext(
-      measureText: measureText,
       getKeyStates: getKeyStates,
       getApplicationTime: getApplicationTime,
       getRealFps: getRealFps,
@@ -108,22 +97,33 @@ open class Root: Parent {
     cumulatedValuesProcessor.resolveSubTree(rootWidget: rootWidget)
   }
 
-  @discardableResult
-  open func consume(_ rawMouseEvent: RawMouseEvent) -> Bool {
-    if let event = rawMouseEvent as? RawMouseMoveEvent {
+  /**
+  EVENTS
+  -----------------------
+  */
+
+  /** - Returns: whether the event was consumed (true) or fell through (false) */
+  final public func receive(rawPointerEvent: RawMouseEvent) -> Bool {
+   if let event = rawPointerEvent as? RawMouseMoveEvent {
+
       mouseMoveEventBurstLimiter.limit { [weak self] in
         if let self = self {
           var operation = ProcessMouseEventOperationDebugData()
           operation.recordStart()
-          self.mouseEventManager.propagate(rawMouseEvent)
+
+          self.mouseEventManager.propagate(rawPointerEvent)
+
           operation.recordEnd()
           self.debugManager.data.storeOperation(operation)
         }
       }
+
     } else {
       var operation = ProcessMouseEventOperationDebugData()
       operation.recordStart()
-      mouseEventManager.propagate(rawMouseEvent)
+
+      mouseEventManager.propagate(rawPointerEvent)
+
       operation.recordEnd()
       self.debugManager.data.storeOperation(operation)
     }
@@ -131,25 +131,17 @@ open class Root: Parent {
     return false
   }
 
-  @discardableResult
-  open func consume(_ rawKeyEvent: KeyEvent) -> Bool {
-    var operation = ProcessKeyEventOperationDebugData()
-    operation.recordStart()
-    propagate(rawKeyEvent)
-    operation.recordEnd()
-    debugManager.data.storeOperation(operation)
-    return false
+  public func receive(rawTextInputEvent: RawTextInputEvent) {
+    textInputEventManager.process(event: rawTextInputEvent)
   }
 
-  @discardableResult
-  open func consume(_ rawTextEvent: TextEvent) -> Bool {
-    var operation = ProcessTextEventOperationDebugData()
-    operation.recordStart()
-    propagate(rawTextEvent)
-    operation.recordEnd()
-    debugManager.data.storeOperation(operation)
-    return false
+  public func receive(rawKeyboardEvent: RawKeyboardEvent) {
+    keyboardEventManager.process(event: rawKeyboardEvent)
   }
+  /**
+  END EVENTS
+  -----------
+  */
 
   open func tick(_ tick: Tick) {
     var operation = TickOperationDebugData()
@@ -238,7 +230,7 @@ open class Root: Parent {
     return stepData
   }
 
-  open func draw(_ drawingContext: DrawingContext) {
+  open func draw(_ drawingContext: DrawingContext, canvas: SkiaKit.Canvas) {
     var operation = DrawOperationDebugData()
     operation.recordStart()
 
@@ -247,66 +239,12 @@ open class Root: Parent {
     rootDrawingContext.transform(.scale(DVec2(scale, scale)))
     rootDrawingContext.lock()
 
-    drawingManager.processQueue(widgetLifecycleManager.queues[.draw]!, drawingContext: rootDrawingContext)
+    drawingManager.processQueue(widgetLifecycleManager.queues[.draw]!, drawingContext: rootDrawingContext, canvas: canvas)
     widgetLifecycleManager.queues[.draw]?.clear()
 
     operation.recordEnd()
     debugManager.data.storeOperation(operation)
   }
-
-  /*
-    Event Propagation
-    --------------------
-    */
-  internal func propagate(_ rawKeyEvent: KeyEvent) {
-    var next = Optional(rootWidget)
-    while let current = next {
-      if let keyDownEvent = rawKeyEvent as? KeyDownEvent {
-        current.processKeyEvent(
-          GUIKeyDownEvent(
-            key: keyDownEvent.key,
-            keyStates: keyDownEvent.keyStates,
-            repetition: keyDownEvent.repetition))
-      } else if let keyUpEvent = rawKeyEvent as? KeyUpEvent {
-        current.processKeyEvent(
-          GUIKeyUpEvent(
-            key: keyUpEvent.key,
-            keyStates: keyUpEvent.keyStates,
-            repetition: keyUpEvent.repetition))
-      } else {
-        fatalError("Unsupported event type: \(rawKeyEvent)")
-      }
-      
-      next = nil
-      for child in current.children {
-        if child.focused {
-          next = child
-          break
-        }
-      }
-    }
-  }
-
-  internal func propagate(_ event: TextEvent) {
-    var next = Optional(rootWidget)
-    while let current = next {
-      if let event = event as? TextInputEvent {
-        current.processTextEvent(GUITextInputEvent(event.text))
-      }
-
-      next = nil
-      for child in current.children {
-        if child.focused {
-          next = child
-          break
-        }
-      }
-    }
-  }
-  /*
-  End Event Propagation
-  ----------------------
-  */
 
   open func destroy() {
     if destroyed {

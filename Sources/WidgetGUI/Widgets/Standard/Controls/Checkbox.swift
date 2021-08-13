@@ -1,4 +1,3 @@
-import VisualAppBase
 import GfxMath
 /*
 public class Checkbox: Widget, GUIMouseEventConsumer {

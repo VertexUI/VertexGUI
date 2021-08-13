@@ -19,6 +19,11 @@ public struct BoxConstraints: Equatable, CustomDebugStringConvertible {
     self.init(minSize: size, maxSize: size)
   }
 
+  // min size of 0, max size infinity
+  public static var unconstrained: BoxConstraints {
+    BoxConstraints(minSize: .zero, maxSize: .infinity)
+  }
+
   public var minWidth: Double {
     get {
       return minSize.width

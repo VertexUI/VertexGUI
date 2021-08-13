@@ -1,14 +1,14 @@
 public enum StylePropertyValue<T> {
   case inherit
-  case some(T)
+  case value(T)
 
   public init?(_ any: AnyStylePropertyValue) {
     switch any {
     case .inherit:
       self = .inherit
-    case let .some(value):
+    case let .value(value):
       if let value = value as? T {
-        self = .some(value)
+        self = .value(value)
       } else {
         return nil
       }
@@ -18,11 +18,12 @@ public enum StylePropertyValue<T> {
 
 public enum AnyStylePropertyValue {
   case inherit
-  case some(Any)
+  case value(Any)
 
   public init?<T>(_ concreteValue: StylePropertyValue<T>?) {
     if let concreteValue = concreteValue {
       self.init(concreteValue)
+      return
     }
     return nil
   }
@@ -31,8 +32,8 @@ public enum AnyStylePropertyValue {
     switch concreteValue {
     case .inherit:
       self = .inherit
-    case let .some(value):
-      self = .some(value)
+    case let .value(value):
+      self = .value(value)
     }
   }
 }

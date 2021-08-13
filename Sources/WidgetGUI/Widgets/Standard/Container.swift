@@ -1,5 +1,5 @@
 import GfxMath
-import CXShim
+import OpenCombine
 import Drawing
 
 public class Container: ContentfulWidget, SlotAcceptingWidgetProtocol {
@@ -48,7 +48,7 @@ public class Container: ContentfulWidget, SlotAcceptingWidgetProtocol {
           updateLayoutInstanceProperties()
         }
       }*/
-      layoutChangeSubscription = $layout.map(ObjectIdentifier.init).removeDuplicates().sink { [unowned self] _ in
+      layoutChangeSubscription = $layout.publisher.map(ObjectIdentifier.init).removeDuplicates().sink { [unowned self] _ in
         updateLayoutInstance()
       }
 

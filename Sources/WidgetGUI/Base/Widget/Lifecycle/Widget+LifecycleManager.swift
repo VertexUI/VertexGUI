@@ -1,5 +1,4 @@
 import Events
-import VisualAppBase
 
 extension Widget {
   public class LifecycleManager {

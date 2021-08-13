@@ -1,4 +1,4 @@
-@_functionBuilder
+@resultBuilder
 public struct WidgetBuilder {
     public static func buildBlock() -> [Widget] {
         return []

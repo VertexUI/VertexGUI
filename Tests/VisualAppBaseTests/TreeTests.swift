@@ -1,6 +1,5 @@
 import Events
-@testable import VisualAppBase
-import XCTest
+@testable import XCTest
 
 final class TreeTests: XCTestCase {
     func testTreePathComparison() {

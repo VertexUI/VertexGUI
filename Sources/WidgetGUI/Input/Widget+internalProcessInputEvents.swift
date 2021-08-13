@@ -31,7 +31,7 @@ extension Widget {
     }
   }
 
-  internal func processKeyEvent(_ event: GUIKeyEvent) {
+  internal func processKeyboardEvent(_ event: GUIKeyboardEvent) {
     switch event {
     case let event as GUIKeyDownEvent:
       self.onKeyDownHandlerManager.invokeHandlers(event)

@@ -11,13 +11,13 @@ VertexGUI is a Swift framework for writing cross-platform GUI applications.
 
 <img alt="screenshot of demo app" src="Docs/demo.png?raw=true"/>
 
-Currently Linux and MacOS are supported. Windows support is planned.
+VertexGUI uses the [Skia](https://skia.org/) 2D rendering engine for drawing Widgets and a part of the [Fireblade](https://github.com/fireblade/engine) game engine for managing windows on multiple platforms.
 
-To run the demo follow the installation instructions for SDL2 below, clone the repository and in the root directory execute `swift run TaskOrganizerDemo`.
+Currently Linux and MacOS are supported. Windows support is planned. Skia supports more platforms: Android, iOS, ChromeOS. So these platforms can probably be supported by VertexGUI as well with not too much work.
+
+To run the demo application, follow the installation instructions below, clone the repository and in the root directory execute `swift run TaskOrganizerDemo`.
 
 The code for the demo app can be found in [Sources/TaskOrganizerDemo](Sources/TaskOrganizerDemo)
-
-**I'm working on a tutorial.**
 
 <br>
 
@@ -38,7 +38,7 @@ The code for the demo app can be found in [Sources/TaskOrganizerDemo](Sources/Ta
 
 ### SDL2
 
-The framework depends on SDL2 to create windows and receive events.
+VertexGUI depends on SDL2 to create windows and receive keyboard and mouse events. SDL2 needs to be present on your system as a binary file. The most convenient way of setting up SDL2 is to use your platform's package manager:
 
 On Ubuntu install it with:
 
@@ -49,6 +49,14 @@ on MacOS (via homebrew):
     brew install sdl2
 
 for other platforms see: [Installing SDL](https://wiki.libsdl.org/Installation).
+
+<br>
+
+### Skia
+
+Skia is the 2D graphics library used to draw VertexGUI widgets. It needs to be present as a binary as well.
+
+To either download a prebuilt binary or built skia yourself, please follow the instructions written for [SkiaKit](https://github.com/ungast/SkiaKit) (SkiaKit is a wrapper library for the Skia c++ API).
 
 <br>
 
@@ -69,7 +77,7 @@ targets: [
 ]
 ```
 
-A [Swift 5.3 toolchain](https://swift.org/download/#releases) is required.
+A [Swift 5.4 toolchain](https://swift.org/download/#releases) is required.
 
 <br><br>
 
@@ -429,9 +437,8 @@ class MyCustomWidget: ContentfulWidget {
 
 ## [Current Limitations](#current-limitations)
 
-- only runs on Linux (tested on Ubuntu 20.04) and MacOS (tested on MacOS 10.15)
+- currently only runs on Linux (tested on Ubuntu 20.04) and MacOS (tested on MacOS 10.15)
 - depends on SDL2 for handling cross platform window management
-- depends on NanoVG (specifically on the OpenGL 3.3 implementation of NanoVG) for rendering primitives (line, rect, ...)
 - a few core Widget types (Container, Button, Text, TextInput, ...) are available
 - the graphics api has only been implemented in so far as to be able to create the above demos
 - everything is redrawn on every frame
@@ -444,16 +451,9 @@ class MyCustomWidget: ContentfulWidget {
 
 - Windows support
 - WebAssembly support
-- extend drawing api
-  - gradients
-  - rounded rects
-  - arbitrary paths
-  - ...
-- consider adding Skia as additional drawing backend
 - more core Widgets
   - RadioButton
   - Checkbox
-  - Image
   - Textarea
   - ...
 - full flexbox layout system

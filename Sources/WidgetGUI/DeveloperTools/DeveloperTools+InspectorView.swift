@@ -7,7 +7,7 @@ extension DeveloperTools {
 
     @DirectContentBuilder override public var content: DirectContent {
       Container().withContent { [unowned self] in
-        DeveloperTools.WidgetNestingView(inspectedRoot.rootWidget)
+        //DeveloperTools.WidgetNestingView(inspectedRoot.rootWidget)
       }
     }
   }

@@ -1,4 +1,4 @@
-@_functionBuilder
+@resultBuilder
 public struct DirectContentBuilder {
   public static func buildExpression(_ widget: Widget) -> [DirectContent.Partial] {
     [.widget(widget)]
@@ -12,8 +12,8 @@ public struct DirectContentBuilder {
     [.content(content)]
   }
 
-  public static func buildExpression(_ dynamic: Dynamic<DirectContent>) -> [DirectContent.Partial] {
-    [.dynamic(dynamic)]
+  public static func buildExpression(_ dynamicContent: Dynamic<DirectContent>) -> [DirectContent.Partial] {
+    [.dynamic(dynamicContent)]
   }
 
   public static func buildOptional(_ partials: [DirectContent.Partial]?) -> [DirectContent.Partial] {
@@ -26,6 +26,10 @@ public struct DirectContentBuilder {
 
   public static func buildEither(second: [DirectContent.Partial]) -> [DirectContent.Partial] {
     return second
+  }
+
+  public static func buildArray(_ components: [[DirectContent.Partial]]) -> [DirectContent.Partial] {
+    components.flatMap { $0 }
   }
 
   public static func buildBlock(_ partials: [DirectContent.Partial]...) -> [DirectContent.Partial] {
@@ -41,8 +45,10 @@ public struct DirectContentBuilder {
   }
 }
 
-@_functionBuilder
+@resultBuilder
 public struct SlottingContentBuilder {
+  public typealias Component = [SlottingContent.Partial]
+
   public static func buildExpression(_ widget: Widget) -> [SlottingContent.Partial] {
     [.widget(widget)]
   }
@@ -63,8 +69,8 @@ public struct SlottingContentBuilder {
     partials ?? []
   }
 
-  public static func buildExpression(_ dynamic: Dynamic<SlottingContent>) -> [SlottingContent.Partial] {
-    [.dynamic(dynamic)]
+  public static func buildExpression(_ dynamicContent: Dynamic<SlottingContent>) -> [SlottingContent.Partial] {
+    [.dynamic(dynamicContent)]
   }
 
   public static func buildEither(first: [SlottingContent.Partial]) -> [SlottingContent.Partial] {
@@ -73,6 +79,10 @@ public struct SlottingContentBuilder {
 
   public static func buildEither(second: [SlottingContent.Partial]) -> [SlottingContent.Partial] {
     return second
+  }
+
+  public static func buildArray(_ components: [[SlottingContent.Partial]]) -> [SlottingContent.Partial] {
+    components.flatMap { $0 }
   }
 
   public static func buildBlock(_ partials: [SlottingContent.Partial]...) -> [SlottingContent.Partial] {

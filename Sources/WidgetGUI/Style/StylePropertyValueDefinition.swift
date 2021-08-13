@@ -1,4 +1,4 @@
-import CXShim
+import OpenCombine
 
 public struct StylePropertyValueDefinition {
   public var keyPath: AnyKeyPath

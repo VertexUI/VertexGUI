@@ -1,7 +1,6 @@
 import GfxMath
-import VisualAppBase
 
-public class FlatTheme {
+public class FlatTheme: Theme {
   public let primaryColor: Color
   public let textColorOnPrimary: Color
   public let secondaryColor: Color
@@ -58,6 +57,29 @@ public class FlatTheme {
 
         Style("&:hover") {
           (\.$foreground, primaryColor.darkened(30))
+        }
+      }
+
+      Style("Select") {
+        (\.$background, .yellow)
+        (\.$debugLayout, true)
+      } nested: {
+        Style(".value-field") {
+          (\.$borderWidth, Insets(all: 1))
+          (\.$borderColor, .yellow)
+        }
+
+        Style(".options-field") {
+          (\.$borderWidth, Insets(all: 1))
+          (\.$borderColor, .yellow)
+        }
+
+        Style(".option") {
+          (\.$padding, Insets(all: 8))
+        } nested: {
+          Style("&.selected") {
+            (\.$background, primaryColor)
+          }
         }
       }
     }

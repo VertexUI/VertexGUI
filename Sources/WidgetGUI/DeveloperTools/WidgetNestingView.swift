@@ -1,7 +1,7 @@
 import GfxMath
 import Events
 
-extension DeveloperTools {
+/*extension DeveloperTools {
   public class WidgetNestingView: ContentfulWidget {
     @Inject var store: DeveloperTools.Store
 
@@ -40,7 +40,7 @@ extension DeveloperTools {
           (\.$direction, .column)
           (\.$padding, Insets(left: 16))
         }).withContent {
-          Dynamic($expanded) {
+          Dynamic($expanded.publisher) {
             if expanded {
               inspectedWidget.children.map { 
                 WidgetNestingView($0, depth: depth + 1)
@@ -74,4 +74,4 @@ extension DeveloperTools {
       }
     }
   }
-}
+}*/

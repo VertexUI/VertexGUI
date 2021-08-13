@@ -1,5 +1,6 @@
 import VertexGUI
-import CXShim
+import Swim
+import OpenCombine
 
 public class MainView: ContentfulWidget, SlotAcceptingWidgetProtocol {
   @Inject
@@ -8,7 +9,9 @@ public class MainView: ContentfulWidget, SlotAcceptingWidgetProtocol {
   @State
   var myState: String = "This is a value from an @State property."
   @State
-  var testBackgroundColor: Color = .orange
+  var testBackgroundColor: VertexGUI.Color = .orange
+  @State
+  var testImage: Swim.Image<RGBA, UInt8>
 
   static let TestSlot1 = Slot(key: "testSlot1", data: Void.self)
   private let testSlot1 = SlotContentManager(MainView.TestSlot1)
@@ -16,8 +19,9 @@ public class MainView: ContentfulWidget, SlotAcceptingWidgetProtocol {
   var stateSubscription: AnyCancellable?
 
   override public init() {
+    self.testImage = Swim.Image(width: 800, height: 600, color: Swim.Color(r: 0, g: 0, b: 0, a: 255))
     super.init()
-    stateSubscription = self.$myState.sink {
+    stateSubscription = self.$myState.publisher.sink {
       print("MY STATEA CHANGED", $0)
     }
   }
@@ -26,9 +30,15 @@ public class MainView: ContentfulWidget, SlotAcceptingWidgetProtocol {
     Container().with(styleProperties: {
       (\.$background, .red)
       (\.$overflowY, .scroll)
-    }).withContent { [unowned self] in
+    }).withContent {
    
       Container().withContent {
+        ImageView(image: $testImage.immutable).with(styleProperties: {
+          (\.$width, 200)
+        }).onClick { [unowned self] in
+          testImage = Swim.Image(width: 800, height: 600, color: Swim.Color(r: 100, g: 0, b: 0, a: 255))
+        }
+
         Container().with(styleProperties: {
           (\.$width, 200)
           (\.$height, 150)

@@ -1,4 +1,3 @@
-import VisualAppBase
 import Events
 
 internal protocol AnyWidgetEventHandlerManager {

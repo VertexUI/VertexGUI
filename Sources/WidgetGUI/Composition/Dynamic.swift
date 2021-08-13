@@ -1,11 +1,12 @@
 import Events
-import CXShim
+import OpenCombine
 
 public class Dynamic<C: ContentProtocol> {
   var associatedStyleScope: UInt
 
   let content: C
 
+  var triggerProperty: AnyObject?
   var triggerSubscription: AnyCancellable?
 
   private init<P: Publisher>(trigger: P, build: @escaping () -> [C.Partial]) where P.Failure == Never {
@@ -26,10 +27,20 @@ extension Dynamic where C == DirectContent {
   public convenience init<P: Publisher>(_ trigger: P, @DirectContentBuilder build: @escaping () -> [C.Partial]) where P.Failure == Never {
     self.init(trigger: trigger, build: build)
   }
+
+  public convenience init<P: ReactiveProperty>(_ trigger: P, @DirectContentBuilder build: @escaping () -> [C.Partial]) {
+    self.init(trigger: trigger.publisher, build: build)
+    triggerProperty = trigger
+  }
 }
 
 extension Dynamic where C == SlottingContent {
   public convenience init<P: Publisher>(_ trigger: P, @SlottingContentBuilder build: @escaping () -> [C.Partial]) where P.Failure == Never {
     self.init(trigger: trigger, build: build)
+  }
+
+  public convenience init<P: ReactiveProperty>(_ trigger: P, @SlottingContentBuilder build: @escaping () -> [C.Partial]) {
+    self.init(trigger: trigger.publisher, build: build)
+    triggerProperty = trigger
   }
 }

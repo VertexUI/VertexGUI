@@ -116,7 +116,7 @@ open class DrawingContext {
     if let color = paint.color {
       processed.color = color.adjusted(alpha: UInt8(mergedOpacity * color.aFrac * 255))
     }
-    processed.fontConfig.size = preprocess(DSize2(0, processed.fontConfig.size)).height
+    //processed.fontConfig.size = preprocess(DSize2(0, processed.fontConfig.size)).height
     return processed
   }
 
@@ -151,9 +151,9 @@ open class DrawingContext {
     if let currentClip = currentClip {
       self.currentClip = currentClip.intersection(with: preprocessedRect)
     } else {
-      currentClip = preprocessedRect
+      self.currentClip = preprocessedRect
     }
-    backend.clip(rect: mergedClip!)
+    backend.clip(rect: mergedClip ?? DRect(min: .zero, size: .zero))
   }
 
   /**
@@ -208,6 +208,10 @@ open class DrawingContext {
 
   open func drawPath() {
     
+  }
+
+  open func drawImage(image: Image2, topLeft: DVec2) {
+    backend.drawImage(image: image, topLeft: topLeft)
   }
 
   /**

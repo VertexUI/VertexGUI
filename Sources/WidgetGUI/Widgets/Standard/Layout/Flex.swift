@@ -1,5 +1,4 @@
 import GfxMath
-import VisualAppBase
 
 public class Flex: Widget {
   private let orientation: Orientation
@@ -176,7 +175,7 @@ extension Flex {
     }
   }
 
-  @_functionBuilder
+  @resultBuilder
   public struct ItemBuilder {
     public static func buildExpression(_ widget: Widget) -> [Flex.Item] {
       [Flex.Item { widget }]

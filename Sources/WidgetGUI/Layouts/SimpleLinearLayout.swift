@@ -1,5 +1,5 @@
 import GfxMath
-import CXShim
+import OpenCombine
 
 public class SimpleLinearLayout: Layout {
   @LayoutProperty(\.$direction)
@@ -20,21 +20,23 @@ public class SimpleLinearLayout: Layout {
     }
   }
 
-  var childrenPropertySubscription: AnyCancellable?
+  var childrenPropertySubscriptions: [AnyCancellable]?
 
   func invalidateLayout() {
     container.invalidateLayout()
   }
 
   override public func setupChildrenPropertySubscription() {
-    childrenPropertySubscription = Publishers.MergeMany(widgets.flatMap {
+    childrenPropertySubscriptions = widgets.flatMap {
       [
-        $0.$shrink.map { $0 as Any }.eraseToAnyPublisher(),
-        $0.$grow.map { $0 as Any }.eraseToAnyPublisher(),
-        $0.$alignSelf.map { $0 as Any }.eraseToAnyPublisher()
+        $0.$shrink.publisher.map { $0 as Any }.eraseToAnyPublisher(),
+        $0.$grow.publisher.map { $0 as Any }.eraseToAnyPublisher(),
+        $0.$alignSelf.publisher.map { $0 as Any }.eraseToAnyPublisher()
       ]
-    }).sink { [unowned self] _ in
-      invalidateLayout()
+    }.map { [unowned self] in
+      $0.sink { _ in
+        invalidateLayout()
+      }
     }
   }
 
