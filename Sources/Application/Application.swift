@@ -336,7 +336,8 @@ extension Application {
 }
 
 extension Application {
-  static let firebladeToVertexKeyMap: [FirebladePAL.KeyCode: Key] = [:
-
+  static let firebladeToVertexKeyMap: [FirebladePAL.KeyCode: Key] = [
+    .LEFT: .ArrowLeft,
+    .RIGHT: .ArrowRight
   ]
 }
