@@ -24,7 +24,7 @@ open class Application {
 
     if graphicsMode == .openGl {
     
-      window = try Window(properties: WindowProperties(title: "Title", frame: .init(0, 0, 800, 600)),
+      window = try Window(properties: WindowProperties(title: "Title", frame: .init(min: Vector2(0, 0), size: Size2(800, 600))),
                               surface: { try SDLOpenGLWindowSurface(in: $0, with: ()) })
 
       guard let surface = window.surface as? SDLOpenGLWindowSurface else {
@@ -40,7 +40,7 @@ open class Application {
       canvas = skiaSurface.canvas
 
     } else if graphicsMode == .cpu {
-      window = try Window(properties: WindowProperties(title: "Title", frame: .init(0, 0, 800, 600)),
+      window = try Window(properties: WindowProperties(title: "Title", frame: .init(min: Vector2(0, 0), size: Size2(800, 600))),
                               surface: { try CPUWindowSurface(in: $0) })
 
       guard let surface = window.surface as? CPUWindowSurface else {

@@ -20,30 +20,12 @@
         }
       },
       {
-        "package": "FirebladeMath",
-        "repositoryURL": "https://github.com/fireblade-engine/math.git",
-        "state": {
-          "branch": null,
-          "revision": "b6700cf9ddfe00423f789f88f2c3a79132cb2eba",
-          "version": "0.10.0"
-        }
-      },
-      {
         "package": "OpenCombine",
         "repositoryURL": "https://github.com/OpenCombine/OpenCombine.git",
         "state": {
           "branch": null,
           "revision": "28993ae57de5a4ea7e164787636cafad442d568c",
           "version": "0.12.0"
-        }
-      },
-      {
-        "package": "FirebladePAL",
-        "repositoryURL": "https://github.com/fireblade-engine/pal",
-        "state": {
-          "branch": "main",
-          "revision": "0976fe971cce4d5d0bf856b2d74f97e07d89c233",
-          "version": null
         }
       },
       {
@@ -75,20 +57,11 @@
       },
       {
         "package": "SDL2",
-        "repositoryURL": "https://github.com/ctreffs/SwiftSDL2.git",
+        "repositoryURL": "https://github.com/ctreffs/SwiftSDL2",
         "state": {
           "branch": null,
           "revision": "886e6552f18240c2403fea2e66435e3bf82d3ef5",
           "version": "1.2.0"
-        }
-      },
-      {
-        "package": "Vulkan",
-        "repositoryURL": "https://github.com/ctreffs/SwiftVulkan",
-        "state": {
-          "branch": null,
-          "revision": "1e5bf055439e6f90382e88242ed14f57809a5228",
-          "version": "0.1.2"
         }
       },
       {
@@ -107,15 +80,6 @@
           "branch": null,
           "revision": "e8e3dc5f6a6f58af40a5c341cb7fbf0d7324dc74",
           "version": "3.9.0"
-        }
-      },
-      {
-        "package": "FirebladeTime",
-        "repositoryURL": "https://github.com/fireblade-engine/time.git",
-        "state": {
-          "branch": null,
-          "revision": "cf1bd291364f57e7583bbf49e77b7d5f8fb5927e",
-          "version": "0.1.1"
         }
       }
     ]

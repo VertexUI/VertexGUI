@@ -28,26 +28,33 @@ let package = Package(
         .package(name: "GfxMath", url: "https://github.com/UnGast/swift-gfx-math.git", .branch("master")),
         .package(url: "https://github.com/OpenCombine/OpenCombine.git", from: "0.12.0"),
         .package(url: "https://github.com/mtynior/ColorizeSwift.git", from: "1.6.0"),
-        .package(name: "FirebladePAL", url: "https://github.com/fireblade-engine/pal", .branch("main")),
+        //.package(name: "FirebladePAL", url: "https://github.com/fireblade-engine/pal", .branch("main")),
+        .package(name: "SDL2", url: "https://github.com/ctreffs/SwiftSDL2", from: "1.2.0"),
         .package(url: "https://github.com/UnGast/SkiaKit", .branch("main"))
     ],
 
     targets: [
         .target(
             name: "Drawing",
-            dependencies: ["GfxMath", .product(name: "FirebladePAL", package: "FirebladePAL"), "Swim"]),
+            dependencies: ["GfxMath", "FirebladePAL", "Swim"]),
 
         .target(
             name: "Application",
             dependencies: [
                 "WidgetGUI",
-                .product(name: "FirebladePAL", package: "FirebladePAL"),
+                "FirebladePAL",
                 "Drawing",
                 "GfxMath",
                 "GL"]),
 
         .target(
             name: "Events"
+        ),
+
+        .target(
+            name: "FirebladePAL",
+            dependencies: [.product(name: "SDL2", package: "SDL2"), .product(name: "CSDL2", package: "SDL2"), "GfxMath"],
+            swiftSettings: [.define("FRB_PLATFORM_SDL"), .define("FRB_GRAPHICS_OPENGL")]
         ),
 
         .target(
