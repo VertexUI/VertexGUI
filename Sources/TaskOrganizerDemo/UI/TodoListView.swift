@@ -49,7 +49,7 @@ public class TodoListView: ContentfulWidget {
         Dynamic($editingName.publisher) { [unowned self] in
           if editingName {
             TextInput(text: $updatedNameBuffer.mutable, placeholder: "list name").with(classes: ["list-name", "list-name-input"]).with { widget in
-              _ = widget.onMounted { [unowned self] in
+              _ = widget.onMounted {
                 widget.requestFocus()
               }
 

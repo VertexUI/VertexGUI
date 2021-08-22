@@ -103,8 +103,8 @@ open class Root: Parent {
   */
 
   /** - Returns: whether the event was consumed (true) or fell through (false) */
-  final public func receive(rawPointerEvent: RawMouseEvent) -> Bool {
-   if let event = rawPointerEvent as? RawMouseMoveEvent {
+  @discardableResult public func receive(rawPointerEvent: RawMouseEvent) -> Bool {
+   if rawPointerEvent is RawMouseMoveEvent {
 
       mouseMoveEventBurstLimiter.limit { [weak self] in
         if let self = self {

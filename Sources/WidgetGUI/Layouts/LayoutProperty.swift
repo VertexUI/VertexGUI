@@ -25,6 +25,6 @@ public class LayoutProperty<T>: AnyLayoutProperty {
   }
 }
 
-internal protocol AnyLayoutProperty: class {
+internal protocol AnyLayoutProperty: AnyObject {
   var layoutInstance: Layout? { get set }
 }

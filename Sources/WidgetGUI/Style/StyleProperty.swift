@@ -1,6 +1,6 @@
 import OpenCombine
 
-protocol AnyStylePropertyProtocol: class {
+protocol AnyStylePropertyProtocol: AnyObject {
   var definitionValue: StylePropertyValueDefinition.Value? { get set }
   var container: Widget? { get set }
   var name: String? { get set }

@@ -14,6 +14,6 @@ public class SlotContentDefinition<D>: AnySlotContentDefinition {
   }
 }
 
-public protocol AnySlotContentDefinition: class {
+public protocol AnySlotContentDefinition: AnyObject {
   var anySlot: AnySlot { get }
 }

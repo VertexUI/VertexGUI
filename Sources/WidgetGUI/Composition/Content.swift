@@ -1,7 +1,7 @@
 import Foundation
 import Events
 
-public protocol ContentProtocol: class {
+public protocol ContentProtocol: AnyObject {
   associatedtype Partial
 
   var partials: [Partial] { get set }

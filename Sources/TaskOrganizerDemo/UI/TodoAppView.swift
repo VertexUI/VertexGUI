@@ -112,7 +112,7 @@ public class TodoAppView: ContentfulWidget {
         case .none:
           Text("no list selected").with(classes: ["no-active-view-label"])
 
-        case let .selectedList:
+        case .selectedList:
           TodoListView(listId: store.$state.selectedListId.immutable).with(classes: ["active-view"])
 
         case .searchResults:

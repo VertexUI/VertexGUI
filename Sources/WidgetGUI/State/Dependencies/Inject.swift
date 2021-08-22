@@ -36,12 +36,12 @@ public class Inject<T>: AnyInject {
   }
 }
 
-internal protocol AnyInject: class, _AnyInject {}
+internal protocol AnyInject: AnyObject, _AnyInject {}
 
 /**
 Warning: Do not directly conform to this protocol. Instead conform to AnyInject.
 This is necessary to get reference semantics for the Inject containers. Use _AnyInject only
-to check whether some property of a class is an Inject container. _AnyInject can not define : class, because
+to check whether some property of a class is an Inject container. _AnyInject can not define : AnyObject, because
 this crashes Swift because of some NSObject conversion.
 */
 internal protocol _AnyInject {

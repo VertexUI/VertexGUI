@@ -53,7 +53,7 @@ public class SlotContentManager<D>: AnySlotContentManager, EventfulObject {
   }
 }
 
-internal protocol AnySlotContentManager: class {
+internal protocol AnySlotContentManager: AnyObject {
   var anySlot: AnySlot { get }
   var anyDefinition: AnySlotContentDefinition? { get set }
 }

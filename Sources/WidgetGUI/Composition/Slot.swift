@@ -16,6 +16,6 @@ public class Slot<D>: AnySlot {
   }*/
 }
 
-public protocol AnySlot: class {
+public protocol AnySlot: AnyObject {
   var key: String { get }
 }

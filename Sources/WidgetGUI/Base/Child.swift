@@ -1,6 +1,6 @@
 import Events
 
-public protocol Child: class {
+public protocol Child: AnyObject {
     var parent: Parent? { get set }
 
     // TODO: is this necessary?

@@ -18,7 +18,7 @@ public class WidgetTreeMouseEventManager {
   /// - Returns true if the event was consumed.
   /// TODO: go by render objects (some render objects need an id or something like that to then find the widgets they belong to) --> advantage: only click where there is content --> need a "sorted" render object tree / composition?
   /// --> might use the already rendered stuff and actually check the pixels for Widgets which are able to consume mouse events --> for others only check layoutBounds or renderBounds
-  public func propagate(_ rawMouseEvent: RawMouseEvent) -> Bool {
+  @discardableResult public func propagate(_ rawMouseEvent: RawMouseEvent) -> Bool {
     // to avoid having to apply the scale for every event type
     var processedRawMouseEvent = rawMouseEvent
     processedRawMouseEvent.position /= root.scale
