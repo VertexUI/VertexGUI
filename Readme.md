@@ -1,8 +1,3 @@
-The package is currently not usable, because some dependencies are private.
-This will be fixed in the next week.
-
-<br>
-
 # VertexGUI
 
 ![build-ubuntu](https://github.com/VertexUI/VertexGUI/workflows/build-ubuntu/badge.svg)
