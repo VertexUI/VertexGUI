@@ -72,9 +72,9 @@ public final class TextInput: ContentfulWidget
   }
 
   private func updatePlaceholderVisibility() {
-    if text.isEmpty && placeholderVisibility == .hidden {
+    if text.isEmpty {
       placeholderVisibility = .visible
-    } else if !text.isEmpty && placeholderVisibility == .visible {
+    } else if !text.isEmpty {
       placeholderVisibility = .hidden
     }
   }
