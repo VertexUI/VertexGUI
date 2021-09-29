@@ -1,5 +1,5 @@
 import Application
-import CSDL2
+import SDL2
 
 extension MouseButton {
   init(fromSDL sdlMouseButton: UInt8) {

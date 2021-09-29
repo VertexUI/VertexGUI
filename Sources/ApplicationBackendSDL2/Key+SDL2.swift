@@ -1,4 +1,4 @@
-import CSDL2
+import SDL2
 import Application
 
 fileprivate func asSDLKeycode(_ key: Int) -> SDL_Keycode {

@@ -1,6 +1,6 @@
 import CVulkan
 import Vulkan
-import CSDL2Vulkan
+import SDL2Vulkan
 import ApplicationBackendSDL2
 import DrawingVulkan
 import GfxMath

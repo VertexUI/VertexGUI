@@ -30,7 +30,7 @@ public final class SDLOpenGLWindowSurface: SDLWindowSurface, OpenGLSurface {
 
     @inline(__always)
     public static var sdlFlags: UInt32 {
-        SDL_WINDOW_OPENGL.rawValue
+        UInt32(SDL_WINDOW_OPENGL.rawValue)
     }
 
     public var enableVsync: Bool {
