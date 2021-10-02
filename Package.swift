@@ -53,7 +53,7 @@ let package = Package(
 
         .target(
             name: "FirebladePAL",
-            dependencies: [.product(name: "SDL2", package: "SDL2"), .product(name: "CSDL2", package: "SDL2"), "GfxMath"],
+            dependencies: [.product(name: "SDL2", package: "SDL2"), "GfxMath"],
             swiftSettings: [.define("FRB_PLATFORM_SDL"), .define("FRB_GRAPHICS_OPENGL")]
         ),
 

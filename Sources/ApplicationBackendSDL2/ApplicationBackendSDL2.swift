@@ -1,5 +1,5 @@
 import Application
-import CSDL2
+import SDL2 // change
 import GfxMath
 import Dispatch
 import Foundation

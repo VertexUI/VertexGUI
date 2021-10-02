@@ -1,4 +1,4 @@
-import CSDL2
+import SDL2 // change
 import Drawing
 import Application
 import GfxMath

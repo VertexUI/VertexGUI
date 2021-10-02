@@ -33,7 +33,7 @@
         "repositoryURL": "https://github.com/UnGast/SkiaKit",
         "state": {
           "branch": "main",
-          "revision": "c5aec0f36c0f708015a3eea006d32d8f1bdf538d",
+          "revision": "a960d43f4dffdd36ea82d731bc70f50386c60e4c",
           "version": null
         }
       },
@@ -42,7 +42,7 @@
         "repositoryURL": "https://github.com/UnGast/swift-gfx-math.git",
         "state": {
           "branch": "master",
-          "revision": "714bdbd4818c24e161767cc465feecef98afbf4b",
+          "revision": "1c64a27204ff680a60f211cf6a3df337f4e2aaa7",
           "version": null
         }
       },
@@ -60,8 +60,8 @@
         "repositoryURL": "https://github.com/ctreffs/SwiftSDL2",
         "state": {
           "branch": null,
-          "revision": "886e6552f18240c2403fea2e66435e3bf82d3ef5",
-          "version": "1.2.0"
+          "revision": "23984cf96f20260413ef16721fe8b1f411f860a1",
+          "version": "1.2.1"
         }
       },
       {
