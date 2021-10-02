@@ -2,15 +2,6 @@
   "object": {
     "pins": [
       {
-        "package": "Cnanovg",
-        "repositoryURL": "https://github.com/UnGast/Cnanovg.git",
-        "state": {
-          "branch": "master",
-          "revision": "b6ca44619bf68833a81ddcb23c9396219acd9b35",
-          "version": null
-        }
-      },
-      {
         "package": "ColorizeSwift",
         "repositoryURL": "https://github.com/mtynior/ColorizeSwift.git",
         "state": {
@@ -23,9 +14,9 @@
         "package": "OpenCombine",
         "repositoryURL": "https://github.com/OpenCombine/OpenCombine.git",
         "state": {
-          "branch": null,
-          "revision": "28993ae57de5a4ea7e164787636cafad442d568c",
-          "version": "0.12.0"
+          "branch": "master",
+          "revision": "710dfa27157d984182676ca24ec18cc25af9330c",
+          "version": null
         }
       },
       {
@@ -33,7 +24,7 @@
         "repositoryURL": "https://github.com/UnGast/SkiaKit",
         "state": {
           "branch": "main",
-          "revision": "6d06204e394d1a692aaaa4803867bf14935954a8",
+          "revision": "fb90a0986753b3c053445992abf9ac967736c3f8",
           "version": null
         }
       },
@@ -42,7 +33,7 @@
         "repositoryURL": "https://github.com/UnGast/swift-gfx-math.git",
         "state": {
           "branch": "master",
-          "revision": "1c64a27204ff680a60f211cf6a3df337f4e2aaa7",
+          "revision": "714bdbd4818c24e161767cc465feecef98afbf4b",
           "version": null
         }
       },
@@ -51,7 +42,7 @@
         "repositoryURL": "https://github.com/UnGast/swift-opengl.git",
         "state": {
           "branch": "master",
-          "revision": "229ef7cdbfe1948948171e17a7d44d9c03ae4b65",
+          "revision": "8dfcb2e1ac804975cd30fe503ca0f3a76b93ab05",
           "version": null
         }
       },
@@ -59,9 +50,9 @@
         "package": "SDL2",
         "repositoryURL": "https://github.com/ctreffs/SwiftSDL2",
         "state": {
-          "branch": null,
-          "revision": "23984cf96f20260413ef16721fe8b1f411f860a1",
-          "version": "1.2.1"
+          "branch": "master",
+          "revision": "6a36a4963d3699b609706cff4352e0e4db9da3de",
+          "version": null
         }
       },
       {
@@ -75,11 +66,11 @@
       },
       {
         "package": "Swim",
-        "repositoryURL": "https://github.com/t-ae/swim.git",
+        "repositoryURL": "https://github.com/UnGast/swim.git",
         "state": {
-          "branch": null,
-          "revision": "e8e3dc5f6a6f58af40a5c341cb7fbf0d7324dc74",
-          "version": "3.9.0"
+          "branch": "master",
+          "revision": "e0bdad1089e96d254b733fa62beccc8516dff4a1",
+          "version": null
         }
       }
     ]
