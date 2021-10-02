@@ -1,5 +1,5 @@
 import Application
-import SDL2 // change
+import SDL2
 import GfxMath
 import Dispatch
 import Foundation

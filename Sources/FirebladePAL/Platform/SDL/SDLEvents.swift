@@ -23,7 +23,7 @@ final class SDLEvents: PlatformEvents {
     }
 
     private static func translate(from sdlEvent: SDL_Event, to event: inout Event) {
-        let sdlEventType = SDL_EventType(sdlEvent.type)
+        let sdlEventType = SDL_EventType(SDL_EventType.RawValue(sdlEvent.type))
         event.variant = .none
         switch sdlEventType {
         case SDL_QUIT:
@@ -173,7 +173,7 @@ final class SDLEvents: PlatformEvents {
         event.pointerID = Int(sdlEvent.which)
 
         let sign: Int
-        switch SDL_MouseWheelDirection(sdlEvent.direction) {
+        switch SDL_MouseWheelDirection(SDL_MouseWheelDirection.RawValue(sdlEvent.direction)) {
         case SDL_MOUSEWHEEL_NORMAL:
             sign = 1
         case SDL_MOUSEWHEEL_FLIPPED:
@@ -196,7 +196,7 @@ final class SDLEvents: PlatformEvents {
     private static func translateWindowEvent(from sdlEvent: SDL_WindowEvent, to event: inout WindowEvent) -> Bool {
         event.windowID = Int(sdlEvent.windowID)
 
-        switch SDL_WindowEventID(UInt32(sdlEvent.event)) {
+        switch SDL_WindowEventID(SDL_WindowEventID.RawValue(sdlEvent.event)) {
         case SDL_WINDOWEVENT_RESIZED:
             event.action = .resizedTo(size: .init(Int(sdlEvent.data1), Int(sdlEvent.data1)))
             return true
@@ -226,13 +226,13 @@ final class SDLEvents: PlatformEvents {
         event.isRepeat = (sdlEvent.repeat != 0)
 
         // SDL virtual key code; see SDL_Keycode for details
-        event.virtualKey = Self.virtualKeyMap[SDL_KeyCode(UInt32(sdlEvent.keysym.sym))]
+        event.virtualKey = Self.virtualKeyMap[SDL_KeyCode(SDL_KeyCode.RawValue(sdlEvent.keysym.sym))]
 
         // SDL physical key code; see SDL_Scancode for details
         event.physicalKey = Self.physicalKeyMap[sdlEvent.keysym.scancode]!
 
         // current key modifiers; see SDL_Keymod for details
-        translateKeyboardModifiers(sdlModifiers: SDL_Keymod(UInt32(sdlEvent.keysym.mod)), modifiers: &event.modifiers)
+        translateKeyboardModifiers(sdlModifiers: SDL_Keymod(SDL_Keymod.RawValue(sdlEvent.keysym.mod)), modifiers: &event.modifiers)
     }
 
     private static func translateKeyboardModifiers(sdlModifiers: SDL_Keymod, modifiers: inout KeyModifier) {

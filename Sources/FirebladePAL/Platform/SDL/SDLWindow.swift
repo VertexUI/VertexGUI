@@ -26,14 +26,14 @@ open class SDLWindow: WindowBase {
         let originY: Int32 = Int32(SDL_WINDOWPOS_CENTERED_MASK)
 
         surfaceType = Surface.self
-        flags |= Surface.sdlFlags
+        flags |= SDL_WindowFlags.RawValue(Surface.sdlFlags)
 
         guard let window = SDL_CreateWindow(properties.title,
                                             originX,
                                             originY,
                                             Int32(properties.frame.width),
                                             Int32(properties.frame.height),
-                                            flags)
+                                            UInt32(flags))
         else {
             throw SDLError()
         }
@@ -48,7 +48,7 @@ open class SDLWindow: WindowBase {
         let originX: Int32 = Int32(SDL_WINDOWPOS_CENTERED_MASK)
         let originY: Int32 = Int32(SDL_WINDOWPOS_CENTERED_MASK)
 
-        flags |= surfaceType.sdlFlags
+        flags |= SDL_WindowFlags.RawValue(surfaceType.sdlFlags)
         self.surfaceType = surfaceType
 
         guard let window = SDL_CreateWindow(properties.title,
@@ -56,7 +56,7 @@ open class SDLWindow: WindowBase {
                                             originY,
                                             Int32(properties.frame.width),
                                             Int32(properties.frame.height),
-                                            flags)
+                                            UInt32(flags))
         else {
             throw SDLError()
         }
@@ -105,10 +105,10 @@ open class SDLWindow: WindowBase {
 
     public var fullscreen: Bool {
         get {
-            (SDL_GetWindowFlags(_window) & SDL_WINDOW_FULLSCREEN.rawValue) == SDL_WINDOW_FULLSCREEN.rawValue
+            (SDL_GetWindowFlags(_window) & UInt32(SDL_WINDOW_FULLSCREEN.rawValue)) == SDL_WINDOW_FULLSCREEN.rawValue
         }
         set {
-            let result = SDL_SetWindowFullscreen(_window, newValue ? SDL_WINDOW_FULLSCREEN.rawValue : 0)
+            let result = SDL_SetWindowFullscreen(_window, newValue ? UInt32(SDL_WINDOW_FULLSCREEN.rawValue) : 0)
             SDLAssert(result == 0)
         }
     }

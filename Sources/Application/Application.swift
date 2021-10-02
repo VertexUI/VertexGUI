@@ -1,5 +1,4 @@
 import Foundation
-import CoreFoundation
 import WidgetGUI
 import FirebladePAL
 import Drawing
