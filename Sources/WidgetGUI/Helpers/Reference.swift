@@ -1,9 +1,14 @@
+import OpenCombine
+
 public protocol AnyReferenceProtocol {
     var anyReferenced: Widget? { get set }
 }
 
 @propertyWrapper
-public class Reference<ReferencedWidget: Widget>: AnyReferenceProtocol {
+public class Reference<ReferencedWidget: Widget>: AnyReferenceProtocol, Publisher {
+    public typealias Output = ReferencedWidget?
+    public typealias Failure = Never
+
     public unowned var anyReferenced: Widget? {
         get { referenced }
         set {
@@ -15,7 +20,11 @@ public class Reference<ReferencedWidget: Widget>: AnyReferenceProtocol {
         }
     }
 
-    public unowned var referenced: ReferencedWidget?
+    public unowned var referenced: ReferencedWidget? {
+        didSet {
+            publisher.send(referenced)
+        }
+    }
 
     public var wrappedValue: ReferencedWidget {
         get {
@@ -30,6 +39,14 @@ public class Reference<ReferencedWidget: Widget>: AnyReferenceProtocol {
         get {
             self
         }
+    }
+
+    public var publisher = PassthroughSubject<Output, Failure>()
+
+    public func receive<S: Subscriber>(
+        subscriber: S
+    ) where S.Input == Output, S.Failure == Failure {
+        publisher.receive(subscriber: subscriber)
     }
 
     public init() {}
