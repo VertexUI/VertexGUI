@@ -362,7 +362,7 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     public let onBuilt = WidgetEventHandlerManager<Void>()
     public let onBuildInvalidated = WidgetEventHandlerManager<Void>()
     public internal(set) var onTick = WidgetEventHandlerManager<Tick>()
-    public internal(set) var onSizeChanged = EventHandlerManager<(newSize: DSize2, firstLayoutPass: Bool)>()
+    public internal(set) var sizeChangedEventManager = PublishingEventManager<(newSize: DSize2, firstLayoutPass: Bool)>()
     public internal(set) var onLayoutInvalidated = EventHandlerManager<Void>()
     public internal(set) var onLayoutingStarted = EventHandlerManager<BoxConstraints>()
     public internal(set) var onLayoutingFinished = EventHandlerManager<DSize2>()
@@ -737,7 +737,7 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         onLayoutingFinished.invokeHandlers(bounds.size)
 
         if previousSize != layoutedSize {
-            onSizeChanged.invokeHandlers((layoutedSize, isFirstLayoutPass))
+            sizeChangedEventManager.send((layoutedSize, isFirstLayoutPass))
         }
 
         /*for child in children {
@@ -832,7 +832,7 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
 
         onParentChanged.removeAllHandlers()
         onMounted.removeAllHandlers()
-        onSizeChanged.removeAllHandlers()
+        //onSizeChanged.removeAllHandlers()
         onLayoutInvalidated.removeAllHandlers()
         onLayoutingStarted.removeAllHandlers()
         onLayoutingFinished.removeAllHandlers()

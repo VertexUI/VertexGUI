@@ -114,12 +114,16 @@ public class WidgetTreeManager {
 
   func setupChildParentInfluence(parent: Widget, child: Widget) {
     if child.mounted && !child.destroyed {
-      _ = parent.onDestroy(child.onSizeChanged { [unowned parent] _ in
+      let cancellable = child.onSizeChanged { [unowned parent] _ in
         // TODO: maybe need special relayout flag / function
         if parent.layouted && !parent.layouting {
             parent.invalidateLayout()
         }
-      })
+      }
+
+      _ = parent.onDestroy {
+        cancellable.cancel()
+      }
     } else {
       print("warning: tried to setup child to parent effects, but child was not yet mounted or already destroyed, parent: \(parent), child: \(child)")
     }
