@@ -47,7 +47,8 @@ let package = Package(
                 "GL"]),
 
         .target(
-            name: "Events"
+            name: "Events",
+            dependencies: ["OpenCombine"]
         ),
 
         .target(
