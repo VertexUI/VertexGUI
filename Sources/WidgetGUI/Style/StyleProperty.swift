@@ -10,9 +10,13 @@ protocol StylePropertyProtocol: AnyStylePropertyProtocol {
   associatedtype Container: Widget
   associatedtype Value
 
+  /// used when value is .inherit but there is nothing to inherit from
   var concreteDefaultValue: Value { get }
+  /// might be .inherit or a concrete value
   var defaultValue: StylePropertyValue<Value> { get }
+  /// might be .inherit or a concrete value
   var styleValue: StylePropertyValue<Value>? { get set }
+  /// resolving .inherit value, only concrete values
   var resolvedValue: Value { get set }
 
   var definitionValueSourceSubscription: AnyCancellable? { get set }
@@ -27,9 +31,11 @@ extension StylePropertyProtocol {
       switch definitionValue {
       case let .constant(value):
         styleValue = StylePropertyValue(value)!
-      case let .reactive(publisher):
-        definitionValueSourceSubscription = publisher.sink { [unowned self] in
-          styleValue = StylePropertyValue($0)!
+      case let .reactive(erasedReactiveProperty):
+        let reactiveProperty = erasedReactiveProperty as! AnyReactiveProperty<Value>
+        styleValue = .value(reactiveProperty.value)
+        definitionValueSourceSubscription = reactiveProperty.publisher.sink { [unowned self] in
+          styleValue = .value($0)
         }
       }
     } else {

@@ -6,6 +6,7 @@ try app.createWindow(widgetRoot: WidgetGUI.Root(rootWidget: Container().withCont
   MainView().with(styleProperties: {
     (\.$alignSelf, .stretch)
     (\.$grow, 1)
+    (\.$background, .white)
   })
 }))
 
