@@ -123,6 +123,7 @@ public final class TextInput: ContentfulWidget
       Style(".placeholder") {
         (\.$opacity, 0.5)
         (\.$foreground, .white)
+        (\.$visibility, $placeholderVisibility.immutable)
       }
     }
   }
@@ -211,16 +212,18 @@ public final class TextInput: ContentfulWidget
   }
 
   public func drawCaret(_ canvas: Canvas) {
-    /*let timestamp = context.applicationTime
+    let timestamp = context.applicationTime
     caretBlinkTime += timestamp - lastDrawTimestamp
     lastDrawTimestamp = timestamp
 
     let caretTranslationX = textWidget.measureText(String(text.prefix(caretIndex))).width + caretWidth / 2
 
-    drawingContext.drawLine(
-      from: DVec2(caretTranslationX, 0),
-      to: DVec2(caretTranslationX, textWidget.layoutedSize.height),
-      paint: Paint(strokeWidth: caretWidth, strokeColor: caretColor.adjusted(alpha: UInt8(caretBlinkProgress * 255))))*/
+    canvas.drawLine(
+      DVec2(caretTranslationX, 0),
+      DVec2(caretTranslationX, textWidget.layoutedSize.height),
+      Paint(
+        stroke: caretColor.adjusted(alpha: UInt8(caretBlinkProgress * 255)),
+        width: caretWidth))
   }
 
   override public func destroySelf() {
