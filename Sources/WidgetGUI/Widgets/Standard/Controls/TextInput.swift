@@ -24,16 +24,11 @@ public final class TextInput: ContentfulWidget
   @StyleProperty public var caretColor: GfxMath.Color = .lightBlue
 
   private var caretIndex: Int = 2
-  private var lastDrawTimestamp: Double = 0.0
   private var caretWidth: Double = 2
+
   private var caretBlinkDuration: Double = 0.9
-  private var caretBlinkTime = 0.0 {
-    didSet {
-      caretBlinkTime = caretBlinkTime.truncatingRemainder(dividingBy: caretBlinkDuration)
-    }
-  }
   private var caretBlinkProgress: Double {
-    let raw = caretBlinkTime / caretBlinkDuration
+    let raw = Date.timeIntervalSinceReferenceDate.truncatingRemainder(dividingBy: caretBlinkDuration) / caretBlinkDuration
     if raw < 0.3 {
       return 1 - raw / 0.3
     } else if raw < 0.8 {
@@ -212,15 +207,12 @@ public final class TextInput: ContentfulWidget
   }
 
   public func drawCaret(_ canvas: Canvas) {
-    let timestamp = context.applicationTime
-    caretBlinkTime += timestamp - lastDrawTimestamp
-    lastDrawTimestamp = timestamp
-
+    let caretHeight = fontSize
     let caretTranslationX = textWidget.measureText(String(text.prefix(caretIndex))).width + caretWidth / 2
 
     canvas.drawLine(
-      DVec2(caretTranslationX, 0),
-      DVec2(caretTranslationX, textWidget.layoutedSize.height),
+      DVec2(caretTranslationX, textWidget.layoutedSize.height / 2 - caretHeight / 2),
+      DVec2(caretTranslationX, textWidget.layoutedSize.height / 2 + caretHeight / 2),
       Paint(
         stroke: caretColor.adjusted(alpha: UInt8(caretBlinkProgress * 255)),
         width: caretWidth))
