@@ -54,7 +54,7 @@ public class TodoListView: ContentfulWidget {
               }
 
               widget.onKeyUp { [unowned self] in
-                if $0.key == .Return {
+                if $0.key == .return {
                   store.commit(.updateTodoListName(listId: list?.id ?? -1, name: updatedNameBuffer))
                   editingName = false
                 }

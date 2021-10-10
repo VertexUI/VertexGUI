@@ -36,7 +36,7 @@ public class TodoListItemView: ContentfulWidget {
             }
 
             instance.onKeyUp {
-              if $0.key == .Return {
+              if $0.key == .return {
                 var updatedItem = item
                 updatedItem.description = updatedDescriptionBuffer
                 store.commit(.updateTodoItem(updatedItem: updatedItem))

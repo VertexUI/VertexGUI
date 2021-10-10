@@ -157,7 +157,7 @@ public final class TextInput: ContentfulWidget
 
   public func handleKeyDown(_ event: GUIKeyDownEvent) {
     switch event.key {
-    case .Backspace:
+    case .backspace:
       if caretIndex > 0 && textBuffer.count >= caretIndex {
         textBuffer.remove(
           at: textBuffer.index(textBuffer.startIndex, offsetBy: caretIndex - 1))
@@ -165,17 +165,17 @@ public final class TextInput: ContentfulWidget
         syncText()
         updateTextTranslation()
       }
-    case .Delete:
+    case .delete:
       if caretIndex < textBuffer.count {
         textBuffer.remove(at: textBuffer.index(textBuffer.startIndex, offsetBy: caretIndex))
         syncText()
       }
-    case .ArrowLeft:
+    case .arrowLeft:
       if caretIndex > 0 {
         caretIndex -= 1
         updateTextTranslation()
       }
-    case .ArrowRight:
+    case .arrowRight:
       if caretIndex < textBuffer.count {
         caretIndex += 1
         updateTextTranslation()
