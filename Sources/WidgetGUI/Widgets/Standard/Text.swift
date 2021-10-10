@@ -57,7 +57,7 @@ public class Text: LeafWidget {
     //context.measureText(text: text, paint: TextPaint(fontConfig: fontConfig, color: foreground))
     let font = createFont()
     let paint = createPaint()
-    return font.measureText(self.transformedText, paint: paint)
+    return font.measureText(text, paint: paint)
   }
 
   private func createPaint() -> SkiaKit.Paint {
