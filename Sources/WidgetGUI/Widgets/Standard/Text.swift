@@ -61,7 +61,7 @@ public class Text: LeafWidget {
   }
 
   private func createPaint() -> SkiaKit.Paint {
-    Paint(fill: foreground)
+    Paint.fill(color: foreground)
   }
 
   private func createFont() -> SkiaKit.Font {

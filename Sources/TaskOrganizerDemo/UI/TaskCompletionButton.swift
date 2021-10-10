@@ -1,4 +1,5 @@
 import WidgetGUI
+import SkiaKit
 import GfxMath
 import Drawing
 
@@ -15,10 +16,10 @@ public class TaskCompletionButton: LeafWidget {
         constraints.constrain(preferredSize)
     }
 
-    override public func draw(_ drawingContext: DrawingContext) {
-        drawingContext.drawCircle(center: DVec2(layoutedSize / 2), radius: layoutedSize.min()! * 0.9, paint: Paint(strokeWidth: 1.0, strokeColor: foreground))
+    override public func draw(_ drawingContext: DrawingContext, canvas: Canvas) {
+        canvas.drawCircle(center: DVec2(layoutedSize / 2), radius: layoutedSize.min()! * 0.9, paint: Paint.stroke(color: foreground, width: 1.0))
         if completed {
-            drawingContext.drawCircle(center: DVec2(layoutedSize / 2), radius: layoutedSize.min()! * 0.8, paint: Paint(color: foreground))
+            canvas.drawCircle(center: DVec2(layoutedSize / 2), radius: layoutedSize.min()! * 0.8, paint: Paint.fill(color: foreground))
         }
     }
 }

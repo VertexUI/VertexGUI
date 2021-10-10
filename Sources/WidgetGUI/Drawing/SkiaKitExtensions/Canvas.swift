@@ -7,7 +7,7 @@ extension Canvas {
   }
 
   public func drawPoint(_ point: DVec2, color: GfxMath.Color) {
-    drawPoint(point, paint: Paint(fill: color))
+    drawPoint(point, paint: Paint.fill(color: color))
   }
 
   public func drawLine(_ start: DVec2, _ end: DVec2, _ paint: Paint) {

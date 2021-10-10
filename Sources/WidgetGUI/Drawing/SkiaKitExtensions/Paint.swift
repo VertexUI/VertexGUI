@@ -9,16 +9,19 @@ extension Paint {
     self.isAntialias = isAntialias
   }
 
-  public convenience init(fill color: GfxMath.Color) {
-    self.init()
-    self.style = .fill
-    self.color = Color(color)
+  public static func fill(color: GfxMath.Color) -> Paint {
+    var paint = Paint()
+    paint.style = .fill
+    paint.color = Color(color)
+    paint.isAntialias = true
+    return paint
   }
 
-  public convenience init(stroke color: GfxMath.Color, width: Double) {
-    self.init()
-    self.style = .stroke
-    self.color = Color(color)
-    self.strokeWidth = Float(width)
+  public static func stroke(color: GfxMath.Color, width: Double) -> Paint {
+    var paint = Paint()
+    paint.style = .stroke
+    paint.color = Color(color)
+    paint.strokeWidth = Float(width)
+    return paint
   }
 }

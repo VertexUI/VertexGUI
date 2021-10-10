@@ -213,8 +213,8 @@ public final class TextInput: ContentfulWidget
     canvas.drawLine(
       DVec2(caretTranslationX, textWidget.layoutedSize.height / 2 - caretHeight / 2),
       DVec2(caretTranslationX, textWidget.layoutedSize.height / 2 + caretHeight / 2),
-      Paint(
-        stroke: caretColor.adjusted(alpha: UInt8(caretBlinkProgress * 255)),
+      Paint.stroke(
+        color: caretColor.adjusted(alpha: UInt8(caretBlinkProgress * 255)),
         width: caretWidth))
   }
 
