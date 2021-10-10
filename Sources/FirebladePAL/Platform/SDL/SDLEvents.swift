@@ -802,7 +802,7 @@ private func convertKey<T: RawRepresentable>(_ sdlKey: T) -> UInt32 where T.RawV
     UInt32(sdlKey.rawValue)
 }
 
-private func convertKey(_ sdlKey: Int32) -> UInt32 {
+private func convertKey(_ sdlKey: Int) -> UInt32 {
     UInt32(sdlKey)
 }
 
