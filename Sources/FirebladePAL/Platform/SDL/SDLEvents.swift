@@ -533,7 +533,7 @@ final class SDLEvents: PlatformEvents {
         UInt32(SDLK_x.rawValue): .X,
         UInt32(SDLK_y.rawValue): .Y,
         UInt32(SDLK_z.rawValue): .Z,
-    ]
+    ] as [UInt32: KeyCode]
 
     private static let physicalKeyMap: [SDL_Scancode: KeyCode] = [
         SDL_SCANCODE_0: ._0,
