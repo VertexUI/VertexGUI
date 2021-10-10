@@ -1,4 +1,4 @@
-name: build-ubuntu2004
+name: build Ubuntu 20.04
 
 on:
   push:
