@@ -1,7 +1,8 @@
 # VertexGUI
 
-![build-ubuntu](https://github.com/VertexUI/VertexGUI/workflows/build-ubuntu/badge.svg)
-![build-macos](https://github.com/VertexUI/VertexGUI/workflows/build-macos/badge.svg)
+![build Ubuntu 18.04](https://github.com/VertexUI/VertexGUI/workflows/build-ubuntu1804/badge.svg)
+![build Ubuntu 20.04](https://github.com/VertexUI/VertexGUI/workflows/build-ubuntu2004/badge.svg)
+![build MacOS](https://github.com/VertexUI/VertexGUI/workflows/build-macos/badge.svg)
 
 VertexGUI is a Swift framework for writing cross-platform GUI applications.
 
