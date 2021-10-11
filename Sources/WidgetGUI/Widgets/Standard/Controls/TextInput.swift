@@ -4,7 +4,7 @@ import SkiaKit
 import OpenCombine
 import Drawing
 
-public final class TextInput: ContentfulWidget
+public final class TextInput: ComposedWidget
 {
   @MutableBinding public var text: String
   private var textBuffer: String

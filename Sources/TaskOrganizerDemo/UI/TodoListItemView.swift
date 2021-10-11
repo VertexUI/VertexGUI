@@ -1,6 +1,6 @@
 import VertexGUI
 
-public class TodoListItemView: ContentfulWidget {
+public class TodoListItemView: ComposedWidget {
   @Inject private var store: TodoStore
 
   private var item: TodoItem

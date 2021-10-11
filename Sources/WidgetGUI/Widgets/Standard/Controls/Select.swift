@@ -2,7 +2,7 @@ import GfxMath
 
 private var optionSlots = [ObjectIdentifier: AnySlot]()
 
-public class Select<O: Equatable>: ContentfulWidget, SlotAcceptingWidgetProtocol {
+public class Select<O: Equatable>: ComposedWidget, SlotAcceptingWidgetProtocol {
   public typealias Option = O
 
   override public var name: String {

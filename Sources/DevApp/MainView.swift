@@ -2,7 +2,7 @@ import VertexGUI
 import Swim
 import OpenCombine
 
-public class MainView: ContentfulWidget, SlotAcceptingWidgetProtocol {
+public class MainView: ComposedWidget, SlotAcceptingWidgetProtocol {
   @Inject
   var someInjectedData: String
 

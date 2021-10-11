@@ -1,7 +1,7 @@
 import VertexGUI
 import OpenCombine
 
-public class TodoListView: ContentfulWidget {
+public class TodoListView: ComposedWidget {
   @Inject private var store: TodoStore
 
   @ImmutableBinding private var listId: Int

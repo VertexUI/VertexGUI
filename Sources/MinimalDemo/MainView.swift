@@ -1,6 +1,6 @@
 import VertexGUI 
 
-public class MainView: ContentfulWidget {
+public class MainView: ComposedWidget {
   @State
   private var counter = 0
 

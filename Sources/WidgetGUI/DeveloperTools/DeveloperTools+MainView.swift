@@ -2,7 +2,7 @@ import Foundation
 import GfxMath
 
 extension DeveloperTools {
-  public class MainView: ContentfulWidget {
+  public class MainView: ComposedWidget {
     private let inspectedRoot: Root
 
     private let store = DeveloperTools.Store()

@@ -16,7 +16,7 @@ Every Widget goes through a chain of lifecycle events.
 
 # User Generated Events
 
-Every class inheriting from Widget (or LeafWidget, ContentfulWidget, because they are subclasses of Widget) allows for registering handlers for a set of user generated events.
+Every class inheriting from Widget (or LeafWidget, ComposedWidget, because they are subclasses of Widget) allows for registering handlers for a set of user generated events.
 
 These are:
 - onMouseEnter
@@ -44,7 +44,7 @@ The mappings from `onSomeEventName` to `onSomeEventNameHandlerManager` are defin
 Direct use of `addHandler` on the corresponding `EventHandlerManager` can be useful when you want to handle events generated on a custom Widget inside your custom implementation. For example:
 
 ```swift
-class MyCustomWidget: Widget { // or inherit from LeafWidget, ContentfulWidget, ...
+class MyCustomWidget: Widget { // or inherit from LeafWidget, ComposedWidget, ...
   var unregisterKeyDownHandler: (() -> ())? = nil
 
   public init() {

@@ -1,6 +1,6 @@
 
 extension DeveloperTools {
-  /*public class PerformanceView: ContentfulWidget {
+  /*public class PerformanceView: ComposedWidget {
     @Inject
     var inspectedRoot: Root
 

@@ -5,7 +5,7 @@ import Drawing
 
 private var itemSlots = [ObjectIdentifier: AnySlot]()
 
-public class List<Item: Equatable>: ContentfulWidget, SlotAcceptingWidgetProtocol {
+public class List<Item: Equatable>: ComposedWidget, SlotAcceptingWidgetProtocol {
   @ImmutableBinding
   private var items: [Item]
   private var previousItems: [Item] = []

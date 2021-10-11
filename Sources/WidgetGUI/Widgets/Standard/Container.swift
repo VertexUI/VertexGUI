@@ -2,7 +2,7 @@ import GfxMath
 import OpenCombine
 import Drawing
 
-public class Container: ContentfulWidget, SlotAcceptingWidgetProtocol {
+public class Container: ComposedWidget, SlotAcceptingWidgetProtocol {
   public static let defaultSlot = Slot(key: "default", data: Void.self)
   var defaultSlotManager = SlotContentManager(Container.defaultSlot)
   public var defaultNoDataSlotContentManager: SlotContentManager<Void>? {

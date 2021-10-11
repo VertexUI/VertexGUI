@@ -2,7 +2,7 @@ import GfxMath
 import Drawing
 
 extension DeveloperTools {
-  public class WidgetPropertiesView: ContentfulWidget {
+  public class WidgetPropertiesView: ComposedWidget {
     @Inject
     var store: DeveloperTools.Store
 

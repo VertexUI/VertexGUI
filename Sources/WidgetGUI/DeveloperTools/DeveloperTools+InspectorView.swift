@@ -1,7 +1,7 @@
 import GfxMath
 
 extension DeveloperTools {
-  public class InspectorView: ContentfulWidget {
+  public class InspectorView: ComposedWidget {
     @Inject var inspectedRoot: Root
     @Inject var store: DeveloperTools.Store
 

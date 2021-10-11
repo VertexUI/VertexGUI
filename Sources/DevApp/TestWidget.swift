@@ -1,6 +1,6 @@
 import VertexGUI
 
-public class TestWidget: ContentfulWidget {
+public class TestWidget: ComposedWidget {
   @MutableBinding
   public var boundText: String
 

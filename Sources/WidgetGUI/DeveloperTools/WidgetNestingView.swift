@@ -2,7 +2,7 @@ import GfxMath
 import Events
 
 /*extension DeveloperTools {
-  public class WidgetNestingView: ContentfulWidget {
+  public class WidgetNestingView: ComposedWidget {
     @Inject var store: DeveloperTools.Store
 
     private let inspectedWidget: Widget

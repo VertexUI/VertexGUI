@@ -91,7 +91,7 @@ Result:
 ```swift
 import VertexGUI 
 
-public class MainView: ContentfulWidget {
+public class MainView: ComposedWidget {
   @State
   private var counter = 0
 
@@ -179,7 +179,7 @@ List(items).withContent {
 Create reusable views consiting of multiple Widgets. Pass child Widgets to your custom Widget instances by using slots. Parts of the composition API might be renamed in the future.
 
 ```swift
-class MyCustomView: ContentfulWidget, SlotAcceptingWidgetProtocol {
+class MyCustomView: ComposedWidget, SlotAcceptingWidgetProtocol {
 
   static let childSlot = Slot(key: "child", data: String.self)
   let childSlotManager = SlotContentManager(MyCustomView.childSlot)
@@ -287,7 +287,7 @@ Style(".class-applied-to-my-custom-widget") {
 Update the content and structure of your Widgets when data changes.
 
 ```swift
-class MyCustomWidget: ContentfulWidget {
+class MyCustomWidget: ComposedWidget {
   @State private var someState: Int = 0
   @ImmutableBinding private var someStateFromTheOutside: String
 
@@ -330,13 +330,13 @@ This should be changed so that providing dependencies can be done by using a pro
 Dependencies are resolved by comparing keys (if given) and types.
 
 ```swift
-class MyCustomWidget: ContentfulWidget {
+class MyCustomWidget: ComposedWidget {
   ...
 
   @Inject(key: <nil or a String>) private var myDependency: String
 }
 
-class MyCustomParentWidget: ContentfulWidget {
+class MyCustomParentWidget: ComposedWidget {
   // API will be changed, so that this dependency can be provided by doing:
   // @Provide(key: <nil or a String>)
   let providedDependency: String = "dependency"
@@ -397,7 +397,7 @@ enum MyAppAction {
 Now you can use the store in your whole app like so:
 
 ```swift
-class TheRootView: ContentfulWidget {
+class TheRootView: ComposedWidget {
   let store = MyAppStore()
 
   @DirectContentBuilder override var content: DirectContent {
@@ -410,7 +410,7 @@ class TheRootView: ContentfulWidget {
   }
 }
 
-class MyCustomWidget: ContentfulWidget {
+class MyCustomWidget: ComposedWidget {
   @Inject var store: MyAppStore
 
   @DirectContentBuilder override var content: DirectContent {

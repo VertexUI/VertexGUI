@@ -1,6 +1,6 @@
 import VertexGUI
 
-public class SearchResultsView: ContentfulWidget {
+public class SearchResultsView: ComposedWidget {
   @Inject
   private var store: TodoStore
 

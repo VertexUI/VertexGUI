@@ -3,7 +3,7 @@ import Dispatch
 import OpenCombine
 import OpenCombineDispatch
 
-public class TodoAppView: ContentfulWidget {
+public class TodoAppView: ComposedWidget {
   public enum Mode {
     case SelectedList, Search
   }

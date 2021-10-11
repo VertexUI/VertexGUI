@@ -3,7 +3,7 @@ import Foundation
 import Drawing
 
 // TODO: actually these are MaterialDESIGNIcons (not from google) --> use the google ones
-public class MaterialDesignIcon: ContentfulWidget {
+public class MaterialDesignIcon: ComposedWidget {
   private let identifier: Identifier
 
   public init(_ identifier: Identifier) {
