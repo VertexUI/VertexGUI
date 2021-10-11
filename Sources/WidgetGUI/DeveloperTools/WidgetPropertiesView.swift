@@ -6,7 +6,7 @@ extension DeveloperTools {
     @Inject
     var store: DeveloperTools.Store
 
-    @DirectContentBuilder override public var content: DirectContent {
+    @Compose override public var content: ComposedContent {
       Container().withContent { [unowned self] in
 
         Dynamic(store.$state.inspectedWidget.publisher) {

@@ -95,7 +95,7 @@ public class MainView: ComposedWidget {
   @State
   private var counter = 0
 
-  @DirectContentBuilder override public var content: DirectContent {
+  @Compose override public var content: ComposedContent {
     Container().with(classes: ["container"]).withContent { [unowned self] in
       Button().onClick {
         counter += 1
@@ -184,7 +184,7 @@ class MyCustomView: ComposedWidget, SlotAcceptingWidgetProtocol {
   static let childSlot = Slot(key: "child", data: String.self)
   let childSlotManager = SlotContentManager(MyCustomView.childSlot)
 
-  @DirectContentBuilder override var content: DirectContent {
+  @Compose override var content: ComposedContent {
     Container().withContent {
       Text("some text 1")
 
@@ -295,7 +295,7 @@ class MyCustomWidget: ComposedWidget {
     self._someStateFromTheOutside = outSideStateBinding
   }
 
-  @DirectContentBuilder override var content: DirectContent {
+  @Compose override var content: ComposedContent {
     Container().withContent { [unowned self] in
 
       // use Dynamic for changing the structure of a Widget
@@ -341,7 +341,7 @@ class MyCustomParentWidget: ComposedWidget {
   // @Provide(key: <nil or a String>)
   let providedDependency: String = "dependency"
 
-  @DirectContentBuilder override var content: DirectContent {
+  @Compose override var content: ComposedContent {
     Container().withContent {
       MyCustomWidget()
     }.provide(dependencies: providedDependency)
@@ -400,7 +400,7 @@ Now you can use the store in your whole app like so:
 class TheRootView: ComposedWidget {
   let store = MyAppStore()
 
-  @DirectContentBuilder override var content: DirectContent {
+  @Compose override var content: ComposedContent {
     Container().provide(dependencies: store).withContent {
       ...
       // can be deeply nested
@@ -413,7 +413,7 @@ class TheRootView: ComposedWidget {
 class MyCustomWidget: ComposedWidget {
   @Inject var store: MyAppStore
 
-  @DirectContentBuilder override var content: DirectContent {
+  @Compose override var content: ComposedContent {
     Container().withContent { [unowned self] in
       // the store exposes reactive bindings
       // to every state property via store.$state

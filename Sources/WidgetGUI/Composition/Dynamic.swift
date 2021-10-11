@@ -34,12 +34,12 @@ extension Dynamic where C == DirectContent {
   }
 }
 
-extension Dynamic where C == SlottingContent {
-  public convenience init<P: Publisher>(_ trigger: P, @SlottingContentBuilder build: @escaping () -> [C.Partial]) where P.Failure == Never {
+extension Dynamic where C == SlotContent {
+  public convenience init<P: Publisher>(_ trigger: P, @SlotContentBuilder build: @escaping () -> [C.Partial]) where P.Failure == Never {
     self.init(trigger: trigger, build: build)
   }
 
-  public convenience init<P: ReactiveProperty>(_ trigger: P, @SlottingContentBuilder build: @escaping () -> [C.Partial]) {
+  public convenience init<P: ReactiveProperty>(_ trigger: P, @SlotContentBuilder build: @escaping () -> [C.Partial]) {
     self.init(trigger: trigger.publisher, build: build)
     triggerProperty = trigger
   }

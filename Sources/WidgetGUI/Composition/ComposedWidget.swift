@@ -1,8 +1,8 @@
 import GfxMath
 
 open class ComposedWidget: Widget {
-  private var _content: DirectContent?
-  open var content: DirectContent {
+  private var _content: ComposedContent?
+  open var content: ComposedContent {
     fatalError("content not implemented")
   }
 

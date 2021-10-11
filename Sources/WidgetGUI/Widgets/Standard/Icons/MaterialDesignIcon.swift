@@ -11,7 +11,7 @@ public class MaterialDesignIcon: ComposedWidget {
     super.init()
   }
 
-  @DirectContentBuilder override public var content: DirectContent {
+  @Compose override public var content: ComposedContent {
     Text(String(Unicode.Scalar(identifier.code)!))/*.with(styleProperties: {
       //(\.$fontFamily, MaterialDesignIcon.materialFontFamily)
     })*/

@@ -41,7 +41,7 @@ public class Select<O: Equatable>: ComposedWidget, SlotAcceptingWidgetProtocol {
     }
   }
 
-  @DirectContentBuilder override public var content: DirectContent {
+  @Compose override public var content: ComposedContent {
     Container().with(classes: "value-field").withContent {
       Dynamic($selectedOption.immutable) { [unowned self] in
         optionSlotManager.buildContent(for: selectedOption)

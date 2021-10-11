@@ -18,7 +18,7 @@ import Events
       super.init()
     }
 
-    @DirectContentBuilder override public var content: DirectContent {
+    @Compose override public var content: ComposedContent {
       Container().with(styleProperties: {
         (\.$direction, .column)
       }).withContent { [unowned self] _ in

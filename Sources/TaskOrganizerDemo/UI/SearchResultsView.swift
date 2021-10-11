@@ -4,7 +4,7 @@ public class SearchResultsView: ComposedWidget {
   @Inject
   private var store: TodoStore
 
-  @DirectContentBuilder override public var content: DirectContent {
+  @Compose override public var content: ComposedContent {
     Container().with(classes: ["lists-container"]).withContent { [unowned self] in
 
       Dynamic(store.$state.searchResult.publisher) {

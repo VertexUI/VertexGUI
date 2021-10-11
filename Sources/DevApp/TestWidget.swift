@@ -8,7 +8,7 @@ public class TestWidget: ComposedWidget {
     self._boundText = boundText
   }
 
-  @DirectContentBuilder override public var content: DirectContent {
+  @Compose override public var content: ComposedContent {
     Container().with(classes: ["container"]).withContent {
       TextInput(text: $boundText.mutable, placeholder: "placeholder").with(styleProperties: {
         (\.$foreground, .black)

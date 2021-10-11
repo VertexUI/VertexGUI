@@ -4,7 +4,7 @@ public class MainView: ComposedWidget {
   @State
   private var counter = 0
 
-  @DirectContentBuilder override public var content: DirectContent {
+  @Compose override public var content: ComposedContent {
     Container().with(classes: ["container"]).withContent { [unowned self] in
       Button().onClick {
         counter += 1

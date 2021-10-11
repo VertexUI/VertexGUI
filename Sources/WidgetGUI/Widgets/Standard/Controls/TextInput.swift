@@ -74,7 +74,7 @@ public final class TextInput: ComposedWidget
     }
   }
 
-  @DirectContentBuilder override public var content: DirectContent {
+  @Compose override public var content: ComposedContent {
     Container().withContent {
       Text($text.immutable).with(classes: ["text"]).with(styleProperties: {
         (\.$transform, ImmutableBinding($textTranslation.immutable, get: {

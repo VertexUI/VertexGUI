@@ -17,7 +17,7 @@ public class TodoListItemView: ComposedWidget {
     updatedDescriptionBuffer = item.description
   }
 
-  @DirectContentBuilder override public var content: DirectContent {
+  @Compose override public var content: ComposedContent {
     Container().with(classes: ["root-container"]).withContent {
       TaskCompletionButton(item.completed).with(classes: ["completion-button"]).onClick { [unowned self] in
         if checkable {

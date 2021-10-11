@@ -17,7 +17,7 @@ extension DeveloperTools {
       }
     }
 
-    @DirectContentBuilder override public var content: DirectContent {
+    @Compose override public var content: ComposedContent {
       Container().withContent { [unowned self] in
         Container().with(classes: ["chart-group"]).with(styleProperties: {
           (\.$direction, .column)

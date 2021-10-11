@@ -8,7 +8,7 @@ extension SlotAcceptingWidgetProtocol {
   }
 
   func internalWithContent(
-    buildContent: (Self.Type) -> SlottingContent 
+    buildContent: (Self.Type) -> SlotContent 
   ) -> Self {
     let content = buildContent(Self.self)
 
@@ -40,18 +40,18 @@ extension SlotAcceptingWidgetProtocol {
   }
 
   public func withContent(
-    @SlottingContentBuilder _ buildContent: (Self.Type) -> SlottingContent
+    @SlotContentBuilder _ buildContent: (Self.Type) -> SlotContent
   ) -> Self {
     internalWithContent(buildContent: buildContent)
   }
 
   public func withContent(
-    @SlottingContentBuilder _ buildContent: () -> SlottingContent
+    @SlotContentBuilder _ buildContent: () -> SlotContent
   ) -> Self {
     internalWithContent(buildContent: { _ in buildContent() })
   }
 
-  fileprivate func resolveSlotContentWrappers(_ content: SlottingContent) {
+  fileprivate func resolveSlotContentWrappers(_ content: SlotContent) {
     let mirror = Mirror(reflecting: self)
     for child in mirror.children {
       if let slotContentManager = child.value as? AnySlotContentManager {

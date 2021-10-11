@@ -39,7 +39,7 @@ public class TodoListView: ComposedWidget {
     editingName = false 
   }
 
-  @DirectContentBuilder override public var content: DirectContent {
+  @Compose override public var content: ComposedContent {
     Container().with(styleProperties: {
       (\.$direction, .column)
     }).withContent {

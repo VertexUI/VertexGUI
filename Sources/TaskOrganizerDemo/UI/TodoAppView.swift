@@ -45,7 +45,7 @@ public class TodoAppView: ComposedWidget {
     }
   }
 
-  @DirectContentBuilder override public var content: DirectContent {
+  @Compose override public var content: ComposedContent {
     Container().withContent {
       buildMenu()
       buildActiveView()

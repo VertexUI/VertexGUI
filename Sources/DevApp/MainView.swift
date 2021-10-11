@@ -28,7 +28,7 @@ public class MainView: ComposedWidget, SlotAcceptingWidgetProtocol {
     }
   }
 
-  @DirectContentBuilder override public var content: DirectContent {
+  @Compose override public var content: ComposedContent {
     Container().withContent {
       Text("TEST").with(styleProperties: {
         (\.$visibility, $textVisibility.immutable)

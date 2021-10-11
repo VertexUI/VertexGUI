@@ -29,7 +29,7 @@ extension DeveloperTools {
       })*/
     }
 
-    @DirectContentBuilder override public var content: DirectContent {
+    @Compose override public var content: ComposedContent {
       /*Container().with(styleProperties: {
         (\.$direction, .column)
         (\.$alignContent, .stretch)
