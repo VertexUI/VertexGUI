@@ -11,11 +11,29 @@
         }
       },
       {
+        "package": "FirebladeMath",
+        "repositoryURL": "https://github.com/fireblade-engine/math.git",
+        "state": {
+          "branch": null,
+          "revision": "65aa6b5045d8dd59bc8512b87ab4ec25a18dd82d",
+          "version": "0.11.0"
+        }
+      },
+      {
         "package": "OpenCombine",
         "repositoryURL": "https://github.com/OpenCombine/OpenCombine.git",
         "state": {
           "branch": "master",
           "revision": "710dfa27157d984182676ca24ec18cc25af9330c",
+          "version": null
+        }
+      },
+      {
+        "package": "FirebladePAL",
+        "repositoryURL": "https://github.com/fireblade-engine/pal.git",
+        "state": {
+          "branch": "main",
+          "revision": "8b785d81f94e47b451d2b9f688b4fa8de5766aa9",
           "version": null
         }
       },
@@ -56,6 +74,15 @@
         }
       },
       {
+        "package": "Vulkan",
+        "repositoryURL": "https://github.com/ctreffs/SwiftVulkan",
+        "state": {
+          "branch": null,
+          "revision": "1e5bf055439e6f90382e88242ed14f57809a5228",
+          "version": "0.1.2"
+        }
+      },
+      {
         "package": "XML",
         "repositoryURL": "https://github.com/kelvin13/swiftxml",
         "state": {
@@ -71,6 +98,15 @@
           "branch": "master",
           "revision": "571022a62b9da8b63d2742f8dc54b8a83e0097dd",
           "version": null
+        }
+      },
+      {
+        "package": "FirebladeTime",
+        "repositoryURL": "https://github.com/fireblade-engine/time.git",
+        "state": {
+          "branch": null,
+          "revision": "cf1bd291364f57e7583bbf49e77b7d5f8fb5927e",
+          "version": "0.1.1"
         }
       }
     ]

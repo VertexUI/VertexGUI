@@ -29,7 +29,8 @@ let package = Package(
         .package(url: "https://github.com/mtynior/ColorizeSwift.git", from: "1.6.0"),
         //.package(name: "FirebladePAL", url: "https://github.com/fireblade-engine/pal", .branch("main")),
         .package(name: "SDL2", url: "https://github.com/ctreffs/SwiftSDL2", .branch("master")),
-        .package(url: "https://github.com/UnGast/SkiaKit", .branch("main"))
+        .package(url: "https://github.com/UnGast/SkiaKit", .branch("main")),
+        .package(name: "FirebladePAL", url: "https://github.com/fireblade-engine/pal.git", .branch("main"))
     ],
 
     targets: [
@@ -49,12 +50,6 @@ let package = Package(
         .target(
             name: "Events",
             dependencies: ["OpenCombine"]
-        ),
-
-        .target(
-            name: "FirebladePAL",
-            dependencies: [.product(name: "SDL2", package: "SDL2"), "GfxMath"],
-            swiftSettings: [.define("FRB_PLATFORM_SDL"), .define("FRB_GRAPHICS_OPENGL")]
         ),
 
         .target(
