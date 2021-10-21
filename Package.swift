@@ -6,7 +6,7 @@ let package = Package(
     name: "VertexGUI",
     
     platforms: [
-        .macOS(.v10_15)
+        .macOS(.v11)
     ],
     
     products: [
@@ -30,7 +30,7 @@ let package = Package(
         //.package(name: "FirebladePAL", url: "https://github.com/fireblade-engine/pal", .branch("main")),
         .package(name: "SDL2", url: "https://github.com/ctreffs/SwiftSDL2", .branch("master")),
         .package(url: "https://github.com/UnGast/SkiaKit", .branch("main")),
-        .package(name: "FirebladePAL", url: "https://github.com/fireblade-engine/pal.git", .branch("main"))
+        .package(name: "FirebladePAL", url: "https://github.com/fireblade-engine/pal.git", .branch("no-time"))
     ],
 
     targets: [
