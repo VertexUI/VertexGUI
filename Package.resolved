@@ -32,8 +32,8 @@
         "package": "FirebladePAL",
         "repositoryURL": "https://github.com/fireblade-engine/pal.git",
         "state": {
-          "branch": "main",
-          "revision": "8b785d81f94e47b451d2b9f688b4fa8de5766aa9",
+          "branch": "no-time",
+          "revision": "fb1e543b428b0c6b8141af97b12359d20515b2ba",
           "version": null
         }
       },
@@ -98,15 +98,6 @@
           "branch": "master",
           "revision": "571022a62b9da8b63d2742f8dc54b8a83e0097dd",
           "version": null
-        }
-      },
-      {
-        "package": "FirebladeTime",
-        "repositoryURL": "https://github.com/fireblade-engine/time.git",
-        "state": {
-          "branch": null,
-          "revision": "cf1bd291364f57e7583bbf49e77b7d5f8fb5927e",
-          "version": "0.1.1"
         }
       }
     ]
