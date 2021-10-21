@@ -19,4 +19,4 @@ jobs:
         sudo apt-get update -y -qq
         sudo apt-get install libsdl2-dev
     - name: Build
-      run: FRB_GRAPHICS_VULKAN=0 swift build --target VertexGUI
+      run: FRB_ENABLE_GRAPHICS_VULKAN=0 swift build --target VertexGUI
