@@ -47,7 +47,7 @@ public class WidgetTreeMouseEventManager {
       for target in currentTargets {
         target.processMouseEvent(
           GUIMouseButtonDownEvent(
-            button: event.button, position: event.position, globalPosition: event.position))
+            button: event.button, position: event.position - target.globalPosition, globalPosition: event.position))
       }
 
     case let event as RawMouseButtonUpEvent:
@@ -56,7 +56,7 @@ public class WidgetTreeMouseEventManager {
       {
         previousDownEventTarget.processMouseEvent(
           GUIMouseButtonUpEvent(
-            button: event.button, position: event.position, globalPosition: event.position))
+            button: event.button, position: event.position - previousDownEventTarget.globalPosition, globalPosition: event.position))
       }
 
       for target in currentTargets {
@@ -67,7 +67,7 @@ public class WidgetTreeMouseEventManager {
           if previousTarget.mounted && previousTarget === target {
             previousTarget.processMouseEvent(
               GUIMouseButtonClickEvent(
-                button: event.button, position: event.position, globalPosition: event.position))
+                button: event.button, position: event.position - previousTarget.globalPosition, globalPosition: event.position))
             wasPreviousTarget = true
           }
         }
@@ -75,7 +75,7 @@ public class WidgetTreeMouseEventManager {
         if !wasPreviousTarget {
           target.processMouseEvent(
             GUIMouseButtonUpEvent(
-              button: event.button, position: event.position, globalPosition: event.position))
+              button: event.button, position: event.position - target.globalPosition, globalPosition: event.position))
         }
       }
 
@@ -90,12 +90,13 @@ public class WidgetTreeMouseEventManager {
           // TODO: save the previous translated position for this target!
           target.processMouseEvent(
             GUIMouseMoveEvent(
-              position: event.position, globalPosition: event.position,
-              previousPosition: event.previousPosition / root.scale,
+              position: event.position - target.globalPosition,
+              globalPosition: event.position,
+              previousPosition: event.previousPosition / root.scale - target.globalPosition,
               previousGlobalPosition: event.previousPosition / root.scale))
         } else {
           target.processMouseEvent(
-            GUIMouseEnterEvent(position: event.position, globalPosition: event.position))
+            GUIMouseEnterEvent(position: event.position - target.globalPosition, globalPosition: event.position))
         }
       }
 
