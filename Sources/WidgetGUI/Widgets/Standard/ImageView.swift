@@ -11,8 +11,6 @@ public class ImageView: LeafWidget {
     private var drawableImage: SkiaKit.Image?
     private var drawableImageDataPointer: UnsafeMutablePointer<UInt8>?
 
-    private var imageSubscription: Any?
-    
     public init(image imageBinding: ImmutableBinding<Swim.Image<RGBA, UInt8>>) {
         self._image = imageBinding
         super.init()
@@ -20,7 +18,7 @@ public class ImageView: LeafWidget {
         updateDrawableImage()
         
         var oldImageSize = (image.width, image.height)
-        self.imageSubscription = $image.publisher.sink { [unowned self] newImage in
+        cancellables.insert($image.publisher.sink { [unowned self] newImage in
             updateDrawableImage()
 
             let newImageSize = (newImage.width, newImage.height)
@@ -29,7 +27,11 @@ public class ImageView: LeafWidget {
                 oldImageSize = newImageSize
                 invalidateLayout()
             }
-        }
+        })
+
+        cancellables.insert(sizeChangedEventManager.sink { [unowned self] _ in
+            updateDrawableImage()
+        })
     }
 
     public init(image: Swim.Image<RGBA, UInt8>) {
@@ -50,6 +52,8 @@ public class ImageView: LeafWidget {
             width = Double(image.width) * scale
         }
 
+        print("IMAGE SIZE", width, height, constraints, constraints.constrain(DSize2(width, height)))
+
         return constraints.constrain(DSize2(width, height))
     }
 
@@ -60,15 +64,18 @@ public class ImageView: LeafWidget {
     }
 
     private func updateDrawableImage() {
+        print("UPDATE DRAWABLE IMAGE", layoutedSize)
+        let resizedImage = image.resize(width: max(1, Int(layoutedSize.width)), height: max(1, Int(layoutedSize.height)))
+
         drawableImageDataPointer?.deallocate()
 
         let skiaImageInfo = ImageInfo(
-          width: Int32(image.width),
-          height: Int32(image.height),
+          width: Int32(resizedImage.width),
+          height: Int32(resizedImage.height),
           colorType: .rgba8888,
           alphaType: .unpremul)
 
-        var imageData = image.getData()
+        var imageData = resizedImage.getData()
         drawableImageDataPointer = UnsafeMutablePointer<UInt8>.allocate(capacity: imageData.count)
         drawableImageDataPointer!.initialize(from: imageData, count: imageData.count)
 
