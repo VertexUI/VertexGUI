@@ -53,7 +53,7 @@ public class SimpleLinearLayout: Layout {
       totalShrinkWeight += widget.shrink
 
       var widgetConstraints = BoxConstraints(minSize: .zero, maxSize: .infinity)
-      widgetConstraints.maxSize[secondaryAxisIndex] = constraints.maxSize[secondaryAxisIndex]
+      widgetConstraints.maxSize[primaryAxisIndex] = constraints.maxSize[primaryAxisIndex]
       widget.referenceConstraints = widgetConstraints
       widget.layout(constraints: widgetConstraints)
 
