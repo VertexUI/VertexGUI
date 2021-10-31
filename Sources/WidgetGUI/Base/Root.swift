@@ -24,10 +24,6 @@ open class Root: Parent {
     return bounds.min
   }
 
-  open var layoutedSize: DSize2 {
-    bounds.size
-  }
-
   public var rootWidget: Widget
 
   var widgetContext: WidgetContext? {
@@ -83,6 +79,9 @@ open class Root: Parent {
     requestCursor: @escaping (_ cursor: Cursor) -> () -> Void
   ) {
     self.widgetContext = WidgetContext(
+      getRootSize: { [unowned self] in
+        bounds.size
+      },
       getKeyStates: getKeyStates,
       getApplicationTime: getApplicationTime,
       getRealFps: getRealFps,
@@ -97,6 +96,10 @@ open class Root: Parent {
   }
   
   open func layout() {
+    // because the root widget size changed values relative to root size will have to be updated
+    // therefore invalidate all widgets below
+    rootWidget.invalidateLayout(deep: true) 
+    rootWidget.invalidateRootSizeDependentThings()
     rootWidget.layout(constraints: BoxConstraints(size: bounds.size / scale))
     cumulatedValuesProcessor.resolveSubTree(rootWidget: rootWidget)
   }
