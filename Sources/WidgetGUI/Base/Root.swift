@@ -24,6 +24,10 @@ open class Root: Parent {
     return bounds.min
   }
 
+  open var layoutedSize: DSize2 {
+    bounds.size
+  }
+
   public var rootWidget: Widget
 
   var widgetContext: WidgetContext? {
