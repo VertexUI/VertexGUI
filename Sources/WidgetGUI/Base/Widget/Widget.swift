@@ -255,16 +255,16 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     public var height: WidgetDimensionSize? = nil
 
     @DefaultStyleProperty
-    public var minWidth: Double? = nil
+    public var minWidth: WidgetDimensionSize? = nil
 
     @DefaultStyleProperty
-    public var minHeight: Double? = nil
+    public var minHeight: WidgetDimensionSize? = nil
 
     @DefaultStyleProperty
-    public var maxWidth: Double? = nil
+    public var maxWidth: WidgetDimensionSize? = nil
 
     @DefaultStyleProperty
-    public var maxHeight: Double? = nil
+    public var maxHeight: WidgetDimensionSize? = nil
 
     @DefaultStyleProperty
     public var padding: Insets = .zero
@@ -571,6 +571,7 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         onBuildInvalidated.invokeHandlers()
     }
 
+    /// Will call invalidateLayout() if explicit constraints changed.
     internal func updateExplicitConstraints() {
         // TODO: implement inspection messages
         let currentExplicitConstraints = explicitConstraints
@@ -600,30 +601,30 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         }
 
         if let explicitMinWidth = minWidth {
-            explicitConstraints.minSize.width = explicitMinWidth
+            explicitConstraints.minSize.width = resolve(widgetDimensionSize: explicitMinWidth)
             explicitConstraints.maxSize.width = max(explicitConstraints.minSize.width, explicitConstraints.maxSize.width)
         }
         if let explicitMinHeight = minHeight {
-            explicitConstraints.minSize.height = explicitMinHeight
+            explicitConstraints.minSize.height = resolve(widgetDimensionSize: explicitMinHeight)
             explicitConstraints.maxSize.height = max(explicitConstraints.minSize.height, explicitConstraints.maxSize.height)
         }
 
         if let explicitMaxWidth = maxWidth {
-            explicitConstraints.maxSize.width = explicitMaxWidth 
+            explicitConstraints.maxSize.width = resolve(widgetDimensionSize: explicitMaxWidth)
             explicitConstraints.minSize.width = min(explicitConstraints.minSize.width, explicitConstraints.maxSize.width)
         }
         if let explicitMaxHeight = maxHeight {
-            explicitConstraints.maxSize.height = explicitMaxHeight 
+            explicitConstraints.maxSize.height = resolve(widgetDimensionSize: explicitMaxHeight)
             explicitConstraints.minSize.height = min(explicitConstraints.minSize.height, explicitConstraints.maxSize.height)
         }
 
         if let explicitWidth = width {
-            explicitConstraints.minSize.width = explicitWidth
-            explicitConstraints.maxSize.width = explicitWidth
+            explicitConstraints.minSize.width = resolve(widgetDimensionSize: explicitWidth)
+            explicitConstraints.maxSize.width = resolve(widgetDimensionSize: explicitWidth)
         }
         if let explicitHeight = height {
-            explicitConstraints.minSize.height = explicitHeight
-            explicitConstraints.maxSize.height = explicitHeight
+            explicitConstraints.minSize.height = resolve(widgetDimensionSize: explicitHeight)
+            explicitConstraints.maxSize.height = resolve(widgetDimensionSize: explicitHeight)
         }
 
         return explicitConstraints
@@ -673,6 +674,7 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         let previousSize = layoutedSize
         let isFirstLayoutPass = !layouted
         
+        // this name means: the explicit constraints for other constraints
         let explicitConstraintsConstraints = BoxConstraints(minSize: explicitConstraints.minSize, maxSize: explicitConstraints.maxSize)
         let constrainedParentConstraints = BoxConstraints(
             minSize: explicitConstraintsConstraints.constrain(constraints.minSize),
@@ -771,7 +773,7 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     }
 
     @inlinable
-    public final func invalidateLayout() {
+    public final func invalidateLayout(deep: Bool = false) {
         if !mounted {
             //print("warning: called invalidateLayout() on a widget that is not yet mounted")
             return
@@ -784,11 +786,17 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
             return
         }
 
-        _invalidateLayout()
+        _invalidateLayout(deep: deep)
     }
 
     @usableFromInline
-    internal final func _invalidateLayout() {
+    internal final func _invalidateLayout(deep: Bool) {
+        if deep {
+            for widget in children {
+                widget.invalidateLayout(deep: deep)
+            }
+        }
+
         layoutInvalid = true
         context.queueLifecycleMethodInvocation(.layout, target: self, sender: self, reason: .undefined)
         onLayoutInvalidated.invokeHandlers(Void())

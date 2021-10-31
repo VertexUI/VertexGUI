@@ -95,6 +95,6 @@ public class Container: ComposedWidget, SlotAcceptingWidgetProtocol {
 
   override public func performLayout(constraints: BoxConstraints) -> DSize2 {
     let accumulatedSize = layoutInstance!.layout(constraints: constraints)
-    return accumulatedSize
+    return constraints.constrain(accumulatedSize)
   }
 }
