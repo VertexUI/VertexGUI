@@ -113,9 +113,18 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     /* layout, position
     -----------------------------------------------------
     */
+    /// Used to find out whether there is some kind of reasonable size.
+    /// Maybe the size that can still fit inside the parent or on the screen.
+    /// Might depend on the kind of parent.
+    /// Usage needs to be determined by the widget.
     public var referenceConstraints: BoxConstraints?
+    /// The constraints passed to the previous call of layout.
+    /// Used to determine whether to perform a relayout when nothing else changed.
     public internal(set) var previousConstraints: BoxConstraints?
+    // TODO: maybe rename to boundsInvalid???
+    public internal(set) var layoutInvalid = false
 
+    /// Constraints configured explicitly by setting widget attributes like width, height, minWidth, ...
     lazy public internal(set) var explicitConstraints = calculateExplicitConstraints()
     var explicitConstraintsUpdateTriggersSubscriptions: [AnyCancellable]?
     /// bridge explicitConstraints for use in @inlinable functions
@@ -129,19 +138,18 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         }
     }
     
+    /// Final size determined by layout process.
     open private(set) var layoutedSize = DSize2(0, 0) {
         didSet {
             if oldValue != layoutedSize {
                 if mounted {
                     invalidateCumulatedValues()
-                    /*if layouted && !layouting && !destroyed {
-                        onSizeChanged.invokeHandlers(layoutedSize)
-                    }*/
                 }
             }
         }
     }
 
+    /// Final local position (in parent) determined by layout process.
     open var layoutedPosition = DPoint2(0, 0) {
         didSet {
             if mounted {
@@ -150,14 +158,22 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
         }
     }
 
+    @available(*, deprecated, message: "use localBounds instead")
     @inlinable open var bounds: DRect {
+        localBounds
+    }
+
+    /// Final local bounds (in parent) determined by layout process.
+    @inlinable open var localBounds: DRect {
         DRect(min: layoutedPosition, size: layoutedSize)
     }
     
+    /// Final global bounds (in root) determined by layout process taking into account transformations (from parent as well).
     @inlinable open var globalBounds: DRect {
         cumulatedTransforms.transform(rect: DRect(min: .zero, size: bounds.size))
     }
     
+    /// Final global position (in root) determined by layout process taking into account transformations (from parent as well).
     @inlinable open var globalPosition: DPoint2 {
         cumulatedTransforms.transform(point: .zero)
     }
@@ -174,8 +190,6 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     public var buildInvalid = false
     public private(set) var layouting = false
     public private(set) var layouted = false
-    // TODO: maybe rename to boundsInvalid???
-    public internal(set) var layoutInvalid = false
     @State private var internalDestroyed = false
     @ImmutableBinding public var destroyed: Bool
 
@@ -235,10 +249,10 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     }
 
     @DefaultStyleProperty
-    public var width: Double? = nil
+    public var width: WidgetDimensionSize? = nil
 
     @DefaultStyleProperty
-    public var height: Double? = nil
+    public var height: WidgetDimensionSize? = nil
 
     @DefaultStyleProperty
     public var minWidth: Double? = nil
