@@ -211,9 +211,9 @@ public final class TextInput: ComposedWidget
     let caretTranslationX = textWidget.measureText(String(text.prefix(caretIndex))).width + caretWidth / 2
 
     canvas.drawLine(
-      DVec2(caretTranslationX, textWidget.layoutedSize.height / 2 - caretHeight / 2),
-      DVec2(caretTranslationX, textWidget.layoutedSize.height / 2 + caretHeight / 2),
-      Paint.stroke(
+      from: DVec2(caretTranslationX, textWidget.layoutedSize.height / 2 - caretHeight / 2),
+      to: DVec2(caretTranslationX, textWidget.layoutedSize.height / 2 + caretHeight / 2),
+      paint: Paint.stroke(
         color: caretColor.adjusted(alpha: UInt8(caretBlinkProgress * 255)),
         width: caretWidth))
   }

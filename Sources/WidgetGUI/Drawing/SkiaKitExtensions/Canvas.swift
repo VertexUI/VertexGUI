@@ -10,7 +10,7 @@ extension Canvas {
     drawPoint(point, paint: Paint.fill(color: color))
   }
 
-  public func drawLine(_ start: DVec2, _ end: DVec2, _ paint: Paint) {
+  public func drawLine(from start: DVec2, to end: DVec2, paint: Paint) {
     drawLine(x0: Float(start.x), y0: Float(start.y), x1: Float(end.x), y1: Float(end.y), paint: paint)
   }
 

@@ -126,30 +126,30 @@ public class DrawingManager {
   private func drawBorders(widget: Widget, canvas: Canvas) {
     if widget.borderWidth.top > 0 {
       canvas.drawLine(
-        DVec2(0, widget.borderWidth.top / 2),
-        DVec2(widget.layoutedSize.width, widget.borderWidth.top / 2),
-        Paint.stroke(color: widget.borderColor, width: widget.borderWidth.top))
+        from: DVec2(0, widget.borderWidth.top / 2),
+        to: DVec2(widget.layoutedSize.width, widget.borderWidth.top / 2),
+        paint: Paint.stroke(color: widget.borderColor, width: widget.borderWidth.top))
     }
 
     if widget.borderWidth.right > 0 {
       canvas.drawLine(
-        DVec2(widget.layoutedSize.width - widget.borderWidth.right / 2, 0),
-        DVec2(widget.layoutedSize.width - widget.borderWidth.right / 2, widget.layoutedSize.height),
-        Paint.stroke(color: widget.borderColor, width: widget.borderWidth.right))
+        from: DVec2(widget.layoutedSize.width - widget.borderWidth.right / 2, 0),
+        to: DVec2(widget.layoutedSize.width - widget.borderWidth.right / 2, widget.layoutedSize.height),
+        paint: Paint.stroke(color: widget.borderColor, width: widget.borderWidth.right))
     }
 
     if widget.borderWidth.bottom > 0 {
       canvas.drawLine(
-        DVec2(0, widget.layoutedSize.height - widget.borderWidth.bottom / 2),
-        DVec2(widget.layoutedSize.width, widget.layoutedSize.height - widget.borderWidth.bottom / 2),
-        Paint.stroke(color: widget.borderColor, width: widget.borderWidth.bottom))
+        from: DVec2(0, widget.layoutedSize.height - widget.borderWidth.bottom / 2),
+        to: DVec2(widget.layoutedSize.width, widget.layoutedSize.height - widget.borderWidth.bottom / 2),
+        paint: Paint.stroke(color: widget.borderColor, width: widget.borderWidth.bottom))
     }
 
     if widget.borderWidth.left > 0 {
       canvas.drawLine(
-        DVec2(widget.borderWidth.left / 2, 0),
-        DVec2(widget.borderWidth.left / 2, widget.layoutedSize.height),
-        Paint.stroke(color: widget.borderColor, width: widget.borderWidth.left))
+        from: DVec2(widget.borderWidth.left / 2, 0),
+        to: DVec2(widget.borderWidth.left / 2, widget.layoutedSize.height),
+        paint: Paint.stroke(color: widget.borderColor, width: widget.borderWidth.left))
     }
   }
 
