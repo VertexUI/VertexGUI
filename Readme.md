@@ -78,7 +78,7 @@ targets: [
 ]
 ```
 
-A [Swift 5.4 toolchain](https://swift.org/download/#releases) is required.
+A [Swift 5.5 toolchain](https://swift.org/download/#releases) is required.
 
 <br><br>
 
