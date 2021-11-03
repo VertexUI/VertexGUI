@@ -52,8 +52,6 @@ public class ImageView: LeafWidget {
             width = Double(image.width) * scale
         }
 
-        print("IMAGE SIZE", width, height, constraints, constraints.constrain(DSize2(width, height)))
-
         return constraints.constrain(DSize2(width, height))
     }
 
@@ -64,7 +62,6 @@ public class ImageView: LeafWidget {
     }
 
     private func updateDrawableImage() {
-        print("UPDATE DRAWABLE IMAGE", layoutedSize)
         let resizedImage = image.resize(width: max(1, Int(layoutedSize.width)), height: max(1, Int(layoutedSize.height)))
 
         drawableImageDataPointer?.deallocate()
