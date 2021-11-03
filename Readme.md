@@ -78,7 +78,7 @@ targets: [
 ]
 ```
 
-A [Swift 5.4 toolchain](https://swift.org/download/#releases) is required.
+A [Swift 5.5 toolchain](https://swift.org/download/#releases) is required.
 
 <br><br>
 
@@ -438,7 +438,6 @@ class MyCustomWidget: ComposedWidget {
 
 ## [Current Limitations](#current-limitations)
 
-- currently only runs on Linux (tested on Ubuntu 20.04) and MacOS (tested on MacOS 10.15)
 - depends on SDL2 for handling cross platform window management
 - a few core Widget types (Container, Button, Text, TextInput, ...) are available
 - the graphics api has only been implemented in so far as to be able to create the above demos
@@ -450,7 +449,6 @@ class MyCustomWidget: ComposedWidget {
 
 ## [Roadmap](#roadmap)
 
-- Windows support
 - WebAssembly support
 - more core Widgets
   - RadioButton
