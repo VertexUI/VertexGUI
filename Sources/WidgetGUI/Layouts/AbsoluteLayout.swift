@@ -4,7 +4,8 @@ public class AbsoluteLayout: Layout {
   override public func layout(constraints: BoxConstraints) -> DSize2 {
     var maxSize = DSize2.zero
     for widget in widgets {
-      widget.layout(constraints: constraints)
+      let childConstraints = BoxConstraints(minSize: .zero, maxSize: constraints.maxSize)
+      widget.layout(constraints: childConstraints)
       if widget.layoutedSize.width > maxSize.width {
         maxSize.width = widget.layoutedSize.width
       }
