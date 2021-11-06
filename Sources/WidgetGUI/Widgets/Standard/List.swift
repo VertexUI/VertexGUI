@@ -5,6 +5,26 @@ import Drawing
 
 private var itemSlots = [ObjectIdentifier: AnySlot]()
 
+/// Display a list of items.
+/// 
+/// Widget instances for specific items are constructed using a function passed to a slot. Example:
+///
+///```swift
+///List(items: arrayOfItems).withContent {
+/// List<ItemType>.itemSlot { item in
+///   Container().withContent {
+///     Text(String(describing: item))
+///   }
+/// }
+///}
+///```
+/// The function passed to .itemSlot is invoked for every item in the given array
+/// (although only when the item is or is close to being visible).
+///
+/// You may pass an ImmutableBinding<[ItemType]> to the List(items:) constructor.
+/// When the data in the binding is updated, the changed items are determined by
+/// checking all items in the old list for equality with items in the new list.
+/// Therefore, items that need to be used in a List, must conform to Equatable.
 public class List<Item: Equatable>: ComposedWidget, SlotAcceptingWidgetProtocol {
   @ImmutableBinding
   private var items: [Item]
@@ -35,6 +55,10 @@ public class List<Item: Equatable>: ComposedWidget, SlotAcceptingWidgetProtocol 
 
   public init(items immutableItems: ImmutableBinding<[Item]>) {
     self._items = immutableItems
+  }
+
+  public init(items staticItems: [Item]) {
+    self._items = ImmutableBinding { staticItems }
   }
 
   override public func performBuild() {
