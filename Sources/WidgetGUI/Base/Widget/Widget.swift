@@ -539,6 +539,7 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     // TODO: consider whether executing this in root tick handling would be better
     */   
     public final func requestUpdateChildren() {
+        context.publish(debugMessage: Widget.DebugMessage("TEST!"))
         context.queueLifecycleMethodInvocation(.updateChildren, target: self, sender: self, reason: .undefined)
     }
 

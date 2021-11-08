@@ -38,7 +38,13 @@ extension DeveloperTools {
         buildMenu()
         buildActiveView()
       }.provide(dependencies: store, inspectedRoot)*/
-      Container()
+      Container().withContent {
+        List(items: inspectedRoot.debugManager.messages).withContent {
+          List<DebugMessage>.itemSlot {
+            Text("DEv Tools" + String(describing: $0))
+          }
+        }
+      }
     }
 
     func buildMenu() -> Widget {

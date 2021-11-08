@@ -72,6 +72,12 @@ open class Application {
     self.windowBunches.append(windowBunch)
   }
 
+  public func openDeveloperTools(for windowBunch: WindowBunch) throws {
+    try createWindow(
+      widgetRoot: Root(
+        rootWidget: DeveloperTools.MainView(windowBunch.widgetRoot)))
+  }
+
   public func start() throws {
     DispatchQueue.main.async { [unowned self] in
       mainLoop()
@@ -175,6 +181,14 @@ open class Application {
               keyStates: KeyStatesContainer(),
               repetition: eventData.isRepeat
             ))
+
+            if mappedKey == .f12 {
+              do {
+                try openDeveloperTools(for: windowBunch)
+              } catch {
+                print("error", error)
+              }
+            }
           } else if eventData.state == .released {
             windowBunch.widgetRoot.receive(rawKeyboardEvent: RawKeyUpEvent(
               key: mappedKey,

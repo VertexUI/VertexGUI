@@ -87,7 +87,10 @@ open class Root: Parent {
       getRealFps: getRealFps,
       requestCursor: requestCursor,
       queueLifecycleMethodInvocation: { [unowned self] in widgetLifecycleManager.queue($0, target: $1, sender: $2, reason: $3) },
-      focusManager: focusManager
+      focusManager: focusManager,
+      publishDebugMessage: { [unowned self] in
+        debugManager.messages.insert($0, at: 0)
+      }
     )
 
     treeManager.mountAsRoot(widget: rootWidget, root: self)
@@ -329,6 +332,7 @@ extension Root {
   // TODO: maybe rename to DebugDataCollector */
   public class DebugManager {
     public var data = DebugData()
+    public var messages: [Widget.DebugMessage] = []
 
     public init() {}
   }

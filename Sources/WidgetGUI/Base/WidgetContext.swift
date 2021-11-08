@@ -3,6 +3,7 @@ import Events
 import Drawing
 
 public class WidgetContext {
+    private let publishDebugMessage: (_ debugMessage: Widget.DebugMessage) -> ()
     public let getRootSize: () -> DSize2
     private var _requestCursor: (_ cursor: Cursor) -> () -> Void
     private let _getKeyStates: () -> KeyStatesContainer
@@ -34,7 +35,8 @@ public class WidgetContext {
         getRealFps: @escaping () -> Double,
         requestCursor: @escaping (_ cursor: Cursor) -> () -> Void,
         queueLifecycleMethodInvocation: @escaping (Widget.LifecycleMethod, Widget, Widget, Widget.LifecycleMethodInvocationReason) -> (),
-        focusManager: FocusManager) {
+        focusManager: FocusManager,
+        publishDebugMessage: @escaping (Widget.DebugMessage) -> ()) {
             self.getRootSize = getRootSize
             self._getKeyStates = getKeyStates
             self._getApplicationTime = getApplicationTime
@@ -42,6 +44,7 @@ public class WidgetContext {
             self._requestCursor = requestCursor
             self._queueLifecycleMethodInvocation = queueLifecycleMethodInvocation
             self.focusManager = focusManager
+            self.publishDebugMessage = publishDebugMessage
     }
 
     public func requestCursor(_ cursor: Cursor) -> () -> Void {
@@ -50,5 +53,9 @@ public class WidgetContext {
 
     public func queueLifecycleMethodInvocation(_ method: Widget.LifecycleMethod, target: Widget, sender: Widget, reason: Widget.LifecycleMethodInvocationReason) {
         _queueLifecycleMethodInvocation(method, target, sender, reason)
+    }
+
+    public func publish(debugMessage: Widget.DebugMessage) {
+        publishDebugMessage(debugMessage)
     }
 }
