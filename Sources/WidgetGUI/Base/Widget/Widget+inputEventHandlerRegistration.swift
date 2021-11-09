@@ -49,6 +49,16 @@ extension Widget {
     return self
   }
 
+  @discardableResult public func onMouseLeave(_ handler: @escaping () -> ()) -> Self {
+    _ = onMouseLeaveHandlerManager.addHandler({ _ in handler() })
+    return self
+  }
+
+  @discardableResult public func onMouseLeave(_ handler: @escaping (GUIMouseLeaveEvent) -> ()) -> Self {
+    _ = onMouseLeaveHandlerManager.addHandler(handler)
+    return self
+  }
+
   @discardableResult public func onMouseWheel(_ handler: @escaping (GUIMouseWheelEvent) -> ()) -> Self {
     _ = onMouseWheelHandlerManager.addHandler(handler)
     return self
