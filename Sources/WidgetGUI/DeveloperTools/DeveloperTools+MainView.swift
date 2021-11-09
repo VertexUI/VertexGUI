@@ -39,9 +39,16 @@ extension DeveloperTools {
         buildActiveView()
       }.provide(dependencies: store, inspectedRoot)*/
       Container().withContent {
-        List(items: inspectedRoot.debugManager.messages).withContent {
-          List<DebugMessage>.itemSlot {
-            Text("DEv Tools" + String(describing: $0))
+        List(items: inspectedRoot.debugManager.$messages.immutable).withContent {
+          List<DebugMessage>.itemSlot { item in
+            Container().withContent {
+              Text(item.message)
+              Text(String(describing: item.sender))
+            }.onMouseEnter {
+              item.sender.debugHighlight = true
+            }.onMouseLeave {
+              item.sender.debugHighlight = false
+            }
           }
         }
       }

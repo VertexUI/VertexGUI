@@ -332,7 +332,7 @@ extension Root {
   // TODO: maybe rename to DebugDataCollector */
   public class DebugManager {
     public var data = DebugData()
-    public var messages: [Widget.DebugMessage] = []
+    @State public var messages: [Widget.DebugMessage] = []
 
     public init() {}
   }

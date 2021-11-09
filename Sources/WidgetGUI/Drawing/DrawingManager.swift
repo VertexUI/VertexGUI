@@ -97,6 +97,11 @@ public class DrawingManager {
             canvas.flush()
             //drawingContext.drawRect(rect: parent.globalBounds, paint: Paint(strokeWidth: 2.0, strokeColor: .red))
           }
+
+          if widget.debugHighlight {
+            canvas.drawRect(DRect(min: .zero, size: widget.globalBounds.size), Paint.fill(color: Color(r: 210, g: 210, b: 255, a: 50)))
+            canvas.flush()
+          }
         }
       }
 

@@ -334,6 +334,12 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     public var debugLayout: Bool = false
     /* end style */
 
+    /* debugging
+    ----------------------------------
+    */
+    internal var debugHighlight: Bool = false
+    /* end debugging */
+
     /* scrolling
     ------------------------------------
     */
@@ -539,7 +545,7 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     // TODO: consider whether executing this in root tick handling would be better
     */   
     public final func requestUpdateChildren() {
-        context.publish(debugMessage: Widget.DebugMessage("TEST!"))
+        context.publish(debugMessage: Widget.DebugMessage("requestUpdateChildren()", sender: self))
         context.queueLifecycleMethodInvocation(.updateChildren, target: self, sender: self, reason: .undefined)
     }
 
@@ -632,6 +638,8 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     }
 
     public final func layout(constraints: BoxConstraints) {
+        context.publish(debugMessage: DebugMessage("layout", sender: self))
+
         if !layoutInvalid, let previousConstraints = previousConstraints, constraints == previousConstraints {
             #if DEBUG
             Logger.log("Constraints equal pervious constraints and layout is not invalid.", "Not performing layout.".with(fg: .yellow), level: .Message, context: .WidgetLayouting)
