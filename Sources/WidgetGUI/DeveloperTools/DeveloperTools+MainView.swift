@@ -9,35 +9,16 @@ extension DeveloperTools {
 
     private let store = DeveloperTools.Store()
 
-    /*private var messages = WidgetBus<WidgetInspectionMessage>.MessageBuffer()
-    private var widgetLifecycleMethodInvocationSignalBuffer = Bus<Widget.LifecycleMethodInvocationSignal>.MessageBuffer()
-    @MutableProperty
-    private var widgetLifecycleMethodInvocationSignalGroups: [Int: Widget.LifecycleMethodInvocationSignalGroup] = [:]*/
-
     public init(_ inspectedRoot: Root) {
       self.inspectedRoot = inspectedRoot
       super.init()
       provide(dependencies: inspectedRoot, store)
-
-      /*_ = onDestroy(self.inspectedRoot.widgetContext!.inspectionBus.pipe(into: messages))
-
-      self.inspectedRoot.widgetContext!.lifecycleMethodInvocationSignalBus.pipe(widgetLifecycleMethodInvocationSignalBuffer)
-
-      _ = onDestroy(widgetLifecycleMethodInvocationSignalBuffer.onMessageAdded { [unowned self] in
-        if (widgetLifecycleMethodInvocationSignalGroups[$0.invocationId] == nil) {
-          widgetLifecycleMethodInvocationSignalGroups[$0.invocationId] = Widget.LifecycleMethodInvocationSignalGroup(
-            method: $0.method, invocationId: $0.invocationId, signals: [$0])
-        } else {
-          widgetLifecycleMethodInvocationSignalGroups[$0.invocationId]!.signals.append($0)
-        }
-      })*/
     }
 
     @Compose override public var content: ComposedContent {
       Container().with(styleProperties: {
         (\.$direction, .column)
         (\.$alignContent, .stretch)
-        (\.$overflowY, .scroll)
       }).withContent {
         buildMenu()
         buildActiveView()
@@ -77,6 +58,8 @@ extension DeveloperTools {
       Style("&") {
         (\.$background, theme.backgroundColor)
         (\.$foreground, theme.textColorOnBackground)
+        (\.$height, .rh(100))
+        (\.$overflowY, .scroll)
       } nested: {
         Style(".menu-item") {
           (\.$background, theme.primaryColor)

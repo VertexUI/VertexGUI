@@ -35,7 +35,7 @@ public class DrawingManager {
           canvasState.transforms.append(.translate(widget.layoutedPosition))
           // TODO: maybe the scrolling translation should be added to the parent widget context before adding the iterator to the list?
           if !widget.unaffectedByParentScroll, let parent = widget.parent as? Widget, parent.overflowX == .scroll || parent.overflowY == .scroll {
-            //childDrawingContext.transform(.translate(-parent.currentScrollOffset))
+            canvasState.transforms.append(.translate(-parent.currentScrollOffset))
           }
           if widget.overflowX == .cut || widget.overflowX == .scroll || widget.overflowY == .cut || widget.overflowY == .scroll {
             /*let translationTestRect = drawingContext.preprocess(DRect(min: .zero, size: widget.layoutedSize))

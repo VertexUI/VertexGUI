@@ -638,7 +638,7 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
     }
 
     public final func layout(constraints: BoxConstraints) {
-        context.publish(debugMessage: DebugMessage("layout", sender: self))
+        _context?.publish(debugMessage: DebugMessage("layout", sender: self))
 
         if !layoutInvalid, let previousConstraints = previousConstraints, constraints == previousConstraints {
             #if DEBUG

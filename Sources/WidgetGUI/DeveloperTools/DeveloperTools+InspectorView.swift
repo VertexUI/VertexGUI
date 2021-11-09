@@ -10,5 +10,11 @@ extension DeveloperTools {
         DeveloperTools.WidgetNestingView(inspectedRoot.rootWidget)
       }
     }
+
+    override public var style: Style {
+      Style("&") {
+        (\.$overflowY, .scroll)
+      }
+    }
   }
 }

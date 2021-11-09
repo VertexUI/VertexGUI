@@ -105,7 +105,7 @@ public class WidgetTreeMouseEventManager {
       for target in previousTargets {
         // TODO: save the previous translated position for this specific target and pass it here instead!
         target.processMouseEvent(
-          GUIMouseLeaveEvent(position: event.position, globalPosition: event.position))
+          GUIMouseLeaveEvent(position: event.position - target.globalPosition, globalPosition: event.position))
       }
 
       previousMouseEventTargets[ObjectIdentifier(GUIMouseMoveEvent.self)] = currentTargets
@@ -114,7 +114,7 @@ public class WidgetTreeMouseEventManager {
       for target in currentTargets {
         target.processMouseEvent(
           GUIMouseWheelEvent(
-            scrollAmount: event.scrollAmount, position: event.position,
+            scrollAmount: event.scrollAmount, position: event.position - target.globalPosition,
             globalPosition: event.position))
       }
     default:

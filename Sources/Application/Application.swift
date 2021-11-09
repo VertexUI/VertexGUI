@@ -13,6 +13,8 @@ open class Application {
 
   private var event = Event()
 
+  private var previousMousePosition: DVec2 = .zero
+
   public init() throws {
     Platform.initialize()
     print("Platform version: \(Platform.version)")
@@ -129,11 +131,12 @@ open class Application {
     switch event.variant {
       case .pointerMotion:
         let eventData = event.pointerMotion
+        let currentPosition = DVec2(Double(eventData.x), Double(eventData.y))
         if let windowBunch = findWindowBunch(windowId: eventData.windowID) {
-          let currentPosition = DVec2(Double(eventData.x), Double(eventData.y))
           let delta = DVec2(Double(eventData.deltaX), Double(eventData.deltaY))
           windowBunch.widgetRoot.receive(rawPointerEvent: RawMouseMoveEvent(position: currentPosition, previousPosition: currentPosition - delta))
         }
+        previousMousePosition = currentPosition
       
       case .pointerButton:
         let eventData = event.pointerButton
@@ -153,7 +156,7 @@ open class Application {
         let eventData = event.pointerScroll
 
         if let windowBunch = findWindowBunch(windowId: eventData.windowID) {
-          let currentPosition = DVec2(Double(eventData.x), Double(eventData.y))
+          let currentPosition = previousMousePosition
           windowBunch.widgetRoot.receive(rawPointerEvent: RawMouseWheelEvent(scrollAmount: DVec2(Double(eventData.horizontal), Double(eventData.vertical)), position: currentPosition))
         }
       
