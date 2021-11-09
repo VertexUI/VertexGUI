@@ -1,7 +1,7 @@
 import GfxMath
 import Events
 
-/*extension DeveloperTools {
+extension DeveloperTools {
   public class WidgetNestingView: ComposedWidget {
     @Inject var store: DeveloperTools.Store
 
@@ -21,17 +21,17 @@ import Events
     @Compose override public var content: ComposedContent {
       Container().with(styleProperties: {
         (\.$direction, .column)
-      }).withContent { [unowned self] _ in
+      }).withContent {
 
         Container().with(classes: ["info-container"]).with(styleProperties: {
           (\.$alignContent, .center)
         }).withContent { _ in
 
-          MaterialDesignIcon(.menuDown).with(classes: ["expand-icon"]).onClick {
+          MaterialDesignIcon(.menuDown).with(classes: ["expand-icon"]).onClick { [unowned self] in
             expanded = !expanded
           }
 
-          Text("\(String(describing: inspectedWidget))").with(classes: ["description-text"]).onClick {
+          Text("\(String(describing: inspectedWidget))").with(classes: ["description-text"]).onClick { [unowned self] in
             store.commit(.setInspectedWidget(inspectedWidget))
           }
         }
@@ -40,9 +40,9 @@ import Events
           (\.$direction, .column)
           (\.$padding, Insets(left: 16))
         }).withContent {
-          Dynamic($expanded.publisher) {
+          Dynamic($expanded.publisher) { [unowned self] in
             if expanded {
-              inspectedWidget.children.map { 
+              inspectedWidget.children.map { [unowned self] in
                 WidgetNestingView($0, depth: depth + 1)
               }
             } else {
@@ -74,4 +74,4 @@ import Events
       }
     }
   }
-}*/
+}

@@ -7,7 +7,7 @@ extension DeveloperTools {
 
     @Compose override public var content: ComposedContent {
       Container().withContent {
-        //DeveloperTools.WidgetNestingView(inspectedRoot.rootWidget)
+        DeveloperTools.WidgetNestingView(inspectedRoot.rootWidget)
       }
     }
   }

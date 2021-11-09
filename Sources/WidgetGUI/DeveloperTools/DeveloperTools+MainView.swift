@@ -5,6 +5,8 @@ extension DeveloperTools {
   public class MainView: ComposedWidget {
     private let inspectedRoot: Root
 
+    @State private var activeMainRoute: MainRoute = .inspector
+
     private let store = DeveloperTools.Store()
 
     /*private var messages = WidgetBus<WidgetInspectionMessage>.MessageBuffer()
@@ -14,6 +16,8 @@ extension DeveloperTools {
 
     public init(_ inspectedRoot: Root) {
       self.inspectedRoot = inspectedRoot
+      super.init()
+      provide(dependencies: inspectedRoot, store)
 
       /*_ = onDestroy(self.inspectedRoot.widgetContext!.inspectionBus.pipe(into: messages))
 
@@ -30,27 +34,13 @@ extension DeveloperTools {
     }
 
     @Compose override public var content: ComposedContent {
-      /*Container().with(styleProperties: {
+      Container().with(styleProperties: {
         (\.$direction, .column)
         (\.$alignContent, .stretch)
         (\.$overflowY, .scroll)
-      }).withContent { [unowned self] in
+      }).withContent {
         buildMenu()
         buildActiveView()
-      }.provide(dependencies: store, inspectedRoot)*/
-      Container().withContent {
-        List(items: inspectedRoot.debugManager.$messages.immutable).withContent {
-          List<DebugMessage>.itemSlot { item in
-            Container().withContent {
-              Text(item.message)
-              Text(String(describing: item.sender))
-            }.onMouseEnter {
-              item.sender.debugHighlight = true
-            }.onMouseLeave {
-              item.sender.debugHighlight = false
-            }
-          }
-        }
       }
     }
 
@@ -64,22 +54,23 @@ extension DeveloperTools {
 
     func buildMenuItem(_ route: MainRoute) -> Widget {
       Container().with(classes: ["menu-item"]).onClick { [unowned self] in
-        store.commit(.setActiveMainRoute(route))
+        activeMainRoute = route
       }.withContent {
         Text(route.rawValue)
       }
     }
 
     @DirectContentBuilder func buildActiveView() -> DirectContent {
-      /*Dynamic(store.$state.activateMainRoute) { [unowned self] in
-        switch store.state.activateMainRoute {
+      Dynamic($activeMainRoute.immutable) { [weak self] in
+        switch self?.activeMainRoute {
         case .inspector:
           DeveloperTools.InspectorView()
-        case .performance:
-          DeveloperTools.PerformanceView()
+        case .messages:
+          DeveloperTools.MessagesView()
+        default: 
+          Text("none")
         }
-      }*/
-      Container()
+      }
     }
 
     override public var style: Style {
