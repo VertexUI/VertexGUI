@@ -22,10 +22,14 @@ private var itemSlots = [ObjectIdentifier: AnySlot]()
 /// (although only when the item is or is close to being visible).
 ///
 /// You may pass an ImmutableBinding<[ItemType]> to the List(items:) constructor.
-/// When the data in the binding is updated, the changed items are determined by
+/// When the data in the binding is updated and the ItemType conforms to Equatable,
+/// the changed items are determined by
 /// checking all items in the old list for equality with items in the new list.
-/// Therefore, items that need to be used in a List, must conform to Equatable.
-public class List<Item: Equatable>: ComposedWidget, SlotAcceptingWidgetProtocol {
+/// When the ItemType does not conform to Equatable, this check cannot be performed.
+/// Therefore, the performance will be better if Equatable performance is given.
+public class List<Item>: ComposedWidget, SlotAcceptingWidgetProtocol {
+  private let compareFunction: ((Item, Item) -> Bool)?
+
   @ImmutableBinding
   private var items: [Item]
   private var previousItems: [Item] = []
@@ -53,12 +57,19 @@ public class List<Item: Equatable>: ComposedWidget, SlotAcceptingWidgetProtocol 
 
   private var itemsSubscription: AnyCancellable?
 
+  public init(items immutableItems: ImmutableBinding<[Item]>) where Item: Equatable {
+    self._items = immutableItems
+    self.compareFunction = (==)
+  }
+
   public init(items immutableItems: ImmutableBinding<[Item]>) {
     self._items = immutableItems
+    self.compareFunction = nil
   }
 
   public init(items staticItems: [Item]) {
     self._items = ImmutableBinding { staticItems }
+    self.compareFunction = nil
   }
 
   override public func performBuild() {
@@ -72,24 +83,28 @@ public class List<Item: Equatable>: ComposedWidget, SlotAcceptingWidgetProtocol 
   private func processItemUpdate(old: [Item], new: [Item]) {
     var updatedItemContents = [DirectContent]()
 
-    var usedOldIndices = [Int]()
+    if let compareFunction = compareFunction {
+      var usedOldIndices = [Int]()
 
-    outer: for newItem in new {
-      var foundOldIndex: Int?
+      outer: for newItem in new {
+        var foundOldIndex: Int?
 
-      for (oldIndex, oldItem) in old.enumerated() {
-        if oldItem == newItem, !usedOldIndices.contains(oldIndex), itemContents.count > oldIndex {
-          foundOldIndex = oldIndex
-          break
+        for (oldIndex, oldItem) in old.enumerated() {
+          if compareFunction(oldItem, newItem), !usedOldIndices.contains(oldIndex), itemContents.count > oldIndex {
+            foundOldIndex = oldIndex
+            break
+          }
+        }
+
+        if let oldIndex = foundOldIndex {
+          updatedItemContents.append(itemContents[oldIndex])
+          usedOldIndices.append(oldIndex)
+        } else {
+          updatedItemContents.append(itemSlotManager(newItem))
         }
       }
-
-      if let oldIndex = foundOldIndex {
-        updatedItemContents.append(itemContents[oldIndex])
-        usedOldIndices.append(oldIndex)
-      } else {
-        updatedItemContents.append(itemSlotManager(newItem))
-      }
+    } else {
+      updatedItemContents = new.map { itemSlotManager($0) }
     }
 
     itemContents = updatedItemContents 
