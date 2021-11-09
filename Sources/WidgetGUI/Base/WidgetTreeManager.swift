@@ -49,6 +49,7 @@ public class WidgetTreeManager {
     if anyChildChanged {
       widget.invalidateLayout()
       widget.invalidateCumulatedValues()
+      (widget.parent as! Widget).invalidateLayout()
     }
 
     widget.previousChildren = widget.children
