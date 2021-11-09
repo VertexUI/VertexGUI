@@ -111,13 +111,8 @@ public final class TextInput: ComposedWidget
         (\.$overflowX, .cut)
       }
 
-      Style(".text") {
-        (\.$foreground, .white)
-      }
-
       Style(".placeholder") {
         (\.$opacity, 0.5)
-        (\.$foreground, .white)
         (\.$visibility, $placeholderVisibility.immutable)
       }
     }
