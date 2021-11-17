@@ -12,7 +12,7 @@ VertexGUI is a Swift framework for writing cross-platform GUI applications.
 
 <img alt="screenshot of demo app" src="Docs/demo.png?raw=true"/>
 
-VertexGUI uses the [Skia](https://skia.org/) 2D rendering engine for drawing Widgets and a part of the [Fireblade](https://github.com/fireblade) game engine for managing windows on multiple platforms.
+VertexGUI uses the [Skia](https://skia.org/) 2D rendering engine for drawing Widgets and a part of the [Fireblade](https://github.com/fireblade-engine) game engine for managing windows on multiple platforms.
 
 Currently Linux, MacOS and Windows are supported. Skia supports more platforms: Android, iOS, ChromeOS. So these platforms can probably be supported by VertexGUI as well with not too much work.
 
