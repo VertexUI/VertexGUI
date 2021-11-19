@@ -15,6 +15,7 @@ public class WidgetContext {
     public var realFps: Double {
         getRealFps()
     }
+    public let getClipboardText: () -> String
 
     private let _queueLifecycleMethodInvocation: (Widget.LifecycleMethod, Widget, Widget, Widget.LifecycleMethodInvocationReason) -> ()
     
@@ -33,6 +34,7 @@ public class WidgetContext {
         getKeyStates: @escaping () -> KeyStatesContainer,
         getApplicationTime: @escaping () -> Double,
         getRealFps: @escaping () -> Double,
+        getClipboardText: @escaping () -> String,
         requestCursor: @escaping (_ cursor: Cursor) -> () -> Void,
         queueLifecycleMethodInvocation: @escaping (Widget.LifecycleMethod, Widget, Widget, Widget.LifecycleMethodInvocationReason) -> (),
         focusManager: FocusManager,
@@ -41,6 +43,7 @@ public class WidgetContext {
             self._getKeyStates = getKeyStates
             self._getApplicationTime = getApplicationTime
             self.getRealFps = getRealFps
+            self.getClipboardText = getClipboardText
             self._requestCursor = requestCursor
             self._queueLifecycleMethodInvocation = queueLifecycleMethodInvocation
             self.focusManager = focusManager

@@ -41,7 +41,7 @@ open class Root: Parent {
   lazy var treeManager = WidgetTreeManager(widgetContext: widgetContext!, widgetLifecycleBus: widgetLifecycleBus)
   lazy var styleManager = StyleManager()
   lazy var cumulatedValuesProcessor = CumulatedValuesProcessor(self)
-  lazy var drawingManager = DrawingManager(rootWidget: rootWidget)
+  lazy var drawingManager = DrawingManager(root: self, rootWidget: rootWidget)
   /* end Widget lifecycle management */
 
   //private var focusContext = FocusContext()
@@ -76,6 +76,7 @@ open class Root: Parent {
     getKeyStates: @escaping () -> KeyStatesContainer,
     getApplicationTime: @escaping () -> Double,
     getRealFps: @escaping () -> Double,
+    getClipboardText: @escaping () -> String,
     requestCursor: @escaping (_ cursor: Cursor) -> () -> Void
   ) {
     self.widgetContext = WidgetContext(
@@ -85,6 +86,7 @@ open class Root: Parent {
       getKeyStates: getKeyStates,
       getApplicationTime: getApplicationTime,
       getRealFps: getRealFps,
+      getClipboardText: getClipboardText,
       requestCursor: requestCursor,
       queueLifecycleMethodInvocation: { [unowned self] in widgetLifecycleManager.queue($0, target: $1, sender: $2, reason: $3) },
       focusManager: focusManager,

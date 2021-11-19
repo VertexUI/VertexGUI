@@ -3,9 +3,11 @@ import SkiaKit
 import Drawing
 
 public class DrawingManager {
+  unowned let root: Root
   var rootWidget: Widget
 
-  public init(rootWidget: Widget) {
+  public init(root: Root, rootWidget: Widget) {
+    self.root = root
     self.rootWidget = rootWidget
   }
 
@@ -13,10 +15,13 @@ public class DrawingManager {
     /*var iterationStates = [(Parent?, DrawingContext, CanvasState, Array<Widget>.Iterator)]()
     iterationStates.append((nil, drawingContext, CanvasState(), [rootWidget].makeIterator()))*/
 
+    var baseCanvasState = CanvasState()
+    baseCanvasState.transforms.append(.scale(DVec2(root.scale, root.scale), origin: DVec2(0, 0)))
+
     var drawStack = [DrawingStackItem]()
     drawStack.append(DrawingStackItem(
       parent: nil,
-      parentCanvasState: CanvasState(),
+      parentCanvasState: baseCanvasState,
       childrenIterator: [rootWidget].makeIterator()))
 
     outer: while var stackItem = drawStack.last {
@@ -32,7 +37,7 @@ public class DrawingManager {
           //childDrawingContext.opacity = widget.opacity
           //childDrawingContext.transform(.translate(widget.layoutedPosition))
           //childDrawingContext.transform(widget.transform)
-          canvasState.transforms.append(.translate(widget.layoutedPosition))
+          canvasState.transforms.append(.translate(widget.layoutedPosition * root.scale))
           // TODO: maybe the scrolling translation should be added to the parent widget context before adding the iterator to the list?
           if !widget.unaffectedByParentScroll, let parent = widget.parent as? Widget, parent.overflowX == .scroll || parent.overflowY == .scroll {
             canvasState.transforms.append(.translate(-parent.currentScrollOffset))
@@ -72,6 +77,16 @@ public class DrawingManager {
             canvas.flush()
           }
 
+          if widget.debugLayout, widget is LeafWidget {
+            canvas.drawRect(DRect(min: .zero, size: widget.globalBounds.size), Paint.stroke(color: .red, width: 2.0))
+            canvas.flush()
+          }
+
+          if widget.debugHighlight {
+            canvas.drawRect(DRect(min: .zero, size: widget.globalBounds.size), Paint.fill(color: Color(r: 210, g: 210, b: 255, a: 50)))
+            canvas.flush()
+          }
+
           if widget.padding.left != 0 || widget.padding.top != 0 {
             //childDrawingContext.transform(.translate(DVec2(widget.padding.left, widget.padding.top)))
             canvasState.transforms.append(.translate(DVec2(widget.padding.left, widget.padding.top)))
@@ -90,27 +105,16 @@ public class DrawingManager {
             drawStack.append(DrawingStackItem(parent: widget, parentCanvasState: canvasState, childrenIterator: widget.children.makeIterator()))
             continue outer
           }
-
-          // this debug border will only be drawn for leaf widgets (after it's contents have been drawn)
-          if widget.debugLayout {
-            canvas.drawRect(DRect(min: .zero, size: widget.globalBounds.size), Paint.stroke(color: .red, width: 2.0))
-            canvas.flush()
-            //drawingContext.drawRect(rect: parent.globalBounds, paint: Paint(strokeWidth: 2.0, strokeColor: .red))
-          }
-
-          if widget.debugHighlight {
-            canvas.drawRect(DRect(min: .zero, size: widget.globalBounds.size), Paint.fill(color: Color(r: 210, g: 210, b: 255, a: 50)))
-            canvas.flush()
-          }
         }
       }
 
       // this debug border will only be drawn for non-leaf widgets (after it's sub widgets have been drawn)
       if let parent = stackItem.parent, parent.debugLayout {
-        apply(canvasState: stackItem.parentCanvasState, to: canvas)
+        var canvasState = stackItem.parentCanvasState
+        canvasState.transforms.append(.translate(-DVec2(parent.padding.left, parent.padding.top)))
+        apply(canvasState: canvasState, to: canvas)
         canvas.drawRect(DRect(min: .zero, size: parent.globalBounds.size), Paint.stroke(color: .red, width: 2.0))
         canvas.flush()
-        //drawingContext.drawRect(rect: parent.globalBounds, paint: Paint(strokeWidth: 2.0, strokeColor: .red))
       }
 
       /*if let parent = parent as? Widget, parent.scrollingEnabled.x || parent.scrollingEnabled.y {
@@ -164,6 +168,12 @@ public class DrawingManager {
       switch transform {
         case let .translate(translation):
           canvas.translate(dx: Float(translation.x), dy: Float(translation.y))
+        case let .scale(scale, origin):
+          if let origin = origin {
+            canvas.scale(sx: Float(scale.x), sy: Float(scale.y), pivot: SkiaKit.Point(FVec2(origin)))
+          } else {
+            canvas.scale(sx: Float(scale.x), sy: Float(scale.y))
+          }
         default:
           break
       }

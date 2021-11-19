@@ -21,7 +21,6 @@ public class WidgetTreeMouseEventManager {
   @discardableResult public func propagate(_ rawMouseEvent: RawMouseEvent) -> Bool {
     // to avoid having to apply the scale for every event type
     var processedRawMouseEvent = rawMouseEvent
-    processedRawMouseEvent.position /= root.scale
 
     // TODO: optimize by storing the target of previous event and checking it first
     var currentTargets: [Widget] = []

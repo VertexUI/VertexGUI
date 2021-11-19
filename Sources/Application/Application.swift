@@ -66,6 +66,7 @@ open class Application {
       getKeyStates:  { KeyStatesContainer() },
       getApplicationTime: { 0 },
       getRealFps: { 0 },
+      getClipboardText: { try! Platform.clipboard.getText() },
       requestCursor: { _ in { () } }
     )
 
@@ -272,6 +273,8 @@ open class Application {
 
     let drawableSize = windowBunch.window.surface!.getDrawableSize()
     windowBunch.widgetRoot.bounds.size = DSize2(Double(drawableSize.width), Double(drawableSize.height))
+
+    windowBunch.widgetRoot.scale = Double(drawableSize.width) / Double(windowBunch.window.frame.width)
   }
 
   private func getSkiaSurface(for surface: SDLOpenGLWindowSurface) -> SkiaKit.Surface? {
