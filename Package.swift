@@ -22,15 +22,13 @@ let package = Package(
     ],
 
     dependencies: [
-        .package(name: "GL", url: "https://github.com/UnGast/swift-opengl.git", .branch("master")),
+        .package(name: "GL", url: "https://github.com/UnGast/swift-opengl", .branch("master")),
         .package(name: "Swim", url: "https://github.com/UnGast/swim.git", .branch("master")),
         .package(name: "GfxMath", url: "https://github.com/UnGast/swift-gfx-math.git", .branch("master")),
         .package(url: "https://github.com/OpenCombine/OpenCombine.git", .branch("master")),
         .package(url: "https://github.com/mtynior/ColorizeSwift.git", from: "1.6.0"),
-        //.package(name: "FirebladePAL", url: "https://github.com/fireblade-engine/pal", .branch("main")),
-        .package(name: "SDL2", url: "https://github.com/ctreffs/SwiftSDL2", .branch("master")),
         .package(url: "https://github.com/UnGast/SkiaKit", .branch("main")),
-        .package(name: "FirebladePAL", url: "https://github.com/fireblade-engine/pal.git", .branch("no-time"))
+        .package(name: "FirebladePAL", url: "https://github.com/fireblade-engine/pal.git", .branch("main"))
     ],
 
     targets: [

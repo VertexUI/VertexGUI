@@ -32,8 +32,8 @@
         "package": "FirebladePAL",
         "repositoryURL": "https://github.com/fireblade-engine/pal.git",
         "state": {
-          "branch": "no-time",
-          "revision": "fb1e543b428b0c6b8141af97b12359d20515b2ba",
+          "branch": "main",
+          "revision": "d4f79203d7729138a40da57f6bbc28c74a4f7430",
           "version": null
         }
       },
@@ -51,13 +51,13 @@
         "repositoryURL": "https://github.com/UnGast/swift-gfx-math.git",
         "state": {
           "branch": "master",
-          "revision": "1c64a27204ff680a60f211cf6a3df337f4e2aaa7",
+          "revision": "2bed3d5aee566213c0735703ef1c7b1316043b23",
           "version": null
         }
       },
       {
         "package": "GL",
-        "repositoryURL": "https://github.com/UnGast/swift-opengl.git",
+        "repositoryURL": "https://github.com/UnGast/swift-opengl",
         "state": {
           "branch": "master",
           "revision": "229ef7cdbfe1948948171e17a7d44d9c03ae4b65",
@@ -65,12 +65,21 @@
         }
       },
       {
-        "package": "SDL2",
-        "repositoryURL": "https://github.com/ctreffs/SwiftSDL2",
+        "package": "SwiftNFD",
+        "repositoryURL": "https://github.com/ctreffs/SwiftNFD.git",
         "state": {
-          "branch": "master",
-          "revision": "6a36a4963d3699b609706cff4352e0e4db9da3de",
-          "version": null
+          "branch": null,
+          "revision": "6c9e4666649f70920775e25d187d5a2c05df5fd2",
+          "version": "1.0.2"
+        }
+      },
+      {
+        "package": "SDL2",
+        "repositoryURL": "https://github.com/ctreffs/SwiftSDL2.git",
+        "state": {
+          "branch": null,
+          "revision": "dc30ee99e4fb5bb4272bfed2e6336d6bc48d8aba",
+          "version": "1.3.1"
         }
       },
       {
@@ -78,8 +87,8 @@
         "repositoryURL": "https://github.com/ctreffs/SwiftVulkan",
         "state": {
           "branch": null,
-          "revision": "1e5bf055439e6f90382e88242ed14f57809a5228",
-          "version": "0.1.2"
+          "revision": "19f57234c4abbf75f94ce3e915ae679c7198eb65",
+          "version": "0.2.0"
         }
       },
       {
@@ -98,6 +107,15 @@
           "branch": "master",
           "revision": "571022a62b9da8b63d2742f8dc54b8a83e0097dd",
           "version": null
+        }
+      },
+      {
+        "package": "FirebladeTime",
+        "repositoryURL": "https://github.com/fireblade-engine/time.git",
+        "state": {
+          "branch": null,
+          "revision": "529c0e27108f2b22d864f61ff3e789dd938ee16c",
+          "version": "0.2.0"
         }
       }
     ]
