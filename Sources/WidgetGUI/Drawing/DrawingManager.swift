@@ -6,6 +6,9 @@ public class DrawingManager {
   unowned let root: Root
   var rootWidget: Widget
 
+  private let debugFontSize = 16.0
+  lazy private var debugFont = createDebugFont()
+
   public init(root: Root, rootWidget: Widget) {
     self.root = root
     self.rootWidget = rootWidget
@@ -40,7 +43,7 @@ public class DrawingManager {
           canvasState.transforms.append(.translate(widget.layoutedPosition * root.scale))
           // TODO: maybe the scrolling translation should be added to the parent widget context before adding the iterator to the list?
           if !widget.unaffectedByParentScroll, let parent = widget.parent as? Widget, parent.overflowX == .scroll || parent.overflowY == .scroll {
-            canvasState.transforms.append(.translate(-parent.currentScrollOffset))
+            canvasState.transforms.append(.translate(-parent.currentScrollOffset * root.scale))
           }
           if widget.overflowX == .cut || widget.overflowX == .scroll || widget.overflowY == .cut || widget.overflowY == .scroll {
             /*let translationTestRect = drawingContext.preprocess(DRect(min: .zero, size: widget.layoutedSize))
@@ -114,6 +117,7 @@ public class DrawingManager {
         canvasState.transforms.append(.translate(-DVec2(parent.padding.left, parent.padding.top)))
         apply(canvasState: canvasState, to: canvas)
         canvas.drawRect(DRect(min: .zero, size: parent.globalBounds.size), Paint.stroke(color: .red, width: 2.0))
+        canvas.draw(text: "\(parent.globalBounds.size.width) \(parent.globalBounds.size.height)", x: 0, y: Float(debugFontSize), font: createDebugFont(), paint: createDebugPaint())
         canvas.flush()
       }
 
@@ -178,6 +182,21 @@ public class DrawingManager {
           break
       }
     }
+  }
+
+  private func createDebugPaint() -> SkiaKit.Paint {
+    Paint.fill(color: .red)
+  }
+
+  private func createDebugFont() -> SkiaKit.Font {
+    guard let typeface = Typeface(familyName: "Arial", weight: .normal, width: .normal, slant: .upright) else {
+      fatalError("could not create typeface for text widget")
+    }
+
+    let font = Font()
+    font.size = Float(debugFontSize)
+    font.typeface = typeface
+    return font
   }
 
   private struct CanvasState {
