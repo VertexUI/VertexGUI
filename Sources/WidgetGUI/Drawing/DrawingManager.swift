@@ -92,7 +92,7 @@ public class DrawingManager {
 
           if widget.padding.left != 0 || widget.padding.top != 0 {
             //childDrawingContext.transform(.translate(DVec2(widget.padding.left, widget.padding.top)))
-            canvasState.transforms.append(.translate(DVec2(widget.padding.left, widget.padding.top)))
+            canvasState.transforms.append(.translate(DVec2(widget.padding.left, widget.padding.top) * root.scale))
             apply(canvasState: canvasState, to: canvas)
           }
 
