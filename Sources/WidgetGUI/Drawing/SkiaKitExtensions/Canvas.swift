@@ -33,4 +33,8 @@ extension Canvas {
   public func scale(x: Float, y: Float, pivot: FVec2) {
     scale(sx: x, sy: y, pivot: SkiaKit.Point(pivot))
   }
+
+  public func clip(rect: DRect) {
+    clip(rect: Rect(FRect(min: FVec2(rect.min), size: FSize2(rect.size))))
+  }
 }

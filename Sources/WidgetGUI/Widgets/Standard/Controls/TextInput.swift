@@ -103,7 +103,6 @@ public final class TextInput: ComposedWidget
     Style("&") {
       (\.$padding, Insets(top: 16, right: 0, bottom: 16, left: 0))
       (\.$fontSize, 16)
-      (\.$overflowX, .cut)
     } nested: {
 
       Style("& Container", Container.self) {

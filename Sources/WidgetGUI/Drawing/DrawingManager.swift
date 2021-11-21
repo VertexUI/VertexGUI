@@ -17,6 +17,7 @@ public class DrawingManager {
   public func processQueue(_ queue: Widget.LifecycleMethodInvocationQueue, drawingContext: DrawingContext, canvas: SkiaKit.Canvas) {
     /*var iterationStates = [(Parent?, DrawingContext, CanvasState, Array<Widget>.Iterator)]()
     iterationStates.append((nil, drawingContext, CanvasState(), [rootWidget].makeIterator()))*/
+    canvas.save()
 
     var baseCanvasState = CanvasState()
     baseCanvasState.transforms.append(.scale(DVec2(root.scale, root.scale), origin: DVec2(0, 0)))
@@ -29,6 +30,8 @@ public class DrawingManager {
 
     outer: while var stackItem = drawStack.last {
       while let widget = stackItem.childrenIterator.next() {
+        canvas.restore()
+        canvas.save()
         //(parent, parentDrawingContext, iterator)
         //iterationStates[iterationStates.count - 1].2 = iterator
 
@@ -45,26 +48,35 @@ public class DrawingManager {
           if !widget.unaffectedByParentScroll, let parent = widget.parent as? Widget, parent.overflowX == .scroll || parent.overflowY == .scroll {
             canvasState.transforms.append(.translate(-parent.currentScrollOffset * root.scale))
           }
-          if widget.overflowX == .cut || widget.overflowX == .scroll || widget.overflowY == .cut || widget.overflowY == .scroll {
-            /*let translationTestRect = drawingContext.preprocess(DRect(min: .zero, size: widget.layoutedSize))
-            var clipRect = translationTestRect
-
-            if widget.overflowX == .cut || widget.overflowX == .scroll {
-              clipRect.min.x = 0
-              clipRect.size.x = widget.layoutedSize.width
-            }
-            if widget.overflowY == .cut || widget.overflowY == .scroll {
-              clipRect.min.y = 0
-              clipRect.size.y = widget.layoutedSize.height
-            }
-
-            childDrawingContext.clip(rect: clipRect)*/
-          }
+          
           //childDrawingContext.lock()
 
           //childDrawingContext.beginDrawing()
 
+          if widget.overflowX == .cut || widget.overflowX == .scroll || widget.overflowY == .cut || widget.overflowY == .scroll {
+            let localClipRect = DRect(min: DVec2(0, 0), size: widget.layoutedSize)
+            let globalClipRect = canvasState.transforms.transform(rect: localClipRect)
+            let combinedClipRect: DRect
+            
+            if let previousClipRect = canvasState.clipRect {
+              combinedClipRect = previousClipRect.intersection(with: globalClipRect) ?? DRect(min: .zero, size: .zero)
+            } else {
+              combinedClipRect = globalClipRect
+            }
+            
+            canvasState.clipRect = combinedClipRect
+          }
+
           apply(canvasState: canvasState, to: canvas)
+
+          if let clipRect = canvasState.clipRect {
+            canvas.clip(region: Region(rect: IRect(
+              x: Int32(clipRect.min.x),
+              y: Int32(clipRect.min.y),
+              width: Int32(clipRect.size.width),
+              height: Int32(clipRect.size.height)
+            )))
+          }
 
           if widget.background != .transparent {
             //childDrawingContext.drawRect(rect: DRect(min: .zero, size: widget.layoutedSize), paint: Paint(color: widget.background))
@@ -129,6 +141,7 @@ public class DrawingManager {
 
       //iterationStates.removeLast()
       drawStack.removeLast()
+      canvas.restore()
     }
 
     /*canvas.clear(color: Colors.yellow)
@@ -202,6 +215,10 @@ public class DrawingManager {
   private struct CanvasState {
     var transforms: [DTransform2] = []
     var clipRect: DRect?
+
+    func transform(point: DVec2) -> DVec2 {
+      transforms.transform(point: point)
+    }
   }
 
   private class DrawingStackItem {
