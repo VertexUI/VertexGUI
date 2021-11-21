@@ -1,5 +1,6 @@
 import GfxMath
 import Drawing
+import SkiaKit
 
 extension Widget {
   public class ScrollBar: LeafWidget {
@@ -69,7 +70,7 @@ extension Widget {
       }
     }
 
-    override public func draw(_ drawingContext: DrawingContext) {
+    override public func draw(_ drawingContext: DrawingContext, canvas: Canvas) {
       let trackOffset = trackLength * scrollProgress
 
       let trackRect: DRect
@@ -79,7 +80,8 @@ extension Widget {
       case .vertical:
         trackRect = DRect(min: DVec2(0, trackOffset), size: DSize2(layoutedSize.width, trackLength))
       }
-      drawingContext.drawRect(rect: trackRect, paint: Paint(color: foreground))
+
+      canvas.drawRect(trackRect, Paint.fill(color: foreground))
     }
 
     public enum Orientation {
