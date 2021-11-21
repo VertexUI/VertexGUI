@@ -81,7 +81,7 @@ open class Root: Parent {
   ) {
     self.widgetContext = WidgetContext(
       getRootSize: { [unowned self] in
-        bounds.size
+        bounds.size / scale
       },
       getKeyStates: getKeyStates,
       getApplicationTime: getApplicationTime,
