@@ -29,24 +29,24 @@ public class MainView: ComposedWidget, SlotAcceptingWidgetProtocol {
   }
 
   @Compose override public var content: ComposedContent {
-    Container().withContent {
-      Text("TEST").with(styleProperties: {
-        (\.$visibility, $textVisibility.immutable)
-        (\.$foreground, .black)
-      })
-
-      Button().onClick { [unowned self] in
-        textVisibility = .visible
+    List(items: Array(repeating: "Test", count: 50)).withContent {
+      List<String>.itemSlot {
+        Text($0).with(classes: "list-item")
       }
-    }
+    }.with(styleProperties: {
+      (\.$height, .rh(100))
+      (\.$overflowY, .scroll)
+    })
   }
 
   override public var style: Style? {
     Style("&") {} nested: {
-      Style(".container-3") {
-        (\.$padding, Insets(all: 32))
-        (\.$background, .white)
-        (\.$grow, 1)
+      Style(".list-item") {
+        (\.$foreground, .black)
+      }
+
+      Style(".list-item:hover") {
+        (\.$background, .grey)
       }
 
       FlatTheme(primaryColor: .orange, secondaryColor: .blue, backgroundColor: Color(10, 30, 50, 255)).styles

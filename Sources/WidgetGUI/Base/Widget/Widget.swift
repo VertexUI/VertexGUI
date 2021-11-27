@@ -478,6 +478,8 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
                 if updated != currentScrollOffset.x {
                     currentScrollOffset.x = updated
                 }
+
+                invalidateCumulatedValues()
             }.store(in: &scrollSubscriptions)
 
             pseudoScrollBarY.$scrollProgress.publisher.removeDuplicates().sink { [unowned self] in
@@ -485,6 +487,8 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
                 if updated != currentScrollOffset.y {
                     currentScrollOffset.y = updated
                 }
+
+                invalidateCumulatedValues()
             }.store(in: &scrollSubscriptions)
 
             scrollMouseWheelHandlerRemover = onMouseWheelHandlerManager.addHandler { [unowned self] event in
