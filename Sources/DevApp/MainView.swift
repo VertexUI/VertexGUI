@@ -29,14 +29,7 @@ public class MainView: ComposedWidget, SlotAcceptingWidgetProtocol {
   }
 
   @Compose override public var content: ComposedContent {
-    List(items: Array(repeating: "Test", count: 50)).withContent {
-      List<String>.itemSlot {
-        Text($0).with(classes: "list-item")
-      }
-    }.with(styleProperties: {
-      (\.$height, .rh(100))
-      (\.$overflowY, .scroll)
-    })
+    TextInput(text: $myState.mutable, placeholder: "ENTER YOUR TEXT")
   }
 
   override public var style: Style? {
@@ -49,7 +42,6 @@ public class MainView: ComposedWidget, SlotAcceptingWidgetProtocol {
         (\.$background, .grey)
       }
 
-      FlatTheme(primaryColor: .orange, secondaryColor: .blue, backgroundColor: Color(10, 30, 50, 255)).styles
     }
   }
 }

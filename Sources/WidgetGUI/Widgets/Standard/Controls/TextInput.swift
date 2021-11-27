@@ -174,6 +174,18 @@ public final class TextInput: ComposedWidget
         caretIndex += 1
         updateTextTranslation()
       }
+    case .v:
+      #if os(macOS)
+      let condition = event.haveGui
+      #else
+      let condition = event.haveCtrl
+      #endif
+
+      if condition {
+        text.insert(
+          contentsOf: context.getClipboardText(),
+          at: text.index(text.startIndex, offsetBy: caretIndex))
+      }
     default:
       break
     }

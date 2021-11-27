@@ -15,6 +15,8 @@ open class Application {
 
   private var previousMousePosition: DVec2 = .zero
 
+  private var keyStates = KeyStatesContainer()
+
   public init() throws {
     Platform.initialize()
     print("Platform version: \(Platform.version)")
@@ -180,9 +182,11 @@ open class Application {
           }
 
           if eventData.state == .pressed {
+            keyStates[mappedKey] = true
+
             windowBunch.widgetRoot.receive(rawKeyboardEvent: RawKeyDownEvent(
               key: mappedKey,
-              keyStates: KeyStatesContainer(),
+              keyStates: keyStates, 
               repetition: eventData.isRepeat
             ))
 
@@ -194,9 +198,11 @@ open class Application {
               }
             }
           } else if eventData.state == .released {
+            keyStates[mappedKey] = false
+
             windowBunch.widgetRoot.receive(rawKeyboardEvent: RawKeyUpEvent(
               key: mappedKey,
-              keyStates: KeyStatesContainer(),
+              keyStates: keyStates,
               repetition: eventData.isRepeat
             ))
           }
@@ -369,6 +375,10 @@ extension Application {
     .RIGHT: .arrowRight,
     .DOWN: .arrowDown,
     .LEFT: .arrowLeft,
+    .LCTRL: .leftCtrl,
+    .RCTRL: .rightCtrl,
+    .LGUI: .leftGui,
+    .RGUI: .rightGui,
     ._0: ._0,
     ._1: ._1,
     ._2: ._2,

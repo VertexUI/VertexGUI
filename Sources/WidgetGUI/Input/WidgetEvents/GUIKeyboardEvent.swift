@@ -6,6 +6,18 @@ public protocol GUIKeyboardEvent {
     var repetition: Bool { get }
 }
 
+extension GUIKeyboardEvent {
+    // whether any of the ctrl keys was pressed when the event was fired
+    var haveCtrl: Bool {
+        keyStates[.leftCtrl] || keyStates[.rightCtrl]
+    }
+
+    // whether any of the gui keys is pressed (CMD on MacOS)
+    var haveGui: Bool {
+        keyStates[.leftGui] || keyStates[.rightGui]
+    }
+}
+
 public struct GUIKeyDownEvent: GUIKeyboardEvent {
     public var keyStates: KeyStatesContainer
     public var key: Key
