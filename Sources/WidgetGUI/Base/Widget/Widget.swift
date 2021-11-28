@@ -421,6 +421,7 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
 
         setupWidgetEventHandlerManagers()
         setupStyleProperties()
+        setupTransformStylePropertyTrigger()
         setupExplicitConstraintsUpdateTriggers()
         setupScrollingEnabled()
         updateScrollEventHandlers() 
@@ -436,6 +437,12 @@ open class Widget: Bounded, Parent, Child, CustomDebugStringConvertible {
                 manager.widget = self
             }
         }
+    }
+
+    private func setupTransformStylePropertyTrigger() {
+        cancellables.insert($transform.publisher.sink { [unowned self] _ in
+            invalidateCumulatedValues()
+        })
     }
 
     private func setupExplicitConstraintsUpdateTriggers() {
