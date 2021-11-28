@@ -108,6 +108,8 @@ public class List<Item>: ComposedWidget, SlotAcceptingWidgetProtocol {
     }
 
     itemContents = updatedItemContents 
+
+    invalidateLayout()
   }
 
   override public func performLayout(constraints: BoxConstraints) -> DSize2 {
