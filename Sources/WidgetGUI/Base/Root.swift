@@ -81,6 +81,7 @@ open class Root: Parent {
     requestCursor: @escaping (_ cursor: Cursor) -> () -> Void
   ) {
     self.widgetContext = WidgetContext(
+      getRoot: { [unowned self] in self },
       getRootSize: { [unowned self] in
         bounds.size / scale
       },

@@ -3,6 +3,7 @@ import Events
 import Drawing
 
 public class WidgetContext {
+    public let getRoot: () -> Root
     private let publishDebugMessage: (_ debugMessage: Widget.DebugMessage) -> ()
     public let getRootSize: () -> DSize2
     private var _requestCursor: (_ cursor: Cursor) -> () -> Void
@@ -31,6 +32,7 @@ public class WidgetContext {
     public let focusManager: FocusManager
 
     public init(
+        getRoot: @escaping () -> Root,
         getRootSize: @escaping () -> DSize2,
         getKeyStates: @escaping () -> KeyStatesContainer,
         getApplicationTime: @escaping () -> Double,
@@ -41,6 +43,7 @@ public class WidgetContext {
         queueLifecycleMethodInvocation: @escaping (Widget.LifecycleMethod, Widget, Widget, Widget.LifecycleMethodInvocationReason) -> (),
         focusManager: FocusManager,
         publishDebugMessage: @escaping (Widget.DebugMessage) -> ()) {
+            self.getRoot = getRoot
             self.getRootSize = getRootSize
             self._getKeyStates = getKeyStates
             self._getApplicationTime = getApplicationTime

@@ -433,11 +433,23 @@ extension Application {
   ]
 }
 
+private struct ScreenImplementation: WidgetGUI.Screen {
+  let wrapped: FirebladePAL.Screen
+
+  public var size: DSize2 {
+    DSize2(Double(wrapped.frame.width), Double(wrapped.frame.height))
+  }
+}
+
 public class FirebladeWindowWrapper: WidgetGUI.Window {
   let wrapped: FirebladePAL.Window
 
   public var bounds: DRect {
     DRect(min: DVec2(Double(wrapped.frame.x), Double(wrapped.frame.y)), size: DSize2(Double(wrapped.frame.width), Double(wrapped.frame.height)))
+  }
+
+  public var screen: WidgetGUI.Screen {
+    ScreenImplementation(wrapped: wrapped.screen!)
   }
 
   init(_ wrapped: FirebladePAL.Window) {
