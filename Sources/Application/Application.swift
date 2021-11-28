@@ -23,7 +23,7 @@ open class Application {
   }
 
   public func createWindow(widgetRoot: Root, graphicsMode: GraphicsMode = .cpu) throws {
-    let window: Window
+    let window: FirebladePAL.Window
     let canvas: SkiaKit.Canvas
 
     if graphicsMode == .openGl {
@@ -62,11 +62,12 @@ open class Application {
 
     let drawingBackend = MockDrawingBackend()
 
-    let windowBunch = WindowBunch(window: window, graphicsMode: graphicsMode, widgetRoot: widgetRoot, drawingContext: DrawingContext(backend: drawingBackend), canvas: canvas)
+    let windowBunch = WindowBunch(window: window, windowWrapper: FirebladeWindowWrapper(window), graphicsMode: graphicsMode, widgetRoot: widgetRoot, drawingContext: DrawingContext(backend: drawingBackend), canvas: canvas)
 
     widgetRoot.setup(
       getKeyStates:  { KeyStatesContainer() },
       getApplicationTime: { 0 },
+      getWindow: { windowBunch.windowWrapper },
       getRealFps: { 0 },
       getClipboardText: { try! Platform.clipboard.getText() },
       requestCursor: { _ in { () } }
@@ -342,13 +343,15 @@ open class Application {
 extension Application {
   public class WindowBunch {
     public var window: FirebladePAL.Window
+    public var windowWrapper: FirebladeWindowWrapper
     public var graphicsMode: GraphicsMode
     public var widgetRoot: Root
     public var drawingContext: DrawingContext
     public var canvas: SkiaKit.Canvas
 
-    public init(window: FirebladePAL.Window, graphicsMode: GraphicsMode, widgetRoot: Root, drawingContext: DrawingContext, canvas: SkiaKit.Canvas) {
+    public init(window: FirebladePAL.Window, windowWrapper: FirebladeWindowWrapper, graphicsMode: GraphicsMode, widgetRoot: Root, drawingContext: DrawingContext, canvas: SkiaKit.Canvas) {
       self.window = window
+      self.windowWrapper = windowWrapper
       self.graphicsMode = graphicsMode
       self.widgetRoot = widgetRoot
       self.drawingContext = drawingContext
@@ -428,4 +431,16 @@ extension Application {
     .F11: .f11,
     .F12: .f12
   ]
+}
+
+public class FirebladeWindowWrapper: WidgetGUI.Window {
+  let wrapped: FirebladePAL.Window
+
+  public var bounds: DRect {
+    DRect(min: DVec2(Double(wrapped.frame.x), Double(wrapped.frame.y)), size: DSize2(Double(wrapped.frame.width), Double(wrapped.frame.height)))
+  }
+
+  init(_ wrapped: FirebladePAL.Window) {
+    self.wrapped = wrapped
+  }
 }

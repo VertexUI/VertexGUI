@@ -8,6 +8,7 @@ public class WidgetContext {
     private var _requestCursor: (_ cursor: Cursor) -> () -> Void
     private let _getKeyStates: () -> KeyStatesContainer
     private let _getApplicationTime: () -> Double
+    public let getWindow: () -> Window 
     public var applicationTime: Double {
         _getApplicationTime()
     }
@@ -33,6 +34,7 @@ public class WidgetContext {
         getRootSize: @escaping () -> DSize2,
         getKeyStates: @escaping () -> KeyStatesContainer,
         getApplicationTime: @escaping () -> Double,
+        getWindow: @escaping () -> Window,
         getRealFps: @escaping () -> Double,
         getClipboardText: @escaping () -> String,
         requestCursor: @escaping (_ cursor: Cursor) -> () -> Void,
@@ -42,6 +44,7 @@ public class WidgetContext {
             self.getRootSize = getRootSize
             self._getKeyStates = getKeyStates
             self._getApplicationTime = getApplicationTime
+            self.getWindow = getWindow
             self.getRealFps = getRealFps
             self.getClipboardText = getClipboardText
             self._requestCursor = requestCursor

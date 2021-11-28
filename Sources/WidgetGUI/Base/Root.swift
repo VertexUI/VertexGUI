@@ -75,6 +75,7 @@ open class Root: Parent {
   open func setup(
     getKeyStates: @escaping () -> KeyStatesContainer,
     getApplicationTime: @escaping () -> Double,
+    getWindow: @escaping () -> Window,
     getRealFps: @escaping () -> Double,
     getClipboardText: @escaping () -> String,
     requestCursor: @escaping (_ cursor: Cursor) -> () -> Void
@@ -85,6 +86,7 @@ open class Root: Parent {
       },
       getKeyStates: getKeyStates,
       getApplicationTime: getApplicationTime,
+      getWindow: getWindow,
       getRealFps: getRealFps,
       getClipboardText: getClipboardText,
       requestCursor: requestCursor,
