@@ -45,7 +45,6 @@ public class ContextMenu {
     #if os(macOS)
     let window = widget.context.getWindow()
     let windowPosition = window.bounds.min
-    print("SCREN SIZE", window.screen.size)
     let menuPosition = (windowPosition + widget.globalPosition + position) * DVec2(1, -1) + DVec2(0, window.screen.size.y)
 
     nsMenu?.popUp(
